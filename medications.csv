@@ -1,0 +1,73 @@
+common_medications,descriptive,frequency,percentage
+C1374,"Acetato de gosserrelina 10,8 mg (Inj.)",1,1.4
+C61625,Alendronato 70 mg (Comp.),1,1.4
+C224,Alopurinol 100 mg (Comp.),1,1.4
+C224_2,Alopurinol 300 mg (Comp.),1,1.4
+C62005,Amitriptilina 25 mg (Comp.),1,1.4
+C61635,Anlodipino 5 mg (Comp.),6,8.1
+C28836,Atenolol 25 mg (Comp.),1,1.4
+C61527,Atorvastatina 40 mg (Comp.),1,1.4
+C62009_2,Beclometasona 200 mcg/dose (Aerossol oral Fr. 200 doses),2,2.7
+C1027,Budesonida 50 mcg (Spray nasal),1,1.4
+C62012,Bupropiona 150 mg (Comp.),7,9.5
+C11306,Carbonato de Calcio + VitD 1250 mg (500 mg de Ca el.)  + 400UI (Comp.),1,1.4
+C28947_2,Ciclobenzaprina 10 mg (Comp.),2,2.7
+C28947_1,Ciclobenzaprina 5 mg (Comp.),1,1.4
+C87471,Ciprofibrato 100 mg (Comp.),1,1.4
+C61680,Citalopram 20 mg (Comp.),1,1.4
+C28935_2,Clonazepam 2 mg (Comp.),2,2.7
+C28935,"Clonazepam 2,5 mg/mL (Sol. oral Fr. 20 mL)",2,2.7
+C16447,Colágeno (Cáps.),2,2.7
+C47476,"Desogestrel 0,75 mg (Comp.)",3,4.1
+C166759,Diacereína 50 mg (Cáps.),2,2.7
+C47984,Diclofenaco de sódio 50 mg,1,1.4
+C81663,Diosmina 450 mg (Comp.),2,2.7
+C65435,Dipirona 500 mg (Comp.),1,1.4
+C42771,Dispositivo intra uterino (Unidade),3,4.1
+C454,Domperidona 10 mg (Comp.),4,5.4
+C180533,Empagliflozin/Linagliptin (GLYXAMBI),1,1.4
+C62027,Enalapril 10 mg (Comp.),1,1.4
+C62027_2,Enalapril 20 mg (Comp.),1,1.4
+C47529,Ezetimiba 10 mg,1,1.4
+C506_1,Fluoxetina 20 mg (Cáps.),4,5.4
+C74548_1,Fosfato de Codeína 30 mg (Comp.),1,1.4
+C1108_1,Gabapentina 300 mg (Cáps.),1,1.4
+C87618,Gliclazida 30 mg (Comp. de lib. pr.),3,4.1
+C29098,Hidroclorotiazida 25 mg (Comp.),8,10.8
+C29034,"Levonorgestrel + Etinilestradiol 0,15 mg + 0,03 mg (Comp.)",10,13.5
+C888_3,Levotiroxina sódica 100 mcg (Comp.),4,5.4
+C888,Levotiroxina sódica 25 mcg (Comp.),4,5.4
+C888_2,Levotiroxina sódica 50 mcg (Comp.),1,1.4
+C888_4,Levotiroxina sódica 75 mcg (Comp.),2,2.7
+C66869,Losartana 50 mg (Comp.),11,14.9
+C47491,Mesilato de dehidroergotamina 1 mg + Dipirona Monoidratada 350mg + Cafeína 100mg,1,1.4
+C61612,Metformina 500 mg (Comp.) (Glifage),8,10.8
+C61612_2,Metformina 850 mg (Comp.) (Glifage),3,4.1
+C29254,"Metoprolol, succinato 25 mg (Comp.)",1,1.4
+C47640_2,Olmesartana 40 mg (Comp.),2,2.7
+C493,Omega 3 1.000 mg (Cáps.),3,4.1
+C716,Omeprazol 20 mg (Cáps.),5,6.8
+C159287,Outra medicação,9,12.2
+C29346_1,Pantoprazol 20 mg (Comp.),1,1.4
+C29346_2,Pantoprazol 40 mg (Comp.),3,4.1
+C198_2,Paracetamol 750 mg (Comp.),1,1.4
+C61879,Paroxetina 20 mg (Comp.),1,1.4
+C72391,Passiflora incarnata 45% (Tintura Fr. 100 mL),1,1.4
+C64625_1,Pregabalina 75 mg (Comp.),1,1.4
+C61917_2,Quetiapina 50 mg (Comp.),1,1.4
+C29416,Risperidona 2 mg (Comp.),1,1.4
+C66523_2,Rosuvastatina 10 mg (Comp.),2,2.7
+C47957,Salbutamol 100 mcg/dose (Spray oral Fr. 200 doses),2,2.7
+C61939,Sertralina 50 mg (Comp.),8,10.8
+C29454,Sinvastatina 20 mg (Comp.),7,9.5
+C66955,Tibolona,1,1.4
+C47764_1,Topiramato 25 mg (Comp.),1,1.4
+C47764_2,Topiramato 50 mg (Comp.),1,1.4
+C29507,Tramadol 50 mg (Cáps.),1,1.4
+C29510,Trazodona,2,2.7
+C1278_3,Venlafaxina 150 mg (Cáps.),1,1.4
+C1278_1,"Venlafaxina 37,5 mg (Caps.)",1,1.4
+C1278_2,Venlafaxina 75 mg (Caps.),2,2.7
+C29536_2,Ácido Valpróico 250 mg (Cáps.),1,1.4
+C506,NA,2,2.7
+NA,NA,75,101.4

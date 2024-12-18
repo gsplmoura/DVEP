@@ -1,0 +1,440 @@
+# title: "DVEP Data Analysis"
+# project: "Effect of Eclipta prostrata (L.) L. (Asteraceae) on bioelectrical impedance phase angle in adults with grade I obesity (DVEP)"
+# PID: "REDCap 1958"
+# author: "Gustavo Santos Paiva Laender Moura"
+# date: "2024-12-11"
+
+rm(list=ls()) # Clear existing data and graphics
+graphics.off()
+cat("\014")  # Clear any pending RStudio sessions or temporary files
+library(Hmisc) # Load necessary libraries
+library(tidyverse) 
+setwd("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP")
+
+# Exporting data from REDCap
+# 1. PID 1958
+# 2. Data Exports, Reports, and Stats
+# 3. Choose "Export Data" from option "A - All data (all records and fields)"
+# 4. Export format: CSV (raw data)
+# 5. De-identification options: "Remove all identifier fields" YES
+# 6. Additional export options: "Export survey identifier field and survey timestamp field(s)?" YES
+# 7. Advanced data formatting options
+# - "Export gray Form Status fields with blank value"
+# - comma as default separator
+# - Use period/full stop (.) as decimal
+# 8. Export file to "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP"
+# 9. Rename file to "data_dvep.csv"
+# Note: resulting file must have 780 variables (last variable on column ACZ: "anexos_complete")
+
+# Reading csv files (Tidyverse)
+data  <- read_csv(
+  "data_dvep.csv",
+  col_names = TRUE,
+  col_types = NULL,
+  col_select = NULL,
+  id = NULL,
+  locale = default_locale(),
+  na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+  quote = "\"",
+  comment = "",
+  trim_ws = TRUE,
+  skip = 0, # Number of lines to skip before reading data
+  n_max = Inf, # Maximum number of lines to read.
+  guess_max = 1000,
+  name_repair = "unique",
+  num_threads = readr_threads(),
+  progress = show_progress(),
+  show_col_types = TRUE,
+  skip_empty_rows = TRUE,
+  lazy = should_read_lazy()
+)
+
+data_codebook <- read_csv(
+  "data_codebook.csv",
+  col_names = TRUE,
+  col_types = NULL,
+  col_select = NULL,
+  id = NULL,
+  locale = default_locale(),
+  na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+  quote = "\"",
+  comment = "",
+  trim_ws = TRUE,
+  skip = 0, # Number of lines to skip before reading data
+  n_max = Inf, # Maximum number of lines to read.
+  guess_max = 1000,
+  name_repair = "unique",
+  num_threads = readr_threads(),
+  progress = show_progress(),
+  show_col_types = TRUE,
+  skip_empty_rows = TRUE,
+  lazy = should_read_lazy()
+)
+
+data_structure  <- read_csv(
+  "data_structure.csv",
+  col_names = TRUE)
+
+data_NCIT  <- read_csv(
+  "data_NCIT.csv",
+  col_names = TRUE)
+
+# Remove identifying name from record_id
+data$record_id <- substr(data$record_id,1,2)
+
+# Renaming variables
+## Create rename vector
+rename_vector <- setNames(object = colnames(data), data_codebook$variable_recoded)
+## Apply  rename vector to data
+data <- data %>%
+    rename(!!!rename_vector)
+rm(rename_vector) # Remove rename vector
+
+# Assing correct column types
+## Excel formula to convert REDCap field types to Tibble nomenclature
+    #     =IF(
+    #     J2="calc","d",IF(
+    #     J2="radio","f",IF(
+    #     J2="notes","c",IF(
+    #     J2="dropdown","f",IF(
+    #     J2="slider","i",if(
+    #         and(J2="text",N2=""),"c",if(
+    #         and(J2="text",N2="date_dmy"),"D",if(
+    #         and(J2="text",N2="integer"),"i",if(
+    #         and(J2="text",left(N2,6)="number"),"d",if(
+    #         and(J2="text",N2="datetime_dmy"),"T",if(
+    #         and(J2="text",N2="time_mm_ss"),"t",if(
+    #         and(J2="text",N2="time"),"t",""
+    #         ))))))))))))
+
+## Creating R function to convert REDCap field types to Tibble nomenclature
+convert_col_type <- function(column, type) {
+  switch(type,
+         c = as.character(column),
+         d = as.numeric(column),
+         i = as.integer(column),
+         l = as.logical(column),
+         D = as.Date(column, format = "%Y-%m-%d"),
+         T = as.POSIXct(column, format = "%Y-%m-%d %H:%M:%S"),
+         f = as.factor(column),
+         column  # Default (no change)
+  )
+}
+## Apply function to data
+data <- data |>
+    mutate(
+        across( # apply a function to multiple columns at once
+            .cols = # .cols: Specifies which columns you want to change
+                all_of(data_codebook$variable_recoded), 
+            .fns = # .fns: Defines the function to apply to each column
+                ~ convert_col_type(.x, data_codebook$col_types[which(data_codebook$variable_recoded == cur_column())])
+))
+
+## Checking the type of each column in a tibble in R
+# If you are using dplyr, you can use glimpse(), which is like str() but optimized for tibbles. It shows a cleaner, more readable summary.
+# <chr>: Character
+# <dbl>: Double (floating-point number)
+# <int>: Integer
+# <fct>: Factor
+# <date>: Date
+# <dttm>: Date-Time (POSIXct)
+
+# sapply() (Show all column types)
+# sapply(data, class)
+
+# TIDYVERSE
+## 1. Create list of REDCap instruments and associated variables
+instruments <- list(
+    I01_elegibility = c("record_id", "event_name", "date_birth", "age", "ubs", "contact_options", "contact_hours", "contact_days", "transport_research_center", "research_source_info", "availability_comments_yn", "availability_comments", "sex", "pregnant_nursing_yn", "eleg_height", "eleg_weight", "bmi_reported", "eleg_comorbidity_yn", "comorbidity_list", "drug_use_yn", "drug_list", "high_risk_pregnancy_ineffective_contraceptives", "high_risk_pregnancy_inconsistent_contraceptives", "high_risk_pregnancy_unprotected_sex", "high_risk_pregnancy_infertility_treatment", "high_risk_pregnancy_postpartum", "high_risk_pregnancy_none", "high_risk_fem_noinfo", "high_risk_fem_unknown", "high_risk_fem_notasked", "high_risk_fem_askunknown", "high_risk_fem_invalid", "high_risk_fem_na", "pregnancy_test_and_contraceptive_agreement", "low_risk_pregnancy_effective_contraceptives", "menopause", "low_risk_pregnancy_surgical_sterilization", "low_risk_pregnancy_no_sex_6_months", "low_risk_pregnancy_no_sex", "low_risk_pregnancy_infertility_diagnosis", "low_risk_pregnancy_exclusive_homo_sexual_behavior", "low_risk_fem_noinfo", "low_risk_fem_unknown", "low_risk_fem_notasked", "low_risk_fem_askunknown", "low_risk_fem_invalid", "low_risk_fem_na", "contraceptive_continuation_agreement", "lab_notes", "consultation_schedule_date", "eleg_lab_request_date", "lab_schedule_date", "eleg_lab_location", "lab_collected_yn", "lab_checked_yn", "lab_finding_yn", "lab_exclusion_yn", "bhcg", "contraception", "preserved_hormone", "contraception_ready_yn", "contraception_ineligibility", "consent_sent_yn", "consent_read_yn", "consent_questions_yn", "consent_questions_2_yn", "consent_questions_cleared_yn", "participant_desire_yn", "first_visit_date", "sms_consent_yn", "block_alerts_1st_yn", "interview_datetime", "eleg_interviewer", "eleg_complete"),
+    I02_tcle = c("record_id","event_name", "consent_signed_yn", "consent_date", "consent_upload", "tcle_complete"),
+    I03_demographic = c("record_id","event_name", "race", "race_other", "marital_status", "education_years", "employment_status", "household_size", "income_level", "demographic_metadata", "demographic_complete"),
+    I04_whoqol = c("record_id","event_name", "whoqol_timestamp", "whoqol_1_quality", "whoqol_2_health", "whoqol_3_pain", "whoqol_4_treatment", "whoqol_5_enjoyment", "whoqol_6_meaning", "whoqol_7_concentration", "whoqol_8_security", "whoqol_9_environment", "whoqol_10_energy", "whoqol_11_appearance", "whoqol_12_finances", "whoqol_13_information", "whoqol_14_leisure", "whoqol_15_mobility", "whoqol_16_sleep", "whoqol_17_activities", "whoqol_18_work", "whoqol_19_selfesteem", "whoqol_20_relationships", "whoqol_21_sexual", "whoqol_22_support", "whoqol_23_housing", "whoqol_24_health_services", "whoqol_25_transport", "whoqol_26_negativity", "whoqol_needed_help", "whoqol_comment", "whoqol_score_overall", "whoqol_score_health", "whoqol_score_physical", "whoqol_score_psychological", "whoqol_score_social", "whoqol_score_environment", "pdf_upload_wb", "whoqol_complete"),
+    I05_dass = c("record_id","event_name", "dass_timestamp", "dass_1_not_calm", "dass_2_drymouth", "dass_3_not_positive", "dass_4_hard_breath", "dass_5_no_initiative", "dass_6_exaggeration", "dass_7_tremor", "dass_8_nervous", "dass_9_worry", "dass_10_no_desire", "dass_11_agitation", "dass_12_not_relaxed", "dass_13_depression", "dass_14_intolerance", "dass_15_panic", "dass_16_no_enthusiasm", "dass_17_no_selfworth", "dass_18_too_emotional", "dass_19_palpitation", "dass_20_fear", "dass_21_no_meaning", "dass_score_depression", "dass_score_anxiety", "dass_score_stress", "dass21_upload", "dass_complete"),
+    I06_ecap = c("record_id","event_name", "ecap_timestamp", "ecap1", "ecap2", "ecap3", "ecap4", "ecap5", "ecap6", "ecap7", "ecap8", "ecap9", "ecap10", "ecap11", "ecap12", "ecap13", "ecap14", "ecap15", "ecap16", "ecap_response_date", "ecap_1_body_image", "ecap_2_eating_speed", "ecap_3_impulse", "ecap_4_emotional_eating", "ecap_5_hunger", "ecap_6_guilt", "ecap_7_diet_failure", "ecap_8_binge_quantity", "ecap_9_compensate", "ecap_10_control", "ecap_11_fullness", "ecap_12_social_eating", "ecap_13_meal_frequency", "ecap_14_worry", "ecap_15_food_thoughts", "ecap_16_hunger_awareness", "ecap_score", "ecap_pdf_upload", "ecap_complete"),
+    I07_bodycount = c("record_id","event_name", "height", "height_checked_cm", "weight", "weight_checked_kg", "abdomen", "abdominal_circ_checked_cm", "arm", "arm_circ_checked_cm", "anthro_check_error", "anthro_check", "bmi", "weight_maxideal", "weight_adjusted", "kcal_kg20", "kcal_kg22", "diet_energy", "weight_loss_kg", "weight_loss_percent", "abdomen_loss_kg", "abdomen_loss_percent", "bmi_loss_absolute", "bmi_loss_percent", "bodycount_complete"),
+    I08_bp_limb = c("record_id","event_name", "bpbia_form_open_date", "bpbia_examiner", "bpbia_r_sw", "cuff_size", "reference_systolic_right", "reference_diastolic_right", "reference_mean_right", "reference_systolic_left", "reference_diastolic_left", "reference_mean_left", "reference_member", "bp_limb_complete"),
+    I09_bp = c("record_id","event_name", "bp_form_open_date", "bp_examiner", "bp_start_sw", "heart_rate", "oxigen_saturation", "systolic_1", "diastolic_1", "bp_mean_1", "bp_first_measurement_sw", "systolic_2", "bp_r21s_checked", "diastolic_2", "bp_r22d_checked", "bp_mean_2", "bp_second_measurement_sw", "systolic_3", "bp_r31s_checked", "diastolic_3", "bp_r32d_checked", "bp_mean_3", "bp_sys_diff", "bp_third_measurement_sw", "systolic_4", "bp_r41s_checked", "diastolic_4", "bp_r42d_checked", "bp_mean_4", "systolic_mean", "systolic_stdev", "diastolic_mean", "diastolic_stdev", "mean_bp_mean", "mean_bp_stdev", "bp_show_metadata", "bp_complete"),
+    I10_bia = c("record_id","event_name", "bia_raw_files", "bia_form_open_date", "bia_examiner", "smoked_24h", "exercised_24h", "alcohol_24h", "room_temperature", "axillary_temperature", "light_clothes", "removed_objects", "hairy_limbs", "removed_hair", "cleaned_skin", "last_meal_time", "last_liquid_time", "bed_rest_10min", "bia_timestamp", "time_fasted_food", "time_fasted_liquid", "resistance", "resistance_checked", "reactance", "reactance_checked", "phase_angle", "phase_angle_checked", "bia_show_metadata", "bia_complete"),
+    I11_handgrip = c("record_id","event_name", "grip_limitations_yn", "grip_rh_limitations", "grip_lh_no_limitations", "grip_lh_paralysis", "grip_lh_cast", "grip_lh_bandaged", "grip_lh_missing_thumb", "grip_lh_other_limitations", "grip_lh_no_info", "grip_lh_unknown", "grip_lh_notasked", "grip_lh_askunknown", "grip_lh_invalid", "grip_lh_na", "grip_recent_surgery_yn", "grip_exclude_test_yn", "grip_surgery_history_yn", "grip_dominance", "grip_pain_last7days_yn", "grip_rhpain", "grip_lhpain", "grip_test_procedure_understanding_yn", "handgrip_right_1", "grip_rh_validation1", "grip_rh_stopwatch1", "handgrip_left_1", "grip_lh_validation1", "grip_lh_stopwatch1", "handgrip_right_2", "grip_rh_validation2", "grip_rh_stopwatch2", "handgrip_left_2", "grip_lh_validation2", "grip_lh_stopwatch2", "handgrip_right_3", "grip_rh_validation3", "handgrip_left_3", "grip_lh_validation3", "handgrip_right_mean", "handgrip_right_stdev", "handgrip_left_mean", "handgrip_left_stdev", "grip_see_metadata", "handgrip_complete"),
+    I12_nutrition = c("record_id","event_name", "frequency_bowel", "frequency_solid_stool", "frequency_diarrhea", "contipation_yn", "frequency_laxative", "urinary_frequency", "water_consumption", "hair_loss", "nutrition_complete"),
+    I13_food_allergy = c("record_id","event_name", "food_alergy", "peanut_allergy", "nut_allergy", "seafood_allergy", "egg_allergy", "lactose_intolerance", "gluten_intolerance", "soy_allergy", "fish_allergy", "allergy_complete"),
+    I14_evs = c("record_id","event_name", "evs_days", "evs_time", "evs_score", "exercise_type_1", "secondary_physical_activity_yn", "tertiary_physical_activity_yn", "evs_complete"),
+    I15_alcohol = c("record_id","event_name", "alcohol_frequency", "alcohol_stopped_years_ago", "years_drinks_alcohol", "beer_yn", "wine_yn", "spirit_yn", "alcohol_type_other", "alcohol_type_no_info", "alcohol_type_unknown", "alcohol_type_not_asked", "alcohol_type_asked_unknown", "alcohol_type_invalid", "alcohol_type_na", "beer_per_week", "beer_dose", "wine_ml_per_week", "wine_dose", "distilled_ml_per_week", "spirit_dose", "alcohol_type_other_specify", "alcohol_other_doses_per_week", "alcohol_dose", "alcohol_significant", "alcohol_complete"),
+    I16_tobacco = c("record_id","event_name", "smoke_history", "age_started_smoking", "smoked_years", "daily_cigarettes", "pack_years", "age_quit_smoking", "tobacco_complete"),
+    I17_diet_recall = c("record_id","event_name", "time_1", "time_2", "time_3", "time_4", "time_5", "time_6", "food_1", "food_2", "food_3", "food_4", "food_5", "food_6", "observations_1", "observations_2", "observations_4", "observations_3", "observations_5", "observations_6", "pdf_upload_recordatorio", "diet_recall_complete", "meal_breakfast_yn", "meal_morning_snack_yn", "meal_lunch_yn", "meal_afternoon_snack_yn", "meal_dinner_yn", "meal_supper_yn", "meal_no_info", "meal_unknown", "meal_not_asked", "meal_asked_unknown", "meal_invalid", "meal_na"),
+    I18_diet_values = c("record_id","event_name", "total_energy", "carbs_grams", "carbs_kcal", "protein_kcal", "fat_kcal", "protein_grams", "fat_grams", "carbs_morning_g", "protein_morning_g", "fat_morning_g", "fat_morning_snack_g", "carbs_morning_snack_g", "protein_morning_snack_g", "carbs_lunch_g", "fat_lunch_g", "protein_lunch_g", "carbs_afternoon_snack_g", "fat_afternoon_snack_g", "protein_afternoon_snack_g", "fat_dinner_g", "protein_dinner_g", "carbs_dinner_g", "carbs_night_snack_g", "fat_night_snack_g", "protein_night_snack_g", "carbs_cal_morning", "protein_cal_morning", "fat_cal_morning", "total_cal_morning", "carbs_cal_morning_snack", "fat_cal_morning_snack", "protein_cal_morning_snack", "total_cal_morning_snack", "total_cal_lunch", "carbs_cal_lunch", "fat_cal_lunch", "protein_cal_lunch", "carbs_cal_afternoon_snack", "fat_cal_afternoon_snack", "protein_cal_afternoon_snack", "total_cal_afternoon_snack", "carbs_cal_dinner", "protein_cal_dinner", "fat_cal_dinner", "total_cal_dinner", "carbs_cal_night_snack", "protein_cal_night_snack", "fat_cal_night_snack", "total_cal_night_snack", "nutr_pdf_upload", "diet_values_complete"),
+    I19_dates = c("record_id","event_name", "intervention_capsule_start_yn", "visit1_schedule_date", "weekly_alert_remove_yn", "intervention_start_date", "date_45d_complete", "visit2_schedule_date", "date_90d_complete", "visit3_schedule_date", "important_dates_link_hidden", "dates_complete"),
+    I20_allocation = c("record_id","event_name", "participant_id", "allocation_group", "allocation_complete"),
+    I21_conditions_R = c("record_id","event_name", "repeat_instrument", "repeat_instance", "comorbidity_yn", "comorbidity_additional", "common_comorbidities", "comorbidities_diagnosis_duration", "comorbidities_diagnosis_duration_unit", "comorbidities_listed_concat", "comorbidities_metadata", "conditions_complete"),
+    I22_drugs_R = c("record_id","event_name", "repeat_instrument", "repeat_instance", "medication_current_yn", "medication_additional", "common_medications", "medication_dosage", "drug_duration_use", "drug_duration_use_unit", "drug_units_per_dose", "drug_dosage_units", "medication_list_concat", "other_medication_use_yn", "medications_metadata", "drugs_complete"),
+    I23_old_drugs_R = c("record_id","event_name", "repeat_instrument", "repeat_instance", "previous_medication_yn", "previous_medication_additional", "common_previous_medications", "previous_drug_start_info", "previous_drug_start_duration", "previous_drug_start_duration_unit", "previous_drug_stop_info", "previous_drug_stop_duration", "previous_drug_stop_duration_unit", "previous_medications_listed_concat", "other_medications", "old.drugs_complete"),
+    I24_old_conditions_R = c("record_id","event_name", "repeat_instrument", "repeat_instance", "medical_history_yn", "medical_history_additional", "common_medical_history", "personal_medical_history", "personal_medical_history_notes", "medical_history_duration", "medical_history_duration_unit", "medical_history_listed_concat", "old.conditions_complete"),
+    I25_symptoms_R = c("record_id","event_name", "repeat_instrument", "repeat_instance", "symptoms_yn", "symptoms_additional", "symptom_instance_number", "symptom_code", "symptom_specify", "symptom_note", "symptom_onset", "symptom_onset_code", "symptom_onset_unit", "symptom_severity", "symptom_severity_scale", "symptom_current", "symptom_current_or_resolved", "symptom_resolution_date", "symptom_resolution_duration_unit", "symptom_causality_assessment", "symptom_intervention_causality", "symptoms_concat", "symptoms_complete"),
+    I26_phy_exam_R = c("record_id","event_name", "repeat_instrument", "repeat_instance", "physical_exam_findings_yn", "physical_exam_findings_additional", "system", "general_appearance", "oral_cavity_exam", "skin_exam", "cardiovascular_exam", "respiratory_exam", "abdominal_exam", "extremities_exam", "abnormal_finding_description", "abnormal_finding_nonindexed_description", "previous_instance_phyexam_concat", "current_instance_phyexam_concat2", "phy.exam_complete"),
+    I27_labs_R = c("record_id","event_name", "repeat_instrument", "repeat_instance", "show_lab_list_yn", "lab_request_signed_pdf", "lab_protocol_request_pdf", "medical_consultation_schedule_date", "lab_request_date", "lab_scheduled_date", "lab_location", "labs_date", "c_reactive_protein", "ast", "alt", "gamma_gt", "alkaline_phosphatase", "total_bilirubin", "direct_bilirubin", "indirect_bilirubin", "amylase", "total_proteins", "albumin", "urea", "creatinine", "glomerular_filtration_rate", "cpk", "uric_acid", "sodium", "potassium", "calcium_ionic", "total_cholesterol", "ldl", "hba1c", "triglycerides", "hdl", "fasting_glucose", "insulin", "homa_ir", "quick_index", "beta_hcg", "hemoglobin", "hematocrit", "leukocytes", "platelets", "tsh", "t4_free", "lab_exam_pdf", "other_lab_tests_yn", "labs_notes", "labs_checked_results", "lab_metadata", "labs_complete"),
+    I28_ecg = c("record_id","event_name", "ecg_timestamp", "ecg_performed", "reason_not_performed_ecg", "ecg_pdf_upload", "amplitude_standard", "heart_rate_bpm", "sample_time_s", "qrs_interval_ms", "pr_interval_ms", "qt_interval_ms", "qtc_interval_ms", "qrs_axis_degrees", "rhythm", "normal_ecg", "ecg_findings_lbbb", "ecg_findings_rbbb", "ecg_findings_av_block", "ecg_findings_st_changes", "ecg_findings_abnormal_q_waves", "ecg_findings_nonspecific_intraventricular_conduction_delay", "ecg_findings_no_info", "ecg_findings_unknown", "ecg_findings_not_asked", "ecg_findings_asked_but_unknown", "ecg_findings_invalid", "ecg_findings_na", "ecg_text_prompt", "ecg_audit_data", "ecg_technical_quality", "ecg_measurement_checked", "show_ecg_metadata_yn", "ecg"),
+    I29_compliance_R = c("record_id","event_name", "repeat_instrument", "repeat_instance", "taking_as_directed", "dosage_schedule", "alternative_schedule", "reminder_method", "alternative_reminder", "missed_study_medication", "missed_dose_count", "missed_dose_timing", "missed_dose_timing_other", "medication_discontinuation", "discontinuation_duration", "discontinuation_reason", "discontinuation_reason_other", "ran_out_of_medication", "ran_out_reason", "daily_routine_change_medication_adherence_yn", "daily_routine_change_specify", "perceived_improvement", "improvements_reported", "challenges_taking_medication", "specify_challenges_medication_adherence", "medication_confidence_scale", "overall_compliance_rate", "compliance_complete"),
+    I30_adverse_event_R = c("record_id","event_name", "repeat_instrument", "repeat_instance", "adverse_event_evaluation_date", "adverse_event_this_cycle_yn", "serious_adverse_event_yn", "adverse_event", "adverse_event_description", "adverse_event_classification", "adverse_event_grade", "adverse_event_start_date", "adverse_event_end_date", "adverse_event_attribution", "adverse_event_action_taken", "adverse_event_followup", "additional_adverse_events_yn", "adverse_event_concat", "adverse_complete"),
+    I31_medical = c("record_id","event_name", "evaluation_date", "pipe_comorbidities", "diuretic_use", "diuretic_dose_change", "pipe_current_medications", "pipe_previous_medications", "pipe_medical_history", "menses", "regular_cycle", "cycle_duration", "last_menses", "ovulation_days_after_lmp", "next_ovulation_date", "next_menses_date", "cycle_phase", "drugs_dose_change", "drugs_dose_change_notes", "pipe_symptoms_1st_visit", "pipe_symptoms_2nd_visit", "pipe_symptoms_3rd_visit", "phy_exam_1st_concat", "phy_exam_2nd_concat", "phy_exam_3rd_concat", "show_lab_yn", "lab_tests_yn", "lab_tests_not_performed_reason", "lab_tests_checked_yn", "abnormal_labs", "abnormal_labs_conduct", "intervention_prevention_reason_yn", "specify_intervention_prevention_reasons", "intervention_delivered_yn", "explain_intervention_not_delivered", "date_delivery", "explained_dosage", "intervention_comprehension_yn", "intervention_comprehension_notes", "expected_start_date", "expected_start_date_capsules", "start_after_lab", "additional_notes_actions_yn", "medical_conduct", "medical_complete"),
+    I32_followup_R = c("record_id","event_name", "repeat_instrument", "repeat_instance", "weekly_followup_timestamp", "is_data_entry_form_yn", "interviewer_followup", "first_contact_attempt_datetime", "first_contact_successful_yn", "second_contact_attempt_datetime", "second_contact_successful_yn", "third_contact_attempt_datetime", "third_contact_successful_yn", "fourth_contact_attempt_datetime", "fourth_contact_successful_yn", "fifth_contact_attempt_datetime", "fifth_contact_successful_yn", "sixth_contact_attempt_datetime", "sixth_contact_successful_yn", "seventh_contact_attempt_datetime", "seventh_contact_successful_yn", "eighth_contact_attempt_datetime", "eighth_contact_successful_yn", "ninth_contact_attempt_datetime", "ninth_contact_successful_yn", "tenth_contact_attempt_datetime", "tenth_contact_successful_yn", "symptoms_since_treatment", "symptoms_description", "contact_info_start_days", "onset_days", "contact_info_severity", "severity_scale", "symptoms_resolved", "contact_info_duration_days", "resolved_days", "capsules_compliance", "missed_dose_last_week", "reason_not_compliant", "questions_yn", "question_notes", "questions_resolved_yn", "pdf_survey_upload", "followup_complete"),
+    I33_conclusion = c("record_id","event_name", "completed_intervention", "conclusion_date", "non_completion_reason", "conclusion_info_view_yn", "ethical_additional_measures_details", "ethical_additional_measures_yn", "ethical_additional_measures_info", "conclusion_complete"),
+    I34_annex_R = c("record_id","event_name", "repeat_instrument", "repeat_instance", "attachment_insertion_date", "attachment_type", "attachment_file_date", "attachment_other_specify", "attachment_file_upload", "attachment_notes", "attachment_complete_yn")
+)
+
+## 2. Create one tibble for each instrument
+### Estas variáveis não devem ser consideradas na verificação de dados faltantes (NA) porque sempre contêm informações.
+always_present_vars <- c("record_id", "event_name", "repeat_instrument", "repeat_instance")
+### Criar uma lista de tibbles separadas para cada instrumento, excluindo linhas que contenham apenas NAs
+instrument_tibbles <- lapply(names(instruments), function(instr_name) {
+  # `instr_name` é o nome atual do instrumento sendo processado, por exemplo, "elegibility".
+  # Seleciona a lista de variáveis associadas ao instrumento atual
+  selected_vars <- instruments[[instr_name]]
+  # Remove as variáveis da lista que estão em `always_present_vars` (que sempre possuem valores).
+  # `setdiff()` retorna apenas as variáveis exclusivas (aquelas que não estão em `always_present_vars`).
+  vars_to_check <- setdiff(selected_vars, always_present_vars)
+  # Filtrar os dados para o instrumento atual
+  filtered_tibble <- data  |> 
+    # Seleciona as colunas correspondentes às variáveis do instrumento atual
+    select(all_of(selected_vars))  |> 
+    # Filtra as linhas onde pelo menos uma das variáveis relevantes (não constantes) não é NA
+    filter(
+      rowSums(
+        !is.na(
+          select(cur_data(), all_of(vars_to_check)) # Seleciona apenas as colunas relevantes para a verificação de NA
+        )
+      ) > 0 # `rowSums()` conta quantas colunas não são NA por linha. Mantemos linhas onde este total é maior que 0.
+    )
+  # Retorna a tibble filtrada com as variáveis e linhas relevantes para o instrumento atual
+  return(filtered_tibble)
+})
+
+# Nomeia os elementos da lista `instrument_tibbles` com os nomes correspondentes dos instrumentos.
+# Por exemplo, o primeiro elemento da lista será nomeado "redcap", o segundo "elegibility", e assim por diante.
+names(instrument_tibbles) <- names(instruments)
+
+# Opcional: Salvar cada tibble no ambiente global como um objeto independente.
+# `list2env()` converte cada elemento da lista `instrument_tibbles` em um objeto no ambiente global,
+# com o nome correspondente ao instrumento.
+list2env(instrument_tibbles, .GlobalEnv)
+
+# Resultado:
+# - Cada tibble criada contém apenas as variáveis e linhas relevantes para o instrumento atual.
+# - As linhas onde todas as variáveis relevantes são NA foram excluídas.
+
+## Corrigindo a lógica de exclusão de linhas com apenas NAs
+I20_allocation  <- I20_allocation  |>
+    filter(
+        event_name == "eleg_arm_1"
+    )
+
+## 3. CREATING DATAFRAME
+## 3.1 Non-repeating instruments
+## 3.1.1 Selecting relevant variables from nonrepeating instruments
+## Eleg_arm_1
+eleg_vars <- data_codebook  |> 
+  filter(eleg_arm_1 == 1 & included == 1 & repeating_instrument == 0)  |>
+  pull(variable_recoded)
+  # > eleg_vars
+  #  [1] "record_id"              "event_name"             "repeat_instrument"     
+  #  [4] "repeat_instance"        "date_birth"             "age"                   
+  #  [7] "sex"                    "menopause"              "preserved_hormone"     
+  # [10] "allocation_group"       "completed_intervention" "conclusion_date"       
+  # [13] "non_completion_reason" 
+
+## 1visit_arm_1
+v1_vars <- data_codebook  |> 
+  filter(V1 == 1 & included == 1 & repeating_instrument == 0)  |>
+  pull(variable_recoded)
+  # > v1_vars
+  #  [1] "record_id"                  "event_name"                 "repeat_instrument"         
+  #  [4] "repeat_instance"            "race"                       "marital_status"            
+  #  [7] "education_years"            "employment_status"          "household_size"            
+  # [10] "income_level"               "whoqol_score_overall"       "whoqol_score_health"       
+  # [13] "whoqol_score_physical"      "whoqol_score_psychological" "whoqol_score_social"       
+  # [16] "whoqol_score_environment"   "dass_score_depression"      "dass_score_anxiety"        
+  # [19] "dass_score_stress"          "ecap_score"                 "height"                    
+  # [22] "weight"                     "abdomen"                    "arm"                       
+  # [25] "bmi"                        "weight_maxideal"            "weight_adjusted"           
+  # [28] "kcal_kg20"                  "kcal_kg22"                  "diet_energy"               
+  # [31] "weight_loss_kg"             "weight_loss_percent"        "abdomen_loss_kg"           
+  # [34] "abdomen_loss_percent"       "bmi_loss_absolute"          "bmi_loss_percent"          
+  # [37] "systolic_mean"              "systolic_stdev"             "diastolic_mean"            
+  # [40] "diastolic_stdev"            "mean_bp_mean"               "mean_bp_stdev"             
+  # [43] "smoked_24h"                 "exercised_24h"              "alcohol_24h"               
+  # [46] "light_clothes"              "time_fasted_food"           "time_fasted_liquid"        
+  # [49] "resistance"                 "reactance"                  "phase_angle"               
+  # [52] "bia_complete"               "handgrip_right_mean"        "handgrip_right_stdev"      
+  # [55] "handgrip_left_mean"         "handgrip_left_stdev"        "frequency_bowel"           
+  # [58] "frequency_solid_stool"      "frequency_diarrhea"         "contipation_yn"            
+  # [61] "frequency_laxative"         "urinary_frequency"          "water_consumption"         
+  # [64] "hair_loss"                  "evs_days"                   "evs_time"                  
+  # [67] "evs_score"                  "alcohol_frequency"          "years_drinks_alcohol"      
+  # [70] "alcohol_dose"               "alcohol_significant"        "smoke_history"             
+  # [73] "age_started_smoking"        "smoked_years"               "daily_cigarettes"          
+  # [76] "pack_years"                 "age_quit_smoking"           "total_energy"              
+  # [79] "carbs_kcal"                 "protein_kcal"               "fat_kcal"                  
+  # [82] "evaluation_date"            "diuretic_use"               "diuretic_dose_change"      
+  # [85] "menses"                     "regular_cycle"              "cycle_duration"            
+  # [88] "last_menses"                "cycle_phase"                "drugs_dose_change"         
+  # [91] "drugs_dose_change_notes"    "abnormal_labs"              "abnormal_labs_conduct"     
+  # [94] "date_delivery"              "explained_dosage"           "expected_start_date"       
+  # [97] "start_after_lab"            "medical_conduct"           
+
+## 2visit_arm_1
+v2_vars <- data_codebook  |> 
+  filter(V2 == 1 & included == 1 & repeating_instrument == 0)  |>
+  pull(variable_recoded)
+  # >v2_vars
+  #  [1] "record_id"               "event_name"              "repeat_instrument"      
+  #  [4] "repeat_instance"         "height"                  "weight"                 
+  #  [7] "abdomen"                 "arm"                     "bmi"                    
+  # [10] "weight_maxideal"         "weight_adjusted"         "kcal_kg20"              
+  # [13] "kcal_kg22"               "diet_energy"             "weight_loss_kg"         
+  # [16] "weight_loss_percent"     "abdomen_loss_kg"         "abdomen_loss_percent"   
+  # [19] "bmi_loss_absolute"       "bmi_loss_percent"        "systolic_mean"          
+  # [22] "systolic_stdev"          "diastolic_mean"          "diastolic_stdev"        
+  # [25] "mean_bp_mean"            "mean_bp_stdev"           "frequency_bowel"        
+  # [28] "frequency_solid_stool"   "frequency_diarrhea"      "contipation_yn"         
+  # [31] "frequency_laxative"      "urinary_frequency"       "water_consumption"      
+  # [34] "hair_loss"               "evs_days"                "evs_time"               
+  # [37] "evs_score"               "evaluation_date"         "diuretic_use"           
+  # [40] "diuretic_dose_change"    "menses"                  "regular_cycle"          
+  # [43] "cycle_duration"          "last_menses"             "cycle_phase"            
+  # [46] "drugs_dose_change"       "drugs_dose_change_notes" "abnormal_labs"          
+  # [49] "abnormal_labs_conduct"   "date_delivery"           "explained_dosage"       
+  # [52] "expected_start_date"     "start_after_lab"         "medical_conduct" 
+  
+## 3visit_arm_1
+v3_vars <- data_codebook  |> 
+  filter(V3 == 1 & included == 1 & repeating_instrument == 0)  |>
+  pull(variable_recoded)
+  # v3_vars
+  #  [1] "record_id"                  "event_name"                 "repeat_instrument"         
+  #  [4] "repeat_instance"            "whoqol_score_overall"       "whoqol_score_health"       
+  #  [7] "whoqol_score_physical"      "whoqol_score_psychological" "whoqol_score_social"       
+  # [10] "whoqol_score_environment"   "dass_score_depression"      "dass_score_anxiety"        
+  # [13] "dass_score_stress"          "ecap_score"                 "height"                    
+  # [16] "weight"                     "abdomen"                    "arm"                       
+  # [19] "bmi"                        "weight_maxideal"            "weight_adjusted"           
+  # [22] "kcal_kg20"                  "kcal_kg22"                  "diet_energy"               
+  # [25] "weight_loss_kg"             "weight_loss_percent"        "abdomen_loss_kg"           
+  # [28] "abdomen_loss_percent"       "bmi_loss_absolute"          "bmi_loss_percent"          
+  # [31] "systolic_mean"              "systolic_stdev"             "diastolic_mean"            
+  # [34] "diastolic_stdev"            "mean_bp_mean"               "mean_bp_stdev"             
+  # [37] "smoked_24h"                 "exercised_24h"              "alcohol_24h"               
+  # [40] "light_clothes"              "time_fasted_food"           "time_fasted_liquid"        
+  # [43] "resistance"                 "reactance"                  "phase_angle"               
+  # [46] "bia_complete"               "handgrip_right_mean"        "handgrip_right_stdev"      
+  # [49] "handgrip_left_mean"         "handgrip_left_stdev"        "frequency_bowel"           
+  # [52] "frequency_solid_stool"      "frequency_diarrhea"         "contipation_yn"            
+  # [55] "frequency_laxative"         "urinary_frequency"          "water_consumption"         
+  # [58] "hair_loss"                  "evs_days"                   "evs_time"                  
+  # [61] "evs_score"                  "alcohol_frequency"          "years_drinks_alcohol"      
+  # [64] "alcohol_dose"               "alcohol_significant"        "smoke_history"             
+  # [67] "age_started_smoking"        "smoked_years"               "daily_cigarettes"          
+  # [70] "pack_years"                 "age_quit_smoking"           "total_energy"              
+  # [73] "carbs_kcal"                 "protein_kcal"               "fat_kcal"                  
+  # [76] "evaluation_date"            "diuretic_use"               "diuretic_dose_change"      
+  # [79] "menses"                     "regular_cycle"              "cycle_duration"            
+  # [82] "last_menses"                "cycle_phase"                "drugs_dose_change"         
+  # [85] "drugs_dose_change_notes"    "abnormal_labs"              "abnormal_labs_conduct"     
+  # [88] "date_delivery"              "explained_dosage"           "expected_start_date"       
+  # [91] "start_after_lab"            "medical_conduct"           
+
+## 3.1.2 Creating dataframes
+## 1 visit
+V1 <- data  |> 
+  filter(event_name == "eleg_arm_1" & is.na(repeat_instrument)) |> 
+  select(setdiff(eleg_vars, c("event_name", "repeat_instrument", "repeat_instance")))  |> 
+  mutate(visit = 1) |> 
+  relocate(record_id, visit, allocation_group, age, sex)  |> 
+  left_join(
+    data  |>
+      filter(event_name == "1visit_arm_1" & is.na(repeat_instrument)) |> 
+      select(setdiff(v1_vars, c("event_name", "repeat_instrument", "repeat_instance"))),
+    by = join_by(record_id) # or simply: by = "record_id"
+  )
+
+## 2 & 3 visit
+V2 <- data  |> 
+  filter(event_name == "2visit_arm_1" & is.na(repeat_instrument)) |> 
+  select(setdiff(v2_vars, c("event_name", "repeat_instrument", "repeat_instance")))  |> 
+  mutate(visit = 2) |> 
+  relocate(visit, .after = 1)  
+
+V3 <- data  |> 
+  filter(event_name == "3visit_arm_1" & is.na(repeat_instrument)) |> 
+  select(setdiff(v3_vars, c("event_name", "repeat_instrument", "repeat_instance")))  |> 
+  mutate(visit = 3) |> 
+  relocate(visit, .after = 1)  
+
+## Merging
+data_filtered  <- bind_rows(V1, V2, V3)  |> 
+  arrange(record_id, visit) |>
+  group_by(record_id) |>
+  fill(
+    allocation_group, age, sex, date_birth, menopause, preserved_hormone, completed_intervention, conclusion_date, non_completion_reason, race, marital_status, education_years, employment_status, household_size, income_level,
+  .direction = "down") |>
+  ungroup()
+
+#### Save data_filtered as csv
+write_csv(data_filtered, "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/data_filtered.csv", na = "")
+
+#### Dissonant variables (present in V1 but absent from V2 &/| V3)
+dissonant_vars  <- tibble(
+V1 = c("record_id", "visit", "allocation_group", "age", "sex", "date_birth", "menopause", "preserved_hormone", "completed_intervention", "conclusion_date", "non_completion_reason", "race", "marital_status", "education_years", "employment_status", "household_size", "income_level", "whoqol_score_overall", "whoqol_score_health", "whoqol_score_physical", "whoqol_score_psychological", "whoqol_score_social", "whoqol_score_environment", "dass_score_depression", "dass_score_anxiety", "dass_score_stress", "ecap_score", "height", "weight", "abdomen", "arm", "bmi", "weight_maxideal", "weight_adjusted", "kcal_kg20", "kcal_kg22", "diet_energy", "weight_loss_kg", "weight_loss_percent", "abdomen_loss_kg", "abdomen_loss_percent", "bmi_loss_absolute", "bmi_loss_percent", "systolic_mean", "systolic_stdev", "diastolic_mean", "diastolic_stdev", "mean_bp_mean", "mean_bp_stdev", "smoked_24h", "exercised_24h", "alcohol_24h", "light_clothes", "time_fasted_food", "time_fasted_liquid", "resistance", "reactance", "phase_angle", "bia_complete", "handgrip_right_mean", "handgrip_right_stdev", "handgrip_left_mean", "handgrip_left_stdev", "frequency_bowel", "frequency_solid_stool", "frequency_diarrhea", "contipation_yn", "frequency_laxative", "urinary_frequency", "water_consumption", "hair_loss", "evs_days", "evs_time", "evs_score", "alcohol_frequency", "years_drinks_alcohol", "alcohol_dose", "alcohol_significant", "smoke_history", "age_started_smoking", "smoked_years", "daily_cigarettes", "pack_years", "age_quit_smoking", "total_energy", "carbs_kcal", "protein_kcal", "fat_kcal", "evaluation_date", "diuretic_use", "diuretic_dose_change", "menses", "regular_cycle", "cycle_duration", "last_menses", "cycle_phase", "drugs_dose_change", "drugs_dose_change_notes", "abnormal_labs", "abnormal_labs_conduct", "date_delivery", "explained_dosage", "expected_start_date", "start_after_lab", "medical_conduct"),
+V2 = c("record_id", "visit", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "height", "weight", "abdomen", "arm", "bmi", "weight_maxideal", "weight_adjusted", "kcal_kg20", "kcal_kg22", "diet_energy", "weight_loss_kg", "weight_loss_percent", "abdomen_loss_kg", "abdomen_loss_percent", "bmi_loss_absolute", "bmi_loss_percent", "systolic_mean", "systolic_stdev", "diastolic_mean", "diastolic_stdev", "mean_bp_mean", "mean_bp_stdev", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "frequency_bowel", "frequency_solid_stool", "frequency_diarrhea", "contipation_yn", "frequency_laxative", "urinary_frequency", "water_consumption", "hair_loss", "evs_days", "evs_time", "evs_score", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "evaluation_date", "diuretic_use", "diuretic_dose_change", "menses", "regular_cycle", "cycle_duration", "last_menses", "cycle_phase", "drugs_dose_change", "drugs_dose_change_notes", "abnormal_labs", "abnormal_labs_conduct", "date_delivery", "explained_dosage", "expected_start_date", "start_after_lab", "medical_conduct"),
+V3 = c("record_id", "visit", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "whoqol_score_overall", "whoqol_score_health", "whoqol_score_physical", "whoqol_score_psychological", "whoqol_score_social", "whoqol_score_environment", "dass_score_depression", "dass_score_anxiety", "dass_score_stress", "ecap_score", "height", "weight", "abdomen", "arm", "bmi", "weight_maxideal", "weight_adjusted", "kcal_kg20", "kcal_kg22", "diet_energy", "weight_loss_kg", "weight_loss_percent", "abdomen_loss_kg", "abdomen_loss_percent", "bmi_loss_absolute", "bmi_loss_percent", "systolic_mean", "systolic_stdev", "diastolic_mean", "diastolic_stdev", "mean_bp_mean", "mean_bp_stdev", "smoked_24h", "exercised_24h", "alcohol_24h", "light_clothes", "time_fasted_food", "time_fasted_liquid", "resistance", "reactance", "phase_angle", "bia_complete", "handgrip_right_mean", "handgrip_right_stdev", "handgrip_left_mean", "handgrip_left_stdev", "frequency_bowel", "frequency_solid_stool", "frequency_diarrhea", "contipation_yn", "frequency_laxative", "urinary_frequency", "water_consumption", "hair_loss", "evs_days", "evs_time", "evs_score", "alcohol_frequency", "years_drinks_alcohol", "alcohol_dose", "alcohol_significant", "smoke_history", "age_started_smoking", "smoked_years", "daily_cigarettes", "pack_years", "age_quit_smoking", "total_energy", "carbs_kcal", "protein_kcal", "fat_kcal", "evaluation_date", "diuretic_use", "diuretic_dose_change", "menses", "regular_cycle", "cycle_duration", "last_menses", "cycle_phase", "drugs_dose_change", "drugs_dose_change_notes", "abnormal_labs", "abnormal_labs_conduct", "date_delivery", "explained_dosage", "expected_start_date", "start_after_lab", "medical_conduct") 
+)
+
+# Adding labels to raw cell values
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(purrr)
+
+# 1. Filter `data_codebook` for variables in `data_filtered` and with `col_types` == "f"
+selected_codebook <- data_codebook  |> 
+  filter(
+    variable_recoded %in% colnames(data_filtered) &  # Variables in data_filtered
+      col_types == "f"                              # Only those with col_types == "f"
+  )
+
+# 2. Parse the `choices` column
+parsed_choices <- selected_codebook |>
+  rowwise() |>
+  mutate(
+    parsed = list(
+      str_split(choices, " \\| ") |>  # Split the choices by "|"
+        unlist() |>
+        map(~ str_split_fixed(.x, ", ", 2) |>  # Split by ", " into two columns
+          as_tibble()  |> 
+          setNames(c("raw_value", "label"))    # Explicitly name columns
+        ) |>
+        bind_rows()  # Combine into a tibble
+    )
+  ) |>
+  select(variable_recoded, parsed) |>
+  unnest(parsed)  # Expand the parsed choices into rows
+
+
+# 3. Create lookup tables for selected variables
+lookup_tables <- parsed_choices %>%
+  group_by(variable_recoded) %>%
+  summarize(
+    lookup = list(setNames(label, raw_value)), .groups = "drop"
+  ) %>%
+  deframe()
+
+# 4. Replace raw values with labels for selected variables
+
+data_filtered_labels <- data_filtered
+for (column_name in names(lookup_tables)) { # Iterate through each column in lookup_tables
+  if (column_name %in% colnames(data_filtered_labels)) { # Ensure the column exists in data_filtered
+    data_filtered_labels[[column_name]] <- recode( # Apply recode using the lookup table for this column
+      data_filtered_labels[[column_name]],
+      !!!lookup_tables[[column_name]]
+    )
+  }
+}
+
