@@ -8,20 +8,6 @@ output: html_document
 ---
 
 # FIRST STEPS
-## Getting Started with R
-```{r, results = 'hide'}
-# Clear existing data and graphics
-rm(list=ls())
-graphics.off()
-cat("\014")  # Clear any pending RStudio sessions or temporary files
-
-# Load necessary libraries
-library(Hmisc)
-library(tidyverse)
-
-# Set working directory
-setwd("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP")
-```
 
 ## Exporting data from REDCap
 1. PID 1958
@@ -38,8 +24,27 @@ setwd("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medic
 9. Rename file to "data_dvep.csv"
 Note: resulting file must have 780 variables (last variable on column ACZ: "anexos_complete")
 
-## Reading CSV data files (Tidyverse)
-```{r}
+## Getting Started with R
+1. Loading libraries
+2. Reading CSV data files (Tidyverse)
+3. Remove identifying data from record_id
+4. Renaming variables
+5. Assigning correct variable types
+
+```{r, results = 'hide'}
+# Clear existing data and graphics
+rm(list = ls())
+graphics.off()
+cat("\014")  # Clear any pending RStudio sessions or temporary files
+
+# Load necessary libraries
+library(Hmisc)
+library(tidyverse)
+
+# Set working directory
+setwd("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP")
+
+# 2. Reading CSV data files (Tidyverse)
 data  <- read_csv(
   "data_dvep.csv",
   col_names = TRUE,
@@ -61,8 +66,6 @@ data  <- read_csv(
   skip_empty_rows = TRUE,
   lazy = should_read_lazy()
 )
-# Remove identifying name from record_id
-data$record_id <- substr(data$record_id,1,2)
 
 data_codebook <- read_csv(
   "data_codebook.csv",
@@ -85,7 +88,6 @@ data_codebook <- read_csv(
   skip_empty_rows = TRUE,
   lazy = should_read_lazy()
 )
-
 data_structure  <- read_csv(
   "data_structure.csv",
   col_names = TRUE)
@@ -93,38 +95,18 @@ data_structure  <- read_csv(
 data_NCIT  <- read_csv(
   "data_NCIT.csv",
   col_names = TRUE)
-```
 
-## Renaming variables
-```{r}
-## Create rename vector
-rename_vector <- setNames(object = colnames(data), data_codebook$variable_recoded)
-## Apply  rename vector to data
+# 3. Remove identifying data from record_id
+data$record_id <- substr(data$record_id,1,2)
+
+# 4. Renaming variables
+rename_vector <- setNames(object = colnames(data), data_codebook$variable)
 data <- data |>
     rename(!!!rename_vector)
 
 rm(rename_vector)
-```
 
-## Assing correct column types
-1. Excel formula to convert REDCap field types to tidyverse tibble nomenclature
-    =IF(
-    J2="calc","d",IF(
-    J2="radio","f",IF(
-    J2="notes","c",IF(
-    J2="dropdown","f",IF(
-    J2="slider","i",if(
-        and(J2="text",N2=""),"c",if(
-        and(J2="text",N2="date_dmy"),"D",if(
-        and(J2="text",N2="integer"),"i",if(
-        and(J2="text",left(N2,6)="number"),"d",if(
-        and(J2="text",N2="datetime_dmy"),"T",if(
-        and(J2="text",N2="time_mm_ss"),"t",if(
-        and(J2="text",N2="time"),"t",""
-        ))))))))))))
-
-2. Creating R function and mutating columns
-```{r}
+# 5. Assingning correct variable types
 convert_col_type <- function(column, type) {
   switch(type,
          c = as.character(column),
@@ -142,12 +124,29 @@ data <- data |>
     mutate(
         across( # apply a function to multiple columns at once
             .cols = # .cols: Specifies which columns you want to change
-                all_of(data_codebook$variable_recoded), 
+                all_of(data_codebook$variable), 
             .fns = # .fns: Defines the function to apply to each column
-                ~ convert_col_type(.x, data_codebook$col_types[which(data_codebook$variable_recoded == cur_column())])
+                ~ convert_col_type(.x, data_codebook$col_types[which(data_codebook$variable == cur_column())])
 ))
 rm(convert_col_type)
 ```
+
+### Assing correct variable types
+1. Excel formula to convert REDCap field types to tidyverse tibble nomenclature
+    =IF(
+    J2="calc","d",IF(
+    J2="radio","f",IF(
+    J2="notes","c",IF(
+    J2="dropdown","f",IF(
+    J2="slider","i",if(
+        and(J2="text",N2=""),"c",if(
+        and(J2="text",N2="date_dmy"),"D",if(
+        and(J2="text",N2="integer"),"i",if(
+        and(J2="text",left(N2,6)="number"),"d",if(
+        and(J2="text",N2="datetime_dmy"),"T",if(
+        and(J2="text",N2="time_mm_ss"),"t",if(
+        and(J2="text",N2="time"),"t",""
+        ))))))))))))
 
 ### Checking each column's variable type
 If you are using dplyr, you can use glimpse(), which is like str() but optimized for tibbles. It shows a cleaner, more readable summary.
@@ -274,6 +273,19 @@ I20_allocation  <- I20_allocation  |>
 ```
 
 ## Tibble for non-repeating instruments
+List of repeating instruments:
+    conditions          comorbidades
+    drugs	            medicamentos_de_uso_habitual
+    old.drugs           medicamentos_prvios
+    old.conditions	    antecedentes_pessoais
+    symptoms	        sintomas
+    phy.exam	        exame_fsico
+    labs	            exames_laboratoriais
+    compliance	        adeso
+    adverse events	    eventos_adversos
+    followup	        contato_semanal
+    annex	            anexos
+
 Steps:
 1. Filter relevant variables for each visit from `data_codebook`
 2. Create tibble for each visit by subsetting `data` with relevant variables
@@ -285,22 +297,22 @@ Coding:
 ## Eleg_arm_1
 vars_eleg <- data_codebook  |>
   filter(eleg_arm_1 == 1 & included == 1 & repeating_instrument == 0)  |>
-  pull(variable_recoded)
+  pull(variable)
 
 ## 1visit_arm_1
 vars_v1 <- data_codebook  |> 
   filter(V1 == 1 & included == 1 & repeating_instrument == 0)  |>
-  pull(variable_recoded)
+  pull(variable)
 
 ## 2visit_arm_1
 vars_v2 <- data_codebook  |> 
   filter(V2 == 1 & included == 1 & repeating_instrument == 0)  |>
-  pull(variable_recoded)
+  pull(variable)
   
 ## 3visit_arm_1
 vars_v3 <- data_codebook  |> 
   filter(V3 == 1 & included == 1 & repeating_instrument == 0)  |>
-  pull(variable_recoded)
+  pull(variable)
 
 ```
 
@@ -384,10 +396,10 @@ variable_names <- colnames(data_filtered)
 
 # Loop over each variable name in data_filtered
 for (variable_name in variable_names) {
-    # Check if the variable name exists in the data_codebook$variable_recoded
-    if (variable_name %in% data_codebook$variable_recoded) {
+    # Check if the variable name exists in the data_codebook$variable
+    if (variable_name %in% data_codebook$variable) {
         # Get the corresponding label for the variable
-        variable_label <- data_codebook$label_pt[data_codebook$variable_recoded == variable_name]
+        variable_label <- data_codebook$label_pt[data_codebook$variable == variable_name]
         
         # Assign the label to the variable in data_filtered
         label(data_filtered[[variable_name]]) <- variable_label
@@ -420,7 +432,7 @@ library(purrr)
 # 1. Filter `data_codebook` for variables in `data_filtered` and with `col_types` == "f"
 selected_codebook <- data_codebook  |> 
   filter(
-    variable_recoded %in% colnames(data_filtered) &  # Variables in data_filtered
+    variable %in% colnames(data_filtered) &  # Variables in data_filtered
       col_types == "f"                              # Only those with col_types == "f"
   )
 
@@ -438,13 +450,13 @@ parsed_choices <- selected_codebook |>
         bind_rows()  # Combine into a tibble
     )
   ) |>
-  select(variable_recoded, parsed) |>
+  select(variable, parsed) |>
   unnest(parsed)  # Expand the parsed choices into rows
 
 
 # 3. Create lookup tables for selected variables
 lookup_tables <- parsed_choices %>%
-  group_by(variable_recoded) %>%
+  group_by(variable) %>%
   summarize(
     lookup = list(setNames(label, raw_value)), .groups = "drop"
   ) %>%
@@ -530,4 +542,7 @@ data_V1 <- data_V1 |>
     relocate(hypertension, .after = income_level)
 
 ```
+
+
+
 
