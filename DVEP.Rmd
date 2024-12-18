@@ -69,26 +69,28 @@ data  <- read_csv(
 )
 
 data_codebook <- read_csv(
-  "data_codebook.csv",
-  col_names = TRUE,
-  col_types = NULL,
-  col_select = NULL,
-  id = NULL,
-  locale = default_locale(),
-  na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
-  quote = "\"",
-  comment = "",
-  trim_ws = TRUE,
-  skip = 0, # Number of lines to skip before reading data
-  n_max = Inf, # Maximum number of lines to read.
-  guess_max = 1000,
-  name_repair = "unique",
-  num_threads = readr_threads(),
-  progress = show_progress(),
-  show_col_types = TRUE,
-  skip_empty_rows = TRUE,
-  lazy = should_read_lazy()
-)
+        "data_codebook.csv",
+        col_names = TRUE,
+        col_types = NULL,
+        col_select = NULL,
+        id = NULL,
+        locale = default_locale(),
+        na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+        quote = "\"",
+        comment = "",
+        trim_ws = TRUE,
+        skip = 0, # Number of lines to skip before reading data
+        n_max = Inf, # Maximum number of lines to read.
+        guess_max = 1000,
+        name_repair = "unique",
+        num_threads = readr_threads(),
+        progress = show_progress(),
+        show_col_types = TRUE,
+        skip_empty_rows = TRUE,
+        lazy = should_read_lazy()
+    )
+
+
 data_structure  <- read_csv(
   "data_structure.csv",
   col_names = TRUE)
