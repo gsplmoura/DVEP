@@ -17,7 +17,7 @@ filter_variables <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeat
                         "tobacco", "eliminations", "diet_recall", "intake", "measures", "bp_limb", "bp", "bia", 
                         "handgrip", "dates", "conditions", "drugs", "old.drugs", "history", "medical", 
                         "symptoms", "phy.exam", "labs", "ecg", "compliance", "events", "followup", 
-                        "conclusion", "annex", "tcle", "allergies")
+                        "conclusion", "annex", "tcle")
   if (!is.null(form_name) && !all(form_name %in% valid_form_names)) {
     stop("Invalid form_name. Choose from: ", paste(valid_form_names, collapse = ", "))
   }
@@ -40,14 +40,50 @@ filter_variables <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeat
 # Step 4: Create a function to filter the raw data based on the selected variables, event_name, and form
 filter_data <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL) {
   
-  # Map visit names to actual event_name values
-  mapped_visits <- case_when(
+# Map visit names to actual event_name values
+mapped_visits <- case_when(
     visit == "eleg" ~ "eleg_arm_1",
     visit == "V1" ~ "1visit_arm_1",
     visit == "V2" ~ "2visit_arm_1",
     visit == "V3" ~ "3visit_arm_1",
     TRUE ~ visit
   )
+
+mapped_form_name  <- case_when(
+    form_name == "tcle" ~ "tcle"
+    form_name == "dados_demogrficos" ~ "demographic"
+    form_name == "questionrio_qualidade_de_vida" ~ "whoqol"
+    form_name == "escore_de_depresso_ansiedade_e_estresse" ~ "dass"
+    form_name == "escala_de_compulso_alimentar" ~ "ecap"
+    form_name == "antropometria" ~ "measures"
+    form_name == "presso_arterial_determinao_do_membro_de_referncia" ~ "bp_limb"
+    form_name == "presso_arterial" ~ "bp"
+    form_name == "impedncia_bioeltrica_corporal" ~ "bia"
+    form_name == "fora_de_preenso_palmar" ~ "handgrip"
+    form_name == "avaliao_nutricional" ~ "eliminations"
+    form_name == "exercise_vital_sign" ~ "evs"
+    form_name == "consumo_alcool" ~ "alcohol"
+    form_name == "consumo_tabaco" ~ "tobacco"
+    form_name == "recordatrio_alimentar" ~ "diet_recall"
+    form_name == "avaliao_da_ingesto_alimentar" ~ "intake"
+    form_name == "datas_importantes" ~ "dates"
+    form_name == "nmero_do_participante" ~ "allocation"
+    form_name == "comorbidades" ~ "conditions"
+    form_name == "medicamentos_de_uso_habitual" ~ "drugs"
+    form_name == "medicamentos_prvios" ~ "old.drugs"
+    form_name == "antecedentes_pessoais" ~ "history"
+    form_name == "sintomas" ~ "symptoms"
+    form_name == "exame_fsico" ~ "phy.exam"
+    form_name == "exames_laboratoriais" ~ "labs"
+    form_name == "eletrocardiograma" ~ "ecg"
+    form_name == "adeso" ~ "compliance"
+    form_name == "eventos_adversos" ~ "events"
+    form_name == "avaliao_mdica" ~ "medical"
+    form_name == "contato_semanal" ~ "followup"
+    form_name == "concluso" ~ "conclusion"
+    form_name == "anexos" ~ "annex",
+    TRUE ~ visit
+)
   
   # Get the filtered variable names using the filter_variables function
   filtered_vars <- filter_variables(visit, include_repeating, form_name)
@@ -82,3 +118,4 @@ filtered_data_all_visits_non_repeating <- filter_data(visit = c("eleg", "V1", "V
 
 # 5. Filter data for a specific form within V1 visit
 filtered_data_V1_specific_form <- filter_data(visit = "V1", form_name = "medicamentos_de_uso_habitual")
+
