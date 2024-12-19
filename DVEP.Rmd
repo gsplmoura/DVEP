@@ -32,6 +32,12 @@ Note: resulting file must have 780 variables (last variable on column ACZ: "anex
 5. Assigning correct variable types
 6. Creating function to filter variables
 
+```{r}
+
+
+
+```
+
 ```{r, results = 'hide'}
 # Clear existing data and graphics
 rm(list = ls())
@@ -41,6 +47,8 @@ cat("\014")  # Clear any pending RStudio sessions or temporary files
 # Load necessary libraries
 library(Hmisc)
 library(tidyverse)
+library(readxl)
+library(roxygen2)
 
 # Set working directory
 setwd("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP")
@@ -68,28 +76,38 @@ data  <- read_csv(
   lazy = should_read_lazy()
 )
 
-data_codebook <- read_csv(
-        "data_codebook.csv",
+#   data_codebook <- read_csv(
+#           "data_codebook.csv",
+#           col_names = TRUE,
+#           col_types = NULL,
+#           col_select = NULL,
+#           id = NULL,
+#           locale = default_locale(),
+#           na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+#           quote = "\"",
+#           comment = "",
+#           trim_ws = TRUE,
+#           skip = 0, # Number of lines to skip before reading data
+#           n_max = Inf, # Maximum number of lines to read.
+#           guess_max = 1000,
+#           name_repair = "unique",
+#           num_threads = readr_threads(),
+#           progress = show_progress(),
+#           show_col_types = TRUE,
+#           skip_empty_rows = TRUE,
+#           lazy = should_read_lazy()
+#       )
+
+data_codebook <- read_excel(
+        "data_codebook.xlsx",
         col_names = TRUE,
         col_types = NULL,
-        col_select = NULL,
-        id = NULL,
-        locale = default_locale(),
         na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
-        quote = "\"",
-        comment = "",
         trim_ws = TRUE,
         skip = 0, # Number of lines to skip before reading data
         n_max = Inf, # Maximum number of lines to read.
-        guess_max = 1000,
-        name_repair = "unique",
-        num_threads = readr_threads(),
-        progress = show_progress(),
-        show_col_types = TRUE,
-        skip_empty_rows = TRUE,
-        lazy = should_read_lazy()
+        guess_max = 1000
     )
-
 
 data_structure  <- read_csv(
   "data_structure.csv",
@@ -165,6 +183,7 @@ rm(convert_col_type)
 ## Create functions
 1. filter_variables
 2. filter_data
+3. filter_codebook
 
 ```{r}
 # 1. Function: filter_variables() based on visit, repeating instrument and form
@@ -177,10 +196,10 @@ filter_variables <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeat
   }
   
   # Ensure the form_name input is valid
-  valid_form_names <- c("elegibility", "tcle", "demographic", "whoqol", "dass", "ecap", "measures", "bp_limb", "bp", 
-                        "bia", "handgrip", "eliminations", "allergies", "evs", "alcohol", "tobacco", "diet_recall", 
+  valid_form_names <- c("eleg", "demographic", "whoqol", "dass", "ecap", "measures", "bp_limb", "bp", 
+                        "bia", "handgrip", "eliminations", "evs", "alcohol", "tobacco", "diet_recall", 
                         "intake", "dates", "allocation", "conditions", "drugs", "old.drugs", "history", "symptoms", 
-                        "phy.exam", "labs", "ecg", "compliance", "events", "medical", "followup", "conclusion", "annex")
+                        "phy.exam", "labs", "ecg", "compliance", "events", "medical", "followup", "conclusion")
   if (!is.null(form_name) && !all(form_name %in% valid_form_names)) {
     stop("Invalid form_name. Choose from: ", paste(valid_form_names, collapse = ", "))
   }
@@ -216,8 +235,7 @@ filter_data <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating =
   # Map form_name to repeat_instrument values using a case_when structure
   mapped_form_name <- if (!is.null(form_name)) {
     case_when(
-      form_name == "elegibility" ~ "elegibilidade",
-      form_name == "tcle" ~ "tcle",
+      form_name == "eleg" ~ "elegibilidade",
       form_name == "demographic" ~ "dados_demogrficos",
       form_name == "whoqol" ~ "questionrio_qualidade_de_vida",
       form_name == "dass" ~ "escore_de_depresso_ansiedade_e_estresse",
@@ -228,7 +246,7 @@ filter_data <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating =
       form_name == "bia" ~ "impedncia_bioeltrica_corporal",
       form_name == "handgrip" ~ "fora_de_preenso_palmar",
       form_name == "eliminations" ~ "avaliao_nutricional",
-      form_name == "allergies" ~ "alergia_alimentar",
+      # form_name == "allergies" ~ "alergia_alimentar",
       form_name == "evs" ~ "exercise_vital_sign",
       form_name == "alcohol" ~ "consumo_alcool",
       form_name == "tobacco" ~ "consumo_tabaco",
@@ -249,7 +267,7 @@ filter_data <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating =
       form_name == "medical" ~ "avaliao_mdica",
       form_name == "followup" ~ "contato_semanal",
       form_name == "conclusion" ~ "concluso",
-      form_name == "annex" ~ "anexos",
+      # form_name == "annex" ~ "anexos",
       TRUE ~ form_name
     )
   } else {
@@ -274,7 +292,81 @@ filter_data <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating =
   return(filtered_data)
 }
 
+# 3. filter_codebook
+#' Filter Codebook
+#'
+#' This function filters the codebook based on the form names.
+#'
+#' @param form_name A character vector of form names to include in the filtering.
+#'   Valid options are: "eleg", "demographic", "whoqol", "dass", "ecap",
+#'   "measures", "bp_limb", "bp", "bia", "handgrip", "eliminations", "evs",
+#'   "alcohol", "tobacco", "diet_recall", "intake", "dates", "allocation",
+#'   "conditions", "drugs", "old.drugs", "history", "symptoms", "phy.exam",
+#'   "labs", "ecg", "compliance", "events", "medical", "followup",
+#'   "conclusion", "annex".
+#' @param included A binary indicator for filtering included variables.
+#'   Default is `1` (include).
+#'
+#' @return A filtered data frame from the `data_codebook`.
+#'
+#' @examples
+#' # Example usage
+#' filter_codebook(form_name = c("eleg", "demographic"), included = 1)
+#'
+filter_codebook <- function(form_name = c(
+    "eleg", "demographic", "whoqol", "dass", "ecap", "measures", "bp_limb", "bp", "bia", "handgrip", "eliminations", "evs", "alcohol", "tobacco", "diet_recall", "intake", "dates", "allocation", "conditions", "drugs", "old.drugs", "history", "symptoms", "phy.exam", "labs", "ecg", "compliance", "events", "medical", "followup", "conclusion", "annex"
+    ), included = 1) {
+    
+    # Ensure input is valid
+    if (!all(form_name %in% c("eleg", "demographic", "whoqol", "dass", "ecap", "measures", "bp_limb", "bp", "bia", "handgrip", "eliminations", "evs", "alcohol", "tobacco", "diet_recall", "intake", "dates", "allocation", "conditions", "drugs", "old.drugs", "history", "symptoms", "phy.exam", "labs", "ecg", "compliance", "events", "medical", "followup", "conclusion", "annex"))) {
+      stop("Invalid form name. Choose from 'eleg', 'demographic', 'whoqol', 'dass', 'ecap', 'measures', 'bp_limb', 'bp', 'bia', 'handgrip', 'eliminations', 'evs', 'alcohol', 'tobacco', 'diet_recall', 'intake', 'dates', 'allocation', 'conditions', 'drugs', 'old.drugs', 'history', 'symptoms', 'phy.exam', 'labs', 'ecg', 'compliance', 'events', 'medical', 'followup', 'conclusion', 'annex'.")
+    
+    }
+    # Filter codebook
+    ## codebook_form <- data_codebook |>
+    ## filter(form_name_en %in% form_name)
+    if (included == 1) {
+        codebook_form <- data_codebook |> 
+        filter(form_name_en %in% form_name & included == 1)
+    } else {
+        codebook_form <- data_codebook |> 
+        filter(form_name_en %in% form_name)
+    }
+
+    view(codebook_form)
+}
+
+
 ```
+
+```{r}
+
+# 3. filter_codebook
+filter_codebook <- function(form_name, included = 1) {
+    form_name = c(
+    "eleg", "demographic", "whoqol", "dass", "ecap", "measures", "bp_limb", "bp", "bia", "handgrip", "eliminations", "evs", "alcohol", "tobacco", "diet_recall", "intake", "dates", "allocation", "conditions", "drugs", "old.drugs", "history", "symptoms", "phy.exam", "labs", "ecg", "compliance", "events", "medical", "followup", "conclusion", "annex"
+    )
+    # Ensure input is valid
+    if (!all(form_name %in% c("eleg", "demographic", "whoqol", "dass", "ecap", "measures", "bp_limb", "bp", "bia", "handgrip", "eliminations", "evs", "alcohol", "tobacco", "diet_recall", "intake", "dates", "allocation", "conditions", "drugs", "old.drugs", "history", "symptoms", "phy.exam", "labs", "ecg", "compliance", "events", "medical", "followup", "conclusion", "annex"))) {
+      stop("Invalid form name. Choose from 'eleg', 'demographic', 'whoqol', 'dass', 'ecap', 'measures', 'bp_limb', 'bp', 'bia', 'handgrip', 'eliminations', 'evs', 'alcohol', 'tobacco', 'diet_recall', 'intake', 'dates', 'allocation', 'conditions', 'drugs', 'old.drugs', 'history', 'symptoms', 'phy.exam', 'labs', 'ecg', 'compliance', 'events', 'medical', 'followup', 'conclusion', 'annex'.")
+    
+    }
+# Filter codebook
+## codebook_form <- data_codebook |>
+## filter(form_name_en %in% form_name)
+if (included == 1) {
+    codebook_form <- data_codebook |> 
+      filter(form_name_en %in% form_name & included == 1)
+  } else {
+    codebook_form <- data_codebook |> 
+      filter(form_name_en %in% form_name)
+  }
+
+view(codebook_form)
+}
+```
+
+
 
 # TIDYVERSE
 
