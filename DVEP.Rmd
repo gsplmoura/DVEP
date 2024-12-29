@@ -3,7 +3,7 @@ title: "DVEP Data Analysis"
 project: "Effect of Eclipta prostrata (L.) L. (Asteraceae) on bioelectrical impedance phase angle in adults with grade I obesity (DVEP)"
 PID: "REDCap 1958"
 author: "Gustavo Santos Paiva Laender Moura"
-date: "2024-12-16"
+date: "2024-12-27"
 output: html_document
 ---
 
@@ -35,6 +35,38 @@ library(stringr)
 setwd("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP")
 
 # 2. Reading CSV data files (Tidyverse)
+data_codebook <- read_excel(
+        "data_codebook.xlsx",
+        col_names = TRUE,
+        col_types = NULL,
+        na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+        trim_ws = TRUE,
+        skip = 0, # Number of lines to skip before reading data
+        n_max = Inf, # Maximum number of lines to read.
+        guess_max = 1000
+    ) |>
+    arrange(index)
+
+data_bia_codebook <- read_excel(
+    "data_bia_codebook.xlsx",
+    col_names = TRUE,
+    col_types = NULL,
+        na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+        trim_ws = TRUE,
+        skip = 0, # Number of lines to skip before reading data
+        n_max = Inf, # Maximum number of lines to read.
+        guess_max = 1000
+    ) |>
+    arrange(index)
+
+data_structure  <- read_csv(
+  "data_structure.csv",
+  col_names = TRUE)
+
+data_NCIT  <- read_csv(
+  "data_NCIT.csv",
+  col_names = TRUE)
+
 data  <- read_csv(
   "data_dvep.csv",
   col_names = TRUE,
@@ -57,37 +89,34 @@ data  <- read_csv(
   lazy = should_read_lazy()
 )
 
-data_codebook <- read_excel(
-        "data_codebook.xlsx",
-        col_names = TRUE,
-        col_types = NULL,
-        na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
-        trim_ws = TRUE,
-        skip = 0, # Number of lines to skip before reading data
-        n_max = Inf, # Maximum number of lines to read.
-        guess_max = 1000
-    ) |>
-    arrange(index)
+data_bia <- read_csv(
+    "data_bia.csv",
+    col_names = TRUE)
 
-data_structure  <- read_csv(
-  "data_structure.csv",
-  col_names = TRUE)
 
-data_NCIT  <- read_csv(
-  "data_NCIT.csv",
-  col_names = TRUE)
-
-# 3. Remove identifying data from record_id
+# 3. Remove identifying data
 data$record_id <- substr(data$record_id,1,2)
+data_bia$File <- substr(data_bia$File,1,2)
 
 # 4. Renaming variables
-rename_vector <- setNames(object = colnames(data), data_codebook$variable)
+rename_data <- setNames(object = colnames(data), data_codebook$variable)
 data <- data |>
-    rename(!!!rename_vector)
+    rename(!!!rename_data)
 
-rm(rename_vector)
+rm(rename_data)
+
+rename_bia <- setNames(object = colnames(data_bia), data_bia_codebook$variable)
+data_bia <- data_bia |>
+    rename(!!!rename_bia)
+
+rm(rename_bia)
 
 # 5. Assingning correct variable types
+## 5.1 record_id as integer
+data$record_id <- as.integer(data$record_id)
+data_bia$record_id <- as.integer(data_bia$record_id)
+
+## 5.2 function
 convert_col_type <- function(column, type) {
   switch(type,
          n = as.numeric(as.character(column)),
@@ -114,7 +143,7 @@ data <- data |>
 rm(convert_col_type)
 
 ## 6. Assign labels to variables with base R attr()
-data <- data %>%
+data <- data |> 
   mutate(across(
     all_of(data_codebook$variable),
     ~ {
@@ -123,6 +152,14 @@ data <- data %>%
     }
   ))
 
+data_bia <- data_bia |> 
+  mutate(across(
+    all_of(data_bia_codebook$variable),
+    ~ {
+      attr(., "label") <- data_bia_codebook$label_pt[data_bia_codebook$variable == cur_column()]
+      .
+    }
+  ))
 
 # 7. Create functions
 ## 7.1 filter_variables() based on visit, repeating instrument and form
@@ -252,6 +289,239 @@ filter_codebook <- function(form_name = c(
     view(codebook_form)
 }
 ```
+
+## Bioimpedance data
+1. D3 data
+```{r}
+
+
+data_bia_pha <- data_bia |> 
+    filter(!is.na(phaseangle)) |> 
+    mutate(
+        date = as.Date(timestamp),           # Extract the date
+        time = format(timestamp, "%H:%M:%S") # Extract the time
+    ) |> 
+    select(all_of(data_bia_codebook$variable)[data_bia_codebook$included == 1], date, time) |> 
+    relocate(record_id, date, time, phaseangle, raverage, xcaverage, weight:w_ecwbytbw) |> 
+    arrange(record_id, date, time)
+
+data_bia_means <- data_bia_pha |> 
+    group_by(record_id, date) |>
+    summarise(
+        across(c(phaseangle:m_tohimaginary), \(x) mean(x, na.rm = TRUE)),
+        .groups = "drop"
+    ) |>
+    group_by(record_id) |> 
+    mutate(
+        visit = case_when(
+            date == min(date) ~ 1,  # Assign 1 to the earliest date
+            date == max(date) ~ 3,  # Assign 3 to the latest date
+            TRUE ~ NA_real_         # Default to NA for unexpected cases
+        ),
+        .after = record_id
+    )
+```
+
+2. D1 data
+
+setdiff(1:75,data_bia_means$record_id)
+3  6  7 14 24 25 28 29 30 35 36 40 43 48 49 55 57 59 60 62 64 70 73 74
+```{r}
+setdiff(1:75,data_bia_means$record_id)
+# 3  6  7 14 24 25 28 29 30 35 36 40 43 48 49 55 57 59 60 62 64 70 73 74
+
+
+```
+
+## Data tibbles
+```{r}
+# Variables collected exclusively on eleg and d1 to be replicated to d2 and d3
+eleg_exclusive <- filter_data("eleg",0) |> 
+    mutate(
+        intervention_duration = as.numeric(conclusion_date - intervention_start_date)
+        )|> 
+    select(record_id, allocation_group, completed_intervention, intervention_duration, age, sex)
+
+visit_1_exclusive <- filter_data("V1",0) |> 
+    select(
+        record_id,
+        race:income_level
+    )
+
+d1_exclusive <- eleg_exclusive |> 
+    left_join(
+        visit_1_exclusive,
+        by = join_by(record_id)
+)
+rm(eleg_exclusive)
+rm(visit_1_exclusive)
+    
+d1d3 <- filter_data(c("V1","V3"),0) |> 
+    mutate(
+        handgrip = if_else(
+            is.na(handgrip_right_mean) & is.na(handgrip_left_mean),
+            NA_real_,  # Leave blank (NA) if both are missing
+            if_else(
+                !is.na(handgrip_right_mean) & is.na(handgrip_left_mean),
+                handgrip_right_mean,  # Use the right hand value if left is missing
+                if_else(
+                    is.na(handgrip_right_mean) & !is.na(handgrip_left_mean),
+                    handgrip_left_mean,  # Use the left hand value if right is missing
+                    rowMeans(cbind(handgrip_right_mean, handgrip_left_mean), na.rm = TRUE)  # Calculate mean if both are present
+                    )
+                )
+            )
+        ) |> 
+    select(
+        record_id, event_name,
+        whoqol_score_overall,
+        dass_score_depression:ecap_score,
+        mean_bp_mean, 
+        handgrip, 
+        evs_score, 
+        alcohol_dose, alcohol_significant, 
+        smoke_history, pack_years, 
+        carbs_kcal, protein_kcal, fat_kcal, 
+        cycle_phase, drugs_dose_change_yn, drugs_dose_change_notes, 
+        intervention_prevention_reason_yn, 
+        specify_intervention_prevention_reasons, 
+        intervention_delivered_yn, 
+        explain_intervention_not_delivered
+        )
+
+d1 <- full_join(d0, d1, by = join_by(record_id))
+```
+
+
+view(
+    data |> filter(
+        !is.na(handgrip_right_1) | !is.na(handgrip_left_1)
+    ) |> 
+    select(record_id, event_name, handgrip_right_1:handgrip_complete)
+)
+
+
+## Compliance
+1. Compute Days Between Visits
+
+```{r}
+# intervention_start_date: data$intervention_start_date[data$event_name == "eleg_arm_1" & !is.na(data$intervention_start_date)]
+# second visit: data$evaluation_date[data$event_name == "2visit_arm_1" & !is.na(data$evaluation_date)]
+# third visit: data$evaluation_date[data$event_name == "3visit_arm_1" & !is.na(data$evaluation_date)]
+
+compliance <- data |> 
+    mutate(
+        days_to_visit_2 = if_else(
+            !is.na(data$evaluation_date[data$event_name == "2visit_arm_1"),
+            as.numeric(
+                difftime(
+                    data$evaluation_date[data$event_name == "2visit_arm_1"], 
+                    data$intervention_start_date[data$event_name == "eleg_arm_1"],
+                    units = "days"
+                )
+            ),
+            NA_real_
+        ),
+        days_to_visit_3 = if_else(
+            !is.na(data$evaluation_date[data$event_name == "3visit_arm_1"),
+            as.numeric(
+                difftime(
+                    data$evaluation_date[data$event_name == "3visit_arm_1"],
+                    data$evaluation_date[data$event_name == "2visit_arm_1"], 
+                    units = "days"
+                )
+            ),
+            NA_real_
+        )
+    )
+
+
+
+compliance <- data |> 
+    mutate(
+        days_to_visit_2 = as.numeric(
+            difftime(
+                data$evaluation_date[data$event_name == "2visit_arm_1"], 
+                data$intervention_start_date[data$event_name == "eleg_arm_1"],
+                units = "days"
+            )
+        ),
+        days_to_visit_3 = as.numeric(
+            difftime(
+                data$evaluation_date[data$event_name == "3visit_arm_1"],
+                data$evaluation_date[data$event_name == "2visit_arm_1"], 
+                units = "days"
+            )
+        )
+    )
+
+
+compliance <- data |>
+    group_by(record_id) |>
+    mutate(
+        days_to_visit_2 = if_else(
+            event_name == "2visit_arm_1",
+            as.numeric(
+                difftime(
+                    evaluation_date,
+                    intervention_start_date[event_name == "eleg_arm_1"],
+                    units = "days"
+                )
+            ),
+            NA_real_
+        ),
+        days_to_visit_3 = if_else(
+            event_name == "3visit_arm_1",
+            as.numeric(
+                difftime(
+                    evaluation_date,
+                    evaluation_date[event_name == "2visit_arm_1"],
+                    units = "days"
+                )
+            ),
+            NA_real_
+        )
+    ) |>
+    ungroup()
+
+
+
+
+```
+
+```{r}
+# intervention_start_date
+filter_data("eleg",0) |> 
+    filter(!is.na(intervention_start_date)) |> 
+    select(intervention_start_date)
+
+# second visit
+filter_data("V2",0) |> 
+    filter(!is.na(evaluation_date)) |> 
+    select(evaluation_date)
+
+# third visit
+filter_data("V3",0) |> 
+    filter(!is.na(evaluation_date)) |> 
+    select(evaluation_date)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # TIDYVERSE
 
