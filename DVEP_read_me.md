@@ -1,4 +1,4 @@
-## Exporting data from REDCap
+# Exporting data from REDCap
 1. PID 1958
 2. Data Exports, Reports, and Stats
 3. Choose "Export Data" from option "A - All data (all records and fields)"
@@ -12,6 +12,23 @@
 8. Export file to "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP"
 9. Rename file to "data_dvep.csv"
 Note: resulting file must have 780 variables (last variable on column ACZ: "anexos_complete")
+
+# Files
+## Codebooks and supporting files
+**data_codebook.xlsx**      Codebook for REDCap DVEP Project
+**data_structure.csv**      Data structure for DVEP project
+**data_NCIT.csv**           Operational Support - NCIT coding
+**data_bia_codebook.xlsx**  Codebook for BIA data
+
+## Data
+**data_dvep.csv**           Full data from REDCap DVEP Project
+**data_bia.csv**            BIA data for participants that completed the intervention
+                            Contains BIA data from both the first and third visits
+**data_bia_incomplete.csv** BIA data for the first visit for all participants
+                            Contains BIA data from the first visit only
+                            Contains BIA data from participants who did not complete the intervention
+
+
 
 #   data_codebook <- read_csv(
 #           "data_codebook.csv",
