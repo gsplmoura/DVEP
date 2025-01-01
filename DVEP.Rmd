@@ -93,20 +93,31 @@ data_bia <- read_csv(
     "data_bia.csv",
     col_names = TRUE)
 
+data_bia_incomplete <- read_csv(
+    "data_bia_incomplete.csv",
+    col_names = TRUE)
+
 
 # 3. Remove identifying data
 data$record_id <- substr(data$record_id,1,2)
 data_bia$File <- substr(data_bia$File,1,2)
+data_bia_incomplete$File <- substr(data_bia_incomplete$File,1,2)
 
-# 4. Renaming variables
+# 4.  Renaming variables
+# 4.1 data
 rename_data <- setNames(object = colnames(data), data_codebook$variable)
 data <- data |>
     rename(!!!rename_data)
 
 rm(rename_data)
 
+# 4.2 bia
 rename_bia <- setNames(object = colnames(data_bia), data_bia_codebook$variable)
+
 data_bia <- data_bia |>
+    rename(!!!rename_bia)
+
+data_bia_incomplete <- data_bia_incomplete |>
     rename(!!!rename_bia)
 
 rm(rename_bia)
@@ -115,6 +126,7 @@ rm(rename_bia)
 ## 5.1 record_id as integer
 data$record_id <- as.integer(data$record_id)
 data_bia$record_id <- as.integer(data_bia$record_id)
+data_bia_incomplete$record_id <- as.integer(data_bia_incomplete$record_id)
 
 ## 5.2 function
 convert_col_type <- function(column, type) {
