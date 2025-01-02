@@ -61,7 +61,10 @@ data_bia_codebook <- read_excel(
 
 data_structure  <- read_csv(
   "data_structure.csv",
-  col_names = TRUE)
+  col_names = TRUE) |> 
+    select(
+        form_name_en:V3
+    )
 
 data_NCIT  <- read_csv(
   "data_NCIT.csv",
@@ -89,19 +92,19 @@ data  <- read_csv(
   lazy = should_read_lazy()
 )
 
-data_bia <- read_csv(
-    "data_bia.csv",
+data_bia_D3 <- read_csv(
+    "data_bia_D3.csv",
     col_names = TRUE)
 
-data_bia_incomplete <- read_csv(
-    "data_bia_incomplete.csv",
+data_bia_D1 <- read_csv(
+    "data_bia_D1.csv",
     col_names = TRUE)
 
 
 # 3. Remove identifying data
 data$record_id <- substr(data$record_id,1,2)
-data_bia$File <- substr(data_bia$File,1,2)
-data_bia_incomplete$File <- substr(data_bia_incomplete$File,1,2)
+data_bia_D3 $File <- substr(data_bia_D3 $File,1,2)
+data_bia_D1$File <- substr(data_bia_D1$File,1,2)
 
 # 4.  Renaming variables
 # 4.1 data
@@ -112,12 +115,12 @@ data <- data |>
 rm(rename_data)
 
 # 4.2 bia
-rename_bia <- setNames(object = colnames(data_bia), data_bia_codebook$variable)
+rename_bia <- setNames(object = colnames(data_bia_D3 ), data_bia_codebook$variable)
 
-data_bia <- data_bia |>
+data_bia_D3 <- data_bia_D3 |>
     rename(!!!rename_bia)
 
-data_bia_incomplete <- data_bia_incomplete |>
+data_bia_D1 <- data_bia_D1 |>
     rename(!!!rename_bia)
 
 rm(rename_bia)
@@ -125,8 +128,8 @@ rm(rename_bia)
 # 5. Assingning correct variable types
 ## 5.1 record_id as integer
 data$record_id <- as.integer(data$record_id)
-data_bia$record_id <- as.integer(data_bia$record_id)
-data_bia_incomplete$record_id <- as.integer(data_bia_incomplete$record_id)
+data_bia_D3 $record_id <- as.integer(data_bia_D3 $record_id)
+data_bia_D1$record_id <- as.integer(data_bia_D1$record_id)
 
 ## 5.2 function
 convert_col_type <- function(column, type) {
@@ -164,7 +167,7 @@ data <- data |>
     }
   ))
 
-data_bia <- data_bia |> 
+data_bia_D3 <- data_bia_D3 |> 
   mutate(across(
     all_of(data_bia_codebook$variable),
     ~ {
@@ -303,11 +306,10 @@ filter_codebook <- function(form_name = c(
 ```
 
 ## Bioimpedance data
-1. D3 data
 ```{r}
-
-
-data_bia_pha <- data_bia |> 
+# 1. D3 DATA (contains data from first and third visits for participants who completed the intervention)
+## Filter lines for which phaseangle is <> ""
+data_bia_D3_filtered <- data_bia_D3 |> 
     filter(!is.na(phaseangle)) |> 
     mutate(
         date = as.Date(timestamp),           # Extract the date
@@ -317,13 +319,14 @@ data_bia_pha <- data_bia |>
     relocate(record_id, date, time, phaseangle, raverage, xcaverage, weight:w_ecwbytbw) |> 
     arrange(record_id, date, time)
 
-data_bia_means <- data_bia_pha |> 
+## Group by record_id and date and obtain mean of multiple measurements from the same day
+data_bia_D3_filtered <- data_bia_D3_filtered |> 
     group_by(record_id, date) |>
     summarise(
         across(c(phaseangle:m_tohimaginary), \(x) mean(x, na.rm = TRUE)),
         .groups = "drop"
     ) |>
-    group_by(record_id) |> 
+    group_by(record_id) |> # Add coding for visit number
     mutate(
         visit = case_when(
             date == min(date) ~ 1,  # Assign 1 to the earliest date
@@ -332,22 +335,64 @@ data_bia_means <- data_bia_pha |>
         ),
         .after = record_id
     )
+
+# 2. D1 DATA (data from the first visit for participants who did not complete the intervention)
+## Filter lines for which phaseangle is <> ""
+data_bia_D1_filtered <- data_bia_D1 |> 
+    filter(!is.na(phaseangle)) |> 
+    mutate(
+        date = as.Date(timestamp),           # Extract the date
+        time = format(timestamp, "%H:%M:%S") # Extract the time
+    ) |> 
+    select(all_of(data_bia_codebook$variable)[data_bia_codebook$included == 1], date, time) |> 
+    relocate(record_id, date, time, phaseangle, raverage, xcaverage, weight:w_ecwbytbw) |> 
+    arrange(record_id, date, time)
+
+## Group by record_id and date and obtain mean of multiple measurements from the same day
+data_bia_D1_filtered <- data_bia_D1_filtered |> 
+    group_by(record_id, date) |>
+    summarise(
+        across(c(phaseangle:m_tohimaginary), \(x) mean(x, na.rm = TRUE)),
+        .groups = "drop"
+    ) |>
+    group_by(record_id) |> # Add coding for visit number
+    mutate(
+        visit = case_when(
+            date == min(date) ~ 1,  # Assign 1 to the earliest date
+            date == max(date) ~ 3,  # Assign 3 to the latest date
+            TRUE ~ NA_real_         # Default to NA for unexpected cases
+        ),
+        .after = record_id
+    )
+## Selecting BIA data from D1 not present in D3
+data_bia_D1_filtered <- data_bia_D1_filtered |> 
+    filter(
+     record_id %in% setdiff(1:75, data_bia_D3_filtered$record_id)   
+    )
+
+# 3. MERGE D1/D3 BIA data into a single tibble
+data_bia <- bind_rows(
+    data_bia_D1_filtered, data_bia_D3_filtered
+) |> 
+    mutate(
+        visit = as.integer(visit)
+    ) |> 
+    arrange(
+        record_id, visit
+    )
+
+# 4. DROP irrelevant tibbles
+rm(data_bia_D1)
+rm(data_bia_D1_filtered)
+rm(data_bia_D3)
+rm(data_bia_D3_filtered)
 ```
 
-2. D1 data
+## DVEP REDCap Data tibbles
+### Variables collected exclusively on eleg and d1 to be replicated to d2 and d3 (`d1_exclusive`)
 
-setdiff(1:75,data_bia_means$record_id)
-3  6  7 14 24 25 28 29 30 35 36 40 43 48 49 55 57 59 60 62 64 70 73 74
 ```{r}
-setdiff(1:75,data_bia_means$record_id)
-# 3  6  7 14 24 25 28 29 30 35 36 40 43 48 49 55 57 59 60 62 64 70 73 74
-
-
-```
-
-## Data tibbles
-```{r}
-# Variables collected exclusively on eleg and d1 to be replicated to d2 and d3
+# 1. Variables collected exclusively on eleg and d1 to be replicated to d2 and d3 (`d1_exclusive`)
 eleg_exclusive <- filter_data("eleg",0) |> 
     mutate(
         intervention_duration = as.numeric(conclusion_date - intervention_start_date)
@@ -367,7 +412,104 @@ d1_exclusive <- eleg_exclusive |>
 )
 rm(eleg_exclusive)
 rm(visit_1_exclusive)
-    
+
+d1_exclusive <- d1_exclusive |> 
+    mutate(
+        visit = 1,
+        .after = record_id
+    )
+
+```
+
+2. Repeating instruments
+Steps:
+1. Concatenating NCIT labels (from data_NCIT) to NCIT codes in data
+```{r}
+# 1.1 Conditions / commorbidities
+I21_conditions_R  <- filter_data("eleg",1,"conditions")  |> 
+    left_join(
+        data_NCIT |> select(ncit_code, descriptive),
+        # by = c("common_comorbidities" = "ncit_code")
+        join_by(common_comorbidities == ncit_code)
+    ) |>
+    relocate(
+        descriptive, .after = common_comorbidities
+    )
+
+# 1.2 Drugs in regular use
+I22_drugs_R  <- filter_data("eleg",1,"drugs")  |> 
+    left_join(
+        data_NCIT |> select(ncit_code, descriptive),
+        join_by(drugs_sql == ncit_code)
+    ) |>
+    relocate(
+        descriptive, .after = drugs_sql
+    )
+
+# # 1.3 Previous drugs
+# I23_old_drugs_R <- filter_data("eleg",1,"old.drugs") |> 
+#     left_join(
+#         data_NCIT |> select(ncit_code, descriptive),
+#         join_by(common_previous_medications == ncit_code)
+#     )|>
+#     relocate(
+#         descriptive, .after = common_previous_medications
+#     )
+# 
+# # 1.4 Past medical conditions
+# I24_old_conditions_R <- filter_data("eleg",1,"history") |> 
+#     left_join(
+#         data_NCIT |> select(ncit_code, descriptive),
+#         join_by(common_medical_history == ncit_code)
+#     )|>
+#     relocate(
+#         descriptive, .after = common_medical_history
+#     )
+```
+
+Most common comorbidities
+```{r}
+I21_conditions_R |> 
+    group_by(common_comorbidities, descriptive) |> 
+    count(common_comorbidities, sort = TRUE, name = "frequency") |> 
+    mutate(percentage = frequency/75 * 100) |> 
+    view()
+```
+
+Most common drugs
+```{r}
+I22_drugs_R |> 
+    group_by(drugs_sql, descriptive) |> 
+    count(drugs_sql, sort = TRUE, name = "frequency") |> 
+    mutate(percentage = frequency/75 * 100) |> 
+    view()
+```
+
+
+```{r}
+d1_exclusive <- d1_exclusive |> 
+    mutate(
+        hypertension = 
+            if_else(
+                record_id %in% (I21_conditions_R |> 
+                                     filter(str_detect(descriptive, "Hipertensão")) |> 
+                                     pull(record_id)),
+                1,
+                if_else(
+                    record_id %in% (I22_drugs_R |> 
+                                         filter(str_detect(drugs_sql, "C66869|C29098|C61635|C28836|C29254|C62027|C62027_2")) |> 
+                                         pull(record_id)),
+                    1,
+                    0
+                )
+            )
+    )
+
+
+```
+
+```{r}
+# 2. Non-repeating data common to V1 and V3 (`d1d3`)
 d1d3 <- filter_data(c("V1","V3"),0) |> 
     mutate(
         handgrip = if_else(
@@ -384,38 +526,101 @@ d1d3 <- filter_data(c("V1","V3"),0) |>
                 )
             )
         ) |> 
+    mutate(
+        visit = case_when(
+            event_name == "1visit_arm_1"    ~ 1,
+            event_name == "3visit_arm_1"    ~ 3
+        )
+    ) |> 
     select(
-        record_id, event_name,
-        whoqol_score_overall,
-        dass_score_depression:ecap_score,
-        mean_bp_mean, 
-        handgrip, 
-        evs_score, 
-        alcohol_dose, alcohol_significant, 
-        smoke_history, pack_years, 
-        carbs_kcal, protein_kcal, fat_kcal, 
-        cycle_phase, drugs_dose_change_yn, drugs_dose_change_notes, 
-        intervention_prevention_reason_yn, 
-        specify_intervention_prevention_reasons, 
-        intervention_delivered_yn, 
-        explain_intervention_not_delivered
+        record_id, visit,
+        whoqol_score_overall, # 4. whoqol
+        dass_score_depression:ecap_score, # 5. dass, 6. ecap
+        height, weight, abdomen, arm, bmi, # 7. measures
+        mean_bp_mean, # 9. bp 
+        time_fasted_food, time_fasted_liquid, resistance, reactance, phase_angle, # 10. bia
+        handgrip, # 11. handgrip
+        # 12. eliminations
+        evs_score, # 14. evs
+        alcohol_dose, alcohol_significant, # 15. alcohol
+        smoke_history, pack_years,  # 16. tobacco
+        carbs_kcal, protein_kcal, fat_kcal, # 18. intake
+        drugs_dose_change_yn, drugs_dose_change_notes, # 31. medical
+        intervention_prevention_reason_yn, # 31. medical
+        specify_intervention_prevention_reasons, # 31. medical
+        intervention_delivered_yn, # 31. medical
+        explain_intervention_not_delivered # 31. medical
         )
 
-d1 <- full_join(d0, d1, by = join_by(record_id))
+# 3. Non-repeating data from the second visit (`d2`)
+d2 <- filter_data("V2",0) |> 
+    mutate(
+        visit = case_when(
+            event_name == "2visit_arm_1"    ~ 2
+        )
+    ) |> 
+    select(
+        record_id, visit,
+        height, weight, abdomen, arm, bmi, # 7. measures
+        mean_bp_mean, # 9. bp 
+        # 12. eliminations
+        evs_score, # 14. evs
+        drugs_dose_change_yn, drugs_dose_change_notes, # 31. medical
+        intervention_prevention_reason_yn, # 31. medical
+        specify_intervention_prevention_reasons, # 31. medical
+        intervention_delivered_yn, # 31. medical
+        explain_intervention_not_delivered # 31. medical
+        )
+
+# 4. Bind rows for non-repeating variables from D1/D2/D3
+all_data <- bind_rows(
+    d1d3,d2
+) |> 
+    mutate(
+        record_id = as.integer(record_id),
+        visit = as.integer(visit)
+) |> 
+    arrange(
+        record_id, visit
+    )
+
+## Remove intermediate tibbles
+rm(d1d3)
+rm(d2)
+
+
+# 5. Left_join BIA data
+all_data <- all_data |> 
+    left_join(
+        data_bia |> 
+            select(
+                record_id, visit,
+                phaseangle, raverage, xcaverage, 
+                weight, height, waist, pal, bmi, 
+                fmi, ffmi, vat,
+                w_tbw, w_ecw
+            ),
+        by = join_by(record_id, visit)
+    )
 ```
 
 
-view(
-    data |> filter(
-        !is.na(handgrip_right_1) | !is.na(handgrip_left_1)
-    ) |> 
-    select(record_id, event_name, handgrip_right_1:handgrip_complete)
-)
+data_structure |> 
+    filter(
+        V2 == 1 & repeating == 0
+) |> 
+    select(
+        form_name_en
+) |> 
+    view()
 
 
 ## Compliance
+Forms:
+     Followup: V1
+     Compliance: V2 and V3
+     
 1. Compute Days Between Visits
-
 ```{r}
 # intervention_start_date: data$intervention_start_date[data$event_name == "eleg_arm_1" & !is.na(data$intervention_start_date)]
 # second visit: data$evaluation_date[data$event_name == "2visit_arm_1" & !is.na(data$evaluation_date)]
@@ -790,6 +995,7 @@ rm(variable_name, variable_label)
 write_csv(data_filtered, "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/data_filtered.csv", na = "")
 ```
 
+
 ## Adding labels to raw cell values
 To apply the labels only to the variables present in colnames(data_filtered), you can filter the data_codebook to include only those variables.
 Steps for Selected Variables
@@ -850,73 +1056,7 @@ for (column_name in names(lookup_tables)) { # Iterate through each column in loo
 }
 ```
 
-## Repeating instruments
-Steps:
-1. Concatenating NCIT labels (from data_NCIT) to NCIT codes in data
-```{r}
-# 1.1 Conditions / commorbidities
-I21_conditions_R  <- I21_conditions_R  |> 
-    left_join(
-        data_NCIT |> select(ncit_code, descriptive),
-        # by = c("common_comorbidities" = "ncit_code")
-        join_by(common_comorbidities == ncit_code)
-    ) |>
-    relocate(
-        descriptive, .after = common_comorbidities
-    )
 
-# 1.2 Drugs in regular use
-I22_drugs_R  <- I22_drugs_R  |> 
-    left_join(
-        data_NCIT |> select(ncit_code, descriptive),
-        join_by(common_medications == ncit_code)
-    ) |>
-    relocate(
-        descriptive, .after = common_medications
-    )
-
-# 1.3 Previous drugs
-I23_old_drugs_R <- I23_old_drugs_R |> 
-    left_join(
-        data_NCIT |> select(ncit_code, descriptive),
-        join_by(common_previous_medications == ncit_code)
-    )|>
-    relocate(
-        descriptive, .after = common_previous_medications
-    )
-
-# 1.4 Past medical conditions
-I24_old_conditions_R <- I24_old_conditions_R |> 
-    left_join(
-        data_NCIT |> select(ncit_code, descriptive),
-        join_by(common_medical_history == ncit_code)
-    )|>
-    relocate(
-        descriptive, .after = common_medical_history
-    )
-```
-
-2. Most common comorbidities
-```{r}
-I21_conditions_R |> 
-    group_by(common_comorbidities, descriptive) |> 
-    count(common_comorbidities, sort = TRUE, name = "frequency") |> 
-    mutate(percentage = frequency/74 * 100)
-```
-```{r}
-data_V1 <- data_V1 |> 
-    mutate(
-        hypertension = 
-            if_else(
-                record_id %in% (I21_conditions_R |> 
-                                     filter(str_detect(descriptive, "Hipertensão")) |> 
-                                     pull(record_id)),
-                1, 0
-                )
-        ) |> 
-    relocate(hypertension, .after = income_level)
-
-```
 
 
 
