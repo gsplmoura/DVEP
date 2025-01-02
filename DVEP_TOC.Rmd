@@ -1,0 +1,110 @@
+---
+title: "DVEP_TOC"
+author: "Moura, G.S.P.L"
+date: "2025-01-02"
+output: html_document
+---
+
+1. Getting started with R
+- Clear data and graphics
+- Load libraries
+- Set working directory
+2. Read CSV data files (Tidyverse)
+3. Remove identifying data from record_id
+4. Renaming variables
+5. Assigning correct variable types
+6. Assigning labels to variable names
+7. Creating functions
+    7.1 filter_variables()
+    7.2 filter_data()
+    7.3 filter_codebook()
+8. Wrangling Bioimpedance data
+    8.1 D3 DATA
+    8.2 D1 DATA
+    8.3 Merging to single tibble
+    8.4 Drop intermediate tibbles
+9. Wrangling DVEP REDCap data
+    9.1 Eclusive variables from Eleg/D1 `d1_exclusive`
+    9.2 Repeating instruments
+        9.2.1. Adding NCIT labels
+        - I21_conditions_R
+        - I22_drugs_R
+    9.3 Creating relevant binary variables*
+        9.3.1 Hypertension
+        9.3.2 Dyslipidemia
+        9.3.3 Insulin resistance
+        9.3.4 Drugs that might induce weight loss
+        9.3.5 Drugs that might induce weight gain
+    9.4 Non-repeating data common to V1 and V3 (`d1d3`)
+        - calculate mean of handgrip strenght
+        - select relevant variables
+    9.5 Non-repeating data from second visit (`d2`)
+    9.6 Bind rows from `d1d3` and `d2`: `all_data`
+    9.7. Left_join BIA data to `all_data`
+    
+
+    
+    
+    
+* Relevant binary variables
+1. Hypertension present if:
+    C3117       Hipertensão
+    C66869      Losartana
+    C29098      Hidroclorotiazida
+    C61635      Anlodipino
+    C47640_2    Olmesartana
+    C28836      Atenolol
+    C29254      Metoprolol
+    C62027      Enalapril 10 mg
+    C62027_2    Enalapril 20 mg
+
+2. Dyslipidemia present if:
+    C37967      Hipercolesterolemia
+    C37971      Hipertrigliceridemia
+    C29454      Sinvastatina
+    C66523_2    Rosuvastatina
+    C47529      Ezetimiba
+    C61527      Atorvastatina
+    C87471      Ciprofibrato
+    
+    
+3. Insulin resistance present if:
+    C113101     Resistência insulínica
+    C26747      DM2 
+    C61612      Metformina 500 mg 
+    C61612_2    Metformina 850 mg
+    C87618      Gliclazida 30 mg
+    C180533     Empagliflozin/Linagliptin
+    
+4. Drugs that might induce weight loss
+    C61939      Sertralina
+    C62012      Bupropiona
+    C506_1      Fluoxetina
+    C1278_2     Venlafaxina 75 mg
+    C1278_1     Venlafaxina 37,5 mg
+    C1278_3     Venlafaxina 150 mg
+    C47764_1    Topiramato 25 mg
+    C47764_2    Topiramato 50 mg
+    C61680      Citalopram 20 mg
+    
+    "C61939|C62012|C506_1|C1278_2|C1278_1|C1278_3|C47764_1|C47764_2|C61680"
+
+    
+4. Drugs that might induce weight gain
+    C61879    Paroxetina 20 mg
+    C62005    Amitriptilina 25 mg
+    C61917_2  Quetiapina 50 mg 
+    C29416    Risperidona 2 mg 
+    C29536_2  Ácido Valpróico 250 mg
+    "C61879|C62005|C61917_2|C29416|C29536_2"
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
