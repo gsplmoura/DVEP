@@ -126,37 +126,43 @@ data_bia_D1 <- data_bia_D1 |>
 
 rm(rename_bia)
 
-# 5. Assingning correct variable types
+# 5. Assigning correct variable types
 ## 5.1 record_id as integer
 data$record_id <- as.integer(data$record_id)
 data_bia_D3 $record_id <- as.integer(data_bia_D3 $record_id)
 data_bia_D1$record_id <- as.integer(data_bia_D1$record_id)
 
 ## 5.2 function
-convert_col_type <- function(column, type) {
-  switch(type,
-         n = as.numeric(as.character(column)),
-         k = lubridate::ymd(column),
-         c = as.character(column),
-         d = as.numeric(column),
-         i = as.integer(column),
-         l = as.logical(column),
-         D = as.Date(column, format = "%Y-%m-%d"),
-         T = as.POSIXct(column, format = "%Y-%m-%d %H:%M:%S"),
-         f = as.factor(column),
-         column  # Default (no change)
-  )
-}
+### as.factor(): categorical data where the label (e.g., "6 cápsulas ao dia") is more meaningful than numeric code.
+### binary data (0, Não | 1, Sim):
+### - Use as.factor() if the "label" (Não or Sim) is important.
+### - Use as.numeric(as.character()) if you're performing mathematical operations (e.g., calculating proportions, averages).
+### For ordinal data (1, Ruim | 2, Regular | 3, Boa | 4, Excelente): use as.factor() with ordered levels (ordered()) if you need to preserve the ranking.
 
-data <- data |>
-    mutate(
-        across( # apply a function to multiple columns at once
-            .cols = # .cols: Specifies which columns you want to change
-                all_of(data_codebook$variable), 
-            .fns = # .fns: Defines the function to apply to each column
-                ~ convert_col_type(.x, data_codebook$col_types[which(data_codebook$variable == cur_column())])
-))
-rm(convert_col_type)
+# convert_col_type <- function(column, type) {
+#   switch(type,
+#          n = as.numeric(as.character(column)),
+#          k = lubridate::ymd(column),
+#          c = as.character(column),
+#          d = as.numeric(column),
+#          i = as.integer(column),
+#          l = as.logical(column),
+#          D = as.Date(column, format = "%Y-%m-%d"),
+#          T = as.POSIXct(column, format = "%Y-%m-%d %H:%M:%S"),
+#          f = as.factor(column),
+#          column  # Default (no change)
+#   )
+# }
+# 
+# data <- data |>
+#     mutate(
+#         across( # apply a function to multiple columns at once
+#             .cols = # .cols: Specifies which columns you want to change
+#                 all_of(data_codebook$variable), 
+#             .fns = # .fns: Defines the function to apply to each column
+#                 ~ convert_col_type(.x, data_codebook$col_types[which(data_codebook$variable == cur_column())])
+# ))
+# rm(convert_col_type)
 
 ## 6. Assign labels to variables with base R attr()
 data <- data |> 
@@ -177,7 +183,7 @@ data_bia_D3 <- data_bia_D3 |>
     }
   ))
 
-# 7. Create functions
+# 7. Creating functions
 ## 7.1 filter_variables() based on visit, repeating instrument and form
 filter_variables <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL) {
   
@@ -305,6 +311,36 @@ filter_codebook <- function(form_name = c(
     view(codebook_form)
 }
 
+## 7.4 convert_col_type()
+convert_col_type <- function(data, codebook = data_codebook) {
+    # Nested function to convert a single column
+    convert_column <- function(column, type) {
+        switch(type,
+               f = as.factor(column),
+               o = as.factor(column),
+               c = as.character(column),
+               d = as.numeric(column),
+               i = as.integer(column),
+               k = lubridate::ymd(column),
+               t = lubridate::ymd_hms(column),
+               n = as.numeric(as.character(column)),
+               l = as.logical(column),
+               D = as.Date(column, format = "%Y-%m-%d"),
+               T = as.POSIXct(column, format = "%Y-%m-%d %H:%M:%S"),
+               column  # Default (no change)
+        )
+    }
+    # Apply conversion
+    data <- data |>
+        mutate(
+            across(
+                .cols = all_of(intersect(colnames(data), codebook$variable)), # Ensures only common variables are processed
+                .fns = ~ convert_column(.x, codebook$col_types[which(codebook$variable == cur_column())])
+            )
+        )
+    glimpse(data)
+}
+
 # 8. Wrangling Bioimpedance data
 
 ## 8.1 D3 DATA (contains data from first and third visits for participants who completed the intervention)
@@ -381,16 +417,13 @@ data_bia <- bind_rows(
         record_id, visit
     )
 
-# 4. DROP intermediate tibbles
+# 8.4. DROP intermediate tibbles
 rm(data_bia_D1)
 rm(data_bia_D1_filtered)
 rm(data_bia_D3)
 rm(data_bia_D3_filtered)
-```
 
-9. Wrangling DVEP REDCap data
 
-```{r}
 # 9. Wrangling DVEP REDCap data
 ## 9.1 Eclusive variables from Eleg/D1 (`d1_exclusive`) to be replicated to d2 and d3
 eleg_exclusive <- filter_data("eleg",0) |> 
@@ -419,11 +452,6 @@ d1_exclusive <- d1_exclusive |>
         .after = record_id
     )
 
-```
-
-9.2 Repeating instruments
-9.2.1. Concatenating NCIT labels (from data_NCIT) to NCIT codes
-```{r}
 ## 9.2 Repeating instruments
 ### 9.2.1. Concatenating NCIT labels (from data_NCIT) to NCIT codes
 #### Conditions (commorbidities)
@@ -466,38 +494,34 @@ I22_drugs_R  <- filter_data("eleg",1,"drugs")  |>
 #     relocate(
 #         descriptive, .after = common_medical_history
 #     )
-```
-
-Most common comorbidities
-```{r, eval = FALSE}
-I21_conditions_R |> 
-    group_by(common_comorbidities, descriptive) |> 
-    count(common_comorbidities, sort = TRUE, name = "frequency") |> 
-    mutate(percentage = round((frequency/75 * 100),1)) |> 
-    view()
-```
-NCIT    Condition   
-C3117	Hipertensão	                18	24         *1
-C26696	Ansiedade	                16	21.3        
-C37967	Hipercolesterolemia         16	21.3       *2
-C37971	Hipertrigliceridemia        13	17.3       *2
-C113101	Resistência à insulina      11	14.7       *3
-C26800	Hipotireoidismo             9	12         
-C89715	Enxaqueca	                8	10.7
-C114667	SOP                     	7	9.3
-C26747	DM2                     	7	9.3        *3
-
-Most common drugs
-```{r, eval = FALSE}
-I22_drugs_R |> 
-    group_by(drugs_sql, descriptive) |> 
-    count(drugs_sql, sort = TRUE, name = "frequency") |> 
-    mutate(percentage = round((frequency/75 * 100),1)) |> 
-    view()
-```
 
 
-```{r}
+# Most common comorbidities
+# I21_conditions_R |> 
+#     group_by(common_comorbidities, descriptive) |> 
+#     count(common_comorbidities, sort = TRUE, name = "frequency") |> 
+#     mutate(percentage = round((frequency/75 * 100),1)) |> 
+#     view()
+
+# NCIT    Condition   
+# C3117	Hipertensão	                18	24         *1
+# C26696	Ansiedade	                16	21.3        
+# C37967	Hipercolesterolemia         16	21.3       *2
+# C37971	Hipertrigliceridemia        13	17.3       *2
+# C113101	Resistência à insulina      11	14.7       *3
+# C26800	Hipotireoidismo             9	12         
+# C89715	Enxaqueca	                8	10.7
+# C114667	SOP                     	7	9.3
+# C26747	DM2                     	7	9.3        *3
+ 
+# Most common drugs
+# ```{r, eval = FALSE}
+# I22_drugs_R |> 
+#     group_by(drugs_sql, descriptive) |> 
+#     count(drugs_sql, sort = TRUE, name = "frequency") |> 
+#     mutate(percentage = round((frequency/75 * 100),1)) |> 
+#     view()
+
 ## 9.3 Creating relevant binary variables*
 
 ### 9.3.1 HYPERTENSION
@@ -625,9 +649,7 @@ d1_exclusive <- d1_exclusive |>
 
 rm(drugs_w_gain)
 
-```
 
-```{r}
 ## 9.4 Non-repeating data common to V1 and V3 (`d1d3`)
 d1d3 <- filter_data(c("V1","V3"),0) |> 
     mutate(
@@ -740,9 +762,135 @@ Forms:
      
 1. Compute Days Between Visits
 ```{r}
+
+compliance_V2 <- data |> 
+    select(
+        record_id, event_name,
+        filter_variables("V2",1,"compliance")
+        ) |> 
+    filter(event_name == "2visit_arm_1" & cp_compliance_complete == 2) |> 
+    left_join(data |>
+                  filter(event_name == "eleg_arm_1" & !is.na(intervention_start_date)) |> 
+                  select(record_id,intervention_start_date, conclusion_date),
+              by = join_by(record_id)
+              ) |> 
+    left_join(data |>
+                  filter(event_name == "2visit_arm_1" & !is.na(evaluation_date)) |> 
+                  select(record_id,evaluation_date),
+              by = join_by(record_id)
+        ) |> 
+    rename(evaluation_date_2 = evaluation_date)
+
+compliance_V3 <- data |> 
+    select(
+        record_id, event_name,
+        filter_variables("V3",,"compliance")
+        ) |> 
+    filter(event_name == "3visit_arm_1" & cp_compliance_complete == 2) |> 
+    left_join(data |>
+                  filter(event_name == "eleg_arm_1" & !is.na(intervention_start_date)) |> 
+                  select(record_id,intervention_start_date, conclusion_date),
+              by = join_by(record_id)
+              ) |> 
+    left_join(data |>
+                  filter(event_name == "2visit_arm_1" & !is.na(evaluation_date)) |> 
+                  select(record_id,evaluation_date),
+              by = join_by(record_id)
+        ) |> 
+    rename(evaluation_date_2 = evaluation_date)
+
+compliance <- bind_rows(
+    compliance_V2,compliance_V3
+) |> 
+    mutate(
+        record_id = as.integer(record_id)
+    ) |> 
+    mutate(
+        visit = case_when(
+            event_name == "2visit_arm_1"    ~ 2,
+            event_name == "3visit_arm_1"    ~ 3
+        ),
+        .after = record_id
+    ) |> 
+    arrange(record_id,visit)
+
+rm(compliance_V2)
+rm(compliance_V3)
+
+convert_col_type(compliance)
+```
+
+## Adding labels to raw cell values
+To apply the labels only to the variables present in colnames(data_filtered), you can filter the data_codebook to include only those variables.
+Steps for Selected Variables
+1. Filter data_codebook for variables present in colnames(data_filtered).
+2. Parse the choices column for these variables only.
+3. Create lookup tables for the selected variables.
+4. Apply the mappings to replace raw values with their corresponding labels in data_filtered.
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(purrr)
+
+# 1. Filter `data_codebook` for variables in `data_filtered` and with `col_types` == "f"
+selected_codebook <- data_codebook  |> 
+  filter(
+    variable %in% colnames(data_filtered) &  # Variables in data_filtered
+      col_types == "f"                              # Only those with col_types == "f"
+  )
+
+# 2. Parse the `choices` column
+parsed_choices <- selected_codebook |>
+  rowwise() |>
+  mutate(
+    parsed = list(
+      str_split(choices, " \\| ") |>  # Split the choices by "|"
+        unlist() |>
+        map(~ str_split_fixed(.x, ", ", 2) |>  # Split by ", " into two columns
+          as_tibble()  |> 
+          setNames(c("raw_value", "label"))    # Explicitly name columns
+        ) |>
+        bind_rows()  # Combine into a tibble
+    )
+  ) |>
+  select(variable, parsed) |>
+  unnest(parsed)  # Expand the parsed choices into rows
+
+
+# 3. Create lookup tables for selected variables
+lookup_tables <- parsed_choices %>%
+  group_by(variable) %>%
+  summarize(
+    lookup = list(setNames(label, raw_value)), .groups = "drop"
+  ) %>%
+  deframe()
+
+# 4. Replace raw values with labels for selected variables
+
+data_filtered_labels <- data_filtered
+for (column_name in names(lookup_tables)) { # Iterate through each column in lookup_tables
+  if (column_name %in% colnames(data_filtered_labels)) { # Ensure the column exists in data_filtered
+    data_filtered_labels[[column_name]] <- recode( # Apply recode using the lookup table for this column
+      data_filtered_labels[[column_name]],
+      !!!lookup_tables[[column_name]]
+    )
+  }
+}
+```
+
+
+
+
+
+
+```{r}
+
 # intervention_start_date: data$intervention_start_date[data$event_name == "eleg_arm_1" & !is.na(data$intervention_start_date)]
 # second visit: data$evaluation_date[data$event_name == "2visit_arm_1" & !is.na(data$evaluation_date)]
 # third visit: data$evaluation_date[data$event_name == "3visit_arm_1" & !is.na(data$evaluation_date)]
+
 
 compliance <- data |> 
     mutate(
