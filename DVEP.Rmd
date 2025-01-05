@@ -3,21 +3,11 @@ title: "DVEP Data Analysis"
 project: "Effect of Eclipta prostrata (L.) L. (Asteraceae) on bioelectrical impedance phase angle in adults with grade I obesity (DVEP)"
 PID: "REDCap 1958"
 author: "Gustavo Santos Paiva Laender Moura"
-date: "2024-12-27"
+date: "2025-01-05"
 output: html_document
 ---
-1. Getting started with R
-    - Clear data and graphics
-    - Load libraries
-    - Set working directory
-2. Read CSV data files (Tidyverse)
-3. Remove identifying data from record_id
-4. Renaming variables
-5. Assigning correct variable types
-6. Assigning labels to variable names
-7. Creating functions to filter variables, data, and codebook
-8. Wrangling Bioimpedance data
 
+# 1. Getting started with R
 ```{r}
 # 1. Getting started with R
 ## Clear existing data and graphics
@@ -35,8 +25,11 @@ library(purrr)
 
 ## Set working directory
 setwd("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP")
+```
 
-# 2. Reading CSV data files (Tidyverse)
+# 2. Read CSV data files (Tidyverse)
+```{r}
+2. Read CSV data files (Tidyverse)
 data_codebook <- read_excel(
         "data_codebook.xlsx",
         col_names = TRUE,
@@ -101,14 +94,19 @@ data_bia_D3 <- read_csv(
 data_bia_D1 <- read_csv(
     "data_bia_D1.csv",
     col_names = TRUE)
+```
 
-
-# 3. Remove identifying data
+# 3. Remove identifying data from record_id
+```{r}
+# 3. Remove identifying data from record_id
 data$record_id <- substr(data$record_id,1,2)
 data_bia_D3 $File <- substr(data_bia_D3 $File,1,2)
 data_bia_D1$File <- substr(data_bia_D1$File,1,2)
+```
 
-# 4.  Renaming variables
+# 4. Renaming variables
+```{r}
+# 4. Renaming variables
 # 4.1 data
 rename_data <- setNames(object = colnames(data), data_codebook$variable)
 data <- data |>
@@ -126,14 +124,19 @@ data_bia_D1 <- data_bia_D1 |>
     rename(!!!rename_bia)
 
 rm(rename_bia)
+```
 
-# 5. Assigning correct variable types
-## 5.1 record_id as integer
+# 5. record_id as.integer
+```{r}
+# 5. record_id as.integer
 data$record_id <- as.integer(data$record_id)
 data_bia_D3 $record_id <- as.integer(data_bia_D3 $record_id)
 data_bia_D1$record_id <- as.integer(data_bia_D1$record_id)
+```
 
-## 6. Assign labels to variables with base R attr()
+# 6. Assign labels to variables
+```{r}
+# 6. Assign labels to variables with base R attr()
 data <- data |> 
   mutate(across(
     all_of(data_codebook$variable),
@@ -151,8 +154,11 @@ data_bia_D3 <- data_bia_D3 |>
       .
     }
   ))
+```
 
 # 7. Creating functions
+## 7.1 filter_variables()
+```{r}
 ## 7.1 filter_variables() based on visit, repeating instrument and form
 filter_variables <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL) {
   
@@ -184,8 +190,11 @@ filter_variables <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeat
   
   return(filtered_vars)
 }
+```
 
-# 7.2 filter_data() based on visit, repeating instrument and form
+## 7.2 filter_data()
+```{r}
+## 7.2 filter_data() based on visit, repeating instrument and form
 filter_data <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL) {
   
   # Map visit names to actual event_name values
@@ -256,8 +265,11 @@ filter_data <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating =
   
   return(filtered_data)
 }
+```
 
-# 7.3 filter_codebook()
+## 7.3 filter_codebook()
+```{r}
+## 7.3 filter_codebook()
 filter_codebook <- function(form_name = c(
     "eleg", "demographic", "whoqol", "dass", "ecap", "measures", "bp_limb", "bp", "bia", "handgrip", "eliminations", "evs", "alcohol", "tobacco", "diet_recall", "intake", "dates", "allocation", "conditions", "drugs", "old.drugs", "history", "symptoms", "phy.exam", "labs", "ecg", "compliance", "events", "medical", "followup", "conclusion", "annex"), included = 1) {
     
@@ -279,13 +291,17 @@ filter_codebook <- function(form_name = c(
 
     view(codebook_form)
 }
+```
 
+## 7.4 convert_col_type() and apply to data
+- as.factor(): categorical data where the label (e.g., "6 cápsulas ao dia") is more meaningful than numeric code.
+- binary data (0, Não | 1, Sim):
+    - Use as.factor() if the "label" (Não or Sim) is important.
+    - Use as.numeric(as.character()) if you're performing mathematical operations (e.g., calculating proportions, averages).
+- For ordinal data (1, Ruim | 2, Regular | 3, Boa | 4, Excelente): use as.factor() with ordered levels (ordered()) if you need to preserve the ranking.
+
+```{r}
 ## 7.4 convert_col_type()
-### as.factor(): categorical data where the label (e.g., "6 cápsulas ao dia") is more meaningful than numeric code.
-### binary data (0, Não | 1, Sim):
-### - Use as.factor() if the "label" (Não or Sim) is important.
-### - Use as.numeric(as.character()) if you're performing mathematical operations (e.g., calculating proportions, averages).
-### For ordinal data (1, Ruim | 2, Regular | 3, Boa | 4, Excelente): use as.factor() with ordered levels (ordered()) if you need to preserve the ranking.
 convert_col_type <- function(data, codebook = data_codebook) {
     # Nested function to convert a single column
     convert_column <- function(column, type) {
@@ -317,7 +333,10 @@ convert_col_type <- function(data, codebook = data_codebook) {
 }
 
 convert_col_type(data)
+```
 
+## 7.5 add_labels()
+```{r}
 ## 7.5 add_labels()
 add_labels <- function(data, codebook = data_codebook) {
   # Ensure required libraries are loaded
@@ -372,11 +391,12 @@ add_labels <- function(data, codebook = data_codebook) {
   # Explicitly return the modified data
   return(data)
 }
-
-
+```
 
 # 8. Wrangling Bioimpedance data
-
+## 8.1 D3 DATA
+```{r}
+# 8. Wrangling Bioimpedance data
 ## 8.1 D3 DATA (contains data from first and third visits for participants who completed the intervention)
 ### Filter lines for which phaseangle is <> ""
 data_bia_D3_filtered <- data_bia_D3 |> 
@@ -405,7 +425,10 @@ data_bia_D3_filtered <- data_bia_D3_filtered |>
         ),
         .after = record_id
     )
+```
 
+## 8.2 D1 DATA
+```{r}
 ## 8.2 D1 DATA (data from the first visit for participants who did not complete the intervention)
 ## Filter lines for which phaseangle is <> ""
 data_bia_D1_filtered <- data_bia_D1 |> 
@@ -439,7 +462,10 @@ data_bia_D1_filtered <- data_bia_D1_filtered |>
     filter(
      record_id %in% setdiff(1:75, data_bia_D3_filtered$record_id)   
     )
+```
 
+## 8.3 Merging to single tibble
+```{r}
 ## 8.3 MERGE D1/D3 BIA data into a single tibble
 data_bia <- bind_rows(
     data_bia_D1_filtered, data_bia_D3_filtered
@@ -450,15 +476,20 @@ data_bia <- bind_rows(
     arrange(
         record_id, visit
     )
+```
 
+## 8.4 Drop intermediate tibbles
+```{r}
 # 8.4. DROP intermediate tibbles
 rm(data_bia_D1)
 rm(data_bia_D1_filtered)
 rm(data_bia_D3)
 rm(data_bia_D3_filtered)
-
+```
 
 # 9. Wrangling DVEP REDCap data
+## 9.1 Eclusive variables from Eleg/D1 `d1_exclusive`
+```{r}
 ## 9.1 Eclusive variables from Eleg/D1 (`d1_exclusive`) to be replicated to d2 and d3
 eleg_exclusive <- filter_data("eleg",0) |> 
     mutate(
@@ -485,7 +516,13 @@ d1_exclusive <- d1_exclusive |>
         visit = 1,
         .after = record_id
     )
+```
 
+## 9.2 Repeating instruments
+### 9.2.1. Adding NCIT labels
+###     - I21_conditions_R
+###     - I22_drugs_R
+```{r}
 ## 9.2 Repeating instruments
 ### 9.2.1. Concatenating NCIT labels (from data_NCIT) to NCIT codes
 #### Conditions (commorbidities)
@@ -555,9 +592,11 @@ I22_drugs_R  <- filter_data("eleg",1,"drugs")  |>
 #     count(drugs_sql, sort = TRUE, name = "frequency") |> 
 #     mutate(percentage = round((frequency/75 * 100),1)) |> 
 #     view()
+```
 
 ## 9.3 Creating relevant binary variables*
-
+### 9.3.1 Hypertension
+```{r}
 ### 9.3.1 HYPERTENSION
 #### Extract record IDs associated with hypertension diagnosis
 hypertension_conditions <- I21_conditions_R |> 
@@ -586,8 +625,10 @@ d1_exclusive <- d1_exclusive |>
 
 rm(hypertension_conditions)
 rm(hypertension_drugs)
+```
 
-
+### 9.3.2 Dyslipidemia
+```{r}
 ### 9.3.2 DYSLIPIDEMIA
 #### Extract record IDs associated with dyslipidemia conditions
 dyslipidemia_conditions <- I21_conditions_R |> 
@@ -616,8 +657,10 @@ d1_exclusive <- d1_exclusive |>
 
 rm(dyslipidemia_conditions)
 rm(dyslipidemia_drugs)
+```
 
-
+### 9.3.3 Insulin resistance
+```{r}
 ### 9.3.3 INSULIN RESISTANCE
 #### Extract record IDs associated with insulin resistance or diabetes
 insulin_conditions <- I21_conditions_R |> 
@@ -646,8 +689,10 @@ d1_exclusive <- d1_exclusive |>
 
 rm(insulin_conditions)
 rm(insulin_drugs)
+```
 
-
+### 9.3.4 Drugs that might induce weight loss
+```{r}
 ### 9.3.4 DRUGS THAT MIGHT INDUCE WEIGHT LOSS
 #### Extract record IDs
 drugs_w_loss <- I22_drugs_R |> 
@@ -664,8 +709,10 @@ d1_exclusive <- d1_exclusive |>
     )
 
 rm(drugs_w_loss)
+```
 
-
+### 9.3.5 Drugs that might induce weight gain
+```{r}
 ### 9.3.5 DRUGS THAT MIGHT INDUCE WEIGHT GAIN
 #### Extract record IDs
 drugs_w_gain <- I22_drugs_R |> 
@@ -682,9 +729,12 @@ d1_exclusive <- d1_exclusive |>
     )
 
 rm(drugs_w_gain)
-
+```
 
 ## 9.4 Non-repeating data common to V1 and V3 (`d1d3`)
+###     - calculate mean of handgrip strenght
+###     - select relevant variables
+```{r}
 d1d3 <- filter_data(c("V1","V3"),0) |> 
     mutate(
         handgrip = if_else(
@@ -726,7 +776,10 @@ d1d3 <- filter_data(c("V1","V3"),0) |>
         intervention_delivered_yn, # 31. medical
         explain_intervention_not_delivered # 31. medical
         )
+```
 
+## 9.5 Non-repeating data from the second visit (`d2`)
+```{r}
 ## 9.5 Non-repeating data from the second visit (`d2`)
 d2 <- filter_data("V2",0) |> 
     mutate(
@@ -746,7 +799,10 @@ d2 <- filter_data("V2",0) |>
         intervention_delivered_yn, # 31. medical
         explain_intervention_not_delivered # 31. medical
         )
+```
 
+9.6 Bind rows from `d1d3` and `d2`: `all_data`
+```{r}
 ## 9.6 Bind rows for non-repeating variables from D1/D2/D3
 all_data <- bind_rows(
     d1d3,d2
@@ -762,8 +818,10 @@ all_data <- bind_rows(
 
 rm(d1d3)
 rm(d2)
+```
 
-
+## 9.7. Left_join BIA data to `all_data`
+```{r}
 ## 9.7. Left_join BIA data to `all_data`
 all_data <- all_data |> 
     left_join(
@@ -777,8 +835,10 @@ all_data <- all_data |>
             ),
         by = join_by(record_id, visit)
     )
+```
 
 ## 9.8 Compliance
+```{r}
 compliance_V2 <- data |> 
     select(
         record_id, event_name,
