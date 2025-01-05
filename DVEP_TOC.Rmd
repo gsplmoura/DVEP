@@ -18,6 +18,7 @@ output: html_document
     7.1 filter_variables()
     7.2 filter_data()
     7.3 filter_codebook()
+    7.4 convert_col_type
 8. Wrangling Bioimpedance data
     8.1 D3 DATA
     8.2 D1 DATA
