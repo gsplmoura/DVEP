@@ -12,13 +12,14 @@ output: html_document
 2. Read CSV data files (Tidyverse)
 3. Remove identifying data from record_id
 4. Renaming variables
-5. Assigning correct variable types
+5. record_id as.integer
 6. Assigning labels to variable names
 7. Creating functions
     7.1 filter_variables()
     7.2 filter_data()
     7.3 filter_codebook()
-    7.4 convert_col_type
+    7.4 convert_col_type() and apply to data
+    7.5 add_labels()
 8. Wrangling Bioimpedance data
     8.1 D3 DATA
     8.2 D1 DATA
@@ -41,7 +42,9 @@ output: html_document
         - select relevant variables
     9.5 Non-repeating data from second visit (`d2`)
     9.6 Bind rows from `d1d3` and `d2`: `all_data`
+        9.6.1 convert_col_type(all_data)
     9.7. Left_join BIA data to `all_data`
+    9.8. Compliance
     
 
     
