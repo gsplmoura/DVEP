@@ -8,6 +8,7 @@ output: html_document
 ---
 
 # 1. Getting started with R
+
 ```{r}
 # 1. Getting started with R
 ## Clear existing data and graphics
@@ -28,8 +29,9 @@ setwd("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medic
 ```
 
 # 2. Read CSV data files (Tidyverse)
+
 ```{r}
-2. Read CSV data files (Tidyverse)
+# 2. Read CSV data files (Tidyverse)
 data_codebook <- read_excel(
         "data_codebook.xlsx",
         col_names = TRUE,
@@ -97,6 +99,7 @@ data_bia_D1 <- read_csv(
 ```
 
 # 3. Remove identifying data from record_id
+
 ```{r}
 # 3. Remove identifying data from record_id
 data$record_id <- substr(data$record_id,1,2)
@@ -105,6 +108,7 @@ data_bia_D1$File <- substr(data_bia_D1$File,1,2)
 ```
 
 # 4. Renaming variables
+
 ```{r}
 # 4. Renaming variables
 # 4.1 data
@@ -127,6 +131,7 @@ rm(rename_bia)
 ```
 
 # 5. record_id as.integer
+
 ```{r}
 # 5. record_id as.integer
 data$record_id <- as.integer(data$record_id)
@@ -135,6 +140,7 @@ data_bia_D1$record_id <- as.integer(data_bia_D1$record_id)
 ```
 
 # 6. Assign labels to variables
+
 ```{r}
 # 6. Assign labels to variables with base R attr()
 data <- data |> 
@@ -157,7 +163,9 @@ data_bia_D3 <- data_bia_D3 |>
 ```
 
 # 7. Creating functions
+
 ## 7.1 filter_variables()
+
 ```{r}
 ## 7.1 filter_variables() based on visit, repeating instrument and form
 filter_variables <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL) {
@@ -193,6 +201,7 @@ filter_variables <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeat
 ```
 
 ## 7.2 filter_data()
+
 ```{r}
 ## 7.2 filter_data() based on visit, repeating instrument and form
 filter_data <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL) {
@@ -268,6 +277,7 @@ filter_data <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating =
 ```
 
 ## 7.3 filter_codebook()
+
 ```{r}
 ## 7.3 filter_codebook()
 filter_codebook <- function(form_name = c(
@@ -294,11 +304,12 @@ filter_codebook <- function(form_name = c(
 ```
 
 ## 7.4 convert_col_type() and apply to data
-- as.factor(): categorical data where the label (e.g., "6 cápsulas ao dia") is more meaningful than numeric code.
-- binary data (0, Não | 1, Sim):
-    - Use as.factor() if the "label" (Não or Sim) is important.
-    - Use as.numeric(as.character()) if you're performing mathematical operations (e.g., calculating proportions, averages).
-- For ordinal data (1, Ruim | 2, Regular | 3, Boa | 4, Excelente): use as.factor() with ordered levels (ordered()) if you need to preserve the ranking.
+
+-   as.factor(): categorical data where the label (e.g., "6 cápsulas ao dia") is more meaningful than numeric code.
+-   binary data (0, Não \| 1, Sim):
+    -   Use as.factor() if the "label" (Não or Sim) is important.
+    -   Use as.numeric(as.character()) if you're performing mathematical operations (e.g., calculating proportions, averages).
+-   For ordinal data (1, Ruim \| 2, Regular \| 3, Boa \| 4, Excelente): use as.factor() with ordered levels (ordered()) if you need to preserve the ranking.
 
 ```{r}
 ## 7.4 convert_col_type()
@@ -336,6 +347,7 @@ convert_col_type(data)
 ```
 
 ## 7.5 add_labels()
+
 ```{r}
 ## 7.5 add_labels()
 add_labels <- function(data, codebook = data_codebook) {
@@ -394,7 +406,9 @@ add_labels <- function(data, codebook = data_codebook) {
 ```
 
 # 8. Wrangling Bioimpedance data
+
 ## 8.1 D3 DATA
+
 ```{r}
 # 8. Wrangling Bioimpedance data
 ## 8.1 D3 DATA (contains data from first and third visits for participants who completed the intervention)
@@ -428,6 +442,7 @@ data_bia_D3_filtered <- data_bia_D3_filtered |>
 ```
 
 ## 8.2 D1 DATA
+
 ```{r}
 ## 8.2 D1 DATA (data from the first visit for participants who did not complete the intervention)
 ## Filter lines for which phaseangle is <> ""
@@ -465,6 +480,7 @@ data_bia_D1_filtered <- data_bia_D1_filtered |>
 ```
 
 ## 8.3 Merging to single tibble
+
 ```{r}
 ## 8.3 MERGE D1/D3 BIA data into a single tibble
 data_bia <- bind_rows(
@@ -479,6 +495,7 @@ data_bia <- bind_rows(
 ```
 
 ## 8.4 Drop intermediate tibbles
+
 ```{r}
 # 8.4. DROP intermediate tibbles
 rm(data_bia_D1)
@@ -488,7 +505,9 @@ rm(data_bia_D3_filtered)
 ```
 
 # 9. Wrangling DVEP REDCap data
+
 ## 9.1 Eclusive variables from Eleg/D1 `d1_exclusive`
+
 ```{r}
 ## 9.1 Eclusive variables from Eleg/D1 (`d1_exclusive`) to be replicated to d2 and d3
 eleg_exclusive <- filter_data("eleg",0) |> 
@@ -519,9 +538,13 @@ d1_exclusive <- d1_exclusive |>
 ```
 
 ## 9.2 Repeating instruments
+
 ### 9.2.1. Adding NCIT labels
-###     - I21_conditions_R
-###     - I22_drugs_R
+
+### - I21_conditions_R
+
+### - I22_drugs_R
+
 ```{r}
 ## 9.2 Repeating instruments
 ### 9.2.1. Concatenating NCIT labels (from data_NCIT) to NCIT codes
@@ -594,8 +617,10 @@ I22_drugs_R  <- filter_data("eleg",1,"drugs")  |>
 #     view()
 ```
 
-## 9.3 Creating relevant binary variables*
+## 9.3 Creating relevant binary variables\*
+
 ### 9.3.1 Hypertension
+
 ```{r}
 ### 9.3.1 HYPERTENSION
 #### Extract record IDs associated with hypertension diagnosis
@@ -628,6 +653,7 @@ rm(hypertension_drugs)
 ```
 
 ### 9.3.2 Dyslipidemia
+
 ```{r}
 ### 9.3.2 DYSLIPIDEMIA
 #### Extract record IDs associated with dyslipidemia conditions
@@ -660,6 +686,7 @@ rm(dyslipidemia_drugs)
 ```
 
 ### 9.3.3 Insulin resistance
+
 ```{r}
 ### 9.3.3 INSULIN RESISTANCE
 #### Extract record IDs associated with insulin resistance or diabetes
@@ -692,6 +719,7 @@ rm(insulin_drugs)
 ```
 
 ### 9.3.4 Drugs that might induce weight loss
+
 ```{r}
 ### 9.3.4 DRUGS THAT MIGHT INDUCE WEIGHT LOSS
 #### Extract record IDs
@@ -712,6 +740,7 @@ rm(drugs_w_loss)
 ```
 
 ### 9.3.5 Drugs that might induce weight gain
+
 ```{r}
 ### 9.3.5 DRUGS THAT MIGHT INDUCE WEIGHT GAIN
 #### Extract record IDs
@@ -732,8 +761,11 @@ rm(drugs_w_gain)
 ```
 
 ## 9.4 Non-repeating data common to V1 and V3 (`d1d3`)
-###     - calculate mean of handgrip strenght
-###     - select relevant variables
+
+### - calculate mean of handgrip strenght
+
+### - select relevant variables
+
 ```{r}
 d1d3 <- filter_data(c("V1","V3"),0) |> 
     mutate(
@@ -779,6 +811,7 @@ d1d3 <- filter_data(c("V1","V3"),0) |>
 ```
 
 ## 9.5 Non-repeating data from the second visit (`d2`)
+
 ```{r}
 ## 9.5 Non-repeating data from the second visit (`d2`)
 d2 <- filter_data("V2",0) |> 
@@ -802,6 +835,7 @@ d2 <- filter_data("V2",0) |>
 ```
 
 9.6 Bind rows from `d1d3` and `d2`: `all_data`
+
 ```{r}
 ## 9.6 Bind rows for non-repeating variables from D1/D2/D3
 all_data <- bind_rows(
@@ -821,6 +855,7 @@ rm(d2)
 ```
 
 ## 9.7. Left_join BIA data to `all_data`
+
 ```{r}
 ## 9.7. Left_join BIA data to `all_data`
 all_data <- all_data |> 
@@ -838,6 +873,7 @@ all_data <- all_data |>
 ```
 
 ## 9.8 Compliance
+
 ```{r}
 compliance_V2 <- data |> 
     select(
