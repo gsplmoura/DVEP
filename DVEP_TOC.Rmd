@@ -6,9 +6,9 @@ output: html_document
 ---
 
 1. Getting started with R
-- Clear data and graphics
-- Load libraries
-- Set working directory
+    - Clear data and graphics
+    - Load libraries
+    - Set working directory
 2. Read CSV data files (Tidyverse)
 3. Remove identifying data from record_id
 4. Renaming variables
