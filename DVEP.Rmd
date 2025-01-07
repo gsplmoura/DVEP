@@ -9,7 +9,7 @@ output: html_document
 
 # 1. Getting started with R
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 1. Getting started with R
 ## Clear existing data and graphics
 rm(list = ls())
@@ -30,7 +30,7 @@ setwd("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medic
 
 # 2. Read CSV data files (Tidyverse)
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 2. Read CSV data files (Tidyverse)
 data_codebook <- read_excel(
         "data_codebook.xlsx",
@@ -100,7 +100,7 @@ data_bia_D1 <- read_csv(
 
 # 3. Remove identifying data from record_id
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 3. Remove identifying data from record_id
 data$record_id <- substr(data$record_id,1,2)
 data_bia_D3 $File <- substr(data_bia_D3 $File,1,2)
@@ -109,7 +109,7 @@ data_bia_D1$File <- substr(data_bia_D1$File,1,2)
 
 # 4. Renaming variables
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 4. Renaming variables
 # 4.1 data
 rename_data <- setNames(object = colnames(data), data_codebook$variable)
@@ -132,7 +132,7 @@ rm(rename_bia)
 
 # 5. record_id as.integer
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 5. record_id as.integer
 data$record_id <- as.integer(data$record_id)
 data_bia_D3 $record_id <- as.integer(data_bia_D3 $record_id)
@@ -141,7 +141,7 @@ data_bia_D1$record_id <- as.integer(data_bia_D1$record_id)
 
 # 6. Assign labels to variables
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 6. Assign labels to variables with base R attr()
 data <- data |> 
   mutate(across(
@@ -166,7 +166,7 @@ data_bia_D3 <- data_bia_D3 |>
 
 ## 7.1 filter_variables()
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 7.1 filter_variables() based on visit, repeating instrument and form
 filter_variables <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL) {
   
@@ -202,7 +202,7 @@ filter_variables <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeat
 
 ## 7.2 filter_data()
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 7.2 filter_data() based on visit, repeating instrument and form
 filter_data <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL) {
   
@@ -278,7 +278,7 @@ filter_data <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating =
 
 ## 7.3 filter_codebook()
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 7.3 filter_codebook()
 filter_codebook <- function(form_name = c(
     "eleg", "demographic", "whoqol", "dass", "ecap", "measures", "bp_limb", "bp", "bia", "handgrip", "eliminations", "evs", "alcohol", "tobacco", "diet_recall", "intake", "dates", "allocation", "conditions", "drugs", "old.drugs", "history", "symptoms", "phy.exam", "labs", "ecg", "compliance", "events", "medical", "followup", "conclusion", "annex"), included = 1) {
@@ -311,7 +311,7 @@ filter_codebook <- function(form_name = c(
     -   Use as.numeric(as.character()) if you're performing mathematical operations (e.g., calculating proportions, averages).
 -   For ordinal data (1, Ruim \| 2, Regular \| 3, Boa \| 4, Excelente): use as.factor() with ordered levels (ordered()) if you need to preserve the ranking.
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 7.4 convert_col_type()
 convert_col_type <- function(data, codebook = data_codebook) {
     # Nested function to convert a single column
@@ -346,11 +346,35 @@ convert_col_type <- function(data, codebook = data_codebook) {
 convert_col_type(data)
 ```
 
-## 7.5 add_labels()
+## 7.5 label_variables()
 
-```{r}
-## 7.5 add_labels()
-add_labels <- function(data, codebook = data_codebook) {
+```{r, results = 'hide', message = FALSE, warning = FALSE}
+label_variables <- function(data, codebook, language = "pt") {
+  # Determine the label column based on the language argument
+  label_column <- ifelse(language == "en", "label_en", "label_pt")
+
+  # Ensure column names are consistent
+  codebook_vars <- codebook$variable
+  codebook_labels <- codebook[[label_column]]
+
+  # Identify common variables in both data and codebook
+  common_vars <- intersect(names(data), codebook_vars)
+
+  # Loop through the common variables and assign labels
+  for (var in common_vars) {
+    label <- codebook_labels[codebook_vars == var]
+    attr(data[[var]], "label") <- label
+  }
+
+  return(data)
+}
+```
+
+## 7.5 label_choices()
+
+```{r, results = 'hide', message = FALSE, warning = FALSE}
+## 7.5 label_choices()
+label_choices <- function(data, codebook = data_codebook) {
   # Ensure required libraries are loaded
   if (!requireNamespace("dplyr") || !requireNamespace("tidyr") ||
       !requireNamespace("stringr") || !requireNamespace("purrr")) {
@@ -409,7 +433,7 @@ add_labels <- function(data, codebook = data_codebook) {
 
 ## 8.1 D3 DATA
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 8. Wrangling Bioimpedance data
 ## 8.1 D3 DATA (contains data from first and third visits for participants who completed the intervention)
 ### Filter lines for which phaseangle is <> ""
@@ -443,7 +467,7 @@ data_bia_D3_filtered <- data_bia_D3_filtered |>
 
 ## 8.2 D1 DATA
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 8.2 D1 DATA (data from the first visit for participants who did not complete the intervention)
 ## Filter lines for which phaseangle is <> ""
 data_bia_D1_filtered <- data_bia_D1 |> 
@@ -481,7 +505,7 @@ data_bia_D1_filtered <- data_bia_D1_filtered |>
 
 ## 8.3 Merging to single tibble
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 8.3 MERGE D1/D3 BIA data into a single tibble
 data_bia <- bind_rows(
     data_bia_D1_filtered, data_bia_D3_filtered
@@ -492,11 +516,14 @@ data_bia <- bind_rows(
     arrange(
         record_id, visit
     )
+
+### label_variables
+data_bia <- label_variables(data_bia, data_bia_codebook)
 ```
 
 ## 8.4 Drop intermediate tibbles
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 8.4. DROP intermediate tibbles
 rm(data_bia_D1)
 rm(data_bia_D1_filtered)
@@ -508,7 +535,7 @@ rm(data_bia_D3_filtered)
 
 ## 9.1 Eclusive variables from Eleg/D1 `d1_exclusive`
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 9.1 Eclusive variables from Eleg/D1 (`d1_exclusive`) to be replicated to d2 and d3
 eleg_exclusive <- filter_data("eleg",0) |> 
     mutate(
@@ -545,7 +572,7 @@ d1_exclusive <- d1_exclusive |>
 
 ### - I22_drugs_R
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 9.2 Repeating instruments
 ### 9.2.1. Concatenating NCIT labels (from data_NCIT) to NCIT codes
 #### Conditions (commorbidities)
@@ -559,6 +586,8 @@ I21_conditions_R  <- filter_data("eleg",1,"conditions")  |>
         descriptive, .after = common_comorbidities
     )
 
+I21_conditions_R <- label_variables(I21_conditions_R, data_codebook)
+
 #### Drugs in regular use
 I22_drugs_R  <- filter_data("eleg",1,"drugs")  |> 
     left_join(
@@ -568,6 +597,8 @@ I22_drugs_R  <- filter_data("eleg",1,"drugs")  |>
     relocate(
         descriptive, .after = drugs_sql
     )
+
+I22_drugs_R <- label_variables(I22_drugs_R, data_codebook)
 
 # # 1.3 Previous drugs
 # I23_old_drugs_R <- filter_data("eleg",1,"old.drugs") |> 
@@ -621,7 +652,7 @@ I22_drugs_R  <- filter_data("eleg",1,"drugs")  |>
 
 ### 9.3.1 Hypertension
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.1 HYPERTENSION
 #### Extract record IDs associated with hypertension diagnosis
 hypertension_conditions <- I21_conditions_R |> 
@@ -654,7 +685,7 @@ rm(hypertension_drugs)
 
 ### 9.3.2 Dyslipidemia
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.2 DYSLIPIDEMIA
 #### Extract record IDs associated with dyslipidemia conditions
 dyslipidemia_conditions <- I21_conditions_R |> 
@@ -687,7 +718,7 @@ rm(dyslipidemia_drugs)
 
 ### 9.3.3 Insulin resistance
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.3 INSULIN RESISTANCE
 #### Extract record IDs associated with insulin resistance or diabetes
 insulin_conditions <- I21_conditions_R |> 
@@ -720,7 +751,7 @@ rm(insulin_drugs)
 
 ### 9.3.4 Drugs that might induce weight loss
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.4 DRUGS THAT MIGHT INDUCE WEIGHT LOSS
 #### Extract record IDs
 drugs_w_loss <- I22_drugs_R |> 
@@ -741,7 +772,7 @@ rm(drugs_w_loss)
 
 ### 9.3.5 Drugs that might induce weight gain
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.5 DRUGS THAT MIGHT INDUCE WEIGHT GAIN
 #### Extract record IDs
 drugs_w_gain <- I22_drugs_R |> 
@@ -766,7 +797,7 @@ rm(drugs_w_gain)
 
 ### - select relevant variables
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 d1d3 <- filter_data(c("V1","V3"),0) |> 
     mutate(
         handgrip = if_else(
@@ -812,7 +843,7 @@ d1d3 <- filter_data(c("V1","V3"),0) |>
 
 ## 9.5 Non-repeating data from the second visit (`d2`)
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 9.5 Non-repeating data from the second visit (`d2`)
 d2 <- filter_data("V2",0) |> 
     mutate(
@@ -836,7 +867,7 @@ d2 <- filter_data("V2",0) |>
 
 9.6 Bind rows from `d1d3` and `d2`: `all_data`
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 9.6 Bind rows for non-repeating variables from D1/D2/D3
 all_data <- bind_rows(
     d1d3,d2
@@ -856,7 +887,7 @@ rm(d2)
 
 ## 9.7. Left_join BIA data to `all_data`
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 9.7. Left_join BIA data to `all_data`
 all_data <- all_data |> 
     left_join(
@@ -874,7 +905,7 @@ all_data <- all_data |>
 
 ## 9.8 Compliance
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 compliance_V2 <- data |> 
     select(
         record_id, event_name,
@@ -925,11 +956,35 @@ compliance <- bind_rows(
         .after = record_id
     ) |> 
     arrange(record_id,visit) |> 
-    select(-event_name) |> 
+    select(record_id, visit, intervention_start_date, evaluation_date_2, conclusion_date, cp_taking_as_directed_yn, cp_schedule, cp_schedule_other, cp_missed_dose_yn, cp_missed_dose_count, cp_discontinued_yn, cp_discontinued_n_days, cp_discontinued_reason_other, cp_ran_out_of_drug_yn, cp_ran_out_reason, cp_perceived_improvement_yn, cp_perceived_improvement, cp_medication_confidence_scale, cp_self_reported_compliance_rate)  |> 
     convert_col_type()
 
 rm(compliance_V2)
 rm(compliance_V3)
 
-compliance <- add_labels(compliance)
+compliance <- label_variables(compliance,data_codebook)
+compliance <- label_choices(compliance)
+
+```
+
+## 9.9 Adverse events
+
+```{r, results = 'hide', message = FALSE, warning = FALSE}
+## 9.9 Adverse events
+data_events <- filter_data(,1,"events") |> 
+    filter(
+        cp_adverse_event_this_cycle_yn == 1
+    ) |>
+    mutate(
+        visit = case_when(
+            event_name == "1visit_arm_1"    ~ 1,
+            event_name == "2visit_arm_1"    ~ 2,
+            event_name == "3visit_arm_1"    ~ 3
+        ),
+        .after = record_id
+        )|> 
+    select(-event_name, -repeat_instrument, -cp_additional_adverse_events_yn,  -cp_adverse_event_this_cycle_yn)
+
+data_events <- label_variables(data_events, data_codebook)
+data_events <- label_choices(data_events, data_codebook) 
 ```
