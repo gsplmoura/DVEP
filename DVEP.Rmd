@@ -7,7 +7,9 @@ date: "2025-01-05"
 output: html_document
 ---
 
-# 1. Getting started with R
+# Data wrangling
+
+## Getting started with R
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 1. Getting started with R
@@ -28,7 +30,7 @@ library(purrr)
 setwd("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP")
 ```
 
-# 2. Read CSV data files (Tidyverse)
+## Read CSV data files (Tidyverse)
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 2. Read CSV data files (Tidyverse)
@@ -98,7 +100,7 @@ data_bia_D1 <- read_csv(
     col_names = TRUE)
 ```
 
-# 3. Remove identifying data from record_id
+## Remove identifying data from record_id
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 3. Remove identifying data from record_id
@@ -107,7 +109,7 @@ data_bia_D3 $File <- substr(data_bia_D3 $File,1,2)
 data_bia_D1$File <- substr(data_bia_D1$File,1,2)
 ```
 
-# 4. Renaming variables
+## Renaming variables
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 4. Renaming variables
@@ -130,7 +132,7 @@ data_bia_D1 <- data_bia_D1 |>
 rm(rename_bia)
 ```
 
-# 5. record_id as.integer
+## record_id as.integer
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 5. record_id as.integer
@@ -139,7 +141,7 @@ data_bia_D3 $record_id <- as.integer(data_bia_D3 $record_id)
 data_bia_D1$record_id <- as.integer(data_bia_D1$record_id)
 ```
 
-# 6. Assign labels to variables
+## Assign labels to variables
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 6. Assign labels to variables with base R attr()
@@ -162,9 +164,9 @@ data_bia_D3 <- data_bia_D3 |>
   ))
 ```
 
-# 7. Creating functions
+## Creating functions
 
-## 7.1 filter_variables()
+### filter_variables()
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 7.1 filter_variables() based on visit, repeating instrument and form
@@ -200,7 +202,7 @@ filter_variables <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeat
 }
 ```
 
-## 7.2 filter_data()
+### filter_data()
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 7.2 filter_data() based on visit, repeating instrument and form
@@ -276,7 +278,7 @@ filter_data <- function(visit = c("eleg", "V1", "V2", "V3"), include_repeating =
 }
 ```
 
-## 7.3 filter_codebook()
+### filter_codebook()
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 7.3 filter_codebook()
@@ -303,7 +305,7 @@ filter_codebook <- function(form_name = c(
 }
 ```
 
-## 7.4 convert_col_type() and apply to data
+### convert_col_type() and apply to data
 
 -   as.factor(): categorical data where the label (e.g., "6 cápsulas ao dia") is more meaningful than numeric code.
 -   binary data (0, Não \| 1, Sim):
@@ -346,7 +348,7 @@ convert_col_type <- function(data, codebook = data_codebook) {
 convert_col_type(data)
 ```
 
-## 7.5 label_variables()
+### label_variables()
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 label_variables <- function(data, codebook, language = "pt") {
@@ -370,7 +372,7 @@ label_variables <- function(data, codebook, language = "pt") {
 }
 ```
 
-## 7.5 label_choices()
+### label_choices()
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 7.5 label_choices()
@@ -429,9 +431,9 @@ label_choices <- function(data, codebook = data_codebook) {
 }
 ```
 
-# 8. Wrangling Bioimpedance data
+## Bioimpedance data
 
-## 8.1 D3 DATA
+### D3 DATA
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 8. Wrangling Bioimpedance data
@@ -465,7 +467,7 @@ data_bia_D3_filtered <- data_bia_D3_filtered |>
     )
 ```
 
-## 8.2 D1 DATA
+### D1 DATA
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 8.2 D1 DATA (data from the first visit for participants who did not complete the intervention)
@@ -503,7 +505,7 @@ data_bia_D1_filtered <- data_bia_D1_filtered |>
     )
 ```
 
-## 8.3 Merging to single tibble
+### Merging to single tibble
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 8.3 MERGE D1/D3 BIA data into a single tibble
@@ -521,7 +523,7 @@ data_bia <- bind_rows(
 data_bia <- label_variables(data_bia, data_bia_codebook)
 ```
 
-## 8.4 Drop intermediate tibbles
+### Drop intermediate tibbles
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 8.4. DROP intermediate tibbles
@@ -531,46 +533,9 @@ rm(data_bia_D3)
 rm(data_bia_D3_filtered)
 ```
 
-# 9. Wrangling DVEP REDCap data
+## Wrangling DVEP REDCap data
 
-## 9.1 Eclusive variables from Eleg/D1 `d1_exclusive`
-
-```{r, results = 'hide', message = FALSE, warning = FALSE}
-## 9.1 Eclusive variables from Eleg/D1 (`d1_exclusive`) to be replicated to d2 and d3
-eleg_exclusive <- filter_data("eleg",0) |> 
-    mutate(
-        intervention_duration = as.numeric(conclusion_date - intervention_start_date)
-        )|> 
-    select(record_id, allocation_group, completed_intervention, intervention_duration, age, sex)
-
-visit_1_exclusive <- filter_data("V1",0) |> 
-    select(
-        record_id,
-        race:income_level
-    )
-
-d1_exclusive <- eleg_exclusive |> 
-    left_join(
-        visit_1_exclusive,
-        by = join_by(record_id)
-)
-rm(eleg_exclusive)
-rm(visit_1_exclusive)
-
-d1_exclusive <- d1_exclusive |> 
-    mutate(
-        visit = 1,
-        .after = record_id
-    )
-```
-
-## 9.2 Repeating instruments
-
-### 9.2.1. Adding NCIT labels
-
-### - I21_conditions_R
-
-### - I22_drugs_R
+### Adding NCIT labels
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 9.2 Repeating instruments
@@ -648,9 +613,36 @@ I22_drugs_R <- label_variables(I22_drugs_R, data_codebook)
 #     view()
 ```
 
-## 9.3 Creating relevant binary variables\*
+### Eclusive variables from Eleg/D1 `d1_exclusive`
 
-### 9.3.1 Hypertension
+```{r, results = 'hide', message = FALSE, warning = FALSE}
+## 9.1 Eclusive variables from Eleg/D1 (`d1_exclusive`) to be replicated to d2 and d3
+eleg_exclusive <- filter_data("eleg",0) |> 
+    mutate(
+        intervention_duration = as.numeric(conclusion_date - intervention_start_date)
+        )|> 
+    select(record_id, allocation_group, completed_intervention, intervention_duration, age, sex)
+
+visit_1_exclusive <- filter_data("V1",0) |> 
+    select(
+        record_id,
+        race:income_level
+    )
+
+d1_exclusive <- eleg_exclusive |> 
+    left_join(
+        visit_1_exclusive,
+        by = join_by(record_id)
+)
+rm(eleg_exclusive)
+rm(visit_1_exclusive)
+```
+
+### REPEATING INSTRUMENTS
+
+#### Creating relevant binary variables\*
+
+##### Hypertension
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.1 HYPERTENSION
@@ -683,7 +675,7 @@ rm(hypertension_conditions)
 rm(hypertension_drugs)
 ```
 
-### 9.3.2 Dyslipidemia
+##### Dyslipidemia
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.2 DYSLIPIDEMIA
@@ -716,7 +708,7 @@ rm(dyslipidemia_conditions)
 rm(dyslipidemia_drugs)
 ```
 
-### 9.3.3 Insulin resistance
+##### Insulin resistance
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.3 INSULIN RESISTANCE
@@ -749,7 +741,7 @@ rm(insulin_conditions)
 rm(insulin_drugs)
 ```
 
-### 9.3.4 Drugs that might induce weight loss
+##### Drugs that might induce weight loss
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.4 DRUGS THAT MIGHT INDUCE WEIGHT LOSS
@@ -770,7 +762,7 @@ d1_exclusive <- d1_exclusive |>
 rm(drugs_w_loss)
 ```
 
-### 9.3.5 Drugs that might induce weight gain
+##### Drugs that might induce weight gain
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.5 DRUGS THAT MIGHT INDUCE WEIGHT GAIN
@@ -791,13 +783,117 @@ d1_exclusive <- d1_exclusive |>
 rm(drugs_w_gain)
 ```
 
-## 9.4 Non-repeating data common to V1 and V3 (`d1d3`)
-
-### - calculate mean of handgrip strenght
-
-### - select relevant variables
+#### Lab exames
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
+I27_labs_R <- filter_data(c("V1","V2","V3"),1,"labs") |> 
+    mutate(
+        visit = case_when(
+            event_name == "1visit_arm_1"    ~ 1,
+            event_name == "2visit_arm_1"    ~ 2,
+            event_name == "3visit_arm_1"    ~ 3
+        ),
+        .after = record_id
+        )|> 
+    select(-event_name, -repeat_instrument, -repeat_instance, -labs_checked_results_yn)
+
+```
+
+#### Compliance
+
+```{r, results = 'hide', message = FALSE, warning = FALSE}
+compliance_V2 <- data |> 
+    select(
+        record_id, event_name,
+        filter_variables("V2",1,"compliance")
+        ) |> 
+    filter(event_name == "2visit_arm_1" & cp_compliance_complete == 2) |> 
+    left_join(data |>
+                  filter(event_name == "eleg_arm_1" & !is.na(intervention_start_date)) |> 
+                  select(record_id,intervention_start_date, conclusion_date),
+              by = join_by(record_id)
+              ) |> 
+    left_join(data |>
+                  filter(event_name == "2visit_arm_1" & !is.na(evaluation_date)) |> 
+                  select(record_id,evaluation_date),
+              by = join_by(record_id)
+        ) |> 
+    rename(evaluation_date_2 = evaluation_date)
+
+compliance_V3 <- data |> 
+    select(
+        record_id, event_name,
+        filter_variables("V3",,"compliance")
+        ) |> 
+    filter(event_name == "3visit_arm_1" & cp_compliance_complete == 2) |> 
+    left_join(data |>
+                  filter(event_name == "eleg_arm_1" & !is.na(intervention_start_date)) |> 
+                  select(record_id,intervention_start_date, conclusion_date),
+              by = join_by(record_id)
+              ) |> 
+    left_join(data |>
+                  filter(event_name == "2visit_arm_1" & !is.na(evaluation_date)) |> 
+                  select(record_id,evaluation_date),
+              by = join_by(record_id)
+        ) |> 
+    rename(evaluation_date_2 = evaluation_date)
+
+I29_compliance <- bind_rows(
+    compliance_V2,compliance_V3
+) |> 
+    mutate(
+        record_id = as.integer(record_id)
+    ) |> 
+    mutate(
+        visit = case_when(
+            event_name == "2visit_arm_1"    ~ 2,
+            event_name == "3visit_arm_1"    ~ 3
+        ),
+        .after = record_id
+    ) |> 
+    arrange(record_id,visit) |> 
+    select(record_id, visit, intervention_start_date, evaluation_date_2, conclusion_date, cp_taking_as_directed_yn, cp_schedule, cp_schedule_other, cp_missed_dose_yn, cp_missed_dose_count, cp_discontinued_yn, cp_discontinued_n_days, cp_discontinued_reason_other, cp_ran_out_of_drug_yn, cp_ran_out_reason, cp_perceived_improvement_yn, cp_perceived_improvement, cp_medication_confidence_scale, cp_self_reported_compliance_rate)  |> 
+    convert_col_type()
+
+rm(compliance_V2)
+rm(compliance_V3)
+
+I29_compliance <- label_variables(I29_compliance, data_codebook)
+I29_compliance <- label_choices(I29_compliance, data_codebook)
+
+```
+
+#### Adverse events
+
+```{r, results = 'hide', message = FALSE, warning = FALSE}
+## 9.9 Adverse events
+I30_events_R <- filter_data(,1,"events") |> 
+    filter(
+        cp_adverse_event_this_cycle_yn == 1
+    ) |>
+    mutate(
+        visit = case_when(
+            event_name == "1visit_arm_1"    ~ 1,
+            event_name == "2visit_arm_1"    ~ 2,
+            event_name == "3visit_arm_1"    ~ 3
+        ),
+        .after = record_id
+        )|> 
+    select(-event_name, -repeat_instrument, -cp_additional_adverse_events_yn,  -cp_adverse_event_this_cycle_yn)
+
+I30_events_R <- label_variables(I30_events_R, data_codebook)
+I30_events_R <- label_choices(I30_events_R, data_codebook) 
+```
+
+### NON-REPEATING INSTRUMENTS
+
+#### Data common to V1 and V3 (`d1d3`)
+
+```{r, results = 'hide', message = FALSE, warning = FALSE}
+
+### Non-repeating data common to V1 and V3 (`d1d3`)
+# calculate mean of handgrip strenght
+# select relevant variables
 d1d3 <- filter_data(c("V1","V3"),0) |> 
     mutate(
         handgrip = if_else(
@@ -841,7 +937,7 @@ d1d3 <- filter_data(c("V1","V3"),0) |>
         )
 ```
 
-## 9.5 Non-repeating data from the second visit (`d2`)
+#### Data from the second visit (`d2`)
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 9.5 Non-repeating data from the second visit (`d2`)
@@ -865,7 +961,9 @@ d2 <- filter_data("V2",0) |>
         )
 ```
 
-9.6 Bind rows from `d1d3` and `d2`: `all_data`
+### JOINING
+
+#### Bind rows from `d1d3` and `d2`: `all_data`
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 9.6 Bind rows for non-repeating variables from D1/D2/D3
@@ -885,7 +983,9 @@ rm(d1d3)
 rm(d2)
 ```
 
-## 9.7. Left_join BIA data to `all_data`
+#### Left_joins
+
+##### BIA data to `all_data`
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 9.7. Left_join BIA data to `all_data`
@@ -901,90 +1001,37 @@ all_data <- all_data |>
             ),
         by = join_by(record_id, visit)
     )
+
 ```
 
-## 9.8 Compliance
+##### Compliance data to `all_data`
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
-compliance_V2 <- data |> 
-    select(
-        record_id, event_name,
-        filter_variables("V2",1,"compliance")
-        ) |> 
-    filter(event_name == "2visit_arm_1" & cp_compliance_complete == 2) |> 
-    left_join(data |>
-                  filter(event_name == "eleg_arm_1" & !is.na(intervention_start_date)) |> 
-                  select(record_id,intervention_start_date, conclusion_date),
-              by = join_by(record_id)
-              ) |> 
-    left_join(data |>
-                  filter(event_name == "2visit_arm_1" & !is.na(evaluation_date)) |> 
-                  select(record_id,evaluation_date),
-              by = join_by(record_id)
-        ) |> 
-    rename(evaluation_date_2 = evaluation_date)
-
-compliance_V3 <- data |> 
-    select(
-        record_id, event_name,
-        filter_variables("V3",,"compliance")
-        ) |> 
-    filter(event_name == "3visit_arm_1" & cp_compliance_complete == 2) |> 
-    left_join(data |>
-                  filter(event_name == "eleg_arm_1" & !is.na(intervention_start_date)) |> 
-                  select(record_id,intervention_start_date, conclusion_date),
-              by = join_by(record_id)
-              ) |> 
-    left_join(data |>
-                  filter(event_name == "2visit_arm_1" & !is.na(evaluation_date)) |> 
-                  select(record_id,evaluation_date),
-              by = join_by(record_id)
-        ) |> 
-    rename(evaluation_date_2 = evaluation_date)
-
-compliance <- bind_rows(
-    compliance_V2,compliance_V3
-) |> 
-    mutate(
-        record_id = as.integer(record_id)
-    ) |> 
-    mutate(
-        visit = case_when(
-            event_name == "2visit_arm_1"    ~ 2,
-            event_name == "3visit_arm_1"    ~ 3
-        ),
-        .after = record_id
-    ) |> 
-    arrange(record_id,visit) |> 
-    select(record_id, visit, intervention_start_date, evaluation_date_2, conclusion_date, cp_taking_as_directed_yn, cp_schedule, cp_schedule_other, cp_missed_dose_yn, cp_missed_dose_count, cp_discontinued_yn, cp_discontinued_n_days, cp_discontinued_reason_other, cp_ran_out_of_drug_yn, cp_ran_out_reason, cp_perceived_improvement_yn, cp_perceived_improvement, cp_medication_confidence_scale, cp_self_reported_compliance_rate)  |> 
-    convert_col_type()
-
-rm(compliance_V2)
-rm(compliance_V3)
-
-compliance <- label_variables(compliance,data_codebook)
-compliance <- label_choices(compliance)
+all_data <- all_data |> 
+    left_join(
+        I29_compliance,
+        by = join_by(record_id, visit)
+    )
 
 ```
 
-## 9.9 Adverse events
+##### d1_exclusive to `all data`
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
-## 9.9 Adverse events
-data_events <- filter_data(,1,"events") |> 
-    filter(
-        cp_adverse_event_this_cycle_yn == 1
-    ) |>
-    mutate(
-        visit = case_when(
-            event_name == "1visit_arm_1"    ~ 1,
-            event_name == "2visit_arm_1"    ~ 2,
-            event_name == "3visit_arm_1"    ~ 3
-        ),
+```{r}
+final_data <- d1_exclusive |> 
+    right_join(
+        all_data,
+        by = join_by(record_id)
+    ) |> 
+    relocate(
+        visit,
         .after = record_id
-        )|> 
-    select(-event_name, -repeat_instrument, -cp_additional_adverse_events_yn,  -cp_adverse_event_this_cycle_yn)
+    )
 
-data_events <- label_variables(data_events, data_codebook)
-data_events <- label_choices(data_events, data_codebook) 
+final_data <- label_variables(final_data, data_codebook)
+final_data <- label_variables(final_data, data_bia_codebook)
+final_data <- label_choices(final_data, data_codebook)
+
 ```
+
+# Data Analysis
