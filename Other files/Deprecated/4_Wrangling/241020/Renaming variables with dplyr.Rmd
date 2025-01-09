@@ -1,0 +1,68 @@
+Yes, you can definitely rename the variables using `dplyr` **after** applying the labels to the original variable names. The labels that are applied using `Hmisc::label()` are tied to the specific variables, but renaming the variables does not remove or alter the labels. So, you can safely rename the variables after setting the labels.
+
+Here’s how you can do it:
+
+### Step-by-Step Approach:
+
+1. **Apply the labels to the original variable names**: 
+   First, set the labels to the original variable names as you're doing now.
+
+2. **Rename the variables using `dplyr`**:
+   After setting the labels, you can then rename the variables to more user-friendly names.
+
+### Example Code:
+
+```{r}
+# Load required libraries
+library(Hmisc)
+library(dplyr)
+
+# Load data
+data <- read.csv('EffectOfEcliptaProst_DATA_2024-10-20_1615.csv')
+
+# Set the labels for the original variable names
+label(data$c64467) = "AST, Aspartato aminotransferase (U/L) / TGO, Transaminase Oxalacética (U/L)"
+label(data$c64433) = "ALT, Alanina Aminotransferase (U/L) / TGP, Transaminase Pirúvica (U/L)"
+label(data$c64847) = "Gama-glutamiltransferase (U/L)"
+label(data$c64432) = "Fosfatase alcalina (U/L)"
+label(data$c38037) = "Bilirrubina total (mg/dL)"
+label(data$c64481) = "Bilirrubina direta (mg/dL)"
+label(data$c64483) = "Bilirrubina indireta (mg/dL)"
+label(data$c64434) = "Amilase (U/L)"
+label(data$c64858) = "Proteínas totais (g/dL)"
+label(data$c64431) = "Albumina (g/dL)"
+
+# Now rename the variables with more meaningful names
+data <- data %>%
+  rename(
+    AST = c64467,
+    ALT = c64433,
+    GGT = c64847,
+    AlkalinePhosphatase = c64432,
+    TotalBilirubin = c38037,
+    DirectBilirubin = c64481,
+    IndirectBilirubin = c64483,
+    Amylase = c64434,
+    TotalProteins = c64858,
+    Albumin = c64431
+  )
+
+# You can check that the labels are still there:
+label(data$AST)           # "AST, Aspartato aminotransferase (U/L) / TGO, Transaminase Oxalacética (U/L)"
+label(data$TotalBilirubin) # "Bilirrubina total (mg/dL)"
+```
+
+### Explanation:
+
+- **Step 1: Apply labels to original variables**: The `label()` function from `Hmisc` associates a descriptive label with a variable. In this example, we set the label for variables like `c64467` (for AST).
+  
+- **Step 2: Rename variables using `dplyr`**: After setting the labels, we use `dplyr::rename()` to give the variables more user-friendly names. This doesn't alter the labels—`Hmisc` will keep the label attached to the newly renamed variable.
+
+- **Step 3: Verify that labels are intact**: You can check that the labels are still associated with the renamed variables by calling `label()` on the new variable names.
+
+### Benefits:
+- **Clean and simple variable names**: You can now work with the more readable variable names like `AST`, `ALT`, `TotalBilirubin`, etc.
+- **Descriptive labels remain intact**: The original, detailed labels (e.g., `"AST, Aspartato aminotransferase (U/L)"`) remain attached to the renamed variables, ensuring clarity when you need it for documentation, reports, or interpretation.
+  
+### Final Notes:
+This approach makes it easier to work with the dataset programmatically while keeping the original context of the variables through the labels.

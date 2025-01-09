@@ -1,0 +1,355 @@
+' EXCEL POWER QUERY EDITOR
+
+'9. 
+
+Rename columns
+Apply column type changes
+Sort the table
+Replace empty values in selected columns with null
+Fill down with patient data
+Split the Date and Time
+Remove unnecessary columns
+Reorder the columns
+Filter out rows where TimeStamp is blank 
+
+let
+    Source = Csv.Document(File.Contents("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/DVEP/BIA_xml/xml_to_csv/241002.txt"), [Delimiter = ",", Columns = 64, QuoteStyle = QuoteStyle.None]),
+    #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+
+    // Step to rename columns by extracting the last node of the original names
+    #"Renamed Columns" = Table.RenameColumns(#"Promoted headers", List.Transform(Table.ColumnNames(#"Promoted headers"), each {_, Text.AfterDelimiter(_, " - ", {0, RelativePosition.FromEnd})})),
+
+    // Apply column type changes
+    #"Changed column type" = Table.TransformColumnTypes(#"Renamed Columns", {{"File", type text}, {"State", type text}, {"Frequency", Int64.Type}, {"LbhReal", type number}, {"LbhImaginary", type number}, {"RbhReal", type number}, {"RbhImaginary", type number}, {"LahReal", type number}, {"LahImaginary", type number}, {"LlhReal", type number}, {"LlhImaginary", type number}, {"RahReal", type number}, {"RahImaginary", type number}, {"RlhReal", type number}, {"RlhImaginary", type number}, {"TohReal", type number}, {"TohImaginary", type number}, {"MeasurementGUID", type text}, {"TimeStamp", type datetime}, {"MeasuringDevice", Int64.Type}, {"ExportToCSV", Int64.Type}, {"ExportToKIS", Int64.Type}, {"CommentTimeStamp", type datetime}, {"Weight", type number}, {"Height", type number}, {"Waist", type number}, {"Pal", type number}, {"Bmi", type number}, {"TotalEnergyExpediture", type number}, {"RestingEnergyExpediture", type number}, {"EnergyStored", type number}, {"RAverage", type number}, {"XcAverage", type number}, {"FmAbsolute", type number}, {"Fmi", type number}, {"FmRelative", type number}, {"FfmAbsolute", type number}, {"Ffmi", type number}, {"FfmRelative", type number}, {"Body", type number}, {"Torso", type number}, {"RightArm", type number}, {"LeftArm", type number}, {"RightLeg", type number}, {"LeftLeg", type number}, {"Vat", type number}, {"PhaseAngle", type number}, {"Tbw", type number}, {"Ecw", type number}, {"TbwRelative", type number}, {"EcwRelative", type number}, {"EcwBytbw", type number}, {"DeviceId", type text}, {"MatSerial", Int64.Type}, {"GUID", type text}, {"ID", Int64.Type}, {"FirstName", type text}, {"LastName", type text}, {"DateOfBirth", type datetime}, {"Gender", type text}, {"Ethnic", type text}, {"Doctor", type text}, {"LastModified", type datetime}, {"IsDeleted", Int64.Type}}),
+
+    // Step to sort by File (smallest to largest) and TimeStamp (oldest to newest)
+    #"Sorted Rows" = Table.Sort(#"Changed column type", {{"File", Order.Ascending}, {"TimeStamp", Order.Ascending}}),
+
+    // Replace empty values in the columns with null to ensure Table.FillDown works
+    #"Replaced Empty with Null" = Table.ReplaceValue(#"Sorted Rows", "", null, Replacer.ReplaceValue, {"DateOfBirth", "Gender", "Ethnic", "FirstName", "LastName"}),
+
+    // Step to fill down the patient data
+    #"Filled Down" = Table.FillDown(#"Replaced Empty with Null", {"ID", "DateOfBirth", "Gender", "Ethnic", "FirstName", "LastName"}),
+
+    // Step to split Date and Time
+    #"Added Date Column" = Table.AddColumn(#"Filled Down", "Date", each DateTime.Date([TimeStamp]), type date),
+    #"Added Time Column" = Table.AddColumn(#"Added Date Column", "Time", each DateTime.Time([TimeStamp]), type time),
+
+    // Step to remove unwanted columns (B to Q)
+    #"Removed Unnecessary Columns" = Table.RemoveColumns(#"Added Time Column", {"State", "Frequency", "LbhReal", "LbhImaginary", "RbhReal", "RbhImaginary", "LahReal", "LahImaginary", "LlhReal", "LlhImaginary", "RahReal", "RahImaginary", "RlhReal", "RlhImaginary", "TohReal", "TohImaginary", "MeasurementGUID", "MeasuringDevice",	"ExportToCSV",	"ExportToKIS",	"CommentTimeStamp","DeviceId",	"MatSerial",	"GUID", "Doctor",	"LastModified",	"IsDeleted"}),
+
+    // Step to reorder columns
+    #"Reordered Columns" = Table.ReorderColumns(#"Removed Unnecessary Columns", {"ID", "Date", "Time", "DateOfBirth", "Gender", "Ethnic", "Weight", "Height", "Bmi", "Waist", "PhaseAngle", "RAverage", "XcAverage", "FmAbsolute", "Fmi", "FmRelative", "FfmAbsolute", "Ffmi", "FfmRelative", "Body", "Torso", "RightArm", "LeftArm", "RightLeg", "LeftLeg", "Vat", "Tbw", "Ecw", "TbwRelative", "EcwRelative", "EcwBytbw", "Pal", "TotalEnergyExpediture", "RestingEnergyExpediture", "EnergyStored", "TimeStamp", "File", "FirstName", "LastName"}),
+
+    // Step to filter out rows where TimeStamp is blank
+    #"Filtered Rows" = Table.SelectRows(#"Reordered Columns", each ([PhaseAngle] <> null))
+in
+    #"Filtered Rows"
+
+
+// The Table.FillDown function fills any blank cells in the specified columns with the last non-null value from above.
+// In your case, the columns to fill down are "ID", "DateOfBirth", "Gender", "Ethnic", "FirstName", and "LastName". This ensures that these fields will be populated for every row for each patient.
+
+
+
+' 8. Due to multiple errors while trying to group patients/date of exam, I went back to a previous version, and implemented an upgrade by reordering the columns.
+
+    1. Rename columns
+    2. Apply column type changes
+    3. Sort the table
+    4. Split the Date and Time
+    5. Remove unnecessary columns
+    6. Reorder the columns
+    7. Filter out rows where TimeStamp is blank
+
+let
+    Source = Csv.Document(File.Contents("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/DVEP/BIA_xml/xml_to_csv/241002.txt"), [Delimiter = ",", Columns = 64, QuoteStyle = QuoteStyle.None]),
+    #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+
+    // Step to rename columns by extracting the last node of the original names
+    #"Renamed Columns" = Table.RenameColumns(#"Promoted headers", List.Transform(Table.ColumnNames(#"Promoted headers"), each {_, Text.AfterDelimiter(_, " - ", {0, RelativePosition.FromEnd})})),
+
+    // Apply column type changes
+    #"Changed column type" = Table.TransformColumnTypes(#"Renamed Columns", {{"File", type text}, {"State", type text}, {"Frequency", Int64.Type}, {"LbhReal", type number}, {"LbhImaginary", type number}, {"RbhReal", type number}, {"RbhImaginary", type number}, {"LahReal", type number}, {"LahImaginary", type number}, {"LlhReal", type number}, {"LlhImaginary", type number}, {"RahReal", type number}, {"RahImaginary", type number}, {"RlhReal", type number}, {"RlhImaginary", type number}, {"TohReal", type number}, {"TohImaginary", type number}, {"MeasurementGUID", type text}, {"TimeStamp", type datetime}, {"MeasuringDevice", Int64.Type}, {"ExportToCSV", Int64.Type}, {"ExportToKIS", Int64.Type}, {"CommentTimeStamp", type datetime}, {"Weight", type number}, {"Height", type number}, {"Waist", type number}, {"Pal", type number}, {"Bmi", type number}, {"TotalEnergyExpediture", type number}, {"RestingEnergyExpediture", type number}, {"EnergyStored", type number}, {"RAverage", type number}, {"XcAverage", type number}, {"FmAbsolute", type number}, {"Fmi", type number}, {"FmRelative", type number}, {"FfmAbsolute", type number}, {"Ffmi", type number}, {"FfmRelative", type number}, {"Body", type number}, {"Torso", type number}, {"RightArm", type number}, {"LeftArm", type number}, {"RightLeg", type number}, {"LeftLeg", type number}, {"Vat", type number}, {"PhaseAngle", type number}, {"Tbw", type number}, {"Ecw", type number}, {"TbwRelative", type number}, {"EcwRelative", type number}, {"EcwBytbw", type number}, {"DeviceId", type text}, {"MatSerial", Int64.Type}, {"GUID", type text}, {"ID", Int64.Type}, {"FirstName", type text}, {"LastName", type text}, {"DateOfBirth", type datetime}, {"Gender", type text}, {"Ethnic", type text}, {"Doctor", type text}, {"LastModified", type datetime}, {"IsDeleted", Int64.Type}}),
+
+    // Step to sort by File (smallest to largest) and TimeStamp (oldest to newest)
+    #"Sorted Rows" = Table.Sort(#"Changed column type", {{"File", Order.Ascending}, {"TimeStamp", Order.Ascending}}),
+
+    // Step to split Date and Time
+    #"Added Date Column" = Table.AddColumn(#"Sorted Rows", "Date", each DateTime.Date([TimeStamp]), type date),
+    #"Added Time Column" = Table.AddColumn(#"Added Date Column", "Time", each DateTime.Time([TimeStamp]), type time),
+
+    // Step to remove unwanted columns (B to Q)
+    #"Removed Unnecessary Columns" = Table.RemoveColumns(#"Added Time Column", {"State", "Frequency", "LbhReal", "LbhImaginary", "RbhReal", "RbhImaginary", "LahReal", "LahImaginary", "LlhReal", "LlhImaginary", "RahReal", "RahImaginary", "RlhReal", "RlhImaginary", "TohReal", "TohImaginary", "MeasurementGUID", "MeasuringDevice",	"ExportToCSV",	"ExportToKIS",	"CommentTimeStamp","DeviceId",	"MatSerial",	"GUID", "Doctor",	"LastModified",	"IsDeleted"}),
+
+    // Step to reorder columns
+    #"Reordered Columns" = Table.ReorderColumns(#"Removed Unnecessary Columns", {"File", "ID", "Date", "Time", "DateOfBirth", "Gender", "Ethnic", "Weight", "Height", "Bmi", "Waist", "PhaseAngle", "RAverage", "XcAverage", "FmAbsolute", "Fmi", "FmRelative", "FfmAbsolute", "Ffmi", "FfmRelative", "Body", "Torso", "RightArm", "LeftArm", "RightLeg", "LeftLeg", "Vat", "Tbw", "Ecw", "TbwRelative", "EcwRelative", "EcwBytbw", "Pal", "TotalEnergyExpediture", "RestingEnergyExpediture", "EnergyStored", "FirstName", "LastName", "TimeStamp"}),
+
+    // Step to filter out rows where TimeStamp is blank
+    #"Filtered Rows" = Table.SelectRows(#"Reordered Columns", each ([TimeStamp] <> null))
+    in
+    #"Filtered Rows"
+
+
+
+
+
+' 7.1 Fixing issues: Rename columns, Change column types, Add the Date and Time columns, Add the index for each patient on the same date, Remove unwanted columns, Filter rows with non-blank "TimeStamp".
+
+  Error on the section that intends to create the index for each patient/date:
+    1. The /* other columns */ placeholder is causing a syntax error. In Power Query, you cannot have such comments within a table definition. You need to explicitly list the columns or use dynamic referencing.
+    -> For the first issue: Remove the placeholder /* other columns */ and explicitly define the columns you're working with or let the code dynamically expand all columns later.
+
+    2. The second error is likely because, when grouping the table and then expanding it back, you're ending up with duplicate column names. This happens because Power Query reintroduces columns like File that already exist in the original dataset.
+    -> For the second issue: Avoid re-expanding the grouped File and Date columns as they are already present after grouping.
+
+let
+    Source = Csv.Document(File.Contents("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/DVEP/BIA_xml/xml_to_csv/241002.txt"), [Delimiter = ",", Columns = 64, QuoteStyle = QuoteStyle.None]),
+    #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+
+    // Step to rename columns by extracting the last node of the original names
+    #"Renamed Columns" = Table.RenameColumns(#"Promoted headers", List.Transform(Table.ColumnNames(#"Promoted headers"), each {_, Text.AfterDelimiter(_, " - ", {0, RelativePosition.FromEnd})})),
+
+    // Apply column type changes
+    #"Changed column type" = Table.TransformColumnTypes(#"Renamed Columns", {{"File", type text}, {"State", type text}, {"Frequency", Int64.Type}, {"LbhReal", type number}, {"LbhImaginary", type number}, {"RbhReal", type number}, {"RbhImaginary", type number}, {"LahReal", type number}, {"LahImaginary", type number}, {"LlhReal", type number}, {"LlhImaginary", type number}, {"RahReal", type number}, {"RahImaginary", type number}, {"RlhReal", type number}, {"RlhImaginary", type number}, {"TohReal", type number}, {"TohImaginary", type number}, {"MeasurementGUID", type text}, {"TimeStamp", type datetime}, {"MeasuringDevice", Int64.Type}, {"ExportToCSV", Int64.Type}, {"ExportToKIS", Int64.Type}, {"CommentTimeStamp", type datetime}, {"Weight", type number}, {"Height", type number}, {"Waist", type number}, {"Pal", type number}, {"Bmi", type number}, {"TotalEnergyExpediture", type number}, {"RestingEnergyExpediture", type number}, {"EnergyStored", type number}, {"RAverage", type number}, {"XcAverage", type number}, {"FmAbsolute", type number}, {"Fmi", type number}, {"FmRelative", type number}, {"FfmAbsolute", type number}, {"Ffmi", type number}, {"FfmRelative", type number}, {"Body", type number}, {"Torso", type number}, {"RightArm", type number}, {"LeftArm", type number}, {"RightLeg", type number}, {"LeftLeg", type number}, {"Vat", type number}, {"PhaseAngle", type number}, {"Tbw", type number}, {"Ecw", type number}, {"TbwRelative", type number}, {"EcwRelative", type number}, {"EcwBytbw", type number}, {"DeviceId", type text}, {"MatSerial", Int64.Type}, {"GUID", type text}, {"ID", Int64.Type}, {"FirstName", type text}, {"LastName", type text}, {"DateOfBirth", type datetime}, {"Gender", type text}, {"Ethnic", type text}, {"Doctor", type text}, {"LastModified", type datetime}, {"IsDeleted", Int64.Type}}),
+
+    // Step to split Date and Time
+    #"Added Date Column" = Table.AddColumn(#"Changed column type", "Date", each DateTime.Date([TimeStamp]), type date),
+    #"Added Time Column" = Table.AddColumn(#"Added Date Column", "Time", each DateTime.Time([TimeStamp]), type time),
+
+    // Grouping by File (patient) and Date
+    #"Grouped Rows" = Table.Group(#"Added Time Column", {"File", "Date"}, {{"All Data", each _, type table}}),
+
+    // Adding Index (Sequential Integer) for each group
+    #"Added Index" = Table.TransformColumns(#"Grouped Rows", {"All Data", each Table.AddIndexColumn(_, "GroupIndex", 1, 1, Int64.Type)}),
+
+    // Expanding the table to get all the data back along with the new GroupIndex
+    #"Expanded All Data" = Table.ExpandTableColumn(#"Added Index", "All Data", Table.ColumnNames(#"Added Time Column") & {"GroupIndex"}),
+
+    // Step to remove unwanted columns (B to Q)
+    #"Removed Unnecessary Columns" = Table.RemoveColumns(#"Expanded All Data", {"State", "Frequency", "LbhReal", "LbhImaginary", "RbhReal", "RbhImaginary", "LahReal", "LahImaginary", "LlhReal", "LlhImaginary", "RahReal", "RahImaginary", "RlhReal", "RlhImaginary", "TohReal", "TohImaginary", "MeasurementGUID", "MeasuringDevice",	"ExportToCSV",	"ExportToKIS",	"CommentTimeStamp","DeviceId",	"MatSerial",	"GUID", "Doctor",	"LastModified",	"IsDeleted"}),
+
+    // Step to filter out rows where TimeStamp is blank
+    #"Filtered Rows" = Table.SelectRows(#"Removed Unnecessary Columns", each ([TimeStamp] <> null))
+in
+    #"Filtered Rows"
+
+
+// Key Changes:
+// type table in Table.Group: I removed the comment /* other columns */ and replaced it with a dynamic column handling. The grouped data now captures all columns dynamically.
+// Table.ExpandTableColumn: Expanded the grouped data back and added GroupIndex along with all columns.
+// Column Name Conflict: Ensured that columns like File and Date are not duplicated when expanding the table.
+
+
+
+
+
+
+
+' 7. Rename columns, Change column types, Add the Date and Time columns, Add the index for each patient on the same date, Remove unwanted columns, Filter rows with non-blank "TimeStamp".
+
+let
+    Source = Csv.Document(File.Contents("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/DVEP/BIA_xml/xml_to_csv/241002.txt"), [Delimiter = ",", Columns = 64, QuoteStyle = QuoteStyle.None]),
+    #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+
+    // Step to rename columns by extracting the last node of the original names
+    #"Renamed Columns" = Table.RenameColumns(#"Promoted headers", List.Transform(Table.ColumnNames(#"Promoted headers"), each {_, Text.AfterDelimiter(_, " - ", {0, RelativePosition.FromEnd})})),
+
+    // Apply column type changes
+    #"Changed column type" = Table.TransformColumnTypes(#"Renamed Columns", {{"File", type text}, {"State", type text}, {"Frequency", Int64.Type}, {"LbhReal", type number}, {"LbhImaginary", type number}, {"RbhReal", type number}, {"RbhImaginary", type number}, {"LahReal", type number}, {"LahImaginary", type number}, {"LlhReal", type number}, {"LlhImaginary", type number}, {"RahReal", type number}, {"RahImaginary", type number}, {"RlhReal", type number}, {"RlhImaginary", type number}, {"TohReal", type number}, {"TohImaginary", type number}, {"MeasurementGUID", type text}, {"TimeStamp", type datetime}, {"MeasuringDevice", Int64.Type}, {"ExportToCSV", Int64.Type}, {"ExportToKIS", Int64.Type}, {"CommentTimeStamp", type datetime}, {"Weight", type number}, {"Height", type number}, {"Waist", type number}, {"Pal", type number}, {"Bmi", type number}, {"TotalEnergyExpediture", type number}, {"RestingEnergyExpediture", type number}, {"EnergyStored", type number}, {"RAverage", type number}, {"XcAverage", type number}, {"FmAbsolute", type number}, {"Fmi", type number}, {"FmRelative", type number}, {"FfmAbsolute", type number}, {"Ffmi", type number}, {"FfmRelative", type number}, {"Body", type number}, {"Torso", type number}, {"RightArm", type number}, {"LeftArm", type number}, {"RightLeg", type number}, {"LeftLeg", type number}, {"Vat", type number}, {"PhaseAngle", type number}, {"Tbw", type number}, {"Ecw", type number}, {"TbwRelative", type number}, {"EcwRelative", type number}, {"EcwBytbw", type number}, {"DeviceId", type text}, {"MatSerial", Int64.Type}, {"GUID", type text}, {"ID", Int64.Type}, {"FirstName", type text}, {"LastName", type text}, {"DateOfBirth", type datetime}, {"Gender", type text}, {"Ethnic", type text}, {"Doctor", type text}, {"LastModified", type datetime}, {"IsDeleted", Int64.Type}}),
+
+    // Step to split Date and Time
+    #"Added Date Column" = Table.AddColumn(#"Changed column type", "Date", each DateTime.Date([TimeStamp]), type date),
+    #"Added Time Column" = Table.AddColumn(#"Added Date Column", "Time", each DateTime.Time([TimeStamp]), type time),
+
+    // Grouping by File (patient) and Date
+    #"Grouped Rows" = Table.Group(#"Added Time Column", {"File", "Date"}, {{"All Data", each _, type table [File=text, Date=date, Time=time, /* other columns */]}}),
+
+    // Adding Index (Sequential Integer) for each group
+    #"Added Index" = Table.TransformColumns(#"Grouped Rows", {"All Data", each Table.AddIndexColumn(_, "GroupIndex", 1, 1, Int64.Type)}),
+
+    // Expanding the table to get all the data back along with the new GroupIndex
+    #"Expanded All Data" = Table.ExpandTableColumn(#"Added Index", "All Data", Table.ColumnNames(#"Added Time Column")),
+
+    // Step to remove unwanted columns (B to Q)
+    #"Removed Unnecessary Columns" = Table.RemoveColumns(#"Expanded All Data", {"State", "Frequency", "LbhReal", "LbhImaginary", "RbhReal", "RbhImaginary", "LahReal", "LahImaginary", "LlhReal", "LlhImaginary", "RahReal", "RahImaginary", "RlhReal", "RlhImaginary", "TohReal", "TohImaginary", "MeasurementGUID", "MeasuringDevice",	"ExportToCSV",	"ExportToKIS",	"CommentTimeStamp","DeviceId",	"MatSerial",	"GUID", "Doctor",	"LastModified",	"IsDeleted"}),
+
+    // Step to filter out rows where TimeStamp is blank
+    #"Filtered Rows" = Table.SelectRows(#"Removed Unnecessary Columns", each ([TimeStamp] <> null))
+in
+    #"Filtered Rows"
+
+
+
+Explanation of the Steps:
+1. Rename Columns: Renames columns by extracting the last node from the original names.
+2. Change Column Types: Changes the data types of the necessary columns.
+3. Add Date and Time Columns: Extracts date and time from the TimeStamp column.
+4. Group by File (Patient) and Date: Groups rows by patient identifier and date.
+5. Add Index for Each Group: Adds a sequential index (GroupIndex) starting from 1 for each group (patient on the same day).
+6. Expand Group Data: Expands the grouped data back into the full table with the new GroupIndex column.
+7. Remove Unwanted Columns: Removes columns B through Q that you don't need.
+8. Filter Rows Based on TimeStamp: Filters out rows where the TimeStamp column is blank.
+
+
+
+
+
+' 6. Remove unwanted columns, filter out rows that have blank values in the "TimeStamp" column, split "Timestamp" into separate "Date" and "Time" columns, add a column that assigns sequential integers to results retrieved on the same day for each patient. 
+  // This can be done by grouping the data based on the File (patient identifier) and Date (which you already have after splitting the TimeStamp column), and then adding an index within each group.
+
+let
+    Source = Csv.Document(File.Contents("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/DVEP/BIA_xml/xml_to_csv/241002.txt"), [Delimiter = ",", Columns = 64, QuoteStyle = QuoteStyle.None]),
+    #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+
+    // Step to rename columns by extracting the last node of the original names
+    #"Renamed Columns" = Table.RenameColumns(#"Promoted headers", List.Transform(Table.ColumnNames(#"Promoted headers"), each {_, Text.AfterDelimiter(_, " - ", {0, RelativePosition.FromEnd})})),
+
+    // Apply column type changes
+    #"Changed column type" = Table.TransformColumnTypes(#"Renamed Columns", {{"File", type text}, {"State", type text}, {"Frequency", Int64.Type}, {"LbhReal", type number}, {"LbhImaginary", type number}, {"RbhReal", type number}, {"RbhImaginary", type number}, {"LahReal", type number}, {"LahImaginary", type number}, {"LlhReal", type number}, {"LlhImaginary", type number}, {"RahReal", type number}, {"RahImaginary", type number}, {"RlhReal", type number}, {"RlhImaginary", type number}, {"TohReal", type number}, {"TohImaginary", type number}, {"MeasurementGUID", type text}, {"TimeStamp", type datetime}, {"MeasuringDevice", Int64.Type}, {"ExportToCSV", Int64.Type}, {"ExportToKIS", Int64.Type}, {"CommentTimeStamp", type datetime}, {"Weight", type number}, {"Height", type number}, {"Waist", type number}, {"Pal", type number}, {"Bmi", type number}, {"TotalEnergyExpediture", type number}, {"RestingEnergyExpediture", type number}, {"EnergyStored", type number}, {"RAverage", type number}, {"XcAverage", type number}, {"FmAbsolute", type number}, {"Fmi", type number}, {"FmRelative", type number}, {"FfmAbsolute", type number}, {"Ffmi", type number}, {"FfmRelative", type number}, {"Body", type number}, {"Torso", type number}, {"RightArm", type number}, {"LeftArm", type number}, {"RightLeg", type number}, {"LeftLeg", type number}, {"Vat", type number}, {"PhaseAngle", type number}, {"Tbw", type number}, {"Ecw", type number}, {"TbwRelative", type number}, {"EcwRelative", type number}, {"EcwBytbw", type number}, {"DeviceId", type text}, {"MatSerial", Int64.Type}, {"GUID", type text}, {"ID", Int64.Type}, {"FirstName", type text}, {"LastName", type text}, {"DateOfBirth", type datetime}, {"Gender", type text}, {"Ethnic", type text}, {"Doctor", type text}, {"LastModified", type datetime}, {"IsDeleted", Int64.Type}}),
+
+    // Step to filter out rows where TimeStamp is blank
+    #"Filtered Rows" = Table.SelectRows(#"Changed column type", each ([TimeStamp] <> null)),
+
+    // Step to split Date and Time
+    #"Added Date Column" = Table.AddColumn(#"Filtered Rows", "Date", each DateTime.Date([TimeStamp]), type date),
+    #"Added Time Column" = Table.AddColumn(#"Added Date Column", "Time", each DateTime.Time([TimeStamp]), type time),
+
+    // Grouping by File (patient) and Date
+    #"Grouped Rows" = Table.Group(#"Added Time Column", {"File", "Date"}, {{"All Data", each _, type table [File=text, Date=date, Time=time, /* other columns */]}}),
+
+    // Adding Index (Sequential Integer) for each group
+    #"Added Index" = Table.TransformColumns(#"Grouped Rows", {"All Data", each Table.AddIndexColumn(_, "GroupIndex", 1, 1, Int64.Type)}),
+
+    // Expanding the table to get all the data back along with the new GroupIndex
+    #"Expanded All Data" = Table.ExpandTableColumn(#"Added Index", "All Data", Table.ColumnNames(#"Added Time Column")),
+
+    // Step to remove unwanted columns (B to Q)
+    #"Removed Unnecessary Columns" = Table.RemoveColumns(#"Expanded All Data", {"State", "Frequency", "LbhReal", "LbhImaginary", "RbhReal", "RbhImaginary", "LahReal", "LahImaginary", "LlhReal", "LlhImaginary", "RahReal", "RahImaginary", "RlhReal", "RlhImaginary", "TohReal", "TohImaginary", "MeasurementGUID", "MeasuringDevice",	"ExportToCSV",	"ExportToKIS",	"CommentTimeStamp","DeviceId",	"MatSerial",	"GUID", "Doctor",	"LastModified",	"IsDeleted"})
+in
+    #"Removed Unnecessary Columns"
+
+// Explanation:
+// Table.Group: This groups the rows by the File (patient identifier) and Date. Each group will have all rows for a specific patient on a specific date.
+// Table.AddIndexColumn: This adds a sequential index (GroupIndex) starting from 1 within each group (each patient on the same date).
+// Table.ExpandTableColumn: After adding the index, we expand the table back to its original structure but with the newly added GroupIndex column.
+// The rest of the steps (splitting date and time, removing unnecessary columns) remain the same.
+// Result: This will add a new column (GroupIndex) that assigns a sequential integer to all the records for the same patient on the same date.
+
+
+
+
+' 5. Remove unwanted columns, filter out rows that have blank values in the "TimeStamp" column, split "Timestamp" into separate "Date" and "Time" columns
+
+let
+    Source = Csv.Document(File.Contents("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/DVEP/BIA_xml/xml_to_csv/241002.txt"), [Delimiter = ",", Columns = 64, QuoteStyle = QuoteStyle.None]),
+    #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+
+    // Step to rename columns by extracting the last node of the original names
+    #"Renamed Columns" = Table.RenameColumns(#"Promoted headers", List.Transform(Table.ColumnNames(#"Promoted headers"), each {_, Text.AfterDelimiter(_, " - ", {0, RelativePosition.FromEnd})})),
+
+    // Apply column type changes
+    #"Changed column type" = Table.TransformColumnTypes(#"Renamed Columns", {{"File", type text}, {"State", type text}, {"Frequency", Int64.Type}, {"LbhReal", type number}, {"LbhImaginary", type number}, {"RbhReal", type number}, {"RbhImaginary", type number}, {"LahReal", type number}, {"LahImaginary", type number}, {"LlhReal", type number}, {"LlhImaginary", type number}, {"RahReal", type number}, {"RahImaginary", type number}, {"RlhReal", type number}, {"RlhImaginary", type number}, {"TohReal", type number}, {"TohImaginary", type number}, {"MeasurementGUID", type text}, {"TimeStamp", type datetime}, {"MeasuringDevice", Int64.Type}, {"ExportToCSV", Int64.Type}, {"ExportToKIS", Int64.Type}, {"CommentTimeStamp", type datetime}, {"Weight", type number}, {"Height", type number}, {"Waist", type number}, {"Pal", type number}, {"Bmi", type number}, {"TotalEnergyExpediture", type number}, {"RestingEnergyExpediture", type number}, {"EnergyStored", type number}, {"RAverage", type number}, {"XcAverage", type number}, {"FmAbsolute", type number}, {"Fmi", type number}, {"FmRelative", type number}, {"FfmAbsolute", type number}, {"Ffmi", type number}, {"FfmRelative", type number}, {"Body", type number}, {"Torso", type number}, {"RightArm", type number}, {"LeftArm", type number}, {"RightLeg", type number}, {"LeftLeg", type number}, {"Vat", type number}, {"PhaseAngle", type number}, {"Tbw", type number}, {"Ecw", type number}, {"TbwRelative", type number}, {"EcwRelative", type number}, {"EcwBytbw", type number}, {"DeviceId", type text}, {"MatSerial", Int64.Type}, {"GUID", type text}, {"ID", Int64.Type}, {"FirstName", type text}, {"LastName", type text}, {"DateOfBirth", type datetime}, {"Gender", type text}, {"Ethnic", type text}, {"Doctor", type text}, {"LastModified", type datetime}, {"IsDeleted", Int64.Type}}),
+
+    // Step to filter out rows where TimeStamp is blank
+    #"Filtered Rows" = Table.SelectRows(#"Changed column type", each ([TimeStamp] <> null)),
+
+    // Step to split Date and Time
+    #"Added Date Column" = Table.AddColumn(#"Filtered Rows", "Date", each DateTime.Date([TimeStamp]), type date),
+    #"Added Time Column" = Table.AddColumn(#"Added Date Column", "Time", each DateTime.Time([TimeStamp]), type time),
+
+    // Step to remove unwanted columns (B to Q)
+    #"Removed Unnecessary Columns" = Table.RemoveColumns(#"Added Time Column", {"State", "Frequency", "LbhReal", "LbhImaginary", "RbhReal", "RbhImaginary", "LahReal", "LahImaginary", "LlhReal", "LlhImaginary", "RahReal", "RahImaginary", "RlhReal", "RlhImaginary", "TohReal", "TohImaginary", "MeasurementGUID", "MeasuringDevice",	"ExportToCSV",	"ExportToKIS",	"CommentTimeStamp","DeviceId",	"MatSerial",	"GUID", "Doctor",	"LastModified",	"IsDeleted"})
+in
+    #"Removed Unnecessary Columns"
+
+// Explanation of Changes:
+// Table.AddColumn for Date: This step creates a new "Date" column by extracting the date part from the "TimeStamp" column using DateTime.Date.
+// Table.AddColumn for Time: Similarly, this step creates a new "Time" column by extracting the time part using DateTime.Time.
+// Rest of the steps remain unchanged, such as filtering out rows with blank timestamps and removing unnecessary columns.
+// After applying this, you'll have two new columns — one for the date and one for the time — extracted from the "TimeStamp" column.
+
+' 4. Remove unwanted columns, filter out rows that have blank values in the "TimeStamp" column
+
+let
+    Source = Csv.Document(File.Contents("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/DVEP/BIA_xml/xml_to_csv/241002.txt"), [Delimiter = ",", Columns = 64, QuoteStyle = QuoteStyle.None]),
+    #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+
+    // Step to rename columns by extracting the last node of the original names
+    #"Renamed Columns" = Table.RenameColumns(#"Promoted headers", List.Transform(Table.ColumnNames(#"Promoted headers"), each {_, Text.AfterDelimiter(_, " - ", {0, RelativePosition.FromEnd})})),
+
+    // Apply column type changes
+    #"Changed column type" = Table.TransformColumnTypes(#"Renamed Columns", {{"File", type text}, {"State", type text}, {"Frequency", Int64.Type}, {"LbhReal", type number}, {"LbhImaginary", type number}, {"RbhReal", type number}, {"RbhImaginary", type number}, {"LahReal", type number}, {"LahImaginary", type number}, {"LlhReal", type number}, {"LlhImaginary", type number}, {"RahReal", type number}, {"RahImaginary", type number}, {"RlhReal", type number}, {"RlhImaginary", type number}, {"TohReal", type number}, {"TohImaginary", type number}, {"MeasurementGUID", type text}, {"TimeStamp", type datetime}, {"MeasuringDevice", Int64.Type}, {"ExportToCSV", Int64.Type}, {"ExportToKIS", Int64.Type}, {"CommentTimeStamp", type datetime}, {"Weight", type number}, {"Height", type number}, {"Waist", type number}, {"Pal", type number}, {"Bmi", type number}, {"TotalEnergyExpediture", type number}, {"RestingEnergyExpediture", type number}, {"EnergyStored", type number}, {"RAverage", type number}, {"XcAverage", type number}, {"FmAbsolute", type number}, {"Fmi", type number}, {"FmRelative", type number}, {"FfmAbsolute", type number}, {"Ffmi", type number}, {"FfmRelative", type number}, {"Body", type number}, {"Torso", type number}, {"RightArm", type number}, {"LeftArm", type number}, {"RightLeg", type number}, {"LeftLeg", type number}, {"Vat", type number}, {"PhaseAngle", type number}, {"Tbw", type number}, {"Ecw", type number}, {"TbwRelative", type number}, {"EcwRelative", type number}, {"EcwBytbw", type number}, {"DeviceId", type text}, {"MatSerial", Int64.Type}, {"GUID", type text}, {"ID", Int64.Type}, {"FirstName", type text}, {"LastName", type text}, {"DateOfBirth", type datetime}, {"Gender", type text}, {"Ethnic", type text}, {"Doctor", type text}, {"LastModified", type datetime}, {"IsDeleted", Int64.Type}}),
+
+    // Step to filter out rows where TimeStamp is blank
+    #"Filtered Rows" = Table.SelectRows(#"Changed column type", each ([TimeStamp] <> null)),
+
+    // Step to remove unwanted columns (B to Q)
+    #"Removed Unnecessary Columns" = Table.RemoveColumns(#"Filtered Rows", {"State", "Frequency", "LbhReal", "LbhImaginary", "RbhReal", "RbhImaginary", "LahReal", "LahImaginary", "LlhReal", "LlhImaginary", "RahReal", "RahImaginary", "RlhReal", "RlhImaginary", "TohReal", "TohImaginary", "MeasurementGUID", "MeasuringDevice",	"ExportToCSV",	"ExportToKIS",	"CommentTimeStamp","DeviceId",	"MatSerial",	"GUID", "Doctor",	"LastModified",	"IsDeleted"})
+in
+    #"Removed Unnecessary Columns"
+
+
+// Explanation:
+// Table.SelectRows: This step filters the rows to only include those where the "TimeStamp" column is not blank (i.e., it is not null).
+// The rest of the steps (renaming columns, changing types, removing columns) remain the same.
+// With this addition, only rows that have a value in the "TimeStamp" column will be included in the final output, making your dataset cleaner.
+
+
+' 3. This option uses the Table.RemoveColumns function to remove unwanted columns belonging to the biameasurements step and others
+
+let
+    Source = Csv.Document(File.Contents("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/DVEP/BIA_xml/xml_to_csv/241002.txt"), [Delimiter = ",", Columns = 64, QuoteStyle = QuoteStyle.None]),
+    #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+
+    // Step to rename columns by extracting the last node of the original names
+    #"Renamed Columns" = Table.RenameColumns(#"Promoted headers", List.Transform(Table.ColumnNames(#"Promoted headers"), each {_, Text.AfterDelimiter(_, " - ", {0, RelativePosition.FromEnd})})),
+
+    // Apply column type changes
+    #"Changed column type" = Table.TransformColumnTypes(#"Renamed Columns", {{"File", type text}, {"State", type text}, {"Frequency", Int64.Type}, {"LbhReal", type number}, {"LbhImaginary", type number}, {"RbhReal", type number}, {"RbhImaginary", type number}, {"LahReal", type number}, {"LahImaginary", type number}, {"LlhReal", type number}, {"LlhImaginary", type number}, {"RahReal", type number}, {"RahImaginary", type number}, {"RlhReal", type number}, {"RlhImaginary", type number}, {"TohReal", type number}, {"TohImaginary", type number}, {"MeasurementGUID", type text}, {"TimeStamp", type datetime}, {"MeasuringDevice", Int64.Type}, {"ExportToCSV", Int64.Type}, {"ExportToKIS", Int64.Type}, {"CommentTimeStamp", type datetime}, {"Weight", type number}, {"Height", type number}, {"Waist", type number}, {"Pal", type number}, {"Bmi", type number}, {"TotalEnergyExpediture", type number}, {"RestingEnergyExpediture", type number}, {"EnergyStored", type number}, {"RAverage", type number}, {"XcAverage", type number}, {"FmAbsolute", type number}, {"Fmi", type number}, {"FmRelative", type number}, {"FfmAbsolute", type number}, {"Ffmi", type number}, {"FfmRelative", type number}, {"Body", type number}, {"Torso", type number}, {"RightArm", type number}, {"LeftArm", type number}, {"RightLeg", type number}, {"LeftLeg", type number}, {"Vat", type number}, {"PhaseAngle", type number}, {"Tbw", type number}, {"Ecw", type number}, {"TbwRelative", type number}, {"EcwRelative", type number}, {"EcwBytbw", type number}, {"DeviceId", type text}, {"MatSerial", Int64.Type}, {"GUID", type text}, {"ID", Int64.Type}, {"FirstName", type text}, {"LastName", type text}, {"DateOfBirth", type datetime}, {"Gender", type text}, {"Ethnic", type text}, {"Doctor", type text}, {"LastModified", type datetime}, {"IsDeleted", Int64.Type}}),
+
+    // Step to remove unwanted columns (B to Q, bia measurements)
+    #"Removed Unnecessary Columns" = Table.RemoveColumns(#"Changed column type", {"State", "Frequency", "LbhReal", "LbhImaginary", "RbhReal", "RbhImaginary", "LahReal", "LahImaginary", "LlhReal", "LlhImaginary", "RahReal", "RahImaginary", "RlhReal", "RlhImaginary", "TohReal", "TohImaginary", "MeasurementGUID", "MeasuringDevice",	"ExportToCSV",	"ExportToKIS",	"CommentTimeStamp","DeviceId",	"MatSerial",	"GUID", "Doctor",	"LastModified",	"IsDeleted"})
+in
+    #"Removed Unnecessary Columns"
+
+
+// Explanation:
+// Table.TransformColumnTypes: This step is kept universal and can stay regardless of whether you keep or remove columns B through Q.
+// Table.RemoveColumns: You can easily delete or comment out this step in the future if you decide to keep all columns.
+// This approach makes the code more flexible, as you suggested. You can simply remove the Table.RemoveColumns step when you want to include all columns, without needing to change anything else.
+
+' 2. This second option uses the Table.RemoveColumns function to remove unwanted columns belonging to the biameasurements step
+
+let
+    Source = Csv.Document(File.Contents("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/DVEP/BIA_xml/xml_to_csv/241002.txt"), [Delimiter = ",", Columns = 64, QuoteStyle = QuoteStyle.None]),
+    #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+
+    // Step to rename columns by extracting the last node of the original names
+    #"Renamed Columns" = Table.RenameColumns(#"Promoted headers", List.Transform(Table.ColumnNames(#"Promoted headers"), each {_, Text.AfterDelimiter(_, " - ", {0, RelativePosition.FromEnd})})),
+
+    // Apply column type changes
+    #"Changed column type" = Table.TransformColumnTypes(#"Renamed Columns", {{"File", type text}, {"State", type text}, {"Frequency", Int64.Type}, {"LbhReal", type number}, {"LbhImaginary", type number}, {"RbhReal", type number}, {"RbhImaginary", type number}, {"LahReal", type number}, {"LahImaginary", type number}, {"LlhReal", type number}, {"LlhImaginary", type number}, {"RahReal", type number}, {"RahImaginary", type number}, {"RlhReal", type number}, {"RlhImaginary", type number}, {"TohReal", type number}, {"TohImaginary", type number}, {"MeasurementGUID", type text}, {"TimeStamp", type datetime}, {"MeasuringDevice", Int64.Type}, {"ExportToCSV", Int64.Type}, {"ExportToKIS", Int64.Type}, {"CommentTimeStamp", type datetime}, {"Weight", type number}, {"Height", type number}, {"Waist", type number}, {"Pal", type number}, {"Bmi", type number}, {"TotalEnergyExpediture", type number}, {"RestingEnergyExpediture", type number}, {"EnergyStored", type number}, {"RAverage", type number}, {"XcAverage", type number}, {"FmAbsolute", type number}, {"Fmi", type number}, {"FmRelative", type number}, {"FfmAbsolute", type number}, {"Ffmi", type number}, {"FfmRelative", type number}, {"Body", type number}, {"Torso", type number}, {"RightArm", type number}, {"LeftArm", type number}, {"RightLeg", type number}, {"LeftLeg", type number}, {"Vat", type number}, {"PhaseAngle", type number}, {"Tbw", type number}, {"Ecw", type number}, {"TbwRelative", type number}, {"EcwRelative", type number}, {"EcwBytbw", type number}, {"DeviceId", type text}, {"MatSerial", Int64.Type}, {"GUID", type text}, {"ID", Int64.Type}, {"FirstName", type text}, {"LastName", type text}, {"DateOfBirth", type datetime}, {"Gender", type text}, {"Ethnic", type text}, {"Doctor", type text}, {"LastModified", type datetime}, {"IsDeleted", Int64.Type}}),
+
+    // Step to remove unwanted columns (B to Q, bia measurements)
+    #"Removed Unnecessary Columns" = Table.RemoveColumns(#"Changed column type", {"State", "Frequency", "LbhReal", "LbhImaginary", "RbhReal", "RbhImaginary", "LahReal", "LahImaginary", "LlhReal", "LlhImaginary", "RahReal", "RahImaginary", "RlhReal", "RlhImaginary", "TohReal", "TohImaginary"})
+in
+    #"Removed Unnecessary Columns"
+
+// Explanation:
+// Table.TransformColumnTypes: This step is kept universal and can stay regardless of whether you keep or remove columns B through Q.
+// Table.RemoveColumns: You can easily delete or comment out this step in the future if you decide to keep all columns.
+// This approach makes the code more flexible, as you suggested. You can simply remove the Table.RemoveColumns step when you want to include all columns, without needing to change anything else.
+
+' 1. This first code extracts every column from the file
+
+let
+    Source = Csv.Document(File.Contents("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/DVEP/BIA_xml/xml_to_csv/241002.txt"), [Delimiter = ",", Columns = 64, QuoteStyle = QuoteStyle.None]),
+    #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+
+    // Step to rename columns by extracting the last node of the original names
+    #"Renamed Columns" = Table.RenameColumns(#"Promoted headers", List.Transform(Table.ColumnNames(#"Promoted headers"), each {_, Text.AfterDelimiter(_, " - ", {0, RelativePosition.FromEnd})})),
+
+    #"Changed column type" = Table.TransformColumnTypes(#"Renamed Columns", {{"File", type text}, {"State", type text}, {"Frequency", Int64.Type}, {"LbhReal", type number}, {"LbhImaginary", type number}, {"RbhReal", type number}, {"RbhImaginary", type number}, {"LahReal", type number}, {"LahImaginary", type number}, {"LlhReal", type number}, {"LlhImaginary", type number}, {"RahReal", type number}, {"RahImaginary", type number}, {"RlhReal", type number}, {"RlhImaginary", type number}, {"TohReal", type number}, {"TohImaginary", type number}, {"MeasurementGUID", type text}, {"TimeStamp", type datetime}, {"MeasuringDevice", Int64.Type}, {"ExportToCSV", Int64.Type}, {"ExportToKIS", Int64.Type}, {"CommentTimeStamp", type datetime}, {"Weight", type number}, {"Height", type number}, {"Waist", type number}, {"Pal", type number}, {"Bmi", type number}, {"TotalEnergyExpediture", type number}, {"RestingEnergyExpediture", type number}, {"EnergyStored", type number}, {"RAverage", type number}, {"XcAverage", type number}, {"FmAbsolute", type number}, {"Fmi", type number}, {"FmRelative", type number}, {"FfmAbsolute", type number}, {"Ffmi", type number}, {"FfmRelative", type number}, {"Body", type number}, {"Torso", type number}, {"RightArm", type number}, {"LeftArm", type number}, {"RightLeg", type number}, {"LeftLeg", type number}, {"Vat", type number}, {"PhaseAngle", type number}, {"Tbw", type number}, {"Ecw", type number}, {"TbwRelative", type number}, {"EcwRelative", type number}, {"EcwBytbw", type number}, {"DeviceId", type text}, {"MatSerial", Int64.Type}, {"GUID", type text}, {"ID", Int64.Type}, {"FirstName", type text}, {"LastName", type text}, {"DateOfBirth", type datetime}, {"Gender", type text}, {"Ethnic", type text}, {"Doctor", type text}, {"LastModified", type datetime}, {"IsDeleted", Int64.Type}})
+    in
+    #"Changed column type"

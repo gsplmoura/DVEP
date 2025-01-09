@@ -1,0 +1,295 @@
+---
+title: "DVEP_2_Analysis"
+author: "Moura, G.S.P.L"
+date: "2025-01-07"
+output: html_document
+---
+
+# Resultados
+
+```{r, }
+# Número de participantes
+max(d1_exclusive$record_id)
+
+# Tabela de frequência de sexo e porcentagem do sexo feminino
+summary(d1_exclusive$sex); (65/75)*100
+
+# Idade (média e DP)
+mean(d1_exclusive$age); sd(d1_exclusive$age)
+
+# Datas de inclusão e conclusão
+summary(data$consent_date)
+summary(data$conclusion_date)
+
+# Completaram a intervenção
+summary(d1_exclusive$completed_intervention)
+
+# Abandonos
+## Taxa de abandono
+(23/75)*100 
+
+## Abandono por sexo e grupo de alocação
+d1_exclusive |> 
+    filter(completed_intervention == "Não") |> 
+    count(sex, allocation_group, name = "Total")
+
+## Taxa de abandono por sexo
+(4/10)*100 # Homens
+(19/65)*100 # Mulheres
+
+table(data$non_completion_reason)
+
+```
+
+```         
+Um total de 75 participantes de pesquisa foram incluídos neste estudo, sendo 65 (86,6%)  do sexo feminino. A média da idade dos participantes foi de 40,6 anos (DP 10,2 anos).
+
+Os participantes foram incluídos no estudo entre 09/08/2023 e 26/07/2024. As datas em que os participantes completaram a intervenção foram entre 14/11/2023 e 25/10/2024.
+
+Dos participantes incluídos, 23 (30.6%) não completaram os três meses de intervenção. A taxa de abandono foi maior nos homens, com 4 abandonos (40% dos homens incluídos), sendo 2 de cada grupo. No sexo feminino, a taxa de abandono foi de 29.2%, sendo oito do grupo placebo e 11 do grupo intervenção.
+
+
+# Analysis
+
+```{r}
+library(tidyverse)
+
+# Function to create a summary table
+create_summary_table <- function(data, variables = NULL) {
+  # If no variables specified, use all numeric columns
+  if (is.null(variables)) {
+    variables <- names(data)[sapply(data, is.numeric)]
+  }
+  
+  # Check if specified variables exist in the dataframe
+  valid_variables <- intersect(variables, colnames(data))
+  
+  # If no valid variables are found, return an error
+  if (length(valid_variables) == 0) {
+    stop("No valid numeric variables found in the provided dataframe.")
+  }
+  
+  # Create the summary table
+  summary_table <- data %>%
+    summarise(across(
+      all_of(valid_variables),
+      list(
+        mean = ~ mean(.x, na.rm = TRUE),
+        sd = ~ sd(.x, na.rm = TRUE),
+        median = ~ median(.x, na.rm = TRUE),
+        iqr = ~ IQR(.x, na.rm = TRUE),
+        min = ~ min(.x, na.rm = TRUE),
+        max = ~ max(.x, na.rm = TRUE),
+        missing = ~ sum(is.na(.x))
+      )
+    )) %>%
+    pivot_longer(
+      cols = everything(),
+      names_to = c("variable", "statistic"),
+      names_sep = "_",
+      values_to = "value"
+    ) %>%
+    pivot_wider(
+      names_from = statistic,
+      values_from = value
+    )
+  
+  return(summary_table)
+}
+
+```
+
+```{r}
+library(lme4)
+
+glmm_model <- lme4::lmer(
+  phaseangle ~ visit + allocation_group + age + sex + labs_homa_ir + labs_leukocytes +
+    (1 | record_id),  # Random effect for patients
+  data = final_data,
+  REML = FALSE        # Use maximum likelihood for comparison between models
+)
+
+# View the model summary
+summary(glmm_model)
+
+
+glmm_model_interaction <- lmer(
+  phaseangle ~ visit * allocation_group + age + sex + labs_homa_ir + labs_leukocytes +
+    (1 | record_id),
+  data = final_data
+)
+summary(glmm_model_interaction)
+
+
+```
+
+```{r}
+# Fit the linear mixed-effects model for CRP
+crp_model <- lmer(
+  labs_crp ~ visit * allocation_group + age + sex + labs_homa_ir + labs_leukocytes +
+    (1 | record_id),  # Random intercept for repeated measures
+  data = final_data
+)
+
+# View the summary
+summary(crp_model)
+
+```
+
+# Help
+
+## Count()
+
+Used for categorical data
+
+```{r, eval=FALSE}
+# Count Unique Values in a Single Column
+d1_exclusive |> 
+  count(allocation_group)
+
+# Count Unique Combinations of Two or More Variables
+d1_exclusive |> 
+  count(allocation_group, visit)
+
+#  Add Proportions Using count()
+d1_exclusive |> 
+  count(allocation_group, name = "count") |> 
+  mutate(proportion = count / sum(count))
+
+# Sort the Results
+d1_exclusive |> 
+  count(allocation_group, sort = TRUE)
+
+# Filter for Specific Counts
+d1_exclusive |> 
+  count(allocation_group) |> 
+  filter(n > 20)
+
+# Rename the Count Column
+d1_exclusive |> 
+  count(allocation_group, name = "total")
+
+# Weight Counts
+You can apply weights to the counts (e.g., if certain rows represent different weights)
+
+d1_exclusive |> 
+  count(allocation_group, wt = weight_column)
+
+## Here, weight_column provides the weights to adjust the counts. If weight_column = c(2, 1, 1, ...), the count for Grupo A might become 37 × 2.
+
+# Use count() in Pipelines
+d1_exclusive |> 
+  group_by(sex) |> 
+  count(allocation_group) |> 
+  arrange(desc(n))
+
+# Visualize the Counts
+d1_exclusive |> 
+  count(allocation_group) |> 
+  ggplot(aes(x = allocation_group, y = n, fill = allocation_group)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Participant Count by Group", x = "Group", y = "Count") +
+  theme_minimal()
+
+
+
+```
+
+# Jamovi
+
+## jmv::descriptives
+
+Defaults
+
+```{r}
+library(jmv)
+#Default
+# N, missing, mean, median, SD, Min, Max
+jmv::descriptives(
+    data = data, # select dataframe
+    vars = vars() #insert variables without ""
+    ) 
+```
+
+To remove defaults
+
+```{r}
+jmv::descriptives(
+    data = data,
+    vars = vars(),
+    n = FALSE,
+    missing = FALSE,
+    mean = FALSE,
+    median = FALSE,
+    sd = FALSE,
+    min = FALSE,
+    max = FALSE
+    )
+```
+
+Additional statistics
+
+```{r}
+
+```
+
+jmv::descriptives( data = data, vars = vars(), pcEqGr = TRUE, pcNEqGr = 5, pc = TRUE)
+
+jmv::descriptives( data = data, vars = vars(age, abdomen, bmi.x), freq = TRUE, desc = "rows", boxLabelOutliers = FALSE, mode = TRUE, sum = TRUE, variance = TRUE, range = TRUE, se = TRUE, ci = TRUE, iqr = TRUE, skew = TRUE, kurt = TRUE, sw = TRUE, pcEqGr = TRUE, pc = TRUE, extreme = TRUE)
+
+```{r}
+
+# Extract vector of double variables
+dbl_vars <- final_data %>%
+  select(where(is.double)) %>%
+  colnames()
+
+# View the result
+print(dbl_vars)
+
+jmv::descriptives(
+    data = final_data,
+    vars = !!rlang::syms(dbl_vars),
+    splitBy = NULL,
+    freq = FALSE, #frequency tables (nominal, ordinal variables only)
+    desc = "columns", # 'rows' or 'columns' to display variables
+    hist = FALSE, # histograms (continuous variables only)
+    dens = FALSE, # density plots (continuous variables only)
+    bar = FALSE, # bar plots (nominal, ordinal variables only)
+    barCounts = FALSE, # add counts to the bar plots
+    box = FALSE, # box plots (continuous variables only)
+    violin = FALSE, # violin plots (continuous variables only)
+    dot = FALSE, # dot plots (continuous variables only)
+    dotType = "jitter",
+    boxMean = FALSE, # add mean to box plot
+    boxLabelOutliers = TRUE, # labels outliers with the row
+    qq = FALSE, # (continuous variables only)
+    n = TRUE, # sample size
+    missing = TRUE, # number of missing values
+    mean = TRUE,
+    median = TRUE,
+    mode = FALSE,
+    sum = FALSE,
+    sd = TRUE,
+    variance = FALSE,
+    range = FALSE,
+    min = TRUE,
+    max = TRUE,
+    se = FALSE, # standard error of the mean
+    ci = FALSE, # confidence intervals for the mean
+    ciWidth = 95, # width of confidence intervals (50-99.9)
+    iqr = FALSE,
+    skew = FALSE,
+    kurt = FALSE,
+    sw = FALSE, # Shapiro-Wilk p-value
+    pcEqGr = FALSE, # provide quantiles (default: 4)
+    pcNEqGr = 4, # an integer specifying the number of equal groups
+    pc = FALSE, # provide percentiles
+    pcValues = "25,50,75", #specify the percentiles
+    extreme = FALSE, # provide N most extreme (highest/lowest) values
+    extremeN = 5, # specify the number of extreme values
+    )
+```
+
+
+```

@@ -1,6 +1,0 @@
----
-title: "DVEP_2_Analysis"
-author: "Moura, G.S.P.L"
-date: "2025-01-07"
-output: html_document
----
