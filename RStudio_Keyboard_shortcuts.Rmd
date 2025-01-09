@@ -1,0 +1,276 @@
+# Keyboard Shortcuts
+
+## Accessibility
+
+|                                   |                          |
+|-----------------------------------|--------------------------|
+| Toggle Screen Reader Support      | Ctrl+Shift+U             |
+| Speak Text Editor Location        | Ctrl+Option+1            |
+| Focus Console Output              | Ctrl+\` or Ctrl+Option+2 |
+| Toggle Tab Key Always Moves Focus | Ctrl+Option+[            |
+| Focus Next Pane                   | F6                       |
+| Focus Previous Pane               | Shift+F6                 |
+| Focus Main Toolbar                | Ctrl+Option+Y            |
+
+## Console
+
+|                                       |               |
+|---------------------------------------|---------------|
+| Move cursor to Console                | Ctrl+2        |
+| Clear console                         | Ctrl+L        |
+| Move cursor to beginning of line      | Command+Left  |
+| Move cursor to end of line            | Command+Right |
+| Navigate command history              | Up/Down       |
+| Popup command history                 | Command+Up    |
+| Interrupt currently executing command | Esc           |
+| Change working directory              | Ctrl+Shift+H  |
+
+## Source
+
+|  |  |
+|----|----|
+| Go to File/Function | Ctrl+. [period] |
+| Move cursor to Source Editor | Ctrl+1 |
+| Toggle document outline | Shift+Command+O |
+| Toggle visual markdown editor | Ctrl+Shift+F4 |
+| New document (except on Chrome/Windows) | Shift+Command+N |
+| New document (Chrome only) | Option+Shift+Command+N |
+| Open document | Command+O |
+| Save active document | Command+S |
+| Save all documents | Command+Option+S |
+| Close active document (except on Chrome) | Command+W |
+| Close active document (Chrome only) | Option+Command+W |
+| Close all open documents | Shift+Command+W |
+| Close other documents | Option+Shift+Command+W |
+| Preview HTML (Markdown and HTML) | Shift+Command+K |
+| Knit Document (knitr) | Shift+Command+K |
+| Compile Notebook | Shift+Command+K |
+| Compile PDF (TeX and Sweave) | Shift+Command+K |
+| Insert chunk (Sweave and Knitr) | Option+Command+I |
+| Insert code section | Shift+Command+R or Ctrl+Shift+R |
+| Run current line/selection | Command+Return |
+| Run current line/selection (retain cursor position) | Option+Return |
+| Re-run previous region | Option+Command+P |
+| Run current document | Option+Command+R |
+| Run from document beginning to current line | Option+Command+B |
+| Run from current line to document end | Option+Command+E |
+| Run the current function definition | Option+Command+F |
+| Run the current code section | Option+Command+T |
+| Run previous Sweave/Rmd code | Option+Shift+Command+P |
+| Run the current Sweave/Rmd chunk | Option+Command+C |
+| Run the next Sweave/Rmd chunk | Option+Command+N |
+| Source a file | Ctrl+Option+G |
+| Source the current document | Shift+Command+S |
+| Source the current document (with echo) | Shift+Command+Return |
+| Send current line/selection to terminal | Option+Command+Return |
+| Fold Selected | Option+Command+L |
+| Unfold Selected | Option+Shift+Command+L |
+| Fold All | Option+Command+O |
+| Unfold All | Option+Shift+Command+O |
+| Go to line | Option+Shift+Command+G |
+| Jump to | Option+Shift+Command+J |
+| Expand selection | Ctrl+Option+Shift+Up |
+| Shrink selection | Ctrl+Option+Shift+Down |
+| Next section | Command+PageDown |
+| Previous section | Command+PageUp |
+| Split into lines | Ctrl+Option+A |
+| Edit lines from start | Ctrl+Option+Shift+A |
+| Switch to tab | Ctrl+Shift+. [period] |
+| Previous tab | Ctrl+F11 or Ctrl+Option+Left |
+| Previous tab (desktop only) | Ctrl+Shift+Tab |
+| Next tab | Ctrl+F12 or Ctrl+Option+Right |
+| Next tab (desktop only) | Ctrl+Tab |
+| First tab | Ctrl+Shift+F11 or Ctrl+Option+Shift+Left |
+| Last tab | Ctrl+Shift+F12 or Ctrl+Option+Shift+Right |
+| Navigate back | Command+F9 |
+| Navigate forward | Command+F10 |
+| Extract function from selection | Option+Command+X |
+| Extract variable from selection | Option+Command+V |
+| Reindent lines | Command+I |
+| Comment/uncomment current line/selection | Shift+Command+C |
+| Reflow Comment | Ctrl+Shift+/ |
+| Reformat Selection | Shift+Command+A |
+| Show Diagnostics for Current Project | Option+Shift+Command+D |
+| Transpose Letters | Ctrl+T |
+| Move Lines Up/Down | Option+Up or Down |
+| Copy Lines Up/Down | Option+Command+Up or Down |
+| Jump to Matching Brace/Paren | Ctrl+P |
+| Expand to Matching Brace/Paren | Ctrl+Shift+E |
+| Add Cursor Above Current Cursor | Ctrl+Option+Up |
+| Add Cursor Below Current Cursor | Ctrl+Option+Down |
+| Move Active Cursor Up | Ctrl+Option+Shift+Up |
+| Move Active Cursor Down | Ctrl+Option+Shift+Down |
+| Find and Replace | Command+F |
+| Find Next | Command+G |
+| Find Previous | Shift+Command+G |
+| Use Selection for Find | Command+E |
+| Replace and Find | Shift+Command+J |
+| Find in Files | Shift+Command+F |
+| Check Spelling | F7 |
+| Rename Symbol in Scope | Option+Shift+Command+M |
+| Insert Roxygen Skeleton | Option+Shift+Command+R |
+
+## Editing (Console and Source)
+
+|  |  |
+|----|----|
+| Undo | Command+Z |
+| Redo | Shift+Command+Z |
+| Cut | Command+X |
+| Copy | Command+C |
+| Paste | Command+V |
+| Paste with Indent | Command+Shift+V |
+| Select All | Command+A |
+| Jump to Word | Option+Left or Right |
+| Jump to Start/End | Command+Up or Down |
+| Delete Line | Command+D |
+| Select | Shift+[Arrow] |
+| Select Word | Option+Shift+Left or Right |
+| Select to Line Start | Shift+Command+Left |
+| Select to Line End | Shift+Command+Right |
+| Select Page Up/Down | Shift+PageUp or PageDown |
+| Select to Start/End | Shift+Command+Up or Down |
+| Delete Word Left | Option+Backspace or Ctrl+Option+Backspace |
+| Delete Word Right | Option+Delete |
+| Delete to Line End | Ctrl+K |
+| Delete to Line Start | Option+Backspace |
+| Indent | Tab (at beginning of line) |
+| Outdent | Shift+Tab |
+| Yank line up to cursor | Ctrl+U |
+| Yank line after cursor | Ctrl+K |
+| Insert currently yanked text | Ctrl+Y |
+| Insert assignment operator | Option+- |
+| Insert pipe operator | Shift+Command+M |
+| Show help for function at cursor | F1 |
+| Show source code for function at cursor | F2 |
+| Find usages for symbol at cursor (C++) | Option+Command+U |
+
+## Completions (Console and Source)
+
+|                           |                       |
+|---------------------------|-----------------------|
+| Attempt completion        | Tab or Command+Space  |
+| Navigate candidates       | Up or Down            |
+| Accept selected candidate | Return, Tab, or Right |
+| Dismiss completion popup  | Esc                   |
+
+## Views
+
+|  |  |
+|----|----|
+| Move focus to Source Editor | Ctrl+1 |
+| Zoom Source Editor | Ctrl+Shift+1 |
+| Move focus to Console | Ctrl+2 |
+| Zoom Console | Ctrl+Shift+2 |
+| Move focus to Help | Ctrl+3 |
+| Zoom Help | Ctrl+Shift+3 |
+| Move Focus to Terminal | Option+Shift+M |
+| Show History | Ctrl+4 |
+| Zoom History | Ctrl+Shift+4 |
+| Show Files | Ctrl+5 |
+| Zoom Files | Ctrl+Shift+5 |
+| Show Plots | Ctrl+6 |
+| Zoom Plots | Ctrl+Shift+6 |
+| Show Packages | Ctrl+7 |
+| Zoom Packages | Ctrl+Shift+7 |
+| Show Environment | Ctrl+8 |
+| Zoom Environment | Ctrl+Shift+8 |
+| Show Viewer | Ctrl+9 |
+| Zoom Viewer | Ctrl+Shift+9 |
+| Show Git/SVN | Command+F1 |
+| Zoom Git/SVN | Ctrl+Shift+F1 |
+| Show Build | Command+F2 |
+| Zoom Build | Ctrl+Shift+F2 |
+| Show Connections | No shortcut |
+| Zoom Connections | Ctrl+Shift+F5 |
+| Zoom Tutorial | Ctrl+Shift+F6 |
+| Show Find in Files Results | Command+F6 |
+| Sync Editor & PDF Preview | Command+F8 |
+| Zoom left column | Ctrl+Option+Shift+F12 |
+| Zoom right column | Ctrl+Option+Shift+F11 |
+| Show all panes | Ctrl+Alt+0 |
+| Add source column | Command+F7 |
+| Global Options | Command+, [comma] (Chrome, Desktop) Option+Command+, [comma] (Safari, Firefox) |
+| Project Options | Shift+Command+, [comma] |
+
+## Help
+
+|                                  |                 |
+|----------------------------------|-----------------|
+| Show Command Palette             | Shift+Command+P |
+| Show Keyboard Shortcut Reference | Option+Shift+K  |
+| Search R Help                    | Ctrl+Option+F1  |
+| Find in Help Topic               | Command+F       |
+| Previous Help Topic              | Option+Shift+F2 |
+| Next Help Topic                  | Option+Shift+F3 |
+
+## Build
+
+|                        |                   |
+|------------------------|-------------------|
+| Install and Restart    | Shift+Command+B   |
+| Load All (devtools)    | Shift+Command+L   |
+| Test Package (Desktop) | Shift+Command+T   |
+| Test Package (Web)     | Option+Command+F7 |
+| Check Package          | Shift+Command+E   |
+| Document Package       | Shift+Command+D   |
+
+## Debug
+
+|                      |          |
+|----------------------|----------|
+| Toggle Breakpoint    | Shift+F9 |
+| Execute Next Line    | F10      |
+| Step Into Function   | Shift+F4 |
+| Finish Function/Loop | Shift+F7 |
+| Continue             | Shift+F5 |
+| Stop Debugging       | Shift+F8 |
+
+## Plots
+
+|               |                                              |
+|---------------|----------------------------------------------|
+| Previous plot | Option+Command+F11 or Shift+Command+PageUp   |
+| Next plot     | Option+Command+F12 or Shift+Command+PageDown |
+
+## Git/SVN
+
+|                                      |                 |
+|--------------------------------------|-----------------|
+| Diff active source document          | Ctrl+Option+D   |
+| Commit changes                       | Ctrl+Option+M   |
+| Scroll diff view                     | Ctrl+Up or Down |
+| Stage/Unstage (Git)                  | Spacebar        |
+| Stage/Unstage and move to next (Git) | Return          |
+
+## Session
+
+|                             |                 |
+|-----------------------------|-----------------|
+| Quit Session (desktop only) | Command+Q       |
+| Restart R Session           | Shift+Command+0 |
+
+## Terminal
+
+|                        |                  |
+|------------------------|------------------|
+| New Terminal           | Option+Shift+R   |
+| Move Focus to Terminal | Option+Shift+M   |
+| Previous Terminal      | Option+Shift+F11 |
+| Next Terminal          | Option+Shift+F12 |
+
+## Main Menu (Server)
+
+|              |               |
+|--------------|---------------|
+| File Menu    | Ctrl+Option+F |
+| Edit Menu    | Ctrl+Option+I |
+| Code Menu    | Ctrl+Option+C |
+| View Menu    | Ctrl+Option+V |
+| Plots Menu   | Ctrl+Option+P |
+| Session Menu | Ctrl+Option+S |
+| Build Menu   | Ctrl+Option+B |
+| Debug Menu   | Ctrl+Option+U |
+| Profile Menu | Ctrl+Option+O |
+| Tools Menu   | Ctrl+Option+T |
+| Help Menu    | Ctrl+Option+H |
