@@ -65,6 +65,8 @@ library(readxl)
 library(lubridate)
 library(stringr)
 library(purrr)
+library(gt)
+library(jmv)
 
 
 ## Set working directory
@@ -465,9 +467,7 @@ convert_col_type <- function(data, codebook = codebook_dvep) {
                 .fns = ~ convert_column(.x, codebook$col_types[which(codebook$variable == cur_column())])
             )
         )
-    glimpse(data)
 }
-
 convert_col_type(data)
 ```
 
@@ -503,6 +503,46 @@ label_variables <- function(data, codebook, language = "pt") {
 
   return(data)
 }
+```
+
+label_variables2()
+
+```{r, eval=FALSE, echo=FALSE}
+label_variables2 <- function(data, codebook, language = "pt") {
+  # Determine the label column based on the language argument
+  label_column <- ifelse(language == "en", "label_en", "label_pt")
+  
+  # Check if the label column exists in the codebook
+  if (!(label_column %in% names(codebook))) {
+    stop(paste("Codebook does not contain the column:", label_column))
+  }
+  
+  # Ensure column names are consistent
+  codebook_vars <- trimws(codebook$variable)
+  codebook_labels <- codebook[[label_column]]
+  
+  # Identify common variables in both data and codebook
+  common_vars <- intersect(names(data), codebook_vars)
+  
+  # Check if there are common variables
+  if (length(common_vars) == 0) {
+    stop("No matching variables found between the data and the codebook.")
+  }
+  
+  # Loop through the common variables and assign labels
+  for (var in common_vars) {
+    # Ensure label is unique
+    label <- codebook_labels[which(codebook_vars == var)]
+    if (length(label) != 1) {
+      warning(paste("Variable", var, "does not have a unique label in the codebook."))
+    } else {
+      attr(data[[var]], "label") <- label
+    }
+  }
+  
+  return(data)
+}
+
 ```
 
 #### label_choices()
@@ -766,12 +806,17 @@ eleg_exclusive <- filter_data("eleg",0) |>
     mutate(
         intervention_duration = as.numeric(conclusion_date - intervention_start_date)
         )|> 
-    select(record_id, allocation_group, completed_intervention, intervention_duration, age, sex)
+    select(record_id, allocation_group, completed_intervention, intervention_duration, non_completion_reason, age, sex)
 
 visit_1_exclusive <- filter_data("V1",0) |> 
     select(
         record_id,
         race:income_level
+    ) |> 
+# codebook_dvep$choices[codebook_dvep$variable == "race"]
+# [1] "c41260, Asiático | c41261, Branco origem europeia | c128994, Branco origem América do Sul | c16352, Negro | c17998, desconhecido | c17649, Outro"
+    mutate(
+        race = if_else(race == "c41261", "c128994", race)
     )
 
 data_d1_exclusive <- eleg_exclusive |> 
@@ -779,6 +824,7 @@ data_d1_exclusive <- eleg_exclusive |>
         visit_1_exclusive,
         by = join_by(record_id)
 )
+
 rm(eleg_exclusive)
 rm(visit_1_exclusive)
 ```
@@ -955,6 +1001,7 @@ data_d1_exclusive <- data_d1_exclusive |>
         drugs_w_loss = as.factor(drugs_w_loss),
         drugs_w_gain = as.factor(drugs_w_gain)
     )
+data_d1_exclusive <- label_variables(data_d1_exclusive, codebook_dvep)
 
 ```
 
@@ -1283,4 +1330,274 @@ rm(instruments)
 # com o nome correspondente ao instrumento.
 #list2env(data_instruments, .GlobalEnv)
 
+```
+
+### Exports tibbles to `Generated data` folder
+
+```{r}
+output_dir <- '/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Generated data'
+
+
+# Iterate over `data_instruments`
+for (instr_name in names(data_instruments)) {
+    # Create the file path for the current instrument
+    file_path <- file.path(output_dir, paste0(instr_name, ".csv"))
+    
+    # Write the tibble to a CSV file
+    write_csv(data_instruments[[instr_name]], file_path)
+    
+    # Print a message confirming the export
+    message("Exported: ", file_path)
+}
+
+# Additional tibbles
+write_csv(data_bia, file.path(output_dir, "data_bia.csv"))
+write_csv(data_d1_exclusive, file.path(output_dir, "data_d1_exclusive.csv"))
+write_csv(data_filtered, file.path(output_dir, "data_filtered.csv"))
+
+rm(output_dir)
+rm(file_path)
+rm(instr_name)
+```
+
+------------------------------------------------------------------------
+
+# DATA ANALYSIS
+
+## Functions
+
+### summarize_numerical()
+
+`summarize_numerical(data, group_col = NULL, use_labels = TRUE)`
+
+Arguments: `data`: dataframe `group_col = NULL`: grouping column; defaults to NULL `use_labels = TRUE`: If set to true, uses labels instead of variable names
+
+```{r}
+summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
+  # Extract variable labels, falling back to variable names if labels are missing
+  variable_labels <- sapply(names(data), function(var) {
+    label <- attr(data[[var]], "label")
+    if (is.null(label) || !use_labels) var else label
+  }, simplify = TRUE)
+  
+  # Identify numeric columns
+  numeric_cols <- data %>% select(where(is.numeric)) %>% names()
+  
+  if (!is.null(group_col)) {
+    # Grouped summary
+    summary <- data %>%
+      group_by(across(all_of(group_col))) %>%
+      summarise(across(
+        all_of(numeric_cols),
+        ~ paste0(
+          round(mean(.x, na.rm = TRUE), 1), 
+          " (", 
+          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          "–", 
+          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          ")"
+        ),
+        .names = "{.col}"
+      )) %>%
+      pivot_longer(-all_of(group_col), names_to = "Variable", values_to = "Value") %>%
+      mutate(Variable = variable_labels[Variable]) # Replace variable names with labels/names
+  } else {
+    # Ungrouped summary
+    summary <- data %>%
+      summarise(across(
+        all_of(numeric_cols),
+        ~ paste0(
+          round(mean(.x, na.rm = TRUE), 1), 
+          " (", 
+          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          "–", 
+          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          ")"
+        ),
+        .names = "{.col}"
+      )) %>%
+      pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
+      mutate(Variable = variable_labels[Variable]) # Replace variable names with labels/names
+  }
+  
+  return(summary)
+}
+```
+
+------------------------------------------------------------------------
+
+### summarize_categorical()
+
+`summarize_categorical(data, group_col = NULL, use_labels = TRUE)`
+
+Arguments: - `data`: dataframe - `group_col = NULL`: grouping column; defaults to NULL - `use_labels = TRUE`: If set to true, uses labels instead of variable names
+
+```{r}
+summarize_categorical <- function(data, group_col = NULL, use_labels = TRUE) {
+  # Extract variable labels, falling back to variable names if labels are missing
+  variable_labels <- sapply(names(data), function(var) {
+    label <- attr(data[[var]], "label")
+    if (is.null(label) || !use_labels) var else label
+  }, simplify = TRUE)
+  
+  # Identify categorical columns
+  categorical_cols <- data %>% select(where(~ is.character(.x) || is.factor(.x))) %>% names()
+  
+  if (!is.null(group_col)) {
+    # For grouped data
+    summary <- lapply(categorical_cols, function(col) {
+      data %>%
+        group_by(across(all_of(group_col)), .drop = FALSE) %>%
+        count(!!sym(col), .drop = FALSE, name = "Freq") %>%
+        mutate(
+          Percent = round(100 * Freq / sum(Freq), 1),
+          Variable = variable_labels[col] # Use labels or names
+        ) %>%
+        rename(Level = !!sym(col)) %>%
+        ungroup()
+    }) %>%
+      bind_rows()
+  } else {
+    # For ungrouped data
+    summary <- lapply(categorical_cols, function(col) {
+      data %>%
+        count(!!sym(col), .drop = FALSE, name = "Freq") %>%
+        mutate(
+          Percent = round(100 * Freq / sum(Freq), 1),
+          Variable = variable_labels[col] # Use labels or names
+        ) %>%
+        rename(Level = !!sym(col))
+    }) %>%
+      bind_rows()
+  }
+  
+  # Arrange columns for consistency
+  summary <- summary %>%
+    select(Variable, Level, Freq, Percent, everything())
+  
+  return(summary)
+}
+
+```
+
+------------------------------------------------------------------------
+
+### compare_groups()
+
+```{r}
+compare_groups <- function(data, group_col = "allocation_group", use_labels = TRUE) {
+  
+  # Extract variable labels, default to variable names if labels are missing
+  # If use_labels = TRUE, fetch the 'label' attribute for each variable. 
+  # If no label exists or use_labels = FALSE, default to the variable name.
+  variable_labels <- sapply(names(data), function(var) {
+    label <- attr(data[[var]], "label") # Check for the 'label' attribute
+    if (is.null(label) || !use_labels) var else label # Use variable name if label is missing
+  }, simplify = TRUE)
+  
+  # Prepare results storage
+  # Create an empty data.frame to store test results with predefined columns
+  results <- data.frame(
+    Variable = character(), # The variable being tested
+    Test = character(),     # The type of test (t-test or chi-squared/Fisher's)
+    Statistic = numeric(),  # The test statistic value
+    P_value = numeric(),    # The p-value from the test
+    stringsAsFactors = FALSE # Ensure strings are not converted to factors
+  )
+  
+  # Loop through all columns in the data, excluding the grouping column
+  for (var in setdiff(names(data), group_col)) {
+    if (is.numeric(data[[var]])) {
+      # Run t-test for numeric variables
+      # Compares the means of the variable between the groups in group_col
+      test_result <- t.test(data[[var]] ~ data[[group_col]])
+      
+      # Append the t-test results to the results data.frame
+      results <- rbind(results, data.frame(
+        Variable = variable_labels[var], # Use label or name
+        Test = "t-test",                 # Specify the test type
+        Statistic = round(test_result$statistic, 2), # Round the t-statistic
+        P_value = round(test_result$p.value, 4)     # Round the p-value
+      ))
+    } else if (is.factor(data[[var]]) || is.character(data[[var]])) {
+      # Run chi-squared test for categorical variables
+      # Create a contingency table for the variable and the group_col
+      contingency_table <- table(data[[var]], data[[group_col]])
+      
+      # Check expected counts to decide between chi-squared and Fisher's test
+      if (any(chisq.test(contingency_table)$expected < 5)) {
+        # Use Fisher's exact test when expected counts are too small
+        test_result <- fisher.test(contingency_table)
+        
+        # Append the Fisher's exact test results to the results data.frame
+        results <- rbind(results, data.frame(
+          Variable = variable_labels[var], # Use label or name
+          Test = "Fisher's exact test",    # Specify the test type
+          Statistic = NA,                  # No statistic for Fisher's test
+          P_value = round(test_result$p.value, 4) # Round the p-value
+        ))
+      } else {
+        # Use chi-squared test when expected counts are sufficient
+        test_result <- tryCatch(
+          chisq.test(contingency_table), # Perform the chi-squared test
+          error = function(e) list(statistic = NA, p.value = NA) # Handle potential errors
+        )
+        
+        # Append the chi-squared test results to the results data.frame
+        results <- rbind(results, data.frame(
+          Variable = variable_labels[var], # Use label or name
+          Test = "Chi-squared test",       # Specify the test type
+          Statistic = round(test_result$statistic, 2), # Round the chi-squared statistic
+          P_value = round(test_result$p.value, 4)     # Round the p-value
+        ))
+      }
+    }
+  }
+  
+  # Return results as a gt table
+  # Convert the results data.frame into a gt table for better visualization
+  gt_table <- results %>%
+    gt() %>%
+    tab_header(
+      title = "Hypothesis Test Results",       # Main title for the table
+      subtitle = paste("Comparison of", group_col) # Subtitle indicating the grouping variable
+    ) %>%
+    cols_label(
+      Variable = "Variable",          # Rename the Variable column
+      Test = "Test Type",             # Rename the Test column
+      Statistic = "Test Statistic",   # Rename the Statistic column
+      P_value = "P-value"             # Rename the P_value column
+    )
+  
+  return(gt_table) # Return the formatted gt table
+}
+```
+
+1.  **Extract Variable Labels**:
+    -   Fetches the `label` attribute for each variable.
+    -   If no label exists or if `use_labels = FALSE`, defaults to the variable name.
+2.  **Prepare Results Storage**:
+    -   An empty `data.frame` is created to store test results, including the variable name/label, test type, test statistic, and p-value.
+3.  **Loop Through Variables**:
+    -   **Numeric Variables**:
+        -   A two-sample t-test is run to compare means between groups.
+        -   Test results (t-statistic and p-value) are appended to the results `data.frame`.
+    -   **Categorical Variables**:
+        -   A contingency table is created for the variable and the grouping column.
+        -   If expected counts in the table are too small, Fisher's exact test is used.
+        -   Otherwise, a chi-squared test is performed.
+        -   Results are appended to the results `data.frame`.
+4.  **Error Handling**:
+    -   The chi-squared test may fail for certain edge cases (e.g., empty levels). Errors are caught and handled gracefully by returning `NA` for the statistic and p-value.
+5.  **Output as a `gt` Table**:
+    -   The `results` `data.frame` is converted to a nicely formatted `gt` table with a title and custom column labels.
+
+Example Usage
+
+```{r, eval=FALSE}
+# Run the function and display results
+test_results <- compare_groups(data_d1_exclusive)
+
+# Print the results
+print(test_results)
 ```

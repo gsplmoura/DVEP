@@ -1,0 +1,229 @@
+---
+title: "DVEP_2_Analysis"
+author: "Moura, G.S.P.L"
+date: "2025-01-07"
+output: html_document
+---
+
+```{r}
+
+```
+
+# Baseline
+
+## Participant's characteristics
+
+### Whole sample
+`summarize_numerical()`
+```{r}
+baseline_num <- summarize_numerical(data_d1_exclusive)
+baseline_num %>%
+  gt() %>%
+  tab_header(
+    title = "Numerical Variable Summary",
+    subtitle = "Overall Summary"
+  )
+```
+`summarize_categorical()`
+```{r}
+baseline_cat <- summarize_categorical(data_d1_exclusive)
+baseline_cat %>%
+  gt() %>%
+  tab_header(
+    title = "Categorical Variable Summary",
+    subtitle = "Overall Summary"
+  )
+```
+
+### By allocation group
+`summarize_numerical()`
+```{r}
+baseline_num_group <- summarize_numerical(data_d1_exclusive, "allocation_group")
+baseline_num_group %>%
+  gt() %>%
+  tab_header(
+    title = "Numerical Variable Summary",
+    subtitle = "Overall Summary"
+  )
+```
+`summarize_categorical()`
+```{r}
+baseline_cat_group <- summarize_categorical(data_d1_exclusive, "allocation_group")
+baseline_cat_group %>%
+  gt() %>%
+  tab_header(
+    title = "Categorical Variable Summary",
+    subtitle = "Overall Summary"
+  )
+```
+
+### Compare groups
+`compare_groups`
+```{r}
+# Run the function and display results
+group_comparison <- compare_groups(data_d1_exclusive)
+
+# Print the table
+print(group_comparison)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r, echo= FALSE, results='hide'}
+max(data_d1_exclusive$record_id) # Número de participantes
+summary(data_d1_exclusive$sex); (65/75)*100 # Tabela de frequência de sexo e porcentagem do sexo feminino
+mean(data_d1_exclusive$age); sd(data_d1_exclusive$age) # Idade (média e DP)
+```
+
+Um total de 75 participantes de pesquisa foram incluídos neste estudo, sendo 65 (86,6%) do sexo feminino. A média da idade dos participantes foi de 40,6 anos (DP 10,2 anos).
+
+### Age
+
+```{r}
+jmv::descriptives(
+    data = data_d1_exclusive,
+    vars = age,
+    se = TRUE,
+    ci = TRUE,
+    sw = TRUE,
+    extreme = TRUE)
+```
+
+```{r}
+#Graphs
+jmv::descriptives(
+    data = data_d1_exclusive,
+    vars = age,
+    hist = TRUE,
+    dens = TRUE,
+    box = TRUE,
+    violin = TRUE,
+    dot = TRUE,
+    boxMean = TRUE,
+    qq = TRUE,
+    n = FALSE,
+    missing = FALSE,
+    mean = FALSE,
+    median = FALSE,
+    sd = FALSE,
+    min = FALSE,
+    max = FALSE)
+```
+
+### Continuos
+
+```{r}
+jmv::descriptives(
+    data = data_d1_exclusive,
+    vars = vars(age, education_years, household_size),
+    n = FALSE,
+    missing = FALSE,
+    ci = TRUE,
+    sw = TRUE
+    )
+```
+
+```{r}
+jmv::descriptives(
+    data = data_d1_exclusive,
+    vars = vars(sex, race, marital_status, employment_status, income_level),
+    freq = TRUE,
+    desc = "rows")
+```
+
+A tabela 1 contem as características do baseline dos participantes de pesquisa.
+
+## Inclusão
+
+Os participantes foram incluídos no estudo entre 09/08/2023 e 26/07/2024. As datas em que os participantes completaram a intervenção foram entre 14/11/2023 e 25/10/2024.
+
+```{r}
+# Datas de inclusão e conclusão
+summary(data$consent_date)
+summary(data$conclusion_date)
+
+# Completaram a intervenção
+summary(data_d1_exclusive$completed_intervention)
+```
+
+## Abandonos
+
+Dos participantes incluídos, 23 (30.6%) não completaram os três meses de intervenção. A taxa de abandono foi maior nos homens, com 4 abandonos (40% dos homens incluídos), sendo 2 de cada grupo. No sexo feminino, a taxa de abandono foi de 29.2%, sendo oito do grupo placebo e 11 do grupo intervenção.
+
+```{r}
+# Abandonos
+## Taxa de abandono
+(23/75)*100 
+
+## Abandono por sexo e grupo de alocação
+data_d1_exclusive |> 
+    filter(completed_intervention == "Não") |> 
+    count(sex, allocation_group, name = "Total")
+
+## Taxa de abandono por sexo
+(4/10)*100 # Homens
+(19/65)*100 # Mulheres
+
+table(data$non_completion_reason)
+```
+
+
+

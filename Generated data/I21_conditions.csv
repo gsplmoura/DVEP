@@ -1,0 +1,256 @@
+comorbidity_yn,comorbidity_additional_yn,common_comorbidities,comorbidities_diagnosis_duration,comorbidities_diagnosis_duration_unit,comorbidities_listed_concat,comorbidities_metadata,conditions_complete
+1,NA,C3117,1,1,NA,NA,2
+NA,1,C26800,1,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 1 Ano(s),NA,2
+NA,1,C3961,8,3,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 1 Ano(s)  C26800 - Hipotireoidismo 1 Ano(s),NA,2
+NA,1,C113101,8,3,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 1 Ano(s)  C26800 - Hipotireoidismo 1 Ano(s)  C3961 - Hiperuricemia 8 Mês(es),NA,2
+NA,1,C37971,0,2,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 1 Ano(s)  C26800 - Hipotireoidismo 1 Ano(s)  C3961 - Hiperuricemia 8 Mês(es)  C113101 - Resistência à insulina (pré-diabetes) 8 Mês(es),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 1 Ano(s)  C26800 - Hipotireoidismo 1 Ano(s)  C3961 - Hiperuricemia 8 Mês(es)  C113101 - Resistência à insulina (pré-diabetes) 8 Mês(es)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 0 Dia(s),NA,2
+1,NA,C37967,0,2,NA,NA,2
+NA,1,C84774,0,2,COMORBIDADES JÁ LISTADAS  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 0 Dia(s),NA,2
+NA,1,C37971,0,2,COMORBIDADES JÁ LISTADAS  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 0 Dia(s)  C84774 - Hipoalfalipoproteinemia (HDL H < 40 mg/dl / M < 50 mg/dl) 0 Dia(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 0 Dia(s)  C84774 - Hipoalfalipoproteinemia (HDL H < 40 mg/dl / M < 50 mg/dl) 0 Dia(s)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 0 Dia(s),NA,2
+1,NA,C26781,2,1,NA,NA,2
+NA,1,C3117,1,1,C26781 - Doença do refluxo gastroesofágico,NA,2
+NA,NA,C3293,18,1,C26781 - Doença do refluxo gastroesofágico  C3117 - Hipertensão,NA,2
+NA,1,C113101,5,3,COMORBIDADES JÁ LISTADAS  C26781 - Doença do refluxo gastroesofágico 2 Ano(s)  C3117 - Hipertensão 1 Ano(s)  C3293 - Osteoartrite 18 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26781 - Doença do refluxo gastroesofágico 2 Ano(s)  C3117 - Hipertensão 1 Ano(s)  C3293 - Osteoartrite 18 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 5 Mês(es),NA,2
+1,NA,C26800,5,1,NA,NA,2
+NA,1,C37967,0,2,COMORBIDADES JÁ LISTADAS  C26800 - Hipotireoidismo 5 Ano(s),NA,2
+NA,1,C114667,5,1,COMORBIDADES JÁ LISTADAS  C26800 - Hipotireoidismo 5 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 0 Dia(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26800 - Hipotireoidismo 5 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 0 Dia(s)  C114667 - Síndrome dos ovários policísticos 5 Ano(s),NA,2
+1,NA,C26696,14,3,NA,NA,2
+NA,1,C37967,0,2,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 14 Mês(es),NA,2
+NA,1,C89715,8,1,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 14 Mês(es)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 0 Dia(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 14 Mês(es)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 0 Dia(s)  C89715 - Enxaqueca 8 Ano(s),NA,2
+1,NA,C26800,5,1,NA,NA,2
+NA,1,C79532,27,1,COMORBIDADES JÁ LISTADAS  C26800 - Hipotireoidismo 5 Ano(s),NA,2
+NA,1,C26781,3,1,COMORBIDADES JÁ LISTADAS  C26800 - Hipotireoidismo 5 Ano(s)  C79532 - Rinite alérgica 27 Ano(s),NA,2
+NA,1,C89715,20,1,COMORBIDADES JÁ LISTADAS  C26800 - Hipotireoidismo 5 Ano(s)  C79532 - Rinite alérgica 27 Ano(s)  C26781 - Doença do refluxo gastroesofágico 3 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26800 - Hipotireoidismo 5 Ano(s)  C79532 - Rinite alérgica 27 Ano(s)  C26781 - Doença do refluxo gastroesofágico 3 Ano(s)  C89715 - Enxaqueca 20 Ano(s),NA,2
+1,NA,C26800,3,3,NA,NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26800 - Hipotireoidismo 3 Mês(es),NA,2
+1,NA,C3117,12,1,NA,NA,2
+NA,1,C26696,4,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 12 Ano(s),NA,2
+NA,1,C113101,0,2,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 12 Ano(s)  C26696 - Ansiedade 4 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 12 Ano(s)  C26696 - Ansiedade 4 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 0 Dia(s),NA,2
+1,NA,C37967,15,1,NA,NA,2
+NA,1,C113101,0,2,COMORBIDADES JÁ LISTADAS  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 15 Ano(s),NA,2
+NA,1,C37971,15,1,COMORBIDADES JÁ LISTADAS  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 15 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 0 Dia(s),NA,2
+NA,1,C26696,25,1,COMORBIDADES JÁ LISTADAS  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 15 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 0 Dia(s)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 15 Ano(s),NA,2
+NA,1,C2983,7,3,COMORBIDADES JÁ LISTADAS  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 15 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 0 Dia(s)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 15 Ano(s)  C26696 - Ansiedade 25 Ano(s)      C2983 - Nefrolitíase 7 Mês(es),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 15 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 0 Dia(s)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 15 Ano(s)  C26696 - Ansiedade 25 Ano(s)  C2983 - Nefrolitíase 7 Mês(es),NA,2
+1,NA,C3117,15,1,NA,NA,2
+NA,1,C26696,5,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 15 Ano(s),NA,2
+NA,1,C37967,6,3,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 15 Ano(s)  C26696 - Ansiedade 5 Ano(s),NA,2
+NA,1,C37971,0,2,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 15 Ano(s)  C26696 - Ansiedade 5 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 6 Mês(es),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 15 Ano(s)  C26696 - Ansiedade 5 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 6 Mês(es)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 0 Dia(s),NA,2
+1,NA,C3117,5,1,NA,NA,2
+NA,1,C113101,5,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s),NA,2
+NA,1,C87497,10,3,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 5 Ano(s),NA,2
+NA,1,C26800,4,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 5 Ano(s)  C87497 - Fibromialgia 10 Mês(es),NA,2
+NA,1,C2982,5,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 5 Ano(s)  C87497 - Fibromialgia 10 Mês(es)  C26800 - Hipotireoidismo 4 Ano(s),NA,2
+NA,1,C127822,1,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 5 Ano(s)  C87497 - Fibromialgia 10 Mês(es)  C26800 - Hipotireoidismo 4 Ano(s)  C2982 - Depressão 5 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 5 Ano(s)  C87497 - Fibromialgia 10 Mês(es)  C26800 - Hipotireoidismo 4 Ano(s)  C2982 - Depressão 5 Ano(s)  C127822 - Insuficiência venosa crônica 1 Ano(s),NA,2
+1,NA,C3293,2,1,NA,NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3293 - Osteoartrite 2 Ano(s),NA,2
+1,NA,C3117,10,1,NA,NA,2
+NA,1,C113101,2,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 10 Ano(s),NA,2
+NA,1,C37967,1,3,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 10 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 2 Ano(s),NA,2
+0,NA,NA,NA,NA,NA,NA,2
+0,NA,NA,NA,NA,NA,NA,2
+1,NA,C3117,11,1,NA,NA,2
+NA,1,C26747,11,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 11 Ano(s),NA,2
+NA,1,C26800,15,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 11 Ano(s)  C26747 - Diabetes mellitus tipo 2 11 Ano(s),NA,2
+NA,1,C87497,3,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 11 Ano(s)  C26747 - Diabetes mellitus tipo 2 11 Ano(s)  C26800 - Hipotireoidismo 15 Ano(s),NA,2
+NA,1,C98945,15,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 11 Ano(s)  C26747 - Diabetes mellitus tipo 2 11 Ano(s)  C26800 - Hipotireoidismo 15 Ano(s)  C87497 - Fibromialgia 3 Ano(s),NA,2
+NA,1,C9224,15,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 11 Ano(s)  C26747 - Diabetes mellitus tipo 2 11 Ano(s)  C26800 - Hipotireoidismo 15 Ano(s)  C87497 - Fibromialgia 3 Ano(s)  C98945 - Hérnia de Hiato 15 Ano(s),NA,2
+NA,1,C26780,15,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 11 Ano(s)  C26747 - Diabetes mellitus tipo 2 11 Ano(s)  C26800 - Hipotireoidismo 15 Ano(s)  C87497 - Fibromialgia 3 Ano(s)  C98945 - Hérnia de Hiato 15 Ano(s)  C9224 - Esofagite 15 Ano(s),NA,2
+NA,1,C3434,10,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 11 Ano(s)  C26747 - Diabetes mellitus tipo 2 11 Ano(s)  C26800 - Hipotireoidismo 15 Ano(s)  C87497 - Fibromialgia 3 Ano(s)  C98945 - Hérnia de Hiato 15 Ano(s)  C9224 - Esofagite 15 Ano(s)  C26780 - Gastrite crônica 15 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 11 Ano(s)  C26747 - Diabetes mellitus tipo 2 11 Ano(s)  C26800 - Hipotireoidismo 15 Ano(s)  C87497 - Fibromialgia 3 Ano(s)  C98945 - Hérnia de Hiato 15 Ano(s)  C9224 - Esofagite 15 Ano(s)  C26780 - Gastrite crônica 15 Ano(s)  C3434 - Leiomioma uterino 10 Ano(s),NA,2
+1,NA,C26747,29,1,NA,NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26747 - Diabetes mellitus tipo 2 29 Ano(s),NA,2
+0,NA,NA,NA,NA,NA,NA,2
+1,NA,C87497,6,1,NA,NA,2
+NA,1,C26781,6,1,COMORBIDADES JÁ LISTADAS  C87497 - Fibromialgia 6 Ano(s),NA,2
+NA,1,C84444,1,1,COMORBIDADES JÁ LISTADAS  C87497 - Fibromialgia 6 Ano(s)  C26781 - Doença do refluxo gastroesofágico 6 Ano(s),NA,2
+NA,1,C4922,2,1,"COMORBIDADES JÁ LISTADAS  C87497 - Fibromialgia 6 Ano(s)  C26781 - Doença do refluxo gastroesofágico 6 Ano(s)  C84444 - Doença hepática gordurosa não alcoólica, Esteatose 1 Ano(s)",NA,2
+NA,0,NA,NA,NA,"COMORBIDADES JÁ LISTADAS  C87497 - Fibromialgia 6 Ano(s)  C26781 - Doença do refluxo gastroesofágico 6 Ano(s)  C84444 - Doença hepática gordurosa não alcoólica, Esteatose 1 Ano(s)  C4922 - Diverticulose 2 Ano(s)",NA,2
+1,NA,C79532,15,1,NA,NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C79532 - Rinite alérgica 15 Ano(s),NA,2
+1,NA,C3434,17,1,NA,NA,2
+NA,1,C26862,11,1,COMORBIDADES JÁ LISTADAS  C3434 - Leiomioma uterino 17 Ano(s),NA,2
+NA,1,C114667,14,1,COMORBIDADES JÁ LISTADAS  C3434 - Leiomioma uterino 17 Ano(s)  C26862 - Endometriose 11 Ano(s),NA,2
+NA,1,C39293,1,1,COMORBIDADES JÁ LISTADAS  C3434 - Leiomioma uterino 17 Ano(s)  C26862 - Endometriose 11 Ano(s)  C114667 - Síndrome dos ovários policísticos 14 Ano(s),NA,2
+NA,1,C26780,5,1,COMORBIDADES JÁ LISTADAS  C3434 - Leiomioma uterino 17 Ano(s)  C26862 - Endometriose 11 Ano(s)  C114667 - Síndrome dos ovários policísticos 14 Ano(s)  C39293 - Helicobacter Pylori Infection (Infecção por H. pylori) 1 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3434 - Leiomioma uterino 17 Ano(s)  C26862 - Endometriose 11 Ano(s)  C114667 - Síndrome dos ovários policísticos 14 Ano(s)  C39293 - Helicobacter Pylori Infection (Infecção por H. pylori) 1 Ano(s)  C26780 - Gastrite crônica 5 Ano(s),NA,2
+1,NA,C89715,30,1,NA,NA,2
+NA,1,C41830,10,1,COMORBIDADES JÁ LISTADAS  C89715 - Enxaqueca,NA,2
+NA,1,C3298,6,1,COMORBIDADES JÁ LISTADAS  C89715 - Enxaqueca 30 Ano(s)  C41830 - Dor nas costas 10 Ano(s),NA,2
+NA,1,C26862,1,1,COMORBIDADES JÁ LISTADAS  C89715 - Enxaqueca 30 Ano(s)  C41830 - Dor nas costas 10 Ano(s)  C3298 - Osteoporose 6 Ano(s),NA,2
+NA,1,C114667,1,1,COMORBIDADES JÁ LISTADAS  C89715 - Enxaqueca 30 Ano(s)  C41830 - Dor nas costas 10 Ano(s)  C3298 - Osteoporose 6 Ano(s)  C26862 - Endometriose 1 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C89715 - Enxaqueca 30 Ano(s)  C41830 - Dor nas costas 10 Ano(s)  C3298 - Osteoporose 6 Ano(s)  C26862 - Endometriose 1 Ano(s)  C114667 - Síndrome dos ovários policísticos 1 Ano(s),NA,2
+1,NA,C98945,5,1,NA,NA,2
+NA,1,C26781,5,1,COMORBIDADES JÁ LISTADAS  C98945 - Hérnia de Hiato 5 Ano(s),NA,2
+NA,1,C9224,5,1,COMORBIDADES JÁ LISTADAS  C98945 - Hérnia de Hiato 5 Ano(s)  C26781 - Doença do refluxo gastroesofágico 5 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C98945 - Hérnia de Hiato 5 Ano(s)  C26781 - Doença do refluxo gastroesofágico 5 Ano(s)  C9224 - Esofagite 5 Ano(s),NA,2
+0,NA,NA,NA,NA,NA,NA,2
+1,NA,C26722,20,1,NA,NA,2
+NA,1,C114667,2,1,COMORBIDADES JÁ LISTADAS  C26722 - Bronquite crônica 20 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26722 - Bronquite crônica 20 Ano(s)  C114667 - Síndrome dos ovários policísticos 2 Ano(s),NA,2
+1,NA,C26696,3,1,NA,NA,2
+NA,1,C37967,8,3,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 3 Ano(s),NA,2
+NA,1,C26747,1,3,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 3 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 8 Mês(es),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 3 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 8 Mês(es)  C26747 - Diabetes mellitus tipo 2 1 Mês(es),NA,2
+0,NA,NA,NA,NA,NA,NA,2
+1,NA,C37967,2,1,NA,NA,2
+NA,1,C37971,1,1,COMORBIDADES JÁ LISTADAS  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 2 Ano(s),NA,2
+NA,1,C114667,16,1,COMORBIDADES JÁ LISTADAS  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 2 Ano(s)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 1 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 2 Ano(s)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 1 Ano(s)  C114667 - Síndrome dos ovários policísticos 16 Ano(s),NA,2
+0,NA,NA,NA,NA,NA,NA,2
+1,NA,C3117,26,1,NA,NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 26 Ano(s),NA,2
+1,NA,C113101,8,1,NA,NA,2
+NA,1,C87497,27,1,COMORBIDADES JÁ LISTADAS  C113101 - Resistência à insulina (pré-diabetes) 8 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C113101 - Resistência à insulina (pré-diabetes) 8 Ano(s)  C87497 - Fibromialgia 27 Ano(s),NA,2
+1,NA,C79532,15,1,NA,NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C79532 - Rinite alérgica 15 Ano(s),NA,2
+1,NA,C3117,5,1,NA,NA,2
+NA,1,C26785,5,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão,NA,2
+NA,1,C2982,2,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão    C26785 - Goiter (Bócio),NA,2
+NA,1,C37967,2,3,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C26785 - Goiter (Bócio) 5 Ano(s)  C2982 - Depressão 2 Ano(s),NA,2
+NA,1,C3293,20,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C26785 - Goiter (Bócio) 5 Ano(s)  C2982 - Depressão 2 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 2 Mês(es),NA,2
+NA,1,C41830,20,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C26785 - Goiter (Bócio) 5 Ano(s)  C2982 - Depressão 2 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 2 Mês(es)  C3293 - Osteoartrite 20 Ano(s),NA,2
+NA,1,C127822,20,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C26785 - Goiter (Bócio) 5 Ano(s)  C2982 - Depressão 2 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 2 Mês(es)  C3293 - Osteoartrite 20 Ano(s)  C41830 - Dor nas costas 20 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C26785 - Goiter (Bócio) 5 Ano(s)  C2982 - Depressão 2 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 2 Mês(es)  C3293 - Osteoartrite 20 Ano(s)  C41830 - Dor nas costas 20 Ano(s)  C127822 - Insuficiência venosa crônica 20 Ano(s),NA,2
+1,NA,C26696,12,1,NA,NA,2
+NA,1,C2982,12,1,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 12 Ano(s)  C2982 - Depressão 12 Ano(s),NA,2
+NA,1,C37967,3,1,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 12 Ano(s)  C2982 - Depressão 12 Ano(s),NA,2
+NA,1,C37971,3,1,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 12 Ano(s)  C2982 - Depressão 12 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 3 Ano(s),NA,2
+NA,1,C89715,6,1,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 12 Ano(s)  C2982 - Depressão 12 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 3 Ano(s)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 3 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 12 Ano(s)  C2982 - Depressão 12 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 3 Ano(s)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 3 Ano(s)  C89715 - Enxaqueca 6 Ano(s),NA,2
+1,NA,C89715,22,1,NA,NA,2
+NA,1,C41830,23,1,COMORBIDADES JÁ LISTADAS  C89715 - Enxaqueca 22 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C89715 - Enxaqueca 22 Ano(s)  C41830 - Dor nas costas 23 Ano(s),NA,2
+1,NA,C2982,16,1,NA,NA,2
+NA,1,C87497,2,1,COMORBIDADES JÁ LISTADAS  C2982 - Depressão 16 Ano(s),NA,2
+NA,1,C28286,16,1,COMORBIDADES JÁ LISTADAS  C2982 - Depressão 16 Ano(s)  C87497 - Fibromialgia 2 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C2982 - Depressão 16 Ano(s)  C87497 - Fibromialgia 2 Ano(s)  C28286 - Insônia 16 Ano(s),NA,2
+1,NA,C113101,5,1,NA,NA,2
+NA,1,C37971,2,1,COMORBIDADES JÁ LISTADAS  C113101 - Resistência à insulina (pré-diabetes) 5 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C113101 - Resistência à insulina (pré-diabetes) 5 Ano(s)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 2 Ano(s),NA,2
+1,NA,C26696,19,1,NA,NA,2
+NA,1,C2982,19,1,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 19 Ano(s),NA,2
+NA,1,C113101,2,1,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 19 Ano(s)  C2982 - Depressão 19 Ano(s),NA,2
+NA,1,C114667,18,1,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 19 Ano(s)  C2982 - Depressão 19 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 2 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 19 Ano(s)  C2982 - Depressão 19 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 2 Ano(s)  C114667 - Síndrome dos ovários policísticos 18 Ano(s),NA,2
+1,NA,C26722,33,1,NA,NA,2
+NA,1,C28397,2,1,COMORBIDADES JÁ LISTADAS  C26722 - Bronquite crônica 33 Ano(s),NA,2
+NA,1,C26781,2,1,COMORBIDADES JÁ LISTADAS  C26722 - Bronquite crônica 33 Ano(s)  C28397 - Asma 2 Ano(s)  C26781 - Doença do refluxo gastroesofágico 2 Ano(s),NA,2
+NA,1,C3117,3,1,COMORBIDADES JÁ LISTADAS  C26722 - Bronquite crônica 33 Ano(s)  C28397 - Asma 2 Ano(s)  C26781 - Doença do refluxo gastroesofágico 2 Ano(s),NA,2
+NA,1,C26800,42,2,COMORBIDADES JÁ LISTADAS  C26722 - Bronquite crônica 33 Ano(s)  C28397 - Asma 2 Ano(s)  C26781 - Doença do refluxo gastroesofágico 2 Ano(s)  C3117 - Hipertensão 3 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26722 - Bronquite crônica 33 Ano(s)  C28397 - Asma 2 Ano(s)  C26781 - Doença do refluxo gastroesofágico 2 Ano(s)  C3117 - Hipertensão 3 Ano(s)  C26800 - Hipotireoidismo 42 Dia(s),NA,2
+0,NA,NA,NA,NA,NA,NA,2
+1,NA,C3117,3,1,NA,NA,2
+NA,1,C37967,3,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 3 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 3 Ano(s)  C26781 - Doença do refluxo gastroesofágico    C3298 - Osteoporose,NA,2
+NA,1,C26781,20,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 3 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 3 Ano(s)  C26781 - Doença do refluxo gastroesofágico    C3298 - Osteoporose,NA,2
+NA,1,C3298,1,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 3 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 3 Ano(s)  C26781 - Doença do refluxo gastroesofágico 20 Ano(s)  C3298 - Osteoporose,NA,2
+NA,1,C97141,25,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 3 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 3 Ano(s)  C26781 - Doença do refluxo gastroesofágico 20 Ano(s)  C3298 - Osteoporose 1 Ano(s),NA,2
+NA,1,C84444,5,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 3 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 3 Ano(s)  C26781 - Doença do refluxo gastroesofágico 20 Ano(s)  C3298 - Osteoporose 1 Ano(s)  C97141 - Tendinopatia 25 Ano(s),NA,2
+NA,1,C113101,0,2,"COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 3 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 3 Ano(s)  C26781 - Doença do refluxo gastroesofágico 20 Ano(s)  C3298 - Osteoporose 1 Ano(s)  C97141 - Tendinopatia 25 Ano(s)  C84444 - Doença hepática gordurosa não alcoólica, Esteatose 5 Ano(s)",NA,2
+NA,0,NA,NA,NA,"COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 3 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 3 Ano(s)  C26781 - Doença do refluxo gastroesofágico 20 Ano(s)  C3298 - Osteoporose 1 Ano(s)  C97141 - Tendinopatia 25 Ano(s)  C84444 - Doença hepática gordurosa não alcoólica, Esteatose 5 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 0 Dia(s)",NA,2
+0,NA,NA,NA,NA,NA,NA,2
+1,NA,C3434,1.5,1,NA,NA,2
+NA,1,C6996,1.5,1,COMORBIDADES JÁ LISTADAS  C3434 - Leiomioma uterino 1.5 Ano(s),NA,2
+NA,1,C26780,10,1,COMORBIDADES JÁ LISTADAS  C3434 - Leiomioma uterino 1.5 Ano(s)  C6996 - Adenomiose 1.5 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3434 - Leiomioma uterino 1.5 Ano(s)  C6996 - Adenomiose 1.5 Ano(s)  C26780 - Gastrite crônica 10 Ano(s),NA,2
+1,NA,C37971,19,1,NA,NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 19 Ano(s),NA,2
+1,NA,C26696,2,1,NA,NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 2 Ano(s),NA,2
+1,NA,C37971,0,2,NA,NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 0 Dia(s),NA,2
+0,NA,NA,NA,NA,NA,NA,2
+0,NA,NA,NA,NA,NA,NA,2
+1,NA,C37971,0,2,NA,NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 0 Dia(s),NA,2
+1,NA,C2982,6,1,NA,NA,2
+NA,1,C26696,6,1,COMORBIDADES JÁ LISTADAS  C2982 - Depressão 6 Ano(s),NA,2
+NA,1,C37967,0,2,COMORBIDADES JÁ LISTADAS  C2982 - Depressão 6 Ano(s)  C26696 - Ansiedade 6 Ano(s),NA,2
+NA,1,C37971,0,2,COMORBIDADES JÁ LISTADAS  C2982 - Depressão 6 Ano(s)  C26696 - Ansiedade 6 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 0 Dia(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C2982 - Depressão 6 Ano(s)  C26696 - Ansiedade 6 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 0 Dia(s)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 0 Dia(s),NA,2
+0,NA,NA,NA,NA,NA,NA,2
+1,NA,C3117,2,1,NA,NA,2
+NA,1,C26780,20,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 2 Ano(s)  C26780 - Gastrite crônica 20 Ano(s),NA,2
+NA,1,C28286,25,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 2 Ano(s)  C26780 - Gastrite crônica 20 Ano(s),NA,2
+NA,1,C26696,20,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 2 Ano(s)  C26780 - Gastrite crônica 20 Ano(s)  C28286 - Insônia 25 Ano(s)  C26696 - Ansiedade 20 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 2 Ano(s)  C26780 - Gastrite crônica 20 Ano(s)  C28286 - Insônia 25 Ano(s)  C26696 - Ansiedade 20 Ano(s),NA,2
+1,NA,C3117,15,1,NA,NA,2
+NA,1,C37967,1,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 15 Ano(s),NA,2
+NA,1,C37971,0,2,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 15 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 1 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 15 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 1 Ano(s)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 0 Dia(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 15 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 1 Ano(s)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 0 Dia(s),NA,2
+1,NA,C3117,8,1,NA,NA,2
+NA,1,C37967,8,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 8 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 8 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 8 Ano(s),NA,2
+1,NA,C2982,2,1,NA,NA,2
+NA,1,C3293,1,1,COMORBIDADES JÁ LISTADAS  C2982 - Depressão 2 Ano(s),NA,2
+NA,1,C26782,20,1,COMORBIDADES JÁ LISTADAS  C2982 - Depressão 2 Ano(s)  C3293 - Osteoartrite 1 Ano(s)  C26782 - Glaucoma 20 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 0 Dia(s)  C3117 - Hipertensão,NA,2
+NA,1,C113101,0,2,COMORBIDADES JÁ LISTADAS  C2982 - Depressão 2 Ano(s)  C3293 - Osteoartrite 1 Ano(s)  C26782 - Glaucoma,NA,2
+NA,1,C3117,10,1,COMORBIDADES JÁ LISTADAS  C2982 - Depressão 2 Ano(s)  C3293 - Osteoartrite 1 Ano(s)  C26782 - Glaucoma 20 Ano(s)  C113101 - Resistência à insulina (pré-diabetes) 0 Dia(s)  C3117 - Hipertensão 10 Ano(s),NA,2
+1,NA,C3117,5,1,NA,NA,2
+NA,1,C26696,1,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C26696 - Ansiedade    C113101 - Resistência à insulina (pré-diabetes),NA,2
+NA,1,C26747,7,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C26696 - Ansiedade 1 Ano(s)  C113101 - Resistência à insulina (pré-diabetes),NA,2
+NA,1,C26781,5,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C26696 - Ansiedade 1 Ano(s)  C26747 - Diabetes mellitus tipo 2 7 Ano(s),NA,2
+NA,1,C26780,5,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C26696 - Ansiedade 1 Ano(s)  C26747 - Diabetes mellitus tipo 2 7 Ano(s)  C26781 - Doença do refluxo gastroesofágico 5 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 5 Ano(s)  C26696 - Ansiedade 1 Ano(s)  C26747 - Diabetes mellitus tipo 2 7 Ano(s)  C26781 - Doença do refluxo gastroesofágico 5 Ano(s)  C26780 - Gastrite crônica 5 Ano(s),NA,2
+1,NA,C26800,7,1,NA,NA,2
+NA,1,C26696,1,1,COMORBIDADES JÁ LISTADAS  C26800 - Hipotireoidismo 7 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26800 - Hipotireoidismo 7 Ano(s)  C26696 - Ansiedade 1 Ano(s),NA,2
+1,NA,C26747,6,3,NA,NA,2
+NA,1,C37967,6,3,COMORBIDADES JÁ LISTADAS  C26747 - Diabetes mellitus tipo 2 6 Mês(es),NA,2
+NA,1,C37971,6,3,COMORBIDADES JÁ LISTADAS  C26747 - Diabetes mellitus tipo 2 6 Mês(es)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 6 Mês(es),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26747 - Diabetes mellitus tipo 2 6 Mês(es)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 6 Mês(es)  C37971 - Hipertrigliceridemia (TAG ≥ 150 mg/dl) 6 Mês(es),NA,2
+0,NA,NA,NA,NA,NA,NA,2
+1,NA,C127822,1,1,NA,NA,2
+NA,1,C89715,2,1,COMORBIDADES JÁ LISTADAS  C127822 - Insuficiência venosa crônica 1 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C127822 - Insuficiência venosa crônica 1 Ano(s)  C89715 - Enxaqueca 2 Ano(s),NA,2
+1,NA,C3117,8,1,NA,NA,2
+NA,1,C26747,9,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 8 Ano(s),NA,2
+NA,1,C37967,5,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 8 Ano(s)  C26747 - Diabetes mellitus tipo 2 9 Ano(s),NA,2
+NA,1,C3293,5,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 8 Ano(s)  C26747 - Diabetes mellitus tipo 2 9 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 5 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 8 Ano(s)  C26747 - Diabetes mellitus tipo 2 9 Ano(s)  C37967 - Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl) 5 Ano(s)  C3293 - Osteoartrite 5 Ano(s),NA,2
+1,NA,C26696,3,1,NA,NA,2
+NA,1,C28286,3,1,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 3 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 3 Ano(s)  C28286 - Insônia 3 Ano(s),NA,2
+1,NA,C26696,15,1,NA,NA,2
+NA,1,C89715,20,1,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 15 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 15 Ano(s)  C89715 - Enxaqueca 20 Ano(s),NA,2
+1,NA,C28286,NA,NA,NA,NA,2
+NA,1,C3293,NA,NA,COMORBIDADES JÁ LISTADAS  C28286 - Insônia,NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C28286 - Insônia    C3293 - Osteoartrite,NA,2
+1,NA,C3117,10,1,NA,NA,2
+NA,1,C26696,5,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 10 Ano(s)  C26696 - Ansiedade 5 Ano(s),NA,2
+NA,1,C28286,30,1,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 10 Ano(s)  C26696 - Ansiedade 5 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C3117 - Hipertensão 10 Ano(s)  C26696 - Ansiedade 5 Ano(s)  C28286 - Insônia 30 Ano(s),NA,2
+1,NA,C26696,4,1,NA,NA,2
+NA,1,C89715,20,1,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 4 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26696 - Ansiedade 4 Ano(s)  C89715 - Enxaqueca 20 Ano(s),NA,2
+0,NA,NA,NA,NA,NA,NA,2
+0,NA,NA,NA,NA,NA,NA,2
+0,NA,NA,NA,NA,NA,NA,2
+1,NA,C6996,2,1,NA,NA,2
+NA,1,C114667,2,1,COMORBIDADES JÁ LISTADAS  C6996 - Adenomiose 2 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C6996 - Adenomiose 2 Ano(s)  C114667 - Síndrome dos ovários policísticos 2 Ano(s),NA,2
+1,NA,C26747,5,1,NA,NA,2
+NA,1,C26780,2,1,COMORBIDADES JÁ LISTADAS  C26747 - Diabetes mellitus tipo 2 5 Ano(s),NA,2
+NA,1,C97141,20,1,COMORBIDADES JÁ LISTADAS  C26747 - Diabetes mellitus tipo 2 5 Ano(s)  C26780 - Gastrite crônica 2 Ano(s),NA,2
+NA,1,C122822,1,2,COMORBIDADES JÁ LISTADAS  C26747 - Diabetes mellitus tipo 2 5 Ano(s)  C26780 - Gastrite crônica 2 Ano(s)  C97141 - Tendinopatia 20 Ano(s),NA,2
+NA,NA,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26747 - Diabetes mellitus tipo 2 5 Ano(s)  C26780 - Gastrite crônica 2 Ano(s)  C97141 - Tendinopatia 20 Ano(s)  C122822 - Colelitíase 1 Dia(s),NA,2
+1,NA,C84444,2,1,NA,NA,2
+NA,0,NA,NA,NA,"COMORBIDADES JÁ LISTADAS  C84444 - Doença hepática gordurosa não alcoólica, Esteatose 2 Ano(s)",NA,2
+0,NA,NA,NA,NA,NA,NA,2
+1,NA,C26800,12,1,NA,NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C26800 - Hipotireoidismo 12 Ano(s),NA,2
+1,NA,C28397,27,1,NA,NA,2
+NA,1,C6996,2,1,COMORBIDADES JÁ LISTADAS  C28397 - Asma 27 Ano(s),NA,2
+NA,0,NA,NA,NA,COMORBIDADES JÁ LISTADAS  C28397 - Asma 27 Ano(s)  C6996 - Adenomiose 2 Ano(s),NA,2

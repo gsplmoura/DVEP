@@ -1,55 +1,4 @@
----
-title: "DVEP_2_Analysis"
-author: "Moura, G.S.P.L"
-date: "2025-01-07"
-output: html_document
----
 
-# Resultados
-
-```{r, }
-# Número de participantes
-max(d1_exclusive$record_id)
-
-# Tabela de frequência de sexo e porcentagem do sexo feminino
-summary(d1_exclusive$sex); (65/75)*100
-
-# Idade (média e DP)
-mean(d1_exclusive$age); sd(d1_exclusive$age)
-
-# Datas de inclusão e conclusão
-summary(data$consent_date)
-summary(data$conclusion_date)
-
-# Completaram a intervenção
-summary(d1_exclusive$completed_intervention)
-
-# Abandonos
-## Taxa de abandono
-(23/75)*100 
-
-## Abandono por sexo e grupo de alocação
-d1_exclusive |> 
-    filter(completed_intervention == "Não") |> 
-    count(sex, allocation_group, name = "Total")
-
-## Taxa de abandono por sexo
-(4/10)*100 # Homens
-(19/65)*100 # Mulheres
-
-table(data$non_completion_reason)
-
-```
-
-```         
-Um total de 75 participantes de pesquisa foram incluídos neste estudo, sendo 65 (86,6%)  do sexo feminino. A média da idade dos participantes foi de 40,6 anos (DP 10,2 anos).
-
-Os participantes foram incluídos no estudo entre 09/08/2023 e 26/07/2024. As datas em que os participantes completaram a intervenção foram entre 14/11/2023 e 25/10/2024.
-
-Dos participantes incluídos, 23 (30.6%) não completaram os três meses de intervenção. A taxa de abandono foi maior nos homens, com 4 abandonos (40% dos homens incluídos), sendo 2 de cada grupo. No sexo feminino, a taxa de abandono foi de 29.2%, sendo oito do grupo placebo e 11 do grupo intervenção.
-
-
-# Analysis
 
 ```{r}
 library(tidyverse)
@@ -289,7 +238,4 @@ jmv::descriptives(
     extreme = FALSE, # provide N most extreme (highest/lowest) values
     extremeN = 5, # specify the number of extreme values
     )
-```
-
-
 ```
