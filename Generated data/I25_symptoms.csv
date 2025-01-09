@@ -1,0 +1,288 @@
+symptoms_yn,symptoms_additional_yn,symptom_instance_number,symptom_bioportal,symptom_bioportal_specify,symptom_note,symptom_onset_hidden,symptom_onset,symptom_onset_unit,symptom_severity_hidden,symptom_severity,symptom_current_hidden,symptom_current_yn,symptom_resolution_time,symptom_resolution_unit,symptom_causality_assessment,symptom_causality,symptoms_concat,symptoms_complete
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C50464,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C32898,NA,/ Onset:,18,1,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C26756,NA,NA,/ Onset:,2,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Arthralgia Knee Joint  / Onset: 18 Year / Severity: 5 / Current   / Assessment of causality: Not applicable,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Arthralgia Knee Joint  / Onset: 18 Year / Severity: 5 / Current   / Assessment of causality: Not applicable   2 Dyspepsia   / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C26851,NA,"ficou ontem e hoje sem tomas as cápsulas, devido à irritação faríngea",/ Onset:,1,2,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C106806,NA,NA,/ Onset:,3,4,/ Severity:,NA,/,1,NA,NA,/ Assessment of causality:,2,SYMPTOMS  1 Pharyngitis   / Onset: 1 Day / Severity: 7 / Current   / Assessment of causality: Not related,2
+NA,1,3,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C71685,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C3303,NA,/ Onset:,3,4,/ Severity:,NA,/,1,NA,NA,/ Assessment of causality:,2,"SYMPTOMS  1 Pharyngitis  ficou ontem e hoje sem tomas as cápsulas, devido à irritação faríngea / Onset: 1 Day / Severity: 7 / Current   / Assessment of causality: Not related   2 GDS-SF - Feel Full of Energy   / Onset: 3 Week / Severity:  / Current   / Assessment of causality: Possibly related",2
+NA,0,4,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Pharyngitis  ficou ontem e hoje sem tomas as cápsulas, devido à irritação faríngea / Onset: 1 Day / Severity: 7 / Current   / Assessment of causality: Not related   2 GDS-SF - Feel Full of Energy   / Onset: 3 Week / Severity:  / Current   / Assessment of causality: Possibly related   3 Better Pain  / Onset: 3 Week / Severity:  / Current   / Assessment of causality: Possibly related",2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C37954,NA,NA,/ Onset:,4,4,/ Severity:,0,/,0,1,4,/ Assessment of causality:,1,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C124186,NA,fezes mudaram de mais endurecidas para consistência normal,/ Onset:,4,4,/ Severity:,0,/,1,NA,NA,/ Assessment of causality:,2,SYMPTOMS  1 Flatulence   / Onset: 4 Week / Severity: 0 / Resolved 1 Week / Assessment of causality: Unlikely related,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Flatulence   / Onset: 4 Week / Severity: 0 / Resolved 1 Week / Assessment of causality: Unlikely related   2 Pattern of Bowel Movements  fezes mudaram de mais endurecidas para consistência normal / Onset: 4 Week / Severity: 0 / Current   / Assessment of causality: Possibly related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C116980,NA,Pode estar associado com produtos para o cabelo,/ Onset:,3,3,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Have Hair Loss  Pode estar associado com produtos para o cabelo / Onset: 3 Month / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34670,NA,melhora desde uso de IBP,/ Onset:,3,1,/ Severity:,6,/,0,1,3,/ Assessment of causality:,NA,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Heartburn  melhora desde uso de IBP / Onset: 3 Year / Severity: 6 / Resolved 1 Month / Assessment of causality: Not applicable,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C3303,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C32898,bilateral,/ Onset:,5,3,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C78262,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C64528,"Quando fica o dia todo em pé trabalhando, no final do dia, acorda sem edema",/ Onset:,5,3,/ Severity:,NA,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Pain Knee Joint bilateral / Onset: 5 Month / Severity: 5 / Current   / Assessment of causality: Not applicable,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Pain Knee Joint bilateral / Onset: 5 Month / Severity: 5 / Current   / Assessment of causality: Not applicable   2 Edema Limbs Three Times Weekly Quando fica o dia todo em pé trabalhando, no final do dia, acorda sem edema / Onset: 5 Month / Severity:  / Current   / Assessment of causality: Not applicable",2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C26851,NA,fez uso de prednisona e xarope,/ Onset:,1,4,/ Severity:,9,/,0,2,2,/ Assessment of causality:,0,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C2987,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C64527,"líquida, com restos alimentares. Sem muco ou sangue. Relata neste período importante mudança do hábito alimentar, com aumento da ingestão de frutas e verduras.",/ Onset:,1,3,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,1,SYMPTOMS  1 Pharyngitis  fez uso de prednisona e xarope / Onset: 1 Week / Severity: 9 / Resolved 2 Day / Assessment of causality: Not related,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Pharyngitis  fez uso de prednisona e xarope / Onset: 1 Week / Severity: 9 / Resolved 2 Day / Assessment of causality: Not related   2 Diarrhea Three Times Daily líquida, com restos alimentares. Sem muco ou sangue. Relata neste período importante mudança do hábito alimentar, com aumento da ingestão de frutas e verduras.  / Onset: 1 Month / Severity: 7 / Current   / Assessment of causality: Unlikely related",2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34753,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C3303,secundário a acidente,/ Onset:,9,1,/ Severity:,2,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34699,NA,NA,/ Onset:,1,1,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Knee Injury Pain secundário a acidente / Onset: 9 Year / Severity: 2 / Current   / Assessment of causality: Not applicable,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Knee Injury Pain secundário a acidente / Onset: 9 Year / Severity: 2 / Current   / Assessment of causality: Not applicable   2 Hip Pain   / Onset: 1 Year / Severity: 5 / Current   / Assessment of causality: Not applicable,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C3303,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C32141,dor no terço superior do MSD,/ Onset:,10,3,/ Severity:,NA,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Pain Arm dor no terço superior do MSD / Onset: 10 Month / Severity:  / Current   / Assessment of causality: Not applicable,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C37943,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C64934,Menopause related?,/ Onset:,2,3,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Dizziness Morning Menopause related? / Onset: 2 Month / Severity: 5 / Current   / Assessment of causality: Not applicable,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C104296,NA,NA,/ Onset:,20,2,/ Severity:,NA,/,1,NA,NA,/ Assessment of causality:,2,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Lacks Appetite   / Onset: 20 Day / Severity: Not applicable / Current   / Assessment of causality: Possibly related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C3303,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C87497,"Joelhos, pés, costas, diário",/ Onset:,7,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Pain Fibromyalgia Joelhos, pés, costas, diário / Onset: 7 Year / Severity: 8 / Current   / Assessment of causality: Not applicable",2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C3303,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C87497,NA,/ Onset:,7,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34670,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C64954,associado a ingestão de leite ou alimentos gordurosos,/ Onset:,3,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C35022,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C25473,ombro direito,/ Onset:,2,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Heartburn Infrequent associado a ingestão de leite ou alimentos gordurosos / Onset: 3 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Heartburn Infrequent associado a ingestão de leite ou alimentos gordurosos / Onset: 3 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   2 Shoulder Pain Daily ombro direito / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C168379,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C64594,Após suspensão do omeprazol dia 11/10,/ Onset:,21,2,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Pain in Epigastrium After Meals Após suspensão do omeprazol dia 11/10 / Onset: 21 Day / Severity: 5 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34670,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C90025,1-3 vezes por mês,/ Onset:,6,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C124175,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C87497,"Dias alternados: dor generalizada - artralgia, dorsalgia, membros inferiores",/ Onset:,2,1,/ Severity:,9,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Heartburn Sometimes 1-3 vezes por mês / Onset: 6 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Heartburn Sometimes 1-3 vezes por mês / Onset: 6 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   2 Pain Distress Fibromyalgia Dias alternados: dor generalizada - artralgia, dorsalgia, membros inferiores / Onset: 2 Year / Severity: 9 / Current   / Assessment of causality: Not applicable",2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C78161,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C26682,Associada com mudança alimentar? Aumento da ingestão de verduras e legumes.,/ Onset:,3,4,/ Severity:,8,/,0,1,4,/ Assessment of causality:,1,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Abdominal Distension Abdominal Pain Associada com mudança alimentar? Aumento da ingestão de verduras e legumes. / Onset: 3 Week / Severity: 8 / Resolved 1 Week / Assessment of causality: Unlikely related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C104301,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C191554,NA,/ Onset:,2,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C125674,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C191554,NA,/ Onset:,2,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Feel Tired COVID-19 Symptom Status  / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+NA,1,3,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C168379,NA,NA,/ Onset:,5,1,/ Severity:,10,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Feel Tired COVID-19 Symptom Status  / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   2 Bothered by Forgetfulness COVID-19 Symptom Status  / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+NA,0,4,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Feel Tired COVID-19 Symptom Status  / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   2 Bothered by Forgetfulness COVID-19 Symptom Status  / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   3 Pain in Epigastrium   / Onset: 5 Year / Severity: 10 / Current   / Assessment of causality: Not applicable,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C168379,NA,NA,/ Onset:,5,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Pain in Epigastrium   / Onset: 5 Year / Severity: 7 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34818,NA,em seguimento com GO - nódulo uterino,/ Onset:,1,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C50688,NA,nas pernas - secundário a compressão de nervos na coluna,/ Onset:,5,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Metrorrhagia  em seguimento com GO - nódulo uterino / Onset: 1 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+NA,1,3,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C41830,NA,NA,/ Onset:,10,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Metrorrhagia  em seguimento com GO - nódulo uterino / Onset: 1 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   2 Paresis  nas pernas - secundário a compressão de nervos na coluna / Onset: 5 Year / Severity: 7 / Current   / Assessment of causality: Not applicable,2
+NA,0,4,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Metrorrhagia  em seguimento com GO - nódulo uterino / Onset: 1 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   2 Paresis  nas pernas - secundário a compressão de nervos na coluna / Onset: 5 Year / Severity: 7 / Current   / Assessment of causality: Not applicable   3 Back Pain   / Onset: 10 Year / Severity: 7 / Current   / Assessment of causality: Not applicable,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34661,NA,Mantém o mesmo padrão habitual do quadro de migrânea da paciente.,/ Onset:,3,2,/ Severity:,8,/,0,1,2,/ Assessment of causality:,0,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C41830,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C90025,NA,/ Onset:,5,1,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Back Pain Sometimes  / Onset: 5 Year / Severity: 5 / Current   / Assessment of causality: Not applicable,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C113630,NA,"redução do apetite, consegue comer menos do que antes",/ Onset:,21,2,/ Severity:,NA,/,1,NA,NA,/ Assessment of causality:,2,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Loss of Appetite  redução do apetite, consegue comer menos do que antes / Onset: 21 Day / Severity:  / Current   / Assessment of causality: Possibly related",2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C124175,NA,Dor nos dois tornozelos,/ Onset:,2,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C131376,NA,NA,/ Onset:,3,1,/ Severity:,6,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Pain Distress  Dor nos dois tornozelos / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Pain Distress  Dor nos dois tornozelos / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   2 Feel Tired When Wake Up   / Onset: 3 Year / Severity: 6 / Current   / Assessment of causality: Not applicable,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C2987,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C64496,NA,/ Onset:,1,4,/ Severity:,9,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Diarrhea Twice Daily  / Onset: 1 Week / Severity: 9 / Current   / Assessment of causality: Not applicable,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C3109,NA,NA,/ Onset:,3,3,/ Severity:,10,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C41830,NA,NA,/ Onset:,3,3,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Hot Flashes   / Onset: 3 Month / Severity: 10 / Current   / Assessment of causality: Not applicable,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Hot Flashes   / Onset: 3 Month / Severity: 10 / Current   / Assessment of causality: Not applicable   2 Back Pain   / Onset: 3 Month / Severity: 7 / Current   / Assessment of causality: Not applicable,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C35022,NA,"Dor no ombro direito, com piora há 3 semenas, coincidindo com momento que começou a fazer faxina",/ Onset:,45,2,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Shoulder Pain  Dor no ombro direito, com piora há 3 semenas, coincidindo com momento que começou a fazer faxina / Onset: 45 Day / Severity: 8 / Current   / Assessment of causality: Not related",2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C41830,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34340,Since accident,/ Onset:,1,1,/ Severity:,6,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Back Pain Accident Since accident / Onset: 1 Year / Severity: 6 / Current   / Assessment of causality: Not applicable,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C50559,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C33325,NA,/ Onset:,4,3,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C35022,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C97141,Dificulta pentear cabelos e trocar blusa,/ Onset:,5,1,/ Severity:,9,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Fasciitis Plantar Fascia  / Onset: 4 Month / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Fasciitis Plantar Fascia  / Onset: 4 Month / Severity: 8 / Current   / Assessment of causality: Not applicable   2 Shoulder Pain Tendonitis Dificulta pentear cabelos e trocar blusa / Onset: 5 Year / Severity: 9 / Current   / Assessment of causality: Not applicable,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C35022,NA,Piora da dor no ombro,/ Onset:,3,4,/ Severity:,10,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34618,NA,NA,/ Onset:,3,4,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Shoulder Pain  Piora da dor no ombro / Onset: 3 Week / Severity: 10 / Current   / Assessment of causality: Not related,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Shoulder Pain  Piora da dor no ombro / Onset: 3 Week / Severity: 10 / Current   / Assessment of causality: Not related   2 Foot Pain   / Onset: 3 Week / Severity: 8 / Current   / Assessment of causality: Not related,2
+1,NA,1,Thesaurus:C35022,NA,NA,/ Onset:,3,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,Thesaurus:C34618,NA,NA,/ Onset:,6,3,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Shoulder Pain   / Onset: 3 Year / Severity: 8 / Current   / Assessment of causality: Not related,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Shoulder Pain   / Onset: 3 Year / Severity: 8 / Current   / Assessment of causality: Not related   2 Foot Pain   / Onset: 6 Month / Severity: 7 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C41830,NA,NA,/ Onset:,20,1,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34764,NA,NA,/ Onset:,20,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Back Pain   / Onset: 20 Year / Severity: 5 / Current   / Assessment of causality: Not applicable,2
+NA,1,3,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C74534,NA,NA,/ Onset:,40,1,/ Severity:,10,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Back Pain   / Onset: 20 Year / Severity: 5 / Current   / Assessment of causality: Not applicable   2 Leg Pain   / Onset: 20 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+NA,0,4,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Back Pain   / Onset: 20 Year / Severity: 5 / Current   / Assessment of causality: Not applicable   2 Leg Pain   / Onset: 20 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   3 Sadness   / Onset: 40 Year / Severity: 10 / Current   / Assessment of causality: Not applicable,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34661,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C118853,NA,/ Onset:,6,3,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C106779,NA,NA,/ Onset:,1,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Headache About Once Weekly  / Onset: 6 Month / Severity: 7 / Current   / Assessment of causality: Not applicable   2 GDS - Feel Downhearted and Blue   / Onset: 1 Year / Severity: 8 / Current   / Assessment of causality: Not related,2
+NA,1,3,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C95746,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C64528,NA,/ Onset:,8,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Headache About Once Weekly  / Onset: 6 Month / Severity: 7 / Current   / Assessment of causality: Not applicable   2 GDS - Feel Downhearted and Blue   / Onset: 1 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+NA,0,4,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Headache About Once Weekly  / Onset: 6 Month / Severity: 7 / Current   / Assessment of causality: Not applicable   2 GDS - Feel Downhearted and Blue   / Onset: 1 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   3 Sleepiness Three Times Weekly  / Onset: 8 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C26696,NA,NA,/ Onset:,1,3,/ Severity:,10,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Anxiety   / Onset: 1 Month / Severity: 10 / Current   / Assessment of causality: Not related,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34661,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C98852,Close to menses,/ Onset:,22,1,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C41830,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C25473,NA,/ Onset:,23,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Headache Four Times Monthly Close to menses / Onset: 22 Year / Severity: 5 / Current   / Assessment of causality: Not applicable   2    / Onset:   / Severity:  /    / Assessment of causality:,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Headache Four Times Monthly Close to menses / Onset: 22 Year / Severity: 5 / Current   / Assessment of causality: Not applicable   2 Back Pain Daily  / Onset: 23 Year / Severity: 7 / Current   / Assessment of causality: Not applicable,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34618,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C25473,right side,/ Onset:,1,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Foot Pain Daily right side / Onset: 1 Year / Severity: 7 / Current   / Assessment of causality: Not applicable,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C126921,NA,"Participante relata fadiga com os acontecimentos recentes. A filha e o marido tiveram dengue grave, o marido chegou até a ficar 4 dias internado. E ela relata não ter dormido durante o período de adoecimento da filha. Ainda, cuida da mãe que tem Alzheimer e do pai, e precisa de dar conta do trabalho. Relata sentir cansada e desencorajada, mas mesmo assim continua exercendo suas atividades.",/ Onset:,1,4,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C26696,NA,"crise de choros, fome, isolamento social, palpitação, sensação de tremores internos",/ Onset:,18,1,/ Severity:,4,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Anxiety  crise de choros, fome, isolamento social, palpitação, sensação de tremores internos / Onset: 18 Year / Severity: 4 / Current   / Assessment of causality: Not applicable",2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C104308,NA,Acompanha no psiquiatra,/ Onset:,2,4,/ Severity:,NA,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Feel Irritable  Acompanha no psiquiatra / Onset: 2 Week / Severity:  / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C34670,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C64528,NA,/ Onset:,2,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C35272,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C202008,"dor em cólica e com melhora espontânea em 10-20 minutos. Relata que já investigou com USG transvaginal e abdominal, sem diagnóstico",/ Onset:,5,1,/ Severity:,10,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Heartburn Three Times Weekly  / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+NA,1,3,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C41830,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C25473,NA,/ Onset:,7,1,/ Severity:,9,/,1,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Heartburn Three Times Weekly  / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   2 Lower Abdominal Pain One to Three Times a Month dor em cólica e com melhora espontânea em 10-20 minutos. Relata que já investigou com USG transvaginal e abdominal, sem diagnóstico / Onset: 5 Year / Severity: 10 / Current   / Assessment of causality: Not applicable",2
+NA,0,4,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Heartburn Three Times Weekly  / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   2 Lower Abdominal Pain One to Three Times a Month dor em cólica e com melhora espontânea em 10-20 minutos. Relata que já investigou com USG transvaginal e abdominal, sem diagnóstico / Onset: 5 Year / Severity: 10 / Current   / Assessment of causality: Not applicable   3 Back Pain Daily  / Onset: 7 Year / Severity: 9 / Current   / Assessment of causality: Not applicable",2
+NA,0,5,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Heartburn Three Times Weekly  / Onset: 2 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   2 Lower Abdominal Pain One to Three Times a Month dor em cólica e com melhora espontânea em 10-20 minutos. Relata que já investigou com USG transvaginal e abdominal, sem diagnóstico / Onset: 5 Year / Severity: 10 / Current   / Assessment of causality: Not applicable   3 Back Pain Daily  / Onset: 7 Year / Severity: 9 / Current   / Assessment of causality: Not applicable   4    / Onset:   / Severity:  /    / Assessment of causality:",2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C26696,NA,NA,/ Onset:,5,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C104301,NA,NA,/ Onset:,5,1,/ Severity:,9,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Anxiety   / Onset: 5 Year / Severity: 8 / Current   / Assessment of causality: Not related,2
+NA,1,3,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C74534,NA,NA,/ Onset:,5,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Anxiety   / Onset: 5 Year / Severity: 8 / Current   / Assessment of causality: Not related   2 Feel Tired   / Onset: 5 Year / Severity: 9 / Current   / Assessment of causality: Not related   3 Sadness   / Onset: 5 Year / Severity: 8 / Current   / Assessment of causality: Not related,2
+NA,0,4,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Anxiety   / Onset: 5 Year / Severity: 8 / Current   / Assessment of causality: Not related   2 Feel Tired   / Onset: 5 Year / Severity: 9 / Current   / Assessment of causality: Not related   3 Sadness   / Onset: 5 Year / Severity: 8 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C186252,NA,Cefaleia e cólica,/ Onset:,6,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C35022,NA,NA,/ Onset:,10,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Menstrual Phase  Cefaleia e cólica / Onset: 6 Year / Severity: 8 / Current   / Assessment of causality: Not related   2    / Onset:   / Severity:  /    / Assessment of causality:,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Menstrual Phase  Cefaleia e cólica / Onset: 6 Year / Severity: 8 / Current   / Assessment of causality: Not related   2 Shoulder Pain   / Onset: 10 Year / Severity: 7 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C104301,NA,ao final da tarde,/ Onset:,10,3,/ Severity:,6,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,Thesaurus:C34764,NA,NA,/ Onset:,10,3,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Feel Tired  ao final da tarde / Onset: 10 Month / Severity: 6 / Current   / Assessment of causality: Not applicable,2
+NA,1,3,Thesaurus:C78161,NA,Pós-alimentar,/ Onset:,1,1,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Feel Tired  ao final da tarde / Onset: 10 Month / Severity: 6 / Current   / Assessment of causality: Not applicable   2 Leg Pain   / Onset: 10 Month / Severity: 7 / Current   / Assessment of causality: Not applicable,2
+NA,1,4,Thesaurus:C89715,NA,1-2 vezes/semana,/ Onset:,26,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Feel Tired  ao final da tarde / Onset: 10 Month / Severity: 6 / Current   / Assessment of causality: Not applicable   2 Leg Pain   / Onset: 10 Month / Severity: 7 / Current   / Assessment of causality: Not applicable   3 Abdominal Distension  Pós-alimentar / Onset: 1 Year / Severity: 5 / Current   / Assessment of causality: Not applicable,2
+NA,1,5,Thesaurus:C21100,NA,NA,/ Onset:,6,1,/ Severity:,9,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Feel Tired  ao final da tarde / Onset: 10 Month / Severity: 6 / Current   / Assessment of causality: Not applicable   2 Leg Pain   / Onset: 10 Month / Severity: 7 / Current   / Assessment of causality: Not applicable   3 Abdominal Distension  Pós-alimentar / Onset: 1 Year / Severity: 5 / Current   / Assessment of causality: Not applicable   4 Migraine  1-2 vezes/semana / Onset: 26 Year / Severity: 8 / Current   / Assessment of causality: Not applicable,2
+NA,0,6,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Feel Tired  ao final da tarde / Onset: 10 Month / Severity: 6 / Current   / Assessment of causality: Not applicable   2 Leg Pain   / Onset: 10 Month / Severity: 7 / Current   / Assessment of causality: Not applicable   3 Abdominal Distension  Pós-alimentar / Onset: 1 Year / Severity: 5 / Current   / Assessment of causality: Not applicable   4 Migraine  1-2 vezes/semana / Onset: 26 Year / Severity: 8 / Current   / Assessment of causality: Not applicable   5 Social Isolation   / Onset: 6 Year / Severity: 9 / Current   / Assessment of causality: Not applicable,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C41830,NA,NA,/ Onset:,5,1,/ Severity:,6,/,1,NA,NA,/ Assessment of causality:,NA,NA,2
+NA,1,2,Thesaurus:C26682,NA,"não consegue caracterizar o tipo da dor - relata que é uma dor ""como a de um hematoma"".",/ Onset:,2,3,/ Severity:,NA,/,1,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Back Pain   / Onset: 5 Year / Severity: 6 / Current   / Assessment of causality: Not applicable,2
+NA,1,3,Thesaurus:C89715,Thesaurus:C25473,NA,/ Onset:,10,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Back Pain   / Onset: 5 Year / Severity: 6 / Current   / Assessment of causality: Not applicable   2 Abdominal Pain  não consegue caracterizar o tipo da dor - relata que é uma dor ""como a de um hematoma"".  / Onset: 2 Month / Severity:  / Current   / Assessment of causality: Not applicable",2
+NA,0,4,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Back Pain   / Onset: 5 Year / Severity: 6 / Current   / Assessment of causality: Not applicable   2 Abdominal Pain  não consegue caracterizar o tipo da dor - relata que é uma dor ""como a de um hematoma"".  / Onset: 2 Month / Severity:  / Current   / Assessment of causality: Not applicable   3 Migraine Daily  / Onset: 10 Year / Severity: 7 / Current   / Assessment of causality: Not applicable   4    / Onset:   / Severity: 5 /    / Assessment of causality:",2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C131390,NA,"Tireoidite? TSH prévio discretamente aumentado com t4 normal; solicitado repetição do exame, com resultado de controle com TSH/T4 normal, no entando com anti-TPO > 1000.",/ Onset:,1,3,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Bothered by Tiredness  Tireoidite? TSH prévio discretamente aumentado com t4 normal; solicitado repetição do exame, com resultado de controle com TSH/T4 normal, no entando com anti-TPO > 1000. / Onset: 1 Month / Severity: 7 / Current   / Assessment of causality: Not related",2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C26696,NA,NA,/ Onset:,20,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,Thesaurus:C28286,NA,NA,/ Onset:,20,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Anxiety   / Onset: 20 Year / Severity: 7 / Current   / Assessment of causality: Not related   2 Insomnia   / Onset: 20 Year / Severity: 7 /    / Assessment of causality: Not related,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Anxiety   / Onset: 20 Year / Severity: 7 / Current   / Assessment of causality: Not related   2 Insomnia   / Onset: 20 Year / Severity: 7 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C3303,Thesaurus:C32898,NA,/ Onset:,3,3,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C34670,NA,NA,/ Onset:,5,1,/ Severity:,3,/,NA,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,Thesaurus:C32898,Thesaurus:C3303,Rompimento de tendão,/ Onset:,27,1,/ Severity:,2,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Heartburn   / Onset: 5 Year / Severity: 3 /    / Assessment of causality: Not related   2 Knee Joint Pain Rompimento de tendão / Onset: 27 Year / Severity: 3 / Current   / Assessment of causality: Not related,2
+NA,1,3,Thesaurus:C32078,Thesaurus:C3303,Várias torções,/ Onset:,9,1,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Heartburn   / Onset: 5 Year / Severity: 3 /    / Assessment of causality: Not related   2 Knee Joint Pain Rompimento de tendão / Onset: 27 Year / Severity: 2 / Current   / Assessment of causality: Not related,2
+NA,0,4,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Heartburn   / Onset: 5 Year / Severity: 3 /    / Assessment of causality: Not related   2 Knee Joint Pain Rompimento de tendão / Onset: 27 Year / Severity: 2 / Current   / Assessment of causality: Not related   3 Ankle Joint Pain Várias torções / Onset: 9 Year / Severity: 5 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C34764,Thesaurus:C176864,NA,/ Onset:,1,1,/ Severity:,6,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Leg Pain Left Leg  / Onset: 1 Year / Severity: 6 / Current   / Assessment of causality: Not related   2    / Onset:   / Severity:  /    / Assessment of causality:,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C131235,NA,NA,/ Onset:,3,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,Thesaurus:C122344,NA,NA,/ Onset:,3,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Feel Angry   / Onset: 3 Year / Severity: 8 / Current   / Assessment of causality: Not related,2
+NA,1,3,Thesaurus:C121585,NA,NA,/ Onset:,3,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Feel Angry   / Onset: 3 Year / Severity: 8 / Current   / Assessment of causality: Not related   2 Feel Anxious   / Onset: 3 Year / Severity: 8 / Current   / Assessment of causality: Not related,2
+NA,0,4,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,"SYMPTOMS  1 Feel Angry   / Onset: 3 Year / Severity: 8 / Current   / Assessment of causality: Not related   2 Feel Anxious   / Onset: 3 Year / Severity: 8 / Current   / Assessment of causality: Not related   3 Trouble Sleeping, Waking Up in the Middle of the Night or Early Morning   / Onset: 3 Year / Severity: 8 / Current   / Assessment of causality: Not related",2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C34661,NA,NA,/ Onset:,20,1,/ Severity:,10,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,Thesaurus:C41830,NA,NA,/ Onset:,10,1,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Headache   / Onset: 20 Year / Severity: 10 / Current   / Assessment of causality: Not related   2 Back Pain   / Onset: 10 Year / Severity: 5 / Current   / Assessment of causality: Not related,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Headache   / Onset: 20 Year / Severity: 10 / Current   / Assessment of causality: Not related   2 Back Pain   / Onset: 10 Year / Severity: 5 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C34699,NA,intermitente,/ Onset:,20,1,/ Severity:,4,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,Thesaurus:C34753,NA,intermitente,/ Onset:,10,1,/ Severity:,2,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Hip Pain  intermitente / Onset: 20 Year / Severity: 4 / Current   / Assessment of causality: Not related   2 Knee Injury   / Onset:   / Severity:  /    / Assessment of causality: Not related   3 Insomnia Pain Origin  / Onset: 30 Year / Severity: 8 / Current   / Assessment of causality: Not related   4    / Onset:   / Severity:  /    / Assessment of causality:,2
+NA,1,3,Thesaurus:C28286,Thesaurus:C21104,NA,/ Onset:,30,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Hip Pain  intermitente / Onset: 20 Year / Severity: 4 / Current   / Assessment of causality: Not related   2 Knee Injury   / Onset:   / Severity:  /    / Assessment of causality: Not related   3 Insomnia Pain Origin  / Onset:   / Severity:  / Current   / Assessment of causality: Not related   4    / Onset:   / Severity:  /    / Assessment of causality:,2
+NA,1,4,Thesaurus:C26696,NA,NA,/ Onset:,30,1,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Hip Pain  intermitente / Onset: 20 Year / Severity: 4 / Current   / Assessment of causality: Not related   2 Knee Injury  intermitente / Onset: 10 Year / Severity: 2 / Current   / Assessment of causality: Not related   3 Insomnia Pain Origin  / Onset: 30 Year / Severity: 8 / Current   / Assessment of causality: Not related   4    / Onset:   / Severity:  /    / Assessment of causality:,2
+NA,0,5,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Hip Pain  intermitente / Onset: 20 Year / Severity: 4 / Current   / Assessment of causality: Not related   2 Knee Injury  intermitente / Onset: 10 Year / Severity: 2 / Current   / Assessment of causality: Not related   3 Insomnia Pain Origin  / Onset: 30 Year / Severity: 8 / Current   / Assessment of causality: Not related   4 Anxiety   / Onset: 30 Year / Severity: 5 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C34699,NA,NA,/ Onset:,3,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Hip Pain   / Onset: 3 Year / Severity: 8 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C91122,NA,NA,/ Onset:,4,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Lacks Energy   / Onset: 4 Year / Severity: 7 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C34661,NA,NA,/ Onset:,1,2,/ Severity:,5,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,0,2,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Headache   / Onset: 1 Day / Severity: 5 / Current   / Assessment of causality: Not related,2
+1,NA,1,Thesaurus:C97162,NA,NA,/ Onset:,13,1,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,Thesaurus:C34661,NA,2 vezes por semana,/ Onset:,3,3,/ Severity:,6,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Binge Eating   / Onset: 13 Year / Severity: 8 / Current   / Assessment of causality: Not related,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Binge Eating   / Onset: 13 Year / Severity: 8 / Current   / Assessment of causality: Not related   2 Headache  2 vezes por semana / Onset: 3 Month / Severity: 6 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C26696,NA,NA,/ Onset:,18,3,/ Severity:,8,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,Thesaurus:C97162,NA,NA,/ Onset:,18,3,/ Severity:,10,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Anxiety   / Onset: 18 Month / Severity: 8 / Current   / Assessment of causality: Not related,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+1,NA,1,Thesaurus:C103718,NA,"Cólica menstrual + ciclo menstrual irregular (em torno de 7-10 dias de duração, com fluxo baixo)",/ Onset:,8,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+1,NA,1,Thesaurus:C131390,NA,NA,/ Onset:,2,1,/ Severity:,7,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+NA,1,2,Thesaurus:C28286,NA,NA,/ Onset:,17,1,/ Severity:,10,/,1,NA,NA,/ Assessment of causality:,0,SYMPTOMS  1 Bothered by Tiredness   / Onset: 2 Year / Severity: 7 / Current   / Assessment of causality: Not related,2
+NA,0,3,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,SYMPTOMS  1 Bothered by Tiredness   / Onset: 2 Year / Severity: 7 / Current   / Assessment of causality: Not related   2 Insomnia   / Onset: 17 Year / Severity: 10 / Current   / Assessment of causality: Not related,2
+1,NA,1,Thesaurus:C35022,NA,bilateral,/ Onset:,1,3,/ Severity:,10,/,1,NA,NA,/ Assessment of causality:,0,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
+0,NA,1,NA,NA,NA,/ Onset:,NA,NA,/ Severity:,NA,/,NA,NA,NA,/ Assessment of causality:,NA,NA,2
