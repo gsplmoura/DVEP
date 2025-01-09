@@ -38,11 +38,15 @@ output: html_document
 ### Codebooks and supporting files
 
 -   **codebook_dvep.xlsx**: Codebook for REDCap DVEP Project
--   **codebook_structure.csv:** Data structure for DVEP project **codebook_ncit.csv** Operational Support - NCIT coding **codebook_bia.xlsx** Codebook for BIA data
+-   **codebook_structure.csv:** Data structure for DVEP project
+-   **codebook_ncit.csv** Operational Support - NCIT coding
+-   **codebook_bia.xlsx** Codebook for BIA data
 
 ### Data
 
-**data_dvep.csv** Full data from REDCap DVEP Project **data_bia_D1.csv** BIA data for the first visit for all participants Contains BIA data from the first visit only Contains BIA data from participants who did not **data_bia_D3.csv** BIA data for participants that completed the intervention Contains BIA data from both the first and third visits
+-   **data_dvep.csv** Full data from REDCap DVEP Project.
+-   **data_bia_D1.csv** BIA data for the first visit for all participants. Contains BIA data from the first visit only. Contains BIA data from participants who did not complete the intervention.
+-   **data_bia_D3.csv** BIA data for participants that completed the intervention. Contains BIA data from both the first and third visits.
 
 # DATA WRANGLING
 
@@ -203,11 +207,25 @@ data_bia_D3 <- data_bia_D3 |>
 
 ## Creating functions
 
-### filter_variables()
+#### filter_variables()
 
-filter_variables(visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL, filter_included = TRUE)
+`filter_variables(visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL, filter_included = TRUE)`
 
-Arguments: visit A vector of visit names to filter (default: all visits) include_repeating = NULL If NULL, includes all variables If 0, does not include repeating variables If 1, only shows repeating variables form_name = NULL The name of the form to filter on (NULL means no filtering by form) filter_included = TRUE Whether to filter by the 'included' column (default: TRUE)
+Arguments:
+
+-   `visit`: A vector of visit names to filter (default: all visits)
+
+-   `include_repeating = NULL`
+
+    -   If NULL, includes all variables
+
+    -   If 0, does not include repeating variables
+
+    -   If 1, only shows repeating variables
+
+-   `form_name = NULL`: The name of the form to filter on (NULL means no filtering by form)
+
+-   `filter_included = TRUE`: Whether to filter by the 'included' column (default: TRUE)
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 filter_variables <- function(
@@ -260,9 +278,26 @@ filter_variables <- function(
 
 ```
 
-### filter_data()
+#### filter_data()
+
+`filter_data <- function( visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL)`
+
+Arguments:
+
+-   `visit`: A vector of visit names to filter (default: all visits)
+
+-   `include_repeating = NULL`
+
+    -   If NULL, includes all variables
+
+    -   If 0, does not include repeating variables
+
+    -   If 1, only shows repeating variables
+
+-   `form_name = NULL`: The name of the form to filter on. **Will only work for repeating instruments.**
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
+
 ## 7.2 filter_data() based on visit, repeating instrument and form
 filter_data <- function(
         visit = c("eleg", "V1", "V2", "V3"), 
@@ -339,7 +374,15 @@ filter_data <- function(
 }
 ```
 
-### filter_codebook()
+#### filter_codebook()
+
+`filter_codebook(form_name = c(...), included = 1)`
+
+Arguments
+
+-   `form_name`
+
+-   `included = 1`: defaults to 1, filtering variables by `included` column. If set to 0, will include all variables
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 7.3 filter_codebook()
@@ -375,7 +418,17 @@ filter_codebook <- function(form_name = c(
 }
 ```
 
-### convert_col_type() and apply to data
+#### convert_col_type()
+
+`convert_col_type(data, codebook = codebook_dvep)`
+
+Arguments:
+
+-   `data`: dataframe to apply the function
+
+-   `codebook = codebook_dvep`: codebook source. Defaults to `codebook_dvep`
+
+Tips:
 
 -   as.factor(): categorical data where the label (e.g., "6 cápsulas ao dia") is more meaningful than numeric code.
 -   binary data (0, Não \| 1, Sim):
@@ -418,7 +471,17 @@ convert_col_type <- function(data, codebook = codebook_dvep) {
 convert_col_type(data)
 ```
 
-### label_variables()
+#### label_variables()
+
+`label_variables(data, codebook, language = "pt")`
+
+Arguments:
+
+-   `data`: dataframe to which function will be applied
+
+-   `codebook`: source codebook
+
+-   `language = "pt"`: defaults to portuguese (`"pt"`); set `"en"` for english
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 label_variables <- function(data, codebook, language = "pt") {
@@ -442,7 +505,15 @@ label_variables <- function(data, codebook, language = "pt") {
 }
 ```
 
-### label_choices()
+#### label_choices()
+
+`label_choices(data, codebook = codebook_dvep)`
+
+Arguments:
+
+-   `data`: dataframe to which function will be applied
+
+-   `codebook = codebook_dvep`: source codebook (dafaults to `codebook_dvep`)
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 7.5 label_choices()
@@ -503,7 +574,9 @@ label_choices <- function(data, codebook = codebook_dvep) {
 
 ## Bioimpedance data
 
-### D3 DATA
+#### Data from first/third visit
+
+Applies to participants who completed the intervention
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 8. Wrangling Bioimpedance data
@@ -537,7 +610,9 @@ data_bia_D3_filtered <- data_bia_D3_filtered |>
     )
 ```
 
-### D1 DATA
+#### Data from first visit
+
+Applies to participants who did not complete the intervention
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 8.2 D1 DATA (data from the first visit for participants who did not complete the intervention)
@@ -575,7 +650,7 @@ data_bia_D1_filtered <- data_bia_D1_filtered |>
     )
 ```
 
-### Merging to single tibble
+#### Merging to single tibble
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 8.3 MERGE D1/D3 BIA data into a single tibble
@@ -593,7 +668,7 @@ data_bia <- bind_rows(
 data_bia <- label_variables(data_bia, codebook_bia)
 ```
 
-### Drop intermediate tibbles
+#### Drop intermediate tibbles
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 8.4. DROP intermediate tibbles
@@ -605,7 +680,7 @@ rm(data_bia_D3_filtered)
 
 ## Wrangling DVEP REDCap data
 
-### Adding NCIT labels
+#### Adding NCIT labels
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 9.2 Repeating instruments
@@ -683,7 +758,7 @@ I22_drugs_R <- label_variables(I22_drugs_R, codebook_dvep)
 #     view()
 ```
 
-### Eclusive variables from Eleg/D1 `data_d1_exclusive`
+#### Exclusive variables from Eleg/D1 `data_d1_exclusive`
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 9.1 Eclusive variables from Eleg/D1 (`data_d1_exclusive`) to be replicated to d2 and d3
@@ -708,11 +783,11 @@ rm(eleg_exclusive)
 rm(visit_1_exclusive)
 ```
 
-### REPEATING INSTRUMENTS
+### Repeating instruments
 
 #### Creating relevant binary variables\*
 
-##### Hypertension
+Hypertension
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.1 HYPERTENSION
@@ -745,7 +820,7 @@ rm(hypertension_conditions)
 rm(hypertension_drugs)
 ```
 
-##### Dyslipidemia
+Dyslipidemia
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.2 DYSLIPIDEMIA
@@ -778,7 +853,7 @@ rm(dyslipidemia_conditions)
 rm(dyslipidemia_drugs)
 ```
 
-##### Insulin resistance
+Insulin resistance
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.3 INSULIN RESISTANCE
@@ -811,7 +886,7 @@ rm(insulin_conditions)
 rm(insulin_drugs)
 ```
 
-##### Drugs that might induce weight loss
+Drugs that might induce weight loss
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.4 DRUGS THAT MIGHT INDUCE WEIGHT LOSS
@@ -832,7 +907,7 @@ data_d1_exclusive <- data_d1_exclusive |>
 rm(drugs_w_loss)
 ```
 
-##### Drugs that might induce weight gain
+Drugs that might induce weight gain
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 ### 9.3.5 DRUGS THAT MIGHT INDUCE WEIGHT GAIN
@@ -854,21 +929,19 @@ rm(drugs_w_gain)
 
 ```
 
--   Relevant binary variables
+\*Relevant binary variables:
 
-1.  Hypertension present if: C3117 Hipertensão C66869 Losartana C29098 Hidroclorotiazida C61635 Anlodipino C47640_2 Olmesartana C28836 Atenolol C29254 Metoprolol C62027 Enalapril 10 mg C62027_2 Enalapril 20 mg
+-   Hypertension present if: C3117 Hipertensão C66869 Losartana C29098 Hidroclorotiazida C61635 Anlodipino C47640_2 Olmesartana C28836 Atenolol C29254 Metoprolol C62027 Enalapril 10 mg C62027_2 Enalapril 20 mg
 
-2.  Dyslipidemia present if: C37967 Hipercolesterolemia C37971 Hipertrigliceridemia C29454 Sinvastatina C66523_2 Rosuvastatina C47529 Ezetimiba C61527 Atorvastatina C87471 Ciprofibrato
+-   Dyslipidemia present if: C37967 Hipercolesterolemia C37971 Hipertrigliceridemia C29454 Sinvastatina C66523_2 Rosuvastatina C47529 Ezetimiba C61527 Atorvastatina C87471 Ciprofibrato
 
-3.  Insulin resistance present if: C113101 Resistência insulínica C26747 DM2 C61612 Metformina 500 mg C61612_2 Metformina 850 mg C87618 Gliclazida 30 mg C180533 Empagliflozin/Linagliptin
+-   Insulin resistance present if: C113101 Resistência insulínica C26747 DM2 C61612 Metformina 500 mg C61612_2 Metformina 850 mg C87618 Gliclazida 30 mg C180533 Empagliflozin/Linagliptin
 
-4.  Drugs that might induce weight loss C61939 Sertralina C62012 Bupropiona C506_1 Fluoxetina C1278_2 Venlafaxina 75 mg C1278_1 Venlafaxina 37,5 mg C1278_3 Venlafaxina 150 mg C47764_1 Topiramato 25 mg C47764_2 Topiramato 50 mg C61680 Citalopram 20 mg
+-   Drugs that might induce weight loss C61939 Sertralina C62012 Bupropiona C506_1 Fluoxetina C1278_2 Venlafaxina 75 mg C1278_1 Venlafaxina 37,5 mg C1278_3 Venlafaxina 150 mg C47764_1 Topiramato 25 mg C47764_2 Topiramato 50 mg C61680 Citalopram 20 mg
 
-    "C61939\|C62012\|C506_1\|C1278_2\|C1278_1\|C1278_3\|C47764_1\|C47764_2\|C61680"
+-   Drugs that might induce weight gain C61879 Paroxetina 20 mg C62005 Amitriptilina 25 mg C61917_2 Quetiapina 50 mg C29416 Risperidona 2 mg C29536_2 Ácido Valpróico 250 mg "C61879\|C62005\|C61917_2\|C29416\|C29536_2"
 
-5.  Drugs that might induce weight gain C61879 Paroxetina 20 mg C62005 Amitriptilina 25 mg C61917_2 Quetiapina 50 mg C29416 Risperidona 2 mg C29536_2 Ácido Valpróico 250 mg "C61879\|C62005\|C61917_2\|C29416\|C29536_2"
-
-##### Wrapping up `data_d1_exclusive`
+###### Wrapping up `data_d1_exclusive`
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 
@@ -987,7 +1060,7 @@ I30_events_R <- label_variables(I30_events_R, codebook_dvep)
 I30_events_R <- label_choices(I30_events_R, codebook_dvep) 
 ```
 
-### NON-REPEATING INSTRUMENTS
+### Non-repeating instruments
 
 #### Data common to V1 and V3 (`d1d3`)
 
@@ -1063,7 +1136,7 @@ d2 <- filter_data("V2",0) |>
         )
 ```
 
-### JOINING
+### Joining
 
 #### Bind rows from `d1d3` and `d2`: `data_filtered`
 
@@ -1148,7 +1221,9 @@ data_filtered <- data_filtered |>
     )
 ```
 
-### data_instruments
+### Supertible (`data_instruments`)
+
+Creates a supertibble with one tibble for each instrument
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 form_names <- unique(codebook_dvep$form_name_en)
