@@ -68,8 +68,38 @@ print(group_comparison)
 
 ```
 
+## Labs
+```{r}
+# filter first visit and relevant variables
+labs_baseline <- I27_labs_R |> 
+    filter(
+        visit == 1
+    ) |> 
+    select(
+        -visit, -labs_date, -labs_beta_hcg , -labs_notes
+    )
+
+baseline_labs_baseline <- summarize_numerical(labs_baseline)
+
+plot(labs_baseline$labs_crp)
+
+cpr_bp <- boxplot(labs_baseline$labs_crp_log)
+cpr_bp$out
+
+par(mfrow = c(1, 2)) 
+hist(labs_baseline$labs_crp)
+hist(labs_baseline$labs_crp_log)
+
+labs_baseline$labs_crp_log <- log(labs_baseline$labs_crp)
+
+summary(labs_baseline$labs_crp_log)
+
+plot(labs_baseline$labs_crp_log, data_filtered$phaseangle[data_filtered$visit == 1])
 
 
+skim(labs_baseline)
+
+```
 
 
 
