@@ -1334,7 +1334,7 @@ rm(instruments)
 
 ### Exports tibbles to `Generated data` folder
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 output_dir <- '/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Generated data'
 
 
@@ -1372,7 +1372,7 @@ rm(instr_name)
 
 Arguments: `data`: dataframe `group_col = NULL`: grouping column; defaults to NULL `use_labels = TRUE`: If set to true, uses labels instead of variable names
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
   # Extract variable labels, falling back to variable names if labels are missing
   variable_labels <- sapply(names(data), function(var) {
@@ -1432,7 +1432,7 @@ summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
 
 Arguments: - `data`: dataframe - `group_col = NULL`: grouping column; defaults to NULL - `use_labels = TRUE`: If set to true, uses labels instead of variable names
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 summarize_categorical <- function(data, group_col = NULL, use_labels = TRUE) {
   # Extract variable labels, falling back to variable names if labels are missing
   variable_labels <- sapply(names(data), function(var) {
@@ -1484,7 +1484,7 @@ summarize_categorical <- function(data, group_col = NULL, use_labels = TRUE) {
 
 ### compare_groups()
 
-```{r}
+```{r, results = 'hide', message = FALSE, warning = FALSE}
 compare_groups <- function(data, group_col = "allocation_group", use_labels = TRUE) {
   
   # Extract variable labels, default to variable names if labels are missing
