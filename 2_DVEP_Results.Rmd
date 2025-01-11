@@ -11,64 +11,95 @@ output: html_document
 
 # Baseline
 
-## Participant's characteristics
+```{r, echo= FALSE, results='hide'}
+max(data_d1_exclusive$record_id) # Número de participantes
+summary(data_d1_exclusive$sex); (65/75)*100 # Tabela de frequência de sexo e porcentagem do sexo feminino
+mean(data_d1_exclusive$age); sd(data_d1_exclusive$age) # Idade (média e DP)
+```
 
-### Whole sample
-`summarize_numerical()`
+Um total de 75 participantes de pesquisa foram incluídos neste estudo, sendo 65 (86,6%) do sexo feminino. A média da idade dos participantes foi de 40,6 anos (DP 10,2 anos). A tabela 1 contem as características de base participantes de pesquisa, antes do início da intervenção. Os participantes foram incluídos no estudo entre 09/08/2023 e 26/07/2024. As datas em que os participantes completaram a intervenção foram entre 14/11/2023 e 25/10/2024.
+
 ```{r}
-baseline_num <- summarize_numerical(data_d1_exclusive)
+# Datas de inclusão e conclusão
+summary(data$consent_date)
+summary(data$conclusion_date)
+
+# Completaram a intervenção
+summary(data_d1_exclusive$completed_intervention)
+```
+
+## Abandonos
+Dos participantes incluídos, 23 (30.6%) não completaram os três meses de intervenção. A taxa de abandono foi maior nos homens, com 4 abandonos (40% dos homens incluídos), sendo 2 de cada grupo. No sexo feminino, a taxa de abandono foi de 29.2%, sendo oito do grupo placebo e 11 do grupo intervenção.
+
+```{r}
+# Abandonos
+## Taxa de abandono
+(23/75)*100 
+
+## Abandono por sexo e grupo de alocação
+data_d1_exclusive |> 
+    filter(completed_intervention == "Não") |> 
+    count(sex, allocation_group, name = "Total")
+
+## Taxa de abandono por sexo
+(4/10)*100 # Homens
+(19/65)*100 # Mulheres
+
+table(data$non_completion_reason)
+```
+
+## Participant's characteristics (data_d1_exclusive)
+```{r}
+# ALL
+baseline_num <- summarize_numerical(data_d1_exclusive) # `summarize_numerical()`
 baseline_num %>%
   gt() %>%
   tab_header(
     title = "Numerical Variable Summary",
     subtitle = "Overall Summary"
   )
-```
-`summarize_categorical()`
-```{r}
-baseline_cat <- summarize_categorical(data_d1_exclusive)
+
+baseline_cat <- summarize_categorical(data_d1_exclusive) # `summarize_categorical()`
 baseline_cat %>%
   gt() %>%
   tab_header(
     title = "Categorical Variable Summary",
     subtitle = "Overall Summary"
   )
-```
 
-### By allocation group
-`summarize_numerical()`
-```{r}
-baseline_num_group <- summarize_numerical(data_d1_exclusive, "allocation_group")
+# BY GROUP
+baseline_num_group <- summarize_numerical(data_d1_exclusive, "allocation_group") # `summarize_numerical()`
 baseline_num_group %>%
   gt() %>%
   tab_header(
     title = "Numerical Variable Summary",
     subtitle = "Overall Summary"
   )
-```
-`summarize_categorical()`
-```{r}
-baseline_cat_group <- summarize_categorical(data_d1_exclusive, "allocation_group")
+
+baseline_cat_group <- summarize_categorical(data_d1_exclusive, "allocation_group") # `summarize_categorical()`
 baseline_cat_group %>%
   gt() %>%
   tab_header(
     title = "Categorical Variable Summary",
     subtitle = "Overall Summary"
   )
-```
 
-### Compare groups
-`compare_groups`
-```{r}
-# Run the function and display results
-group_comparison <- compare_groups(data_d1_exclusive)
-
-# Print the table
+# COMPARE GROUPS
+group_comparison <- compare_groups(data_d1_exclusive) #`compare_groups`
 print(group_comparison)
-
 ```
 
-## Labs
+**Clear** Participant's characteristics (data_d1_exclusive)
+```{r, eval=FALSE}
+# CLEAR
+rm(baseline_num)
+rm(baseline_cat)
+rm(baseline_num_group)
+rm(baseline_cat_group)
+rm(group_comparison)
+```
+
+## Lab exames
 ```{r}
 # filter first visit and relevant variables
 labs_baseline <- I27_labs_R |> 
@@ -77,9 +108,27 @@ labs_baseline <- I27_labs_R |>
     ) |> 
     select(
         -visit, -labs_date, -labs_beta_hcg , -labs_notes
-    )
+    ) |> left_join(
+        data_d1_exclusive |> 
+            select(record_id, allocation_group),
+                   by = "record_id"
+                  )
 
-baseline_labs_baseline <- summarize_numerical(labs_baseline)
+baseline_labs_baseline <- summarize_numerical(labs_baseline) #all
+baseline_labs_baseline_groups <- summarize_numerical(labs_baseline,"allocation_group") #groups
+baseline_labs_baseline_groups_compare <- compare_groups(labs_baseline) #compare
+print(baseline_labs_baseline_groups_compare) #print
+```
+
+**Clear** Lab exams
+```{r, eval=FALSE}
+rm(baseline_labs_baseline)
+rm(baseline_labs_baseline_groups)
+rm(baseline_labs_baseline_groups_compare)
+```
+
+**CPR**
+```{r}
 
 plot(labs_baseline$labs_crp)
 
@@ -98,161 +147,76 @@ plot(labs_baseline$labs_crp_log, data_filtered$phaseangle[data_filtered$visit ==
 
 
 skim(labs_baseline)
-
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```{r, echo= FALSE, results='hide'}
-max(data_d1_exclusive$record_id) # Número de participantes
-summary(data_d1_exclusive$sex); (65/75)*100 # Tabela de frequência de sexo e porcentagem do sexo feminino
-mean(data_d1_exclusive$age); sd(data_d1_exclusive$age) # Idade (média e DP)
-```
-
-Um total de 75 participantes de pesquisa foram incluídos neste estudo, sendo 65 (86,6%) do sexo feminino. A média da idade dos participantes foi de 40,6 anos (DP 10,2 anos).
-
-### Age
-
+## BIA
 ```{r}
-jmv::descriptives(
-    data = data_d1_exclusive,
-    vars = age,
-    se = TRUE,
-    ci = TRUE,
-    sw = TRUE,
-    extreme = TRUE)
+bia_baseline <- data_bia |>
+    filter(
+        visit == 1
+    ) |> 
+    select(
+        record_id, phaseangle:w_ecw
+        ) |> 
+    left_join(
+        data_d1_exclusive |> 
+            select(record_id, allocation_group, sex),
+                   by = "record_id"
+        )
+
+bia_baseline_all <- summarize_numerical(bia_baseline, "sex")
+bia_baseline_groups <- summarize_numerical(bia_baseline, "allocation_group") #groups
+bia_baseline_compare <- compare_groups(bia_baseline) # compare
+print(bia_baseline_compare) # print
 ```
 
-```{r}
-#Graphs
-jmv::descriptives(
-    data = data_d1_exclusive,
-    vars = age,
-    hist = TRUE,
-    dens = TRUE,
-    box = TRUE,
-    violin = TRUE,
-    dot = TRUE,
-    boxMean = TRUE,
-    qq = TRUE,
-    n = FALSE,
-    missing = FALSE,
-    mean = FALSE,
-    median = FALSE,
-    sd = FALSE,
-    min = FALSE,
-    max = FALSE)
+**Clear** BIA
+```{r, eval=FALSE}
+rm(bia_baseline)
+rm(bia_baseline_all)
+rm(bia_baseline_groups)
+rm(bia_baseline_compare)
 ```
 
-### Continuos
 
-```{r}
-jmv::descriptives(
-    data = data_d1_exclusive,
-    vars = vars(age, education_years, household_size),
-    n = FALSE,
-    missing = FALSE,
-    ci = TRUE,
-    sw = TRUE
-    )
+**Clear**
+```{r, eval=FALSE}
+rm()
+rm()
+rm()
+rm()
+rm()
 ```
 
-```{r}
-jmv::descriptives(
-    data = data_d1_exclusive,
-    vars = vars(sex, race, marital_status, employment_status, income_level),
-    freq = TRUE,
-    desc = "rows")
+
+**Clear**
+```{r, eval=FALSE}
+rm()
+rm()
+rm()
+rm()
+rm()
 ```
 
-A tabela 1 contem as características do baseline dos participantes de pesquisa.
 
-## Inclusão
-
-Os participantes foram incluídos no estudo entre 09/08/2023 e 26/07/2024. As datas em que os participantes completaram a intervenção foram entre 14/11/2023 e 25/10/2024.
-
-```{r}
-# Datas de inclusão e conclusão
-summary(data$consent_date)
-summary(data$conclusion_date)
-
-# Completaram a intervenção
-summary(data_d1_exclusive$completed_intervention)
+**Clear**
+```{r, eval=FALSE}
+rm()
+rm()
+rm()
+rm()
+rm()
 ```
 
-## Abandonos
 
-Dos participantes incluídos, 23 (30.6%) não completaram os três meses de intervenção. A taxa de abandono foi maior nos homens, com 4 abandonos (40% dos homens incluídos), sendo 2 de cada grupo. No sexo feminino, a taxa de abandono foi de 29.2%, sendo oito do grupo placebo e 11 do grupo intervenção.
-
-```{r}
-# Abandonos
-## Taxa de abandono
-(23/75)*100 
-
-## Abandono por sexo e grupo de alocação
-data_d1_exclusive |> 
-    filter(completed_intervention == "Não") |> 
-    count(sex, allocation_group, name = "Total")
-
-## Taxa de abandono por sexo
-(4/10)*100 # Homens
-(19/65)*100 # Mulheres
-
-table(data$non_completion_reason)
+**Clear**
+```{r, eval=FALSE}
+rm()
+rm()
+rm()
+rm()
+rm()
 ```
 
 

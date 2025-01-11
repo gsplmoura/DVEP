@@ -702,7 +702,8 @@ data_bia <- bind_rows(
     ) |> 
     arrange(
         record_id, visit
-    )
+    ) |> 
+    ungroup()
 
 ### label_variables
 data_bia <- label_variables(data_bia, codebook_bia)
