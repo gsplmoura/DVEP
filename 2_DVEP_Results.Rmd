@@ -28,6 +28,7 @@ summary(data$conclusion_date)
 summary(data_d1_exclusive$completed_intervention)
 ```
 
+
 ## Abandonos
 Dos participantes incluídos, 23 (30.6%) não completaram os três meses de intervenção. A taxa de abandono foi maior nos homens, com 4 abandonos (40% dos homens incluídos), sendo 2 de cada grupo. No sexo feminino, a taxa de abandono foi de 29.2%, sendo oito do grupo placebo e 11 do grupo intervenção.
 
@@ -99,6 +100,27 @@ rm(baseline_cat_group)
 rm(group_comparison)
 ```
 
+Comparação da proporção do sexo dos participantes segundo o grupo de alocação
+Na verdade essa análise foi redundante - já foi feita em `baseline_cat_group`
+```{r, eval=FALSE}
+group_by_sex <- data_d1_exclusive |> 
+    group_by(sex, allocation_group) |> 
+    count() |> 
+    pivot_wider(names_from = allocation_group, values_from = n, values_fill = 0) |>
+    column_to_rownames(var = "sex") |> # Converts the 'sex' column into row names
+    as.matrix()
+
+group_by_sex_chisq <- chisq.test(group_by_sex)
+group_by_sex_chisq
+group_by_sex_FET <- fisher.test(group_by_sex)
+group_by_sex_FET
+
+rm(group_by_sex)
+rm(group_by_sex_chisq)
+rm(group_by_sex_FET)
+```
+
+
 ## Lab exames
 ```{r}
 # filter first visit and relevant variables
@@ -165,10 +187,30 @@ bia_baseline <- data_bia |>
                    by = "record_id"
         )
 
-bia_baseline_all <- summarize_numerical(bia_baseline, "sex")
-bia_baseline_groups <- summarize_numerical(bia_baseline, "allocation_group") #groups
-bia_baseline_compare <- compare_groups(bia_baseline) # compare
-print(bia_baseline_compare) # print
+#by sex
+bia_baseline_sex <- summarize_numerical(bia_baseline, "sex") 
+bia_baseline_sex_compare <- compare_groups(bia_baseline,"sex") # compare
+print(bia_baseline_sex_compare) # print
+
+# by groups, by sex
+## males
+bia_baseline_males <- bia_baseline |> 
+    filter(
+        sex == "Masculino"
+    )
+bia_baseline_males_groups <- summarize_numerical(bia_baseline_males, "allocation_group") #males, by group
+bia_baseline_males_groups_compare <- compare_groups(bia_baseline_males) #males, comapre
+print(bia_baseline_males_groups_compare)
+
+## females
+bia_baseline_females <- bia_baseline |> 
+    filter(
+        sex == "Feminino"
+    )
+bia_baseline_females_groups <- summarize_numerical(bia_baseline_females, "allocation_group") #females, by group
+bia_baseline_females_groups_compare <- compare_groups(bia_baseline_females) #females, compare
+print(bia_baseline_females_groups_compare)
+
 ```
 
 **Clear** BIA
