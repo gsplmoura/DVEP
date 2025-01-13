@@ -1365,6 +1365,32 @@ rm(instr_name)
 
 # DATA ANALYSIS
 
+## Simplifying Environment
+
+```{r}
+codebooks <- tibble(
+    name = c("bia", "dvep", "ncit", "structure"),
+    data = list(codebook_bia, codebook_dvep, codebook_ncit, codebook_structure)
+)
+
+# Assign names to the `data` list-column
+names(codebooks$data) <- codebooks$name
+
+# Remove the individual tibbles from the environment
+rm(codebook_bia, codebook_dvep, codebook_ncit, codebook_structure)
+
+
+```
+
+### Pull individual codebooks
+
+You can pull each individual codebook by:
+
+-   codebooks\$data[["bia"]]
+-   codebooks\$data[["dvep"]]
+-   codebooks\$data[["ncit"]]
+-   codebooks\$data[["structure"]]
+
 ## Functions
 
 ### summarize_numerical()

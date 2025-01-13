@@ -6,13 +6,17 @@ output: html_document
 ---
 
 ```{r}
-
+library(skimr)
 ```
 
 # Baseline
+```{r}
+file_path_baseline <- "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Analysis/"
+```
+
 
 ```{r, echo= FALSE, results='hide'}
-max(data_d1_exclusive$record_id) # Número de participantes
+max(data_d1_exclusive$record_id) <- # Número de participantes
 summary(data_d1_exclusive$sex); (65/75)*100 # Tabela de frequência de sexo e porcentagem do sexo feminino
 mean(data_d1_exclusive$age); sd(data_d1_exclusive$age) # Idade (média e DP)
 ```
@@ -144,6 +148,7 @@ print(baseline_labs_baseline_groups_compare) #print
 
 **Clear** Lab exams
 ```{r, eval=FALSE}
+rm(labs_baseline)
 rm(baseline_labs_baseline)
 rm(baseline_labs_baseline_groups)
 rm(baseline_labs_baseline_groups_compare)
@@ -169,6 +174,10 @@ plot(labs_baseline$labs_crp_log, data_filtered$phaseangle[data_filtered$visit ==
 
 
 skim(labs_baseline)
+
+
+rm(cpr_bp)
+rm(labs_baseline$labs_crp_log)
 ```
 
 
@@ -216,19 +225,113 @@ print(bia_baseline_females_groups_compare)
 **Clear** BIA
 ```{r, eval=FALSE}
 rm(bia_baseline)
-rm(bia_baseline_all)
-rm(bia_baseline_groups)
-rm(bia_baseline_compare)
+rm(bia_baseline_sex)
+rm(bia_baseline_sex_compare)
+rm(bia_baseline_males)
+rm(bia_baseline_males_groups)
+rm(bia_baseline_males_groups_compare)
+rm(bia_baseline_females)
+rm(bia_baseline_females_groups)
+rm(bia_baseline_females_groups_compare)
+```
+
+## Questionnaires
+```{r}
+questionnaires <- data_filtered |> 
+    ungroup() |> 
+    filter(
+        visit == 1
+    ) |> 
+    select(
+        record_id, allocation_group, sex, whoqol_score_overall:ecap_score
+    )
+
+# write_excel_csv(questionnaires, paste0(file_path_baseline,"questionnaires.csv"))
+
+questionnaires_num <- summarize_numerical(questionnaires)
+questionnaires_num_groups <- summarize_numerical(questionnaires,"allocation_group")
+questionnaires_num_groups_compare <- compare_groups(questionnaires,"allocation_group")
+print(questionnaires_compare)
+
+# By sex
+questionnaires_sex <- summarize_numerical(questionnaires,"sex")
+questionnaires_sex_compare <- compare_groups(questionnaires,"sex")
+print(questionnaires_sex_compare)
+
+# By allocation_group
+questionnaires_num <- summarize_numerical(questionnaires,"allocation_group")
+questionnaires_num_compare <- compare_groups(questionnaires,"allocation_group")
+print(questionnaires_sex_compare)
+
+# ANOVA to search for interaction between sex and allocation
+anova_whoqol <- aov(whoqol_score_overall ~ sex * allocation_group, data = questionnaires)
+summary(anova_whoqol)
+anova_depression <- aov(dass_score_depression ~ sex * allocation_group, data = questionnaires)
+summary(anova_depression)
+anova_anxiety <- aov(dass_score_anxiety ~ sex * allocation_group, data = questionnaires)
+summary(anova_anxiety)
+anova_ecap <- aov(ecap_score ~ sex * allocation_group, data = questionnaires)
+summary(anova_ecap)
+
+```
+# Adverse Events
+```{r}
+adverse_events <- read_csv('/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Analysis/adverse_events.csv')
+
+adverse_events$`Nome completo` <- substr(adverse_events$`Nome completo`,1,2)
+
+adverse_events <- adverse_events |> 
+    filter(
+        !is.na(`Repeat Instrument`)
+    ) |> 
+    filter(
+        `Algum Evento Adverso neste ciclo?` == "Sim"
+    )
+
+colnames(adverse_events) <- trimws(colnames(adverse_events))
+
+adverse_events <- adverse_events |> 
+    select(
+        `Nome completo`, `Event Name`,`Evento Adverso Grave?  `,Grau, Classificação, `Evento Adverso`, `Atribuição de causalidade`, `Ação Realizada`, Seguimento, Descrição
+    ) 
+
+adverse_events <- adverse_events |>
+    mutate(
+        `Nome completo` = as.integer(`Nome completo`)
+    ) |>
+    left_join(
+        data_d1_exclusive |>
+            select(record_id, sex, allocation_group),
+        by = join_by(`Nome completo` == record_id)
+    )
+
+adverse_events <- adverse_events |> 
+    mutate(
+        `Event Name` = as.factor(`Event Name`),
+        `Evento Adverso Grave?  ` = as.factor(`Evento Adverso Grave?  `),
+        Grau = as.factor(Grau),
+        Classificação = as.factor(Classificação),
+        `Atribuição de causalidade` = as.factor(`Atribuição de causalidade`),
+        `Ação Realizada` = as.factor(`Ação Realizada`),
+        Seguimento = as.factor(Seguimento),
+        `Nome completo` = as.character(`Nome completo`)
+    )
+
+#summarize_categorical
+adverse_events_cat <- summarize_categorical(adverse_events)
+write_excel_csv(adverse_events_cat, paste0(file_path_baseline, "adverse_events_cat.csv"))
+
+#baseR: summary
+summary(adverse_events)
 ```
 
 
 **Clear**
 ```{r, eval=FALSE}
-rm()
-rm()
-rm()
-rm()
-rm()
+rm(questionnaires)
+rm(questionnaires_num)
+rm(questionnaires_compare)
+
 ```
 
 
