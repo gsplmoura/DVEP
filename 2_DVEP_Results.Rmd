@@ -279,23 +279,12 @@ summary(anova_ecap)
 adverse_events <- read_csv('/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Analysis/adverse_events.csv')
 
 adverse_events$`Nome completo` <- substr(adverse_events$`Nome completo`,1,2)
-
-adverse_events <- adverse_events |> 
-    filter(
-        !is.na(`Repeat Instrument`)
-    ) |> 
-    filter(
-        `Algum Evento Adverso neste ciclo?` == "Sim"
-    )
-
 colnames(adverse_events) <- trimws(colnames(adverse_events))
 
-adverse_events <- adverse_events |> 
-    select(
-        `Nome completo`, `Event Name`,`Evento Adverso Grave?  `,Grau, Classificação, `Evento Adverso`, `Atribuição de causalidade`, `Ação Realizada`, Seguimento, Descrição
-    ) 
-
-adverse_events <- adverse_events |>
+adverse_events_yes <- adverse_events |>
+    filter(
+        `Algum Evento Adverso neste ciclo?` == "Sim"
+    ) |> 
     mutate(
         `Nome completo` = as.integer(`Nome completo`)
     ) |>
@@ -303,9 +292,7 @@ adverse_events <- adverse_events |>
         data_d1_exclusive |>
             select(record_id, sex, allocation_group),
         by = join_by(`Nome completo` == record_id)
-    )
-
-adverse_events <- adverse_events |> 
+    ) |> 
     mutate(
         `Event Name` = as.factor(`Event Name`),
         `Evento Adverso Grave?  ` = as.factor(`Evento Adverso Grave?  `),
@@ -318,11 +305,107 @@ adverse_events <- adverse_events |>
     )
 
 #summarize_categorical
-adverse_events_cat <- summarize_categorical(adverse_events)
-write_excel_csv(adverse_events_cat, paste0(file_path_baseline, "adverse_events_cat.csv"))
+adverse_events_cat <- summarize_categorical(adverse_events_yes)
+## write_excel_csv(adverse_events_cat, paste0(file_path_baseline, "adverse_events_cat.csv"))
 
 #baseR: summary
-summary(adverse_events)
+summary(adverse_events_yes)
+```
+
+**Association between visit (time point) and severity of adverse event**
+Testing for an association between visit (time point) and severity of adverse events to evaluate whether the likelihood of experiencing severe adverse events changes as the intervention progresses (Chi-squared test of independence)
+```{r, eval=FALSE}
+# contingency table
+table_ae <- table(adverse_events_yes$`Event Name`, adverse_events_yes$Grau)
+print(table_ae)
+
+# Chi-square
+chisq_test <- chisq.test(table_ae)
+print(chisq_test)
+chisq_test$expected
+## Many cells with expected counts < 5 -> FET would be more appropriate
+fisher_test <- fisher.test(table_ae)
+print(fisher_test)
+
+adverse_events_yes$allocation_group
+
+```
+
+--> Running Mantel-Haenszel test to control for the intervention group
+```{r}
+library(gmodels)
+
+# CrossTable to explore the stratified data
+CrossTable(
+  x = adverse_events_yes$`Event Name`, 
+  y = adverse_events_yes$Grau, 
+  strata = adverse_events_yes$allocation_group,
+  prop.chisq = FALSE, 
+  prop.r = FALSE, 
+  prop.c = FALSE, 
+  prop.t = FALSE
+)
+
+# Create a 3D contingency table stratified by allocation group
+table_visit_severity_allocation <- table(
+    adverse_events_yes$`Event Name`, adverse_events_yes$Grau, adverse_events_yes$allocation_group
+    )
+print(table_visit_severity_allocation)
+
+# Mantel-Haenszel test
+mantel_test <- mantelhaen.test(table_visit_severity_allocation)
+print(mantel_test)
+
+```
+
+
+
+
+**By severity**
+```{r}
+table_ae <- table(adverse_events_yes$Classificação, adverse_events_yes$Grau)
+print(table_ae)
+```
+**By causality**
+```{r}
+table_ae <- table(adverse_events_yes$Classificação, adverse_events_yes$`Atribuição de causalidade`)
+View(table_ae)
+```
+
+**Gastrointestinal**
+```{r}
+ae_gastrointestinal <- adverse_events_yes |> 
+    filter(
+        Classificação == "Gastrointestinal"
+    )
+```
+
+**Grouping events by classification**
+```{r}
+
+# Group by Classificação and Evento Adverso, count occurrences, and calculate percentages
+summary_data <- adverse_events_yes %>%
+  group_by(Classificação, `Evento Adverso`) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Percentage = (Count / sum(Count)) * 100) %>%
+  arrange(Classificação, desc(Count))
+
+# Create the formatted output
+formatted_output <- summary_data %>%
+  group_by(Classificação) %>%
+  summarise(
+    Events = paste0(`Evento Adverso`, " (", round(Percentage, 1), "%)", collapse = ", "),
+    .groups = "drop"
+  ) %>%
+  mutate(Result = paste0(Classificação, ": ", Events))
+
+# Print the result
+cat(paste(formatted_output$Result, collapse = "\n"))
+
+# Save file
+write_lines(paste(formatted_output$Result, collapse = "\n"), paste0(file_path_baseline, "eventos_adversos_por_sistema.txt"))
+
+
 ```
 
 
