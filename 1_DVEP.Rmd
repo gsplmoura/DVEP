@@ -1,10 +1,13 @@
 ---
 title: "DVEP Data Analysis"
-project: "Effect of Eclipta prostrata (L.) L. (Asteraceae) on bioelectrical impedance phase angle in adults with grade I obesity (DVEP)"
-PID: "REDCap 1958"
 author: "Gustavo Santos Paiva Laender Moura"
 date: "2025-01-05"
-output: html_document
+output:
+  word_document: default
+  pdf_document: default
+PID: REDCap 1958
+project: Effect of Eclipta prostrata (L.) L. (Asteraceae) on bioelectrical impedance
+  phase angle in adults with grade I obesity (DVEP)
 ---
 
 # READ ME
