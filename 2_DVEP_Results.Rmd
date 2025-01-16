@@ -5,29 +5,26 @@ date: "2025-01-07"
 output: html_document
 ---
 
-```{r}
+```{r, eval=FALSE}
 library(skimr)
 ```
 
 # Baseline
-```{r}
+```{r, eval=FALSE}
 file_path_baseline <- "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Analysis/"
-```
-
-
-```{r, echo= FALSE, results='hide'}
-max(data_d1_exclusive$record_id) <- # Número de participantes
-summary(data_d1_exclusive$sex); (65/75)*100 # Tabela de frequência de sexo e porcentagem do sexo feminino
-mean(data_d1_exclusive$age); sd(data_d1_exclusive$age) # Idade (média e DP)
 ```
 
 Um total de 75 participantes de pesquisa foram incluídos neste estudo, sendo 65 (86,6%) do sexo feminino. A média da idade dos participantes foi de 40,6 anos (DP 10,2 anos). A tabela 1 contem as características de base participantes de pesquisa, antes do início da intervenção. Os participantes foram incluídos no estudo entre 09/08/2023 e 26/07/2024. As datas em que os participantes completaram a intervenção foram entre 14/11/2023 e 25/10/2024.
 
-```{r}
+```{r, eval=FALSE}
 # Datas de inclusão e conclusão
 summary(data$consent_date)
-summary(data$conclusion_date)
+```
 
+```{r, eval=FALSE}
+summary(data["conclusion_date"])
+```
+```{r, eval=FALSE}
 # Completaram a intervenção
 summary(data_d1_exclusive$completed_intervention)
 ```
@@ -36,7 +33,7 @@ summary(data_d1_exclusive$completed_intervention)
 ## Abandonos
 Dos participantes incluídos, 23 (30.6%) não completaram os três meses de intervenção. A taxa de abandono foi maior nos homens, com 4 abandonos (40% dos homens incluídos), sendo 2 de cada grupo. No sexo feminino, a taxa de abandono foi de 29.2%, sendo oito do grupo placebo e 11 do grupo intervenção.
 
-```{r}
+```{r, eval=FALSE}
 # Abandonos
 ## Taxa de abandono
 (23/75)*100 
@@ -54,7 +51,7 @@ table(data$non_completion_reason)
 ```
 
 ## Participant's characteristics (data_d1_exclusive)
-```{r}
+```{r, eval=FALSE}
 # ALL
 baseline_num <- summarize_numerical(data_d1_exclusive) # `summarize_numerical()`
 baseline_num %>%
@@ -126,7 +123,7 @@ rm(group_by_sex_FET)
 
 
 ## Lab exames
-```{r}
+```{r, eval=FALSE}
 # filter first visit and relevant variables
 labs_baseline <- I27_labs_R |> 
     filter(
@@ -155,7 +152,7 @@ rm(baseline_labs_baseline_groups_compare)
 ```
 
 **CPR**
-```{r}
+```{r, eval=FALSE}
 
 plot(labs_baseline$labs_crp)
 
@@ -182,7 +179,7 @@ rm(labs_baseline$labs_crp_log)
 
 
 ## BIA
-```{r}
+```{r, eval=FALSE}
 bia_baseline <- data_bia |>
     filter(
         visit == 1
@@ -236,7 +233,7 @@ rm(bia_baseline_females_groups_compare)
 ```
 
 ## Questionnaires
-```{r}
+```{r, eval=FALSE}
 questionnaires <- data_filtered |> 
     ungroup() |> 
     filter(
@@ -275,7 +272,7 @@ summary(anova_ecap)
 
 ```
 # Adverse Events
-```{r}
+```{r, eval=FALSE}
 adverse_events <- read_csv('/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Analysis/adverse_events.csv')
 
 adverse_events$`Nome completo` <- substr(adverse_events$`Nome completo`,1,2)
@@ -332,7 +329,7 @@ adverse_events_yes$allocation_group
 ```
 
 --> Running Mantel-Haenszel test to control for the intervention group
-```{r}
+```{r, eval=FALSE}
 library(gmodels)
 
 # CrossTable to explore the stratified data
@@ -362,18 +359,18 @@ print(mantel_test)
 
 
 **By severity**
-```{r}
+```{r, eval=FALSE}
 table_ae <- table(adverse_events_yes$Classificação, adverse_events_yes$Grau)
 print(table_ae)
 ```
 **By causality**
-```{r}
+```{r, eval=FALSE}
 table_ae <- table(adverse_events_yes$Classificação, adverse_events_yes$`Atribuição de causalidade`)
 View(table_ae)
 ```
 
 **Gastrointestinal**
-```{r}
+```{r, eval=FALSE}
 ae_gastrointestinal <- adverse_events_yes |> 
     filter(
         Classificação == "Gastrointestinal"
@@ -381,7 +378,7 @@ ae_gastrointestinal <- adverse_events_yes |>
 ```
 
 **Grouping events by classification**
-```{r}
+```{r, eval=FALSE}
 
 # Group by Classificação and Evento Adverso, count occurrences, and calculate percentages
 summary_data <- adverse_events_yes %>%
