@@ -14,7 +14,11 @@ library(skimr)
 file_path_baseline <- "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Analysis/"
 ```
 
-Um total de 75 participantes de pesquisa foram incluídos neste estudo, sendo 65 (86,6%) do sexo feminino. A média da idade dos participantes foi de 40,6 anos (DP 10,2 anos). A tabela 1 contem as características de base participantes de pesquisa, antes do início da intervenção. Os participantes foram incluídos no estudo entre 09/08/2023 e 26/07/2024. As datas em que os participantes completaram a intervenção foram entre 14/11/2023 e 25/10/2024.
+Um total de 75 participantes de pesquisa foram incluídos neste estudo, sendo 65 (86,6%) do sexo feminino. A média da idade dos participantes foi de 40,6 anos (DP 10,2 anos). A Tabela 8.1 contém as características de base participantes de pesquisa. Trinta e sete (49,3%) participantes foram alocados no grupo placebo e 38 (50,7%) no grupo Eclipta. Os participantes foram incluídos no estudo entre 09/08/2023 e 26/07/2024. 
+```{r}
+```
+
+O término da intervenção ocorreu entre 14/11/2023 e 25/10/2024. O tempo médio da intervenção foi de 94.4 dias ( IC 95% 88.8–99.9). Na comparação das características de base dos participantes de pesquisa segundo o grupo de alocação, houve diferença estatística apenas no nível de renda (Tabela 8.2).
 
 ```{r, eval=FALSE}
 # Datas de inclusão e conclusão
@@ -91,6 +95,32 @@ group_comparison <- compare_groups(data_d1_exclusive) #`compare_groups`
 print(group_comparison)
 ```
 
+Descriptive:
+Drugs that might induce weight loss
+```{r}
+drugs_w_loss_descriptive <- I22_drugs_R |> 
+    dplyr::filter(stringr::str_detect(drugs_sql, 
+        "C61939|C62012|C506_1|C1278_2|C1278_1|C1278_3|C47764_1|C47764_2|C61680"
+    )) |> 
+    dplyr::pull(descriptive) |> 
+    stringr::str_extract("^[^0-9]+") |> 
+    stringr::str_trim() |> 
+    base::unique() |> 
+    cat(sep = ", ")
+
+```
+```{r}
+drugs_w_gain <- I22_drugs_R |> 
+    filter(str_detect(drugs_sql, 
+        "C61879|C62005|C61917_2|C29416|C29536_2")) |> 
+    dplyr::pull(descriptive) |> 
+    stringr::str_extract("^[^0-9]+") |> 
+    stringr::str_trim() |> 
+    base::unique() |> 
+    cat(sep = ", ")
+```
+
+
 **Clear** Participant's characteristics (data_d1_exclusive)
 ```{r, eval=FALSE}
 # CLEAR
@@ -99,6 +129,8 @@ rm(baseline_cat)
 rm(baseline_num_group)
 rm(baseline_cat_group)
 rm(group_comparison)
+rm(drugs_w_loss_descriptive)
+
 ```
 
 Comparação da proporção do sexo dos participantes segundo o grupo de alocação
