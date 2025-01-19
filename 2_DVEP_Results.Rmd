@@ -264,6 +264,66 @@ rm(bia_baseline_females_groups)
 rm(bia_baseline_females_groups_compare)
 ```
 
+## Handgrip
+```{r}
+handgrip <- data |> 
+    select(record_id, event_name, handgrip_right_mean, handgrip_left_mean) |> 
+    filter(
+        event_name == "1visit_arm_1"
+    ) |> 
+    filter(
+        !is.na(handgrip_right_mean) | !is.na(handgrip_left_mean)
+    ) |> 
+    left_join(
+        data_d1_exclusive |> 
+            select(
+                record_id, sex, allocation_group
+            ),
+        by = "record_id"
+    ) |> 
+    mutate(
+        handgrip = rowMeans(
+            across(c(handgrip_left_mean, handgrip_right_mean)),
+            na.rm = TRUE
+        )
+    )
+#write_excel_csv(handgrip,paste0(file_path_baseline,"handgrip.csv"))
+
+summarize_numerical(handgrip,"sex")
+compare_groups(handgrip,"sex")
+
+# handgrip |> 
+    filter(
+        sex == "Masculino"
+    ) |> 
+    group_by(
+        allocation_group
+    ) |> 
+    summarize(
+        `Média da mão direita` = mean(handgrip_right_mean, na.rm = TRUE),
+        `Média da mão esquerda` = mean(handgrip_left_mean, na.rm = TRUE),
+        `Média das mãos` = mean(handgrip, na.rm = TRUE),
+    )
+
+# Males
+handgrip_man <- handgrip |> 
+    filter(
+        sex == "Masculino"
+    )
+handgrip_man_num <- print(summarize_numerical(handgrip_man, "allocation_group"))
+handgrip_man_compare <- print(compare_groups(handgrip_man, "allocation_group"))
+
+# Females
+handgrip_fem <- handgrip |> 
+    filter(
+        sex == "Feminino"
+    )
+handgrip_fem_num <- print(summarize_numerical(handgrip_fem, "allocation_group"))
+handgrip_fem_compare <- print(compare_groups(handgrip_fem, "allocation_group"))
+```
+
+
+
 ## Questionnaires
 ```{r, eval=FALSE}
 questionnaires <- data_filtered |> 
