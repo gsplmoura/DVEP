@@ -21,21 +21,12 @@ library(skimr)
 file_path_baseline <- "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Output/"
 ```
 
-Um total de 75 participantes de pesquisa foram incluídos neste estudo, sendo 65 (86,6%) do sexo feminino. A média da idade dos participantes foi de 40,6 anos (DP 10,2 anos). A Tabela 8.1 contém as características de base participantes de pesquisa. Trinta e sete (49,3%) participantes foram alocados no grupo placebo e 38 (50,7%) no grupo Eclipta. Os participantes foram incluídos no estudo entre 09/08/2023 e 26/07/2024. 
-```{r}
-```
-
-O término da intervenção ocorreu entre 14/11/2023 e 25/10/2024. O tempo médio da intervenção foi de 94.4 dias ( IC 95% 88.8–99.9). Na comparação das características de base dos participantes de pesquisa segundo o grupo de alocação, houve diferença estatística apenas no nível de renda (Tabela 8.2).
-
 ```{r, eval=FALSE}
 # Datas de inclusão e conclusão
 summary(data$consent_date)
-```
 
-```{r, eval=FALSE}
 summary(data["conclusion_date"])
-```
-```{r, eval=FALSE}
+
 # Completaram a intervenção
 summary(data_d1_exclusive$completed_intervention)
 ```
@@ -75,14 +66,8 @@ teste_qui2$expected
 
 # Exibir os resultados do teste do qui-quadrado
 print(teste_qui2)
-
-# Teste exato de Fisher (caso as frequências esperadas sejam menores que 5)
-teste_fisher <- fisher.test(tabela)
-
-# Exibir os resultados do teste exato de Fisher
-print(teste_fisher)
-
 ```
+
 ### Contingency table by sex, controlling for allocation group
 ```{r}
 # Criar a tabela de contingência estratificada por allocation_group
