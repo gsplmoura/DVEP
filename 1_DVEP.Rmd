@@ -14,44 +14,6 @@ project: Effect of Eclipta prostrata (L.) L. (Asteraceae) on bioelectrical imped
 
 # READ ME
 
-## Exporting data from REDCap
-
-1.  PID 1958
-
-2.  Data Exports, Reports, and Stats
-
-3.  Choose "Export Data" from option "A - All data (all records and fields)"
-
-4.  Export format: CSV (raw data)
-
-5.  De-identification options: "Remove all identifier fields" YES
-
-6.  Additional export options: "Export survey identifier field and survey timestamp field(s)?" YES
-
-7.  Advanced data formatting options
-
-    -   "Export gray Form Status fields with blank value"
-    -   comma as default separator
-    -   Use period/full stop (.) as decimal
-
-8.  Export file to "\~Data Science/PROJECTS/DVEP"
-
-9.  Rename file to "data_dvep.csv" Note: resulting file must have 780 variables (last variable on column ACZ: "anexos_complete")
-
-## Files
-
-### Codebooks and supporting files
-
--   **codebook_dvep.xlsx**: Codebook for REDCap DVEP Project
--   **codebook_structure.csv:** Data structure for DVEP project
--   **codebook_ncit.csv** Operational Support - NCIT coding
--   **codebook_bia.xlsx** Codebook for BIA data
-
-### Data
-
--   **data_dvep.csv** Full data from REDCap DVEP Project.
--   **data_bia_D1.csv** BIA data for the first visit for all participants. Contains BIA data from the first visit only. Contains BIA data from participants who did not complete the intervention.
--   **data_bia_D3.csv** BIA data for participants that completed the intervention. Contains BIA data from both the first and third visits.
 
 # DATA WRANGLING
 
@@ -72,10 +34,7 @@ library(stringr)
 library(purrr)
 library(gt)
 library(jmv)
-
-
-## Set working directory
-setwd("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP")
+library(skimr)
 ```
 
 ## Read CSV data files (Tidyverse)
@@ -83,7 +42,7 @@ setwd("/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medic
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 2. Read CSV data files (Tidyverse)
 codebook_dvep <- read_excel(
-        "codebook_dvep.xlsx",
+        "Data/codebook_dvep.xlsx",
         col_names = TRUE,
         col_types = NULL,
         na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
@@ -95,7 +54,7 @@ codebook_dvep <- read_excel(
     arrange(index)
 
 codebook_bia <- read_excel(
-    "codebook_bia.xlsx",
+    "Data/codebook_bia.xlsx",
     col_names = TRUE,
     col_types = NULL,
         na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
@@ -107,18 +66,18 @@ codebook_bia <- read_excel(
     arrange(index)
 
 codebook_structure  <- read_csv(
-  "codebook_structure.csv",
+  "Data/codebook_structure.csv",
   col_names = TRUE) |> 
     select(
         form_name_en:V3
     )
 
 codebook_ncit  <- read_csv(
-  "codebook_ncit.csv",
+  "Data/codebook_ncit.csv",
   col_names = TRUE)
 
 data  <- read_csv(
-  "data_dvep.csv",
+  "Data/data_dvep.csv",
   col_names = TRUE,
   col_types = NULL,
   col_select = NULL,
@@ -140,11 +99,11 @@ data  <- read_csv(
 )
 
 data_bia_D3 <- read_csv(
-    "data_bia_D3.csv",
+    "Data/data_bia_D3.csv",
     col_names = TRUE)
 
 data_bia_D1 <- read_csv(
-    "data_bia_D1.csv",
+    "Data/data_bia_D1.csv",
     col_names = TRUE)
 ```
 

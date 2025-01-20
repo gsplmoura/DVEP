@@ -5,13 +5,20 @@ date: "2025-01-07"
 output: html_document
 ---
 
-```{r, eval=FALSE}
+```{r, eval= FALSE}
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(stringr)
+library(purrr)
+library(gt)
+library(jmv)
 library(skimr)
 ```
 
 # Baseline
 ```{r, eval=FALSE}
-file_path_baseline <- "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Analysis/"
+file_path_baseline <- "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Output/"
 ```
 
 Um total de 75 participantes de pesquisa foram incluídos neste estudo, sendo 65 (86,6%) do sexo feminino. A média da idade dos participantes foi de 40,6 anos (DP 10,2 anos). A Tabela 8.1 contém as características de base participantes de pesquisa. Trinta e sete (49,3%) participantes foram alocados no grupo placebo e 38 (50,7%) no grupo Eclipta. Os participantes foram incluídos no estudo entre 09/08/2023 e 26/07/2024. 
@@ -52,6 +59,57 @@ data_d1_exclusive |>
 (19/65)*100 # Mulheres
 
 table(data$non_completion_reason)
+```
+
+### Contingency table by sex
+```{r}
+# Criar a tabela de contingência
+tabela <- table(data_d1_exclusive$sex, data_d1_exclusive$completed_intervention)
+
+# Exibir a tabela
+print(tabela)
+
+# Teste do qui-quadrado
+teste_qui2 <- chisq.test(tabela)
+teste_qui2$expected
+
+# Exibir os resultados do teste do qui-quadrado
+print(teste_qui2)
+
+# Teste exato de Fisher (caso as frequências esperadas sejam menores que 5)
+teste_fisher <- fisher.test(tabela)
+
+# Exibir os resultados do teste exato de Fisher
+print(teste_fisher)
+
+```
+### Contingency table by sex, controlling for allocation group
+```{r}
+# Criar a tabela de contingência estratificada por allocation_group
+tabela <- table(data_d1_exclusive$sex, 
+                data_d1_exclusive$completed_intervention, 
+                data_d1_exclusive$allocation_group)
+
+# Exibir a tabela para verificar se está correta
+print(tabela)
+
+# Realizar o teste de Mantel-Haenszel
+resultado_mh <- mantelhaen.test(tabela)
+
+# Exibir o resultado do teste
+print(resultado_mh)
+
+```
+
+
+### Log reg
+```{r}
+model <- glm(completed_intervention ~ sex * allocation_group, data = data_d1_exclusive, family = binomial)
+
+summary(model)
+
+exp(cbind(OR = coef(model), confint(model)))
+
 ```
 
 ## Participant's characteristics (data_d1_exclusive)
@@ -340,7 +398,6 @@ questionnaires <- data_filtered |>
 questionnaires_num <- summarize_numerical(questionnaires)
 questionnaires_num_groups <- summarize_numerical(questionnaires,"allocation_group")
 questionnaires_num_groups_compare <- compare_groups(questionnaires,"allocation_group")
-print(questionnaires_compare)
 
 # By sex
 questionnaires_sex <- summarize_numerical(questionnaires,"sex")
@@ -359,6 +416,8 @@ anova_depression <- aov(dass_score_depression ~ sex * allocation_group, data = q
 summary(anova_depression)
 anova_anxiety <- aov(dass_score_anxiety ~ sex * allocation_group, data = questionnaires)
 summary(anova_anxiety)
+anova_stress <- aov(dass_score_stress ~ sex * allocation_group, data = questionnaires)
+summary(anova_stress)
 anova_ecap <- aov(ecap_score ~ sex * allocation_group, data = questionnaires)
 summary(anova_ecap)
 
