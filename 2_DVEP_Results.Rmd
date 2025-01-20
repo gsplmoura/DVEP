@@ -17,8 +17,8 @@ library(skimr)
 ```
 
 # Baseline
-```{r, eval=FALSE}
-file_path_baseline <- "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Output/"
+```{r}
+file_path_baseline <- "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Output/Baseline/"
 ```
 
 ```{r, eval=FALSE}
@@ -53,7 +53,7 @@ table(data$non_completion_reason)
 ```
 
 ### Contingency table by sex
-```{r}
+```{r, eval=FALSE}
 # Criar a tabela de contingência
 tabela <- table(data_d1_exclusive$sex, data_d1_exclusive$completed_intervention)
 
@@ -69,7 +69,7 @@ print(teste_qui2)
 ```
 
 ### Contingency table by sex, controlling for allocation group
-```{r}
+```{r, eval=FALSE}
 # Criar a tabela de contingência estratificada por allocation_group
 tabela <- table(data_d1_exclusive$sex, 
                 data_d1_exclusive$completed_intervention, 
@@ -88,7 +88,7 @@ print(resultado_mh)
 
 
 ### Log reg
-```{r}
+```{r, eval=FALSE}
 model <- glm(completed_intervention ~ sex * allocation_group, data = data_d1_exclusive, family = binomial)
 
 summary(model)
@@ -140,7 +140,7 @@ print(group_comparison)
 
 Descriptive:
 Drugs that might induce weight loss
-```{r}
+```{r, eval=FALSE}
 drugs_w_loss_descriptive <- I22_drugs_R |> 
     dplyr::filter(stringr::str_detect(drugs_sql, 
         "C61939|C62012|C506_1|C1278_2|C1278_1|C1278_3|C47764_1|C47764_2|C61680"
@@ -151,8 +151,6 @@ drugs_w_loss_descriptive <- I22_drugs_R |>
     base::unique() |> 
     cat(sep = ", ")
 
-```
-```{r}
 drugs_w_gain <- I22_drugs_R |> 
     filter(str_detect(drugs_sql, 
         "C61879|C62005|C61917_2|C29416|C29536_2")) |> 
@@ -308,7 +306,7 @@ rm(bia_baseline_females_groups_compare)
 ```
 
 ## Handgrip
-```{r}
+```{r, eval=FALSE}
 handgrip <- data |> 
     select(record_id, event_name, handgrip_right_mean, handgrip_left_mean) |> 
     filter(
