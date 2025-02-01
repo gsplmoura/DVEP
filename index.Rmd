@@ -10,57 +10,51 @@ output: html_document
 Este repositório contém materiais relacionados ao projeto DVEP, incluindo relatórios de análise, código-fonte, documentos e apresentações.
 
 🚀 **GitHub Pages URL:** [https://gsplmoura.github.io/DVEP/](https://gsplmoura.github.io/DVEP/)
-
+   **Repositório GitHub:** [https://github.com/gsplmoura/DVEP/](https://github.com/gsplmoura/DVEP/)
+ 
 ---
 
 ## 📊 Relatórios de Análise
 
 - **Manipulação de Dados**  
-  [1_DVEP.html](1_DVEP.html)  
   Relatório com o pré-processamento e limpeza de dados.
+  [Arquivo em html](1_DVEP.html)
+  [Código R markdown](1_DVEP.Rmd)
+  
 
 - **Análise Exploratória de Dados**  
-  [2_DVEP_Results.html](2_DVEP_Results.html)  
   Análise descritiva e gráficos exploratórios.
+  [Arquivo em html](2_DVEP_Results.html)  
+  [Código R markdown](2_DVEP_Results.html)  
 
 ---
 
 ## 📂 Documentação e Recursos
 
-- **Código-Base para Análise**  
-  [Reference code for analysis.Rmd](Docs/Reference%20code%20for%20analysis.Rmd)
-
-- **Atalhos do RStudio**  
-  [RStudio Keyboard Shortcuts](Docs/RStudio_Keyboard_shortcuts.Rmd)
-
-- **Regras de Estilo**  
-  [Style Shortcuts](Docs/Style%20shortcuts)
-
-- **Código para Publicação no GitHub**  
-  [Push to Git](Docs/Push%20to%20git.txt)
-
 ---
 
-## 📑 Slides e Apresentações
+### 📑 Slides e Apresentações
 
 - 📢 **Slides do Projeto**  
-  [Visualizar Apresentação](Slides/Slides.html)
+  Os slides foram criados na IDE RStudio utilizando R Markdown. O pacote xaringan foi usado para configurar o remark.js, e o knitr foi responsável para convertê-los em HTML.
+  [Visualizar Apresentação de Slides](Slides/Slides.html)
+  [Código R markdown utilizado](Slides/Slides.Rmd)
 
 ---
 
-## 📖 Materiais da Tese
+### 📖 Materiais da Tese
 
 - 📄 **Tese Completa**  
-  [Tese Eclipta Prostrata.pdf](Docs/Tese%20Eclipta%20prostrata.pdf)
+  [Arquivo em pdf](Docs/Tese%20Eclipta%20prostrata.pdf)
 
 - 📄 **Documento Word da Tese**  
-  [Thesis.docx](Docs/Thesis.docx)
+  [Arquivo em word](Docs/Thesis.docx)
 
 ---
 
-## 📜 Codebooks
+### 📜 Dicionário de dados
 
-Esses arquivos contêm a estrutura de variáveis e descrições para os bancos de dados usados na análise.
+Esses arquivos nos formatos .csv e Excel (.xlsx) contêm a estrutura de variáveis e suas descrições para os projetos criados no REDCap e utilizados na coleta de dados. Além disso, representam a estrutura dos bancos de dados utilizados na análise.
 
 - [Codebook BIA](Codebooks/codebook_bia.xlsx)  
 - [Codebook DVEP](Codebooks/codebook_dvep.xlsx)  
@@ -69,9 +63,9 @@ Esses arquivos contêm a estrutura de variáveis e descrições para os bancos d
 
 ---
 
-## 📜 Dados do REDCap
+### 📜 Codebooks do REDCap
 
-Os seguintes arquivos contêm registros de extração de dados do **REDCap**:
+Os seguintes arquivos contêm os Codebooks dos projetos do **REDCap**:
 
 - **Registro de Pacientes**  
   [PID 1958 DVEP.pdf](REDCap/PID%201958%20DVEP.pdf)
