@@ -142,12 +142,18 @@ template: objetivos
 class: inverse, middle, center
 # Materiais e Métodos
 ____
+
 ---
+
 name: Metodologia
+
 # Metodologia
+
 ---
+
 template: Metodologia
-## Aspectos Éticos
+class: top, left
+### Aspectos Éticos
 
 - **Aprovação Ética:** Comitê de Ética em Pesquisa da FMRP-USP  
   
@@ -160,17 +166,20 @@ template: Metodologia
 
 ---
 template: Metodologia
-## Determinação da Dose
-###Droga Vegetal de *Eclipta Prostrata*
+class: top, left
+### Determinação da Dose
+#### Droga Vegetal de *Eclipta Prostrata*
 
 - **Regulação:** Ensaios clínicos devem utilizar a mesma dose e posologia do .my-coral[uso tradicional] .small[[ANVISA (2014), MS (2008) e WHO (2005)]].
 
 - **Uso Tradicional (Ayurveda):** A dose tradicional para *Eclipta prostrata* é de 2 a 3 g/dia, administrada de forma fracionada .small[(Kambli; Khaires; Kushwaha, 2022)].
 
 ---
+
 template: Metodologia
-## Determinação da Dose
-###Droga Vegetal de *Eclipta Prostrata*
+class: top, left
+### Determinação da Dose
+#### Droga Vegetal de *Eclipta Prostrata*
 
 - **Ensaios Clínicos Anteriores:**  
   - Rangineni; Sharada; Saxena (2007) utilizaram 3 g/dia;  
@@ -180,13 +189,17 @@ template: Metodologia
 
 ---
 template: Metodologia
-## Determinação da Dose
-###Droga Vegetal de *Eclipta Prostrata*
+class: top, left
+### Determinação da Dose
+#### Droga Vegetal de *Eclipta Prostrata*
 
 - **Equivalência à Dose Máxima Recomendada:** 2250 mg/dia corresponde a 13,8% da dose máxima recomendada para ensaios clínicos em humanos, baseada em estudos de toxicidade animal .small[(FDA, 2005)].
+
 ---
+
 template: Metodologia
-## Cálculo do Tamanho Amostral
+class: top, left
+### Cálculo do Tamanho Amostral
 
 - **Dados Populacionais:**  
   Banco de dados de 214.732 adultos na Alemanha: ângulo de fase estratificados por idade, sexo e IMC.  
@@ -196,9 +209,11 @@ template: Metodologia
   Resultados semelhantes em estudo com 2122 indivíduos, dos quais 478 tinham IMC > 30 kg/m² .small[(MATTIELLO; MUNDSTOCK; ZIEGELMANN, 2022)].
 
 ---
+
 template: Metodologia
-## Cálculo do Tamanho Amostral
-### Ângulo de fase
+class: top, left
+### Cálculo do Tamanho Amostral
+#### Ângulo de fase
 - **Relação entre Média e Percentil 10:**  
   A média populacional do AF é 15% maior que o valor do AF correspondente ao percentil 10, com diferença média de 0,84° .small[(0,78° para mulheres e 0,89° para homens)].
 
@@ -207,10 +222,10 @@ template: Metodologia
 
 ---
 template: Metodologia
+class: top, left
+### Cálculo do Tamanho Amostral
 
-## Cálculo do Tamanho Amostral
-
-### Ângulo de fase
+#### Ângulo de fase
 
 - **Parâmetros para o Cálculo:**  
   - Grupo _Eclipta_: incremento médio de 0,28°;  
@@ -221,9 +236,10 @@ template: Metodologia
   Com nível de significância de 0,05 (bicaudal) e poder de 80%, obteve-se um tamanho amostral de 37 participantes por grupo .small[(SINGER, 2001)].
 
 ---
-template: Metodologia
 
-## Gestão de Dados
+template: Metodologia
+class: top, left
+### Gestão de Dados
 
 **Plano de Gestão de Dados:** DMPTool usando o template Digital Curation Centre.  
   [Plano completo](https://doi.org/10.48321/D1N34D) .small[(APÊNDICE A)].
@@ -234,9 +250,10 @@ template: Metodologia
 - **Projeto Principal (PID 1958):** 34 instrumentos de coleta e 821 campos .small[(APÊNDICE C)]
 
 ---
-template: Metodologia
 
-## Gestão de Dados
+template: Metodologia
+class: top, left
+### Gestão de Dados
 **Projetos Adicionais:**
 - PID 2184: Para o público verificar elegibilidade .small[(APÊNDICE D)];
 - PID 2246: Para avaliação completa de elegibilidade pela equipe de pesquisa .small[(APÊNDICE E)];
@@ -246,62 +263,155 @@ template: Metodologia
   Lógicas condicionais, campos calculados, campos redundantes e alertas para validação de resultados, assegurando a integridade dos dados.
 
 ---
-
----
 template: Metodologia
-## Protocolo Experimental
+class: top, left
+### Protocolo Experimental
 
 - **Tipo de Estudo:** Ensaio clínico de intervenção, fase II, randomizado 1:1, triplo cego, controlado por placebo, com grupos paralelos.
 - **Intervenções:**  
-  - **Grupo Eclipta Prostrata:** Recebe intervenção nutricional + droga vegetal de *Eclipta prostrata* (2250 mg/dia por 3 meses).  
-  - **Grupo Placebo:** Recebe intervenção nutricional + cápsulas de placebo (mesma dose e posologia).  
+  - **Grupo _Eclipta prostrata_:** Recebe intervenção nutricional + droga vegetal de *Eclipta prostrata* (2250 mg/dia por 3 meses).  
+  - **Grupo Placebo:** Recebe intervenção nutricional + cápsulas de placebo (mesma dose e posologia).   
 - **Cegamento:** As cápsulas e frascos são indistinguíveis.
+- **Avaliações clínicas**: na inclusão, aos 45 dias, e aos 90 dias.
 ---
-
-class: middle, left
-# Critérios de Inclusão e Não-Inclusão
+template: Metodologia
+class: top, left
+### Critérios de Inclusão e Não-Inclusão
 
 - **Inclusão:**  
-  - Participantes adultos (18 a 59 anos) de ambos os gêneros com obesidade grau I, acompanhados pela ESF de Jardinópolis.  
-  - Escolha justificada pela alta prevalência e uniformidade necessária para evitar vieses.
+  - Adultos (18 a 59 anos) de ambos os gêneros com obesidade grau I, acompanhados pela ESF de Jardinópolis - SP.  
   
-- **Exclusão Prévia:**  
-  - Comorbidades que não sejam as associadas à obesidade (ex.: doenças autoimunes, inflamatórias intestinais, neurodegenerativas, renais, pneumopatias, neoplasias, imunodepressão, e doença periodontal crônica).  
-  - Histórico de uso crônico de anti-inflamatórios ou imunossupressores; distúrbios disabsortivos e alterações anatômicas do trato gastrointestinal.  
-  - Condições que interfiram na análise de impedância bioelétrica (ex.: insuficiência cardíaca estágio C/D, trombose, amputações, edema, paquidermia, linfedema, lesões cutâneas no local dos eletrodos, modificações recentes de diuréticos, ou uso de dispositivos cardíacos implantáveis).  
-  - Participantes com quadros de diarreia crônica ou restrição de liberdade/incapazes de consentir adequadamente.
+- **Não-Inclusão:**  
+  - Comorbidades associadas a inflamação crônica de baixo grau;
+  - Histórico de uso crônico de anti-inflamatórios ou imunossupressores; 
+  - Distúrbios disabsortivos e alterações anatômicas do trato gastrointestinal;
+  - Condições que interfiram na análise de impedância bioelétrica;
+  - Diarreia crônica;
+  - Restrição de liberdade/incapazes de consentir adequadamente.
+
 ---
 
-class: middle, left
-# Critérios de Exclusão
+template: Metodologia
+class: top, left
+### Critérios de Exclusão
 
 - Retirada do consentimento.
-- Eventos adversos, seja relacionados ou não à pesquisa, conforme deliberação do comitê de monitoramento.
+- Eventos adversos, relacionados ou não à pesquisa, conforme deliberação do comitê de monitoramento.
 - Mulheres que se tornem gestantes ou desejem engravidar durante o período do estudo.
 - Outros eventos imprevistos, segundo o critério do comitê de monitoramento externo.
+
 ---
 
-class: middle, left
-# Seleção e Recrutamento
+template: Metodologia
+class: top, left
+### Seleção e Recrutamento
 
 - **Parceria Institucional:** Colaboração com a Secretaria de Saúde de Jardinópolis-SP e divulgação via ESF.
 - **Procedimento:**  
-  - A equipe de pesquisa contata potenciais participantes, fornecendo informações detalhadas (objetivos, métodos, riscos e benefícios) em linguagem acessível.  
-  - A elegibilidade é verificada conforme os critérios definidos.
+  - A equipe de pesquisa contatou potenciais participantes, fornecendo informações detalhadas em linguagem acessível.  
+  - A elegibilidade foi verificada conforme os critérios definidos.
 - **Consentimento:**  
   - Obtido de forma livre e esclarecida, conforme a Resolução CNS 466/2012.  
-  - O TCLE é preenchido em duas vias (uma para o participante e outra arquivada) e uma cópia digital é salva no REDCap.
+  - TCLE preenchido em duas vias (uma para o participante e outra arquivada) e uma cópia digitalizada foi salva no REDCap.
+
 ---
 
-class: middle, left
-# Randomização
+template: Metodologia
+class: top, left
+### Randomização
 
 - **Geração da Sequência:**  
-  - Criada em 03/07/2023 pelo Prof. Dr. Fábio Carmona, utilizando a ferramenta [Sealed Envelope](https://www.sealedenvelope.com/simple-randomiser/v1/lists).  
-  - Parâmetros: seed 177782464738902, blocos de tamanho 4 ou 6, lista com 148 itens (alocação 1:1).
+  - [Sealed Envelope](https://www.sealedenvelope.com/simple-randomiser/v1/lists): Criada em 03/07/2023 pelo Prof. Dr. Fábio Carmona.
+  - Parâmetros: seed 177782464738902, blocos aleatórios de tamanho 4 ou 6, lista com 148 itens (alocação 1:1).
   
 - **Procedimento:**  
-  - A sequência é encaminhada exclusivamente à farmácia para a produção e rotulação dos frascos.  
-  - Frascos com cápsulas (droga vegetal ou placebo) são idênticos, diferenciados apenas pelo número de alocação.
+  - A sequência foi encaminhada exclusivamente à farmácia para a produção e rotulação dos frascos.  
+  - Os frascos (droga vegetal ou placebo) são idênticos, diferenciados apenas pelo rótulo que contém o número de alocação.
   - Participantes são designados por ordem de inclusão (ex.: o primeiro participante recebe o frasco com o número 1).
 ---
+template: Metodologia
+class: top, left
+### Logística do Transporte
+
+- **Transporte Organizado:**  
+  - Van disponibilizada para levar os participantes das Unidades Básicas de Saúde (UBS) ao centro de pesquisa.  
+  - Partida estipulada às 13h, com retorno realizado após os procedimentos.
+  
+- **Suporte Pós-jejum:**  
+  - Após procedimentos realizados em jejum, os participantes recebem um lanche fornecido pelo patrocinador.
+
+---
+
+template: Metodologia
+class: top, left
+### e Ambiente das Avaliações
+
+- **Centro de Pesquisa:**  
+  - Localizado nas instalações ambulatoriais da Casa Espírita Terra de Ismael, em Jardinópolis-SP.
+  
+- **Acomodação:**  
+  - Sala de espera confortável para os participantes, com cadeiras adequadas.
+
+---
+
+template: Metodologia
+class: top, left
+### Procedimentos Presenciais
+
+- **Consultas Médicas:**  
+  - Realizadas em todas as visitas, com análise clínica, exame físico e eletrocardiografia de 12 derivações.  
+  - Nas 2ª e 3ª visitas, também se verifica a adesão à intervenção.
+
+- **Exames e Avaliações Complementares:**  
+  - Coleta de exames laboratoriais (realizada por profissionais de enfermagem).  
+  - Avaliação nutricional e antropométrica conduzida pela nutricionista colaboradora.
+  
+- **Medições Específicas:**  
+  - Aferição da pressão arterial em todas as avaliações.  
+  - Medição da força de preensão palmar e análise de impedância bioelétrica realizadas na 1ª e na última visita.  
+  - Aplicação de questionários na inclusão e ao término da intervenção.
+
+---
+
+ctemplate: Metodologia
+class: top, left
+### Organização do Fluxo e Distribuição das Cápsulas
+
+- **Fluxo Otimizado:**  
+  - Procedimentos simultâneos (avaliação clínica, nutricional e preenchimento de questionários) para otimizar o tempo.
+  - Prioridade aos procedimentos em jejum, garantindo que os participantes possam se alimentar logo após.
+
+- **Distribuição dos Frascos de Cápsulas:**  
+  - **Primeira Visita:** Cada participante recebe um frasco rotulado com cápsulas suficientes para 45 dias (2 cápsulas, 3 vezes ao dia).
+  - **Segunda Visita (45 dias):** Recebem um segundo frasco para completar os 90 dias de intervenção.
+  
+- **Continuidade dos Tratamentos Habitual:**  
+  - Medicamentos de uso regular não foram interrompidos, exceto quando ajustes foram necessários para o controle de comorbidades, conforme diretrizes do SUS, com essas modificações registradas no REDCap.
+
+---
+class: middle, left
+.small[
+```{r tabela-procedimentos, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+tabela <- data.frame(
+  Procedimentos = c("Avaliação clínica",
+                    "Coleta de dados demográficos",
+                    "Parâmetros de segurança: clínicos, eletrocardiográficos, laboratoriais, pressão arterial",
+                    "Avaliação e quantificação da ingestão de etanol e uso de tabaco",
+                    "Avaliação da prática de atividade física",
+                    "Dispensação dos frascos contendo as cápsulas designadas",
+                    "Avaliação da adesão à intervenção",
+                    "Avaliação nutricional",
+                    "Avaliação do recordatório alimentar e intervenção nutricional",
+                    "Aferição de peso, altura e circunferência abdominal",
+                    "Aferição da força de preensão palmar e BIA",
+                    "Aplicação dos escores WHOQOL-BREF, DASS-21, ECAP"),
+  T1 = c("✕", "✕", "✕", "✕", "✕", "✕", "", "✕", "✕", "✕", "✕", "✕"),
+  T2 = c("✕", "", "✕", "", "✕", "✕", "✕", "✕", "", "✕", "", ""),
+  T3 = c("✕", "", "✕", "✕", "✕", "", "✕", "✕", "✕", "✕", "✕", "✕")
+)
+kable(tabela, format = "markdown", align = "lccc")
+```
+Legenda: T1 – primeira avaliação clínica (dia 0); T2 – segunda avaliação clínica (dia 45); T3 – terceira avaliação clínica (dia 90)
+]
+
