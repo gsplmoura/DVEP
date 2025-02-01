@@ -1,7 +1,28 @@
-.Rproj.user/
+# Ignore macOS system files
+.DS_Store
+
+# Ignore VS Code settings
+.vscode/
+*.code-workspace
+
+# Ignore logs and temp files
+*.log
+*.out
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Ignore R and RStudio files
 .Rhistory
 .RData
-.Ruserdata
-.DS_Store
-__pycache__/
-Temporary files/
+.Rproj.user/
+
+# Ignore REDCap exports
+*.csv~
+
+# Ignore unnecessary Git files
+.git/
+
+# Ignore sensitive patient data
+Data/
