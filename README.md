@@ -5,9 +5,13 @@ The **DVEP** project is designed to facilitate data visualization, exploratory a
 
 ## Repo
 Gustavo Santos Paiva Laender Moura
+
 gsplmoura@usp.br
+
 Git: [https://github.com/gsplmoura/DVEP](https://github.com/gsplmoura/DVEP)
+
 🚀 GitHub Pages URL: [https://gsplmoura.github.io/DVEP/](https://gsplmoura.github.io/DVEP/)
+
 
 ## Setup Instructions
 ### Prerequisites
