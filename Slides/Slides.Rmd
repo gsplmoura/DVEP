@@ -247,3 +247,61 @@ template: Metodologia
 
 ---
 
+---
+template: Metodologia
+## Protocolo Experimental
+
+- **Tipo de Estudo:** Ensaio clínico de intervenção, fase II, randomizado 1:1, triplo cego, controlado por placebo, com grupos paralelos.
+- **Intervenções:**  
+  - **Grupo Eclipta Prostrata:** Recebe intervenção nutricional + droga vegetal de *Eclipta prostrata* (2250 mg/dia por 3 meses).  
+  - **Grupo Placebo:** Recebe intervenção nutricional + cápsulas de placebo (mesma dose e posologia).  
+- **Cegamento:** As cápsulas e frascos são indistinguíveis.
+---
+
+class: middle, left
+# Critérios de Inclusão e Não-Inclusão
+
+- **Inclusão:**  
+  - Participantes adultos (18 a 59 anos) de ambos os gêneros com obesidade grau I, acompanhados pela ESF de Jardinópolis.  
+  - Escolha justificada pela alta prevalência e uniformidade necessária para evitar vieses.
+  
+- **Exclusão Prévia:**  
+  - Comorbidades que não sejam as associadas à obesidade (ex.: doenças autoimunes, inflamatórias intestinais, neurodegenerativas, renais, pneumopatias, neoplasias, imunodepressão, e doença periodontal crônica).  
+  - Histórico de uso crônico de anti-inflamatórios ou imunossupressores; distúrbios disabsortivos e alterações anatômicas do trato gastrointestinal.  
+  - Condições que interfiram na análise de impedância bioelétrica (ex.: insuficiência cardíaca estágio C/D, trombose, amputações, edema, paquidermia, linfedema, lesões cutâneas no local dos eletrodos, modificações recentes de diuréticos, ou uso de dispositivos cardíacos implantáveis).  
+  - Participantes com quadros de diarreia crônica ou restrição de liberdade/incapazes de consentir adequadamente.
+---
+
+class: middle, left
+# Critérios de Exclusão
+
+- Retirada do consentimento.
+- Eventos adversos, seja relacionados ou não à pesquisa, conforme deliberação do comitê de monitoramento.
+- Mulheres que se tornem gestantes ou desejem engravidar durante o período do estudo.
+- Outros eventos imprevistos, segundo o critério do comitê de monitoramento externo.
+---
+
+class: middle, left
+# Seleção e Recrutamento
+
+- **Parceria Institucional:** Colaboração com a Secretaria de Saúde de Jardinópolis-SP e divulgação via ESF.
+- **Procedimento:**  
+  - A equipe de pesquisa contata potenciais participantes, fornecendo informações detalhadas (objetivos, métodos, riscos e benefícios) em linguagem acessível.  
+  - A elegibilidade é verificada conforme os critérios definidos.
+- **Consentimento:**  
+  - Obtido de forma livre e esclarecida, conforme a Resolução CNS 466/2012.  
+  - O TCLE é preenchido em duas vias (uma para o participante e outra arquivada) e uma cópia digital é salva no REDCap.
+---
+
+class: middle, left
+# Randomização
+
+- **Geração da Sequência:**  
+  - Criada em 03/07/2023 pelo Prof. Dr. Fábio Carmona, utilizando a ferramenta [Sealed Envelope](https://www.sealedenvelope.com/simple-randomiser/v1/lists).  
+  - Parâmetros: seed 177782464738902, blocos de tamanho 4 ou 6, lista com 148 itens (alocação 1:1).
+  
+- **Procedimento:**  
+  - A sequência é encaminhada exclusivamente à farmácia para a produção e rotulação dos frascos.  
+  - Frascos com cápsulas (droga vegetal ou placebo) são idênticos, diferenciados apenas pelo número de alocação.
+  - Participantes são designados por ordem de inclusão (ex.: o primeiro participante recebe o frasco com o número 1).
+---
