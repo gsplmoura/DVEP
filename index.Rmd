@@ -1,0 +1,91 @@
+---
+title: "Ensaio clínico randomizado: efeito da droga vegetal de Eclipta prostrata (L.) L. (Asteraceae) no ângulo de fase em adultos com obesidade grau I"
+author: "Gustavo Santos Paiva Laender Moura"
+date: "`r format(Sys.Date(), '%d de %B de %Y')`"
+output: html_document
+---
+
+# Bem-vindo ao Projeto DVEP
+
+Este repositório contém materiais relacionados ao projeto DVEP, incluindo relatórios de análise, código-fonte, documentos e apresentações.
+
+🚀 **GitHub Pages URL:** [https://gsplmoura.github.io/DVEP/](https://gsplmoura.github.io/DVEP/)
+
+---
+
+## 📊 Relatórios de Análise
+
+- **Manipulação de Dados**  
+  [1_DVEP.html](1_DVEP.html)  
+  Relatório com o pré-processamento e limpeza de dados.
+
+- **Análise Exploratória de Dados**  
+  [2_DVEP_Results.html](2_DVEP_Results.html)  
+  Análise descritiva e gráficos exploratórios.
+
+---
+
+## 📂 Documentação e Recursos
+
+- **Código-Base para Análise**  
+  [Reference code for analysis.Rmd](Docs/Reference%20code%20for%20analysis.Rmd)
+
+- **Atalhos do RStudio**  
+  [RStudio Keyboard Shortcuts](Docs/RStudio_Keyboard_shortcuts.Rmd)
+
+- **Regras de Estilo**  
+  [Style Shortcuts](Docs/Style%20shortcuts)
+
+- **Código para Publicação no GitHub**  
+  [Push to Git](Docs/Push%20to%20git.txt)
+
+---
+
+## 📑 Slides e Apresentações
+
+- 📢 **Slides do Projeto**  
+  [Visualizar Apresentação](Slides/Slides.html)
+
+---
+
+## 📖 Materiais da Tese
+
+- 📄 **Tese Completa**  
+  [Tese Eclipta Prostrata.pdf](Docs/Tese%20Eclipta%20prostrata.pdf)
+
+- 📄 **Documento Word da Tese**  
+  [Thesis.docx](Docs/Thesis.docx)
+
+---
+
+## 📜 Codebooks
+
+Esses arquivos contêm a estrutura de variáveis e descrições para os bancos de dados usados na análise.
+
+- [Codebook BIA](Codebooks/codebook_bia.xlsx)  
+- [Codebook DVEP](Codebooks/codebook_dvep.xlsx)  
+- [Codebook NCIT](Codebooks/codebook_ncit.csv)  
+- [Codebook Estrutural](Codebooks/codebook_structure.csv)  
+
+---
+
+## 📜 Dados do REDCap
+
+Os seguintes arquivos contêm registros de extração de dados do **REDCap**:
+
+- **Registro de Pacientes**  
+  [PID 1958 DVEP.pdf](REDCap/PID%201958%20DVEP.pdf)
+
+- **Contato com Pacientes**  
+  [PID 2184 Patient Outreach.pdf](REDCap/PID%202184%20Patient%20outreach.pdf)
+
+- **Tesauro do Instituto Nacional do Câncer**  
+  [PID 2205 NCIT Thesaurus](REDCap/PID%202205%20National%20Cancer%20Institute%20Thesaurus%20%7C%20REDCap.pdf)
+
+- **Critérios de Elegibilidade**  
+  [PID 2246 Eligibility Assessment.pdf](REDCap/PID%202246%20Eligibility%20assessment.pdf)
+
+- **Registro de Eventos REDCap**  
+  [REDCap DVEP Logging.csv](REDCap/REDCap%20DVEP%20logging.csv)
+
+---
