@@ -1,5 +1,5 @@
 ---
-title: "Ensaio clínico randomizado: efeito da droga vegetal de Eclipta prostrata (L.) L. (Asteraceae) no ângulo de fase em adultos com obesidade grau I"
+title: "Ensaio clínico randomizado: efeito da droga vegetal de _Eclipta prostrata_ (L.) L. (_Asteraceae_) no ângulo de fase em adultos com obesidade grau I"
 author: "Gustavo Santos Paiva Laender Moura"
 date: "`r format(Sys.Date(), '%d de %B de %Y')`"
 output: html_document
@@ -9,22 +9,22 @@ output: html_document
 
 Este repositório contém materiais relacionados ao projeto DVEP, incluindo relatórios de análise, código-fonte, documentos e apresentações.
 
-🚀 **GitHub Pages URL:** [https://gsplmoura.github.io/DVEP/](https://gsplmoura.github.io/DVEP/)
-   **Repositório GitHub:** [https://github.com/gsplmoura/DVEP/](https://github.com/gsplmoura/DVEP/)
+🚀 **GitHub Pages URL:** [https://gsplmoura.github.io/DVEP/](https://gsplmoura.github.io/DVEP/) </br>
+🚀 **Repositório GitHub:** [https://github.com/gsplmoura/DVEP/](https://github.com/gsplmoura/DVEP/)
  
 ---
 
 ## 📊 Relatórios de Análise
 
 - **Manipulação de Dados**  
-  Relatório com o pré-processamento e limpeza de dados.
-  [Arquivo em html](1_DVEP.html)
+  Relatório com o pré-processamento e limpeza de dados.<br/>
+  [Arquivo em html](1_DVEP.html)<br/>
   [Código R markdown](1_DVEP.Rmd)
   
 
 - **Análise Exploratória de Dados**  
-  Análise descritiva e gráficos exploratórios.
-  [Arquivo em html](2_DVEP_Results.html)  
+  Análise descritiva e gráficos exploratórios.<br/>
+  [Arquivo em html](2_DVEP_Results.html)<br/>
   [Código R markdown](2_DVEP_Results.html)  
 
 ---
@@ -37,8 +37,8 @@ Este repositório contém materiais relacionados ao projeto DVEP, incluindo rela
 
 - 📢 **Slides do Projeto**  
   Os slides foram criados na IDE RStudio utilizando R Markdown. O pacote xaringan foi usado para configurar o remark.js, e o knitr foi responsável para convertê-los em HTML.
-  [Visualizar Apresentação de Slides](Slides/Slides.html)
-  [Código R markdown utilizado](Slides/Slides.Rmd)
+  <br/>[Visualizar Apresentação de Slides](Slides/Slides.html)
+  <br/>[Código R markdown utilizado](Slides/Slides.Rmd)
 
 ---
 
