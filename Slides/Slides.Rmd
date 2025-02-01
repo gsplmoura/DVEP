@@ -189,29 +189,36 @@ template: Metodologia
 ## Cálculo do Tamanho Amostral
 
 - **Dados Populacionais:**  
-  Baseado em um banco de dados de 214.732 adultos na Alemanha, onde os valores do ângulo de fase foram estratificados por idade, sexo e IMC.  
-  Indivíduos com ângulo de fase abaixo do percentil 10 apresentaram proteína C reativa significativamente elevada (5,61±10,88 mg/L vs. 2,74±5,29 mg/L; p<0,05)  
-  (BOSY-WESTPHAL et al., 2006).
+  Banco de dados de 214.732 adultos na Alemanha: ângulo de fase estratificados por idade, sexo e IMC.  
+  .red[_Indivíduos com ângulo de fase abaixo do percentil 10 apresentaram proteína C reativa significativamente elevada_.]</br> .small[(BOSY-WESTPHAL et al., 2006)].
 
-- **Dados Adicionais:**  
-  Resultados semelhantes foram observados em estudo brasileiro com 2122 indivíduos, dos quais 478 tinham IMC > 30 kg/m²  
-  (MATTIELLO; MUNDSTOCK; ZIEGELMANN, 2022).
+- **População Brasileira:**  
+  Resultados semelhantes em estudo com 2122 indivíduos, dos quais 478 tinham IMC > 30 kg/m² .small[(MATTIELLO; MUNDSTOCK; ZIEGELMANN, 2022)].
 
+---
+template: Metodologia
+## Cálculo do Tamanho Amostral
+### Ângulo de fase
 - **Relação entre Média e Percentil 10:**  
-  A média do ângulo de fase é 15% maior que o valor do percentil 10, correspondendo a uma diferença média de 0,84°  
-  (0,78° para mulheres e 0,89° para homens).
+  A média populacional do AF é 15% maior que o valor do AF correspondente ao percentil 10, com diferença média de 0,84° .small[(0,78° para mulheres e 0,89° para homens)].
 
 - **Premissa de Benefício Clínico:**  
-  Considera-se clinicamente relevante um incremento de 0,28° (um terço de 0,84°) com a intervenção de 3 meses.
+  Consideramos clinicamente relevante um incremento de 0,28° (um terço de 0,84°) associado a intervenção.
+
+---
+template: Metodologia
+
+## Cálculo do Tamanho Amostral
+
+### Ângulo de fase
 
 - **Parâmetros para o Cálculo:**  
-  - Grupo que receberá a DVEP: incremento médio de 0,28°;  
-  - Grupo placebo: incremento médio de 0,14° (50% do incremento do grupo DVEP, devido ao efeito placebo e Hawthorne);  
+  - Grupo _Eclipta_: incremento médio de 0,28°;  
+  - Grupo placebo: incremento médio de 0,14° .small[(50% do incremento do grupo DVEP, devido ao efeito placebo e Hawthorne)];  
   - Desvio padrão médio: 0,21°.
 
 - **Tamanho Amostral:**  
-  Com nível de significância de 0,05 (bicaudal) e poder de 80%, obteve-se um tamanho amostral de 37 participantes por grupo  
-  (SINGER, 2001).
+  Com nível de significância de 0,05 (bicaudal) e poder de 80%, obteve-se um tamanho amostral de 37 participantes por grupo .small[(SINGER, 2001)].
 
 ---
 template: Metodologia
