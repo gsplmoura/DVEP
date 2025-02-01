@@ -8,32 +8,6 @@ Gustavo Santos Paiva Laender Moura
 gsplmoura@usp.br
 Git: https://github.com/gsplmoura/DVEP
 
-## Project Structure
-The repository is organized into the following main directories:
-
-DVEP/
-├── Data/                     # Raw data
-├── Deprecated/               # Archived or outdated content
-│   ├── Data/
-│   ├── Outputs/
-│   ├── Scripts/
-│   ├── Word_docs/
-│   └── Archive_BIA_xml.zip   # Archived deep subfolders
-├── Docs/                     # Documentation and drafts
-│   ├── Scratch/              # Exploratory drafts
-│   ├── Temp_analysis/        # Temporary analysis files
-│   └── Final/                # Finalized documents or presentations (optional)
-├── Output/                   # Processed outputs
-│   ├── Data_files/           
-│   ├── Instruments/          
-│   ├── Plots/                
-│   ├── Reports/              
-│   └── Tables/               
-├── Scripts/                  # R scripts
-└── README.md                 # Overview of the project
-
-
-
 ## Setup Instructions
 ### Prerequisites
 Ensure you have the following software and packages installed:
