@@ -1,7 +1,38 @@
+:root {
+/*-- COLOR VARIABLES --*/
+--DarkBlue:           #003087;
+--Blue:               var(--my-blue);
+--BrightBlue:         #0072CE;
+
+--Black:              #231F20;
+--DarkGrey:           #425563;
+--MidGrey:            #768692;
+--PaleGrey:           #E8EDEE;
+--White:              #FFFFFF;
+
+--DarkGreen:          #006747;
+--Green:              #009639;
+--AquaGreen:          #00A499;
+
+--Purple:             #330072;
+--DarkPink:           #7C2855;
+--Pink:               #AE2573;
+--DarkRed:            #8A1538;
+--Red:                #DA291C;
+
+--my-blue:            #122140;
+--my-yellow:          #e5bf00;
+--my-gold:            #ae8f00;
+
+--my-coral:          #903030;
+--my-red:            #600018;
+--my-pink:           #c09090;
+}
+
 /*-- LINKS/ANCHORS --*/
 a {
-  color:              #005EB8;
-  border-bottom:      2px solid #005EB8;
+  color:              var(--my-blue);
+  border-bottom:      2px solid var(--my-blue);
   line-height:        1.5em;
 }
 
@@ -11,20 +42,20 @@ a:hover {
 
 /*-- HEADINGS --*/
 .remark-slide-content h1 {
-  color:              #005EB8;
+  color:              var(--my-blue);
   font-size:          45px;
   line-height:        1em;
 }
 
 .remark-slide-content h2 {
   font-size:          35px;
-  color:              #005EB8;
+  color:              var(--my-blue);
   line-height:        1em;
 }
 
 .remark-slide-content h3 {
   font-size:          25px;
-  color:              #005EB8;
+  color:              var(--my-blue);
 }
 
 li{
@@ -33,7 +64,7 @@ li{
 
 /*-- PARAGRAPH TEXT --*/
 .remark-slide-content {
-  font-size:          20px;
+  font-size:          1.6rem;
   line-height:        1.2em;
 }
 
@@ -125,8 +156,8 @@ blockquote {
 
 /*-- Slide background and text (inverse) --*/
 .inverse {
-  background-color:   #005EB8;
-  color:              #FFFFFF;
+  background-color:   var(--my-blue);
+  color:              var(--PaleGrey);
   text-shadow:        none;
 }
 
@@ -142,13 +173,16 @@ blockquote {
 
 /*-- Links/anchors (inverse) --*/
 .inverse a {
-  color:              white;
+  color:              var(--PaleGrey);
   border-bottom:      2px solid white;
 }
 
 .inverse a:hover {
   border-bottom: none;
 }
+
+/*-- Horizontal bars (inverse) --*/
+.inverse hr { background-color: var(--PaleGrey); }
 
 /*-- CUSTOM CLASS FOR THE TITLE SLIDE --*/
 
@@ -170,8 +204,21 @@ blockquote {
 }
 
 /*-- CUSTOM CLASSES FOR TEXT EMPHASIS --*/
-.blue       { color:   #005EB8 }
-.green      { color:   #009639 }
-.pink       { color:   #AE2573 }
-.red        { color:   #DA291C }
-.warmyellow { color:   #FFB81C }
+.blue       { color:  var(--Blue) }
+.green      { color:  var(--Green) }
+.pink       { color:  var(--Pink) }
+.red        { color:  var(--Red) }
+.warmyellow { color:  var(--WarmYellow) }
+.palegrey   { color:  var(--PaleGrey)}
+.my-blue    { color:  var(--my-blue) }
+.my-yellow  { color:  var(--my-yellow) }
+.my-gold    { color:  var(--my-gold)}
+.my-red     { color:  var(--my-red) }
+.my-coral   { color:  var(--my-coral) }
+.my-pink    { color:  var(--my-pink) }
+.my-hot-pink { background-color: #ff69b4 }
+
+/*-- Small text --*/
+.small {
+  font-size: 70%;
+}
