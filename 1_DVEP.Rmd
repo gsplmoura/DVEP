@@ -838,7 +838,7 @@ dyslipidemia_conditions <- I21_conditions_R |>
     filter(str_detect(common_comorbidities, "C37967|C37971")) |>
     pull(record_id)
 
-#### Extract record IDs associated with antihypertensive drugs
+#### Extract record IDs associated with antilipemic drugs
 dyslipidemia_drugs <- I22_drugs_R |> 
     filter(str_detect(drugs_sql, 
         "C29454|C66523_2|C47529|C61527|C87471"
