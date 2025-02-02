@@ -18,7 +18,7 @@ library(skimr)
 
 # Baseline
 ```{r}
-file_path_baseline <- "/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Output/Baseline/"
+file_path_baseline <- "Output/Baseline/Data_files"
 ```
 
 ```{r, eval=FALSE}

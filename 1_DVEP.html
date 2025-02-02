@@ -1628,66 +1628,13 @@ display: none;
 </div>
 
 
-<div id="read-me" class="section level1">
-<h1>READ ME</h1>
-<div id="exporting-data-from-redcap" class="section level2">
-<h2>Exporting data from REDCap</h2>
-<ol style="list-style-type: decimal">
-<li><p>PID 1958</p></li>
-<li><p>Data Exports, Reports, and Stats</p></li>
-<li><p>Choose “Export Data” from option “A - All data (all records and
-fields)”</p></li>
-<li><p>Export format: CSV (raw data)</p></li>
-<li><p>De-identification options: “Remove all identifier fields”
-YES</p></li>
-<li><p>Additional export options: “Export survey identifier field and
-survey timestamp field(s)?” YES</p></li>
-<li><p>Advanced data formatting options</p>
-<ul>
-<li>“Export gray Form Status fields with blank value”</li>
-<li>comma as default separator</li>
-<li>Use period/full stop (.) as decimal</li>
-</ul></li>
-<li><p>Export file to “~Data Science/PROJECTS/DVEP”</p></li>
-<li><p>Rename file to “data_dvep.csv” Note: resulting file must have 780
-variables (last variable on column ACZ: “anexos_complete”)</p></li>
-</ol>
-</div>
-<div id="files" class="section level2">
-<h2>Files</h2>
-<div id="codebooks-and-supporting-files" class="section level3">
-<h3>Codebooks and supporting files</h3>
-<ul>
-<li><strong>codebook_dvep.xlsx</strong>: Codebook for REDCap DVEP
-Project</li>
-<li><strong>codebook_structure.csv:</strong> Data structure for DVEP
-project</li>
-<li><strong>codebook_ncit.csv</strong> Operational Support - NCIT
-coding</li>
-<li><strong>codebook_bia.xlsx</strong> Codebook for BIA data</li>
-</ul>
-</div>
-<div id="data" class="section level3">
-<h3>Data</h3>
-<ul>
-<li><strong>data_dvep.csv</strong> Full data from REDCap DVEP
-Project.</li>
-<li><strong>data_bia_D1.csv</strong> BIA data for the first visit for
-all participants. Contains BIA data from the first visit only. Contains
-BIA data from participants who did not complete the intervention.</li>
-<li><strong>data_bia_D3.csv</strong> BIA data for participants that
-completed the intervention. Contains BIA data from both the first and
-third visits.</li>
-</ul>
-</div>
-</div>
-</div>
 <div id="data-wrangling" class="section level1">
 <h1>DATA WRANGLING</h1>
 <div id="getting-started-with-r" class="section level2">
 <h2>Getting started with R</h2>
 <pre class="r"><code># 1. Getting started with R
 ## Clear existing data and graphics
+
 rm(list = ls())
 graphics.off()
 cat(&quot;\014&quot;)  # Clear any pending RStudio sessions or temporary files
@@ -1700,16 +1647,13 @@ library(stringr)
 library(purrr)
 library(gt)
 library(jmv)
-
-
-## Set working directory
-setwd(&quot;/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP&quot;)</code></pre>
+library(skimr)</code></pre>
 </div>
 <div id="read-csv-data-files-tidyverse" class="section level2">
 <h2>Read CSV data files (Tidyverse)</h2>
 <pre class="r"><code># 2. Read CSV data files (Tidyverse)
 codebook_dvep &lt;- read_excel(
-        &quot;codebook_dvep.xlsx&quot;,
+        &quot;Codebooks/codebook_dvep.xlsx&quot;,
         col_names = TRUE,
         col_types = NULL,
         na = c(&quot;&quot;, &quot;NA&quot;, &quot;NI&quot;, &quot;UNK&quot;, &quot;NASK&quot;, &quot;ASKU&quot;, &quot;INV&quot;),
@@ -1721,7 +1665,7 @@ codebook_dvep &lt;- read_excel(
     arrange(index)
 
 codebook_bia &lt;- read_excel(
-    &quot;codebook_bia.xlsx&quot;,
+    &quot;Codebooks/codebook_bia.xlsx&quot;,
     col_names = TRUE,
     col_types = NULL,
         na = c(&quot;&quot;, &quot;NA&quot;, &quot;NI&quot;, &quot;UNK&quot;, &quot;NASK&quot;, &quot;ASKU&quot;, &quot;INV&quot;),
@@ -1733,18 +1677,18 @@ codebook_bia &lt;- read_excel(
     arrange(index)
 
 codebook_structure  &lt;- read_csv(
-  &quot;codebook_structure.csv&quot;,
+  &quot;Codebooks/codebook_structure.csv&quot;,
   col_names = TRUE) |&gt; 
     select(
         form_name_en:V3
     )
 
 codebook_ncit  &lt;- read_csv(
-  &quot;codebook_ncit.csv&quot;,
+  &quot;Codebooks/codebook_ncit.csv&quot;,
   col_names = TRUE)
 
 data  &lt;- read_csv(
-  &quot;data_dvep.csv&quot;,
+  &quot;Data/data_dvep.csv&quot;,
   col_names = TRUE,
   col_types = NULL,
   col_select = NULL,
@@ -1766,11 +1710,11 @@ data  &lt;- read_csv(
 )
 
 data_bia_D3 &lt;- read_csv(
-    &quot;data_bia_D3.csv&quot;,
+    &quot;Data/data_bia_D3.csv&quot;,
     col_names = TRUE)
 
 data_bia_D1 &lt;- read_csv(
-    &quot;data_bia_D1.csv&quot;,
+    &quot;Data/data_bia_D1.csv&quot;,
     col_names = TRUE)</code></pre>
 </div>
 <div id="remove-identifying-data-from-record_id" class="section level2">
@@ -2852,7 +2796,7 @@ rm(instruments)
 </div>
 <div id="exports-tibbles-to-generated-data-folder" class="section level3">
 <h3>Exports tibbles to <code>Generated data</code> folder</h3>
-<pre class="r"><code>output_dir &lt;- &#39;/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Generated data&#39;
+<pre class="r"><code>output_dir &lt;- &#39;Output/Baseline/Instruments&#39;
 
 
 # Iterate over `data_instruments`
