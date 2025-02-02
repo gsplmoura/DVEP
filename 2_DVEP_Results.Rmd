@@ -16,6 +16,153 @@ library(jmv)
 library(skimr)
 ```
 
+# Modifying functions
+
+## summarize_numerical_wider
+Returns the dataframe in wide format
+```{r}
+summarize_numerical_wider <- function(data, group_col = NULL, use_labels = TRUE) {
+  # Extract variable labels, falling back to variable names if labels are missing
+  variable_labels <- sapply(names(data), function(var) {
+    label <- attr(data[[var]], "label")
+    if (is.null(label) || !use_labels) var else label
+  }, simplify = TRUE)
+  
+  # Identify numeric columns
+  numeric_cols <- data %>% select(where(is.numeric)) %>% names()
+  
+  if (!is.null(group_col)) {
+    # Grouped summary
+    summary <- data %>%
+      group_by(across(all_of(group_col))) %>%
+      summarise(across(
+        all_of(numeric_cols),
+        ~ paste0(
+          round(mean(.x, na.rm = TRUE), 1), 
+          " (", 
+          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          "–", 
+          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          ")"
+        ),
+        .names = "{.col}"
+      )) %>%
+      pivot_longer(-all_of(group_col), names_to = "Variable", values_to = "Value") %>%
+      mutate(Variable = variable_labels[Variable]) %>%
+      pivot_wider(names_from = all_of(group_col), values_from = Value)  # Pivot to wide format
+  } else {
+    # Ungrouped summary
+    summary <- data %>%
+      summarise(across(
+        all_of(numeric_cols),
+        ~ paste0(
+          round(mean(.x, na.rm = TRUE), 1), 
+          " (", 
+          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          "–", 
+          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          ")"
+        ),
+        .names = "{.col}"
+      )) %>%
+      pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
+      mutate(Variable = variable_labels[Variable])
+  }
+  
+  return(summary)
+}
+
+```
+
+## compare_groups
+
+Added an additional argument `return_df`, which, if set to TRUE, extracts the gt table into a data.frame
+
+```{r}
+compare_groups <- function(data, group_col = "allocation_group", use_labels = TRUE, return_df = FALSE) {
+  
+  # Extract variable labels, default to variable names if labels are missing
+  variable_labels <- sapply(names(data), function(var) {
+    label <- attr(data[[var]], "label") # Check for the 'label' attribute
+    if (is.null(label) || !use_labels) var else label # Use variable name if label is missing
+  }, simplify = TRUE)
+  
+  # Prepare results storage
+  results <- data.frame(
+    Variable = character(), # The variable being tested
+    Test = character(),     # The type of test (t-test or chi-squared/Fisher's)
+    Statistic = numeric(),  # The test statistic value
+    P_value = numeric(),    # The p-value from the test
+    stringsAsFactors = FALSE # Ensure strings are not converted to factors
+  )
+  
+  # Loop through all columns in the data, excluding the grouping column
+  for (var in setdiff(names(data), group_col)) {
+    if (is.numeric(data[[var]])) {
+      # Run t-test for numeric variables
+      test_result <- t.test(data[[var]] ~ data[[group_col]])
+      
+      # Append the t-test results to the results data.frame
+      results <- rbind(results, data.frame(
+        Variable = variable_labels[var], # Use label or name
+        Test = "t-test",                 
+        Statistic = round(test_result$statistic, 2), 
+        P_value = round(test_result$p.value, 4)
+      ))
+    } else if (is.factor(data[[var]]) || is.character(data[[var]])) {
+      # Run chi-squared or Fisher's exact test
+      contingency_table <- table(data[[var]], data[[group_col]])
+      
+      if (any(chisq.test(contingency_table)$expected < 5)) {
+        # Use Fisher's exact test
+        test_result <- fisher.test(contingency_table)
+        results <- rbind(results, data.frame(
+          Variable = variable_labels[var],
+          Test = "Fisher's exact test",
+          Statistic = NA,
+          P_value = round(test_result$p.value, 4)
+        ))
+      } else {
+        # Use chi-squared test
+        test_result <- tryCatch(
+          chisq.test(contingency_table), 
+          error = function(e) list(statistic = NA, p.value = NA)
+        )
+        results <- rbind(results, data.frame(
+          Variable = variable_labels[var],
+          Test = "Chi-squared test",
+          Statistic = round(test_result$statistic, 2),
+          P_value = round(test_result$p.value, 4)
+        ))
+      }
+    }
+  }
+  
+  # If return_df = TRUE, return the results as a data frame
+  if (return_df) {
+    return(results)
+  }
+  
+  # Return results as a gt table
+  gt_table <- results %>%
+    gt() %>%
+    tab_header(
+      title = "Hypothesis Test Results",
+      subtitle = paste("Comparison of", group_col)
+    ) %>%
+    cols_label(
+      Variable = "Variable",
+      Test = "Test Type",
+      Statistic = "Test Statistic",
+      P_value = "P-value"
+    )
+  
+  return(gt_table) # Return the formatted gt table
+}
+
+```
+
+
 # Baseline
 ```{r}
 file_path_baseline <- "Output/Baseline/Data_files"
@@ -252,6 +399,7 @@ rm(labs_baseline$labs_crp_log)
 
 
 ## BIA
+### Baseline
 ```{r, eval=FALSE}
 bia_baseline <- data_bia |>
     filter(
@@ -265,22 +413,95 @@ bia_baseline <- data_bia |>
             select(record_id, allocation_group, sex),
                    by = "record_id"
         )
+```
 
+### Comparing between males and females
+```{r}
 #by sex
 bia_baseline_sex <- summarize_numerical(bia_baseline, "sex") 
 bia_baseline_sex_compare <- compare_groups(bia_baseline,"sex") # compare
 print(bia_baseline_sex_compare) # print
+```
 
-# by groups, by sex
-## males
-bia_baseline_males <- bia_baseline |> 
+### Males
+```{r}
+# Filter males
+BIA_V1_M <- bia_baseline |> 
     filter(
         sex == "Masculino"
     )
-bia_baseline_males_groups <- summarize_numerical(bia_baseline_males, "allocation_group") #males, by group
-bia_baseline_males_groups_compare <- compare_groups(bia_baseline_males) #males, comapre
-print(bia_baseline_males_groups_compare)
 
+#summarize_numerical()
+BIA_V1_M_SN <- summarize_numerical(BIA_V1_M, "allocation_group",use_labels = TRUE)
+
+# compare_groups()
+BIA_V1_M_C <- compare_groups(BIA_V1_M, group_col = "allocation_group",use_labels = TRUE, return_df = TRUE) 
+
+# join tables
+bia_males <- BIA_V1_M_SN %>%
+    left_join(y = BIA_V1_M_C %>% 
+                  select(Variable, P_value),
+              by = join_by(Variable)
+    ) %>%
+    mutate(
+        P_value = round(P_value,3)
+    ) %>% 
+    filter(
+        Variable != "Nome do arquivo"
+    ) %>% 
+    rename(
+         Parâmetro = Variable,
+         `Grupo placebo [média (IC 95%)]` = `Grupo A`,
+         `Grupo Eclipta [média (IC 95%)]` = `Grupo B`,
+         `Valor p [Teste t]` = P_value
+    ) %>% 
+    mutate(Parâmetro = recode(Parâmetro, 
+                            "Altura" = "Altura (m)", 
+                            "Peso" = "Peso (kg)", 
+                            "Índice de Massa Corporal" = "Índice de Massa Corporal (kg/m²)", 
+                            "Cintura" = "Circunferência Abdominal (m)", 
+                            "Nível de Atividade Física" = "Nível de Atividade Física (PAL)", 
+                            "Ângulo de Fase" = "Ângulo de Fase (°)", 
+                            "Média de Resistência" = "Resistência (Ω)", 
+                            "Média de Reatância" = "Reatância (Ω)", 
+                            "Massa de Gordura Absoluta" = "Massa gorda Absoluta (kg)", 
+                            "Índice de Massa de Gordura" = "Índice de Massa gorda (kg/m²)", 
+                            "Massa de Gordura Relativa" = "Massa gorda Relativa (%)", 
+                            "Tecido Adiposo Visceral" = "Tecido Adiposo Visceral (kg)", 
+                            "Massa Livre de Gordura Absoluta" = "Massa Livre de Gordura Absoluta (kg)", 
+                            "Índice de Massa Livre de Gordura" = "Índice de Massa Livre de Gordura (kg/m²)", 
+                            "Massa Livre de Gordura Relativa" = "Massa Livre de Gordura Relativa (%)", 
+                            "Massa Muscular Esquelética do Corpo" = "MME Corporal Total (kg)", 
+                            "Massa Muscular Esquelética do Tronco" = "MME do Tronco (kg)", 
+                            "Massa Muscular Esquelética do Braço Direito" = "MME do Braço Direito (kg)", 
+                            "Massa Muscular Esquelética do Braço Esquerdo" = "MME do Braço Esquerdo (kg)", 
+                            "Massa Muscular Esquelética da Perna Direita" = "MME da Perna Direita (kg)", 
+                            "Massa Muscular Esquelética da Perna Esquerda" = "MME da Perna Esquerda (kg)", 
+                            "Água Corporal Total" = "Água Corporal Total (L)", 
+                            "Água Extracelular" = "Água Extracelular (L)", 
+                            "Gasto Energético Total" = "Gasto Energético Total (kcal)", 
+                            "Gasto Energético em Repouso" = "Gasto Energético em Repouso (kcal)", 
+                            "Energia Armazenada" = "Energia Armazenada (kcal)")
+        ) %>%
+    mutate(Parâmetro = factor(Parâmetro, levels = c(
+    "Altura (m)", "Peso (kg)", "Índice de Massa Corporal (kg/m²)", "Circunferência Abdominal (m)", 
+    "Nível de Atividade Física (PAL)", "Ângulo de Fase (°)", "Resistência (Ω)", "Reatância (Ω)", 
+    "Massa gorda Absoluta (kg)", "Índice de Massa gorda (kg/m²)", "Massa gorda Relativa (%)", 
+    "Tecido Adiposo Visceral (kg)", "Massa Livre de Gordura Absoluta (kg)", 
+    "Índice de Massa Livre de Gordura (kg/m²)", "Massa Livre de Gordura Relativa (%)", 
+    "MME Corporal Total (kg)", "MME do Tronco (kg)", "MME do Braço Direito (kg)", 
+    "MME do Braço Esquerdo (kg)", "MME da Perna Direita (kg)", "MME da Perna Esquerda (kg)", 
+    "Água Corporal Total (L)", "Água Extracelular (L)", "Gasto Energético Total (kcal)", 
+    "Gasto Energético em Repouso (kcal)", "Energia Armazenada (kcal)"))
+    ) %>% 
+    arrange(Parâmetro)
+
+clipr::write_clip(bia_males)
+saveRDS(bia_males, file = "Slides/data/bia_males.rds")
+```
+
+#### Females
+```{r}
 ## females
 bia_baseline_females <- bia_baseline |> 
     filter(
