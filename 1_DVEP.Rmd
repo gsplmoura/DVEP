@@ -12,9 +12,6 @@ project: Effect of Eclipta prostrata (L.) L. (Asteraceae) on bioelectrical imped
   phase angle in adults with grade I obesity (DVEP)
 ---
 
-# READ ME
-
-
 # DATA WRANGLING
 
 ## Getting started with R
@@ -22,6 +19,7 @@ project: Effect of Eclipta prostrata (L.) L. (Asteraceae) on bioelectrical imped
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 1. Getting started with R
 ## Clear existing data and graphics
+
 rm(list = ls())
 graphics.off()
 cat("\014")  # Clear any pending RStudio sessions or temporary files
@@ -42,7 +40,7 @@ library(skimr)
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
 # 2. Read CSV data files (Tidyverse)
 codebook_dvep <- read_excel(
-        "Data/codebook_dvep.xlsx",
+        "Codebooks/codebook_dvep.xlsx",
         col_names = TRUE,
         col_types = NULL,
         na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
@@ -54,7 +52,7 @@ codebook_dvep <- read_excel(
     arrange(index)
 
 codebook_bia <- read_excel(
-    "Data/codebook_bia.xlsx",
+    "Codebooks/codebook_bia.xlsx",
     col_names = TRUE,
     col_types = NULL,
         na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
@@ -66,14 +64,14 @@ codebook_bia <- read_excel(
     arrange(index)
 
 codebook_structure  <- read_csv(
-  "Data/codebook_structure.csv",
+  "Codebooks/codebook_structure.csv",
   col_names = TRUE) |> 
     select(
         form_name_en:V3
     )
 
 codebook_ncit  <- read_csv(
-  "Data/codebook_ncit.csv",
+  "Codebooks/codebook_ncit.csv",
   col_names = TRUE)
 
 data  <- read_csv(
@@ -1300,7 +1298,7 @@ rm(instruments)
 ### Exports tibbles to `Generated data` folder
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
-output_dir <- '/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Generated data'
+output_dir <- 'Output/Baseline/Instruments'
 
 
 # Iterate over `data_instruments`

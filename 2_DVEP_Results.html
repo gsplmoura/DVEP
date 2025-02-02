@@ -357,21 +357,23 @@ display: none;
 </div>
 
 
-<pre class="r"><code>library(skimr)</code></pre>
+<pre class="r"><code>library(tidyverse)
+library(readxl)
+library(lubridate)
+library(stringr)
+library(purrr)
+library(gt)
+library(jmv)
+library(skimr)</code></pre>
 <div id="baseline" class="section level1">
 <h1>Baseline</h1>
-<pre class="r"><code>file_path_baseline &lt;- &quot;/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Analysis/&quot;</code></pre>
-<p>Um total de 75 participantes de pesquisa foram incluídos neste
-estudo, sendo 65 (86,6%) do sexo feminino. A média da idade dos
-participantes foi de 40,6 anos (DP 10,2 anos). A tabela 1 contem as
-características de base participantes de pesquisa, antes do início da
-intervenção. Os participantes foram incluídos no estudo entre 09/08/2023
-e 26/07/2024. As datas em que os participantes completaram a intervenção
-foram entre 14/11/2023 e 25/10/2024.</p>
+<pre class="r"><code>file_path_baseline &lt;- &quot;Output/Baseline/Data_files&quot;</code></pre>
 <pre class="r"><code># Datas de inclusão e conclusão
-summary(data$consent_date)</code></pre>
-<pre class="r"><code>summary(data[&quot;conclusion_date&quot;])</code></pre>
-<pre class="r"><code># Completaram a intervenção
+summary(data$consent_date)
+
+summary(data[&quot;conclusion_date&quot;])
+
+# Completaram a intervenção
 summary(data_d1_exclusive$completed_intervention)</code></pre>
 <div id="abandonos" class="section level2">
 <h2>Abandonos</h2>
@@ -394,6 +396,45 @@ data_d1_exclusive |&gt;
 (19/65)*100 # Mulheres
 
 table(data$non_completion_reason)</code></pre>
+<div id="contingency-table-by-sex" class="section level3">
+<h3>Contingency table by sex</h3>
+<pre class="r"><code># Criar a tabela de contingência
+tabela &lt;- table(data_d1_exclusive$sex, data_d1_exclusive$completed_intervention)
+
+# Exibir a tabela
+print(tabela)
+
+# Teste do qui-quadrado
+teste_qui2 &lt;- chisq.test(tabela)
+teste_qui2$expected
+
+# Exibir os resultados do teste do qui-quadrado
+print(teste_qui2)</code></pre>
+</div>
+<div id="contingency-table-by-sex-controlling-for-allocation-group" class="section level3">
+<h3>Contingency table by sex, controlling for allocation group</h3>
+<pre class="r"><code># Criar a tabela de contingência estratificada por allocation_group
+tabela &lt;- table(data_d1_exclusive$sex, 
+                data_d1_exclusive$completed_intervention, 
+                data_d1_exclusive$allocation_group)
+
+# Exibir a tabela para verificar se está correta
+print(tabela)
+
+# Realizar o teste de Mantel-Haenszel
+resultado_mh &lt;- mantelhaen.test(tabela)
+
+# Exibir o resultado do teste
+print(resultado_mh)</code></pre>
+</div>
+<div id="log-reg" class="section level3">
+<h3>Log reg</h3>
+<pre class="r"><code>model &lt;- glm(completed_intervention ~ sex * allocation_group, data = data_d1_exclusive, family = binomial)
+
+summary(model)
+
+exp(cbind(OR = coef(model), confint(model)))</code></pre>
+</div>
 </div>
 <div id="participants-characteristics-data_d1_exclusive" class="section level2">
 <h2>Participant’s characteristics (data_d1_exclusive)</h2>
@@ -434,6 +475,25 @@ baseline_cat_group %&gt;%
 # COMPARE GROUPS
 group_comparison &lt;- compare_groups(data_d1_exclusive) #`compare_groups`
 print(group_comparison)</code></pre>
+<p>Descriptive: Drugs that might induce weight loss</p>
+<pre class="r"><code>drugs_w_loss_descriptive &lt;- I22_drugs_R |&gt; 
+    dplyr::filter(stringr::str_detect(drugs_sql, 
+        &quot;C61939|C62012|C506_1|C1278_2|C1278_1|C1278_3|C47764_1|C47764_2|C61680&quot;
+    )) |&gt; 
+    dplyr::pull(descriptive) |&gt; 
+    stringr::str_extract(&quot;^[^0-9]+&quot;) |&gt; 
+    stringr::str_trim() |&gt; 
+    base::unique() |&gt; 
+    cat(sep = &quot;, &quot;)
+
+drugs_w_gain &lt;- I22_drugs_R |&gt; 
+    filter(str_detect(drugs_sql, 
+        &quot;C61879|C62005|C61917_2|C29416|C29536_2&quot;)) |&gt; 
+    dplyr::pull(descriptive) |&gt; 
+    stringr::str_extract(&quot;^[^0-9]+&quot;) |&gt; 
+    stringr::str_trim() |&gt; 
+    base::unique() |&gt; 
+    cat(sep = &quot;, &quot;)</code></pre>
 <p><strong>Clear</strong> Participant’s characteristics
 (data_d1_exclusive)</p>
 <pre class="r"><code># CLEAR
@@ -441,7 +501,8 @@ rm(baseline_num)
 rm(baseline_cat)
 rm(baseline_num_group)
 rm(baseline_cat_group)
-rm(group_comparison)</code></pre>
+rm(group_comparison)
+rm(drugs_w_loss_descriptive)</code></pre>
 <p>Comparação da proporção do sexo dos participantes segundo o grupo de
 alocação Na verdade essa análise foi redundante - já foi feita em
 <code>baseline_cat_group</code></p>
@@ -557,6 +618,63 @@ rm(bia_baseline_females)
 rm(bia_baseline_females_groups)
 rm(bia_baseline_females_groups_compare)</code></pre>
 </div>
+<div id="handgrip" class="section level2">
+<h2>Handgrip</h2>
+<pre class="r"><code>handgrip &lt;- data |&gt; 
+    select(record_id, event_name, handgrip_right_mean, handgrip_left_mean) |&gt; 
+    filter(
+        event_name == &quot;1visit_arm_1&quot;
+    ) |&gt; 
+    filter(
+        !is.na(handgrip_right_mean) | !is.na(handgrip_left_mean)
+    ) |&gt; 
+    left_join(
+        data_d1_exclusive |&gt; 
+            select(
+                record_id, sex, allocation_group
+            ),
+        by = &quot;record_id&quot;
+    ) |&gt; 
+    mutate(
+        handgrip = rowMeans(
+            across(c(handgrip_left_mean, handgrip_right_mean)),
+            na.rm = TRUE
+        )
+    )
+#write_excel_csv(handgrip,paste0(file_path_baseline,&quot;handgrip.csv&quot;))
+
+summarize_numerical(handgrip,&quot;sex&quot;)
+compare_groups(handgrip,&quot;sex&quot;)
+
+# handgrip |&gt; 
+    filter(
+        sex == &quot;Masculino&quot;
+    ) |&gt; 
+    group_by(
+        allocation_group
+    ) |&gt; 
+    summarize(
+        `Média da mão direita` = mean(handgrip_right_mean, na.rm = TRUE),
+        `Média da mão esquerda` = mean(handgrip_left_mean, na.rm = TRUE),
+        `Média das mãos` = mean(handgrip, na.rm = TRUE),
+    )
+
+# Males
+handgrip_man &lt;- handgrip |&gt; 
+    filter(
+        sex == &quot;Masculino&quot;
+    )
+handgrip_man_num &lt;- print(summarize_numerical(handgrip_man, &quot;allocation_group&quot;))
+handgrip_man_compare &lt;- print(compare_groups(handgrip_man, &quot;allocation_group&quot;))
+
+# Females
+handgrip_fem &lt;- handgrip |&gt; 
+    filter(
+        sex == &quot;Feminino&quot;
+    )
+handgrip_fem_num &lt;- print(summarize_numerical(handgrip_fem, &quot;allocation_group&quot;))
+handgrip_fem_compare &lt;- print(compare_groups(handgrip_fem, &quot;allocation_group&quot;))</code></pre>
+</div>
 <div id="questionnaires" class="section level2">
 <h2>Questionnaires</h2>
 <pre class="r"><code>questionnaires &lt;- data_filtered |&gt; 
@@ -573,7 +691,6 @@ rm(bia_baseline_females_groups_compare)</code></pre>
 questionnaires_num &lt;- summarize_numerical(questionnaires)
 questionnaires_num_groups &lt;- summarize_numerical(questionnaires,&quot;allocation_group&quot;)
 questionnaires_num_groups_compare &lt;- compare_groups(questionnaires,&quot;allocation_group&quot;)
-print(questionnaires_compare)
 
 # By sex
 questionnaires_sex &lt;- summarize_numerical(questionnaires,&quot;sex&quot;)
@@ -592,6 +709,8 @@ anova_depression &lt;- aov(dass_score_depression ~ sex * allocation_group, data 
 summary(anova_depression)
 anova_anxiety &lt;- aov(dass_score_anxiety ~ sex * allocation_group, data = questionnaires)
 summary(anova_anxiety)
+anova_stress &lt;- aov(dass_score_stress ~ sex * allocation_group, data = questionnaires)
+summary(anova_stress)
 anova_ecap &lt;- aov(ecap_score ~ sex * allocation_group, data = questionnaires)
 summary(anova_ecap)</code></pre>
 </div>
