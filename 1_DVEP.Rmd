@@ -1361,7 +1361,7 @@ You can pull each individual codebook by:
 
 Arguments: `data`: dataframe `group_col = NULL`: grouping column; defaults to NULL `use_labels = TRUE`: If set to true, uses labels instead of variable names
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r, results = 'hide', message = FALSE, warning = FALSE, eval=FALSE}
 summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
   # Extract variable labels, falling back to variable names if labels are missing
   variable_labels <- sapply(names(data), function(var) {
@@ -1473,7 +1473,7 @@ summarize_categorical <- function(data, group_col = NULL, use_labels = TRUE) {
 
 ### compare_groups()
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r, results = 'hide', message = FALSE, warning = FALSE, eval=FALSE}
 compare_groups <- function(data, group_col = "allocation_group", use_labels = TRUE) {
   
   # Extract variable labels, default to variable names if labels are missing
