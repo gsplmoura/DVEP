@@ -1,28 +1,55 @@
-<!DOCTYPE html>
-<html lang="" xml:lang="">
-  <head>
-    <title>Ensaio clínico randomizado:</title>
-    <meta charset="utf-8" />
-    <meta name="author" content="Gustavo Santos Paiva Laender Moura" />
-    <meta name="date" content="2025-01-01" />
-    <script src="libs/header-attrs-2.29/header-attrs.js"></script>
-    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
-    <link rel="stylesheet" href="css/nhsr.css" type="text/css" />
-    <link rel="stylesheet" href="css/nhsr-fonts.css" type="text/css" />
-  </head>
-  <body>
-    <textarea id="source">
+---
+title: "Ensaio clínico randomizado:"
+subtitle: "efeito da droga vegetal de *Eclipta prostrata* (L.) L. (*Asteraceae*) no ângulo de fase em adultos com obesidade grau I"
+author: "Gustavo Santos Paiva Laender Moura"
+institute: "Faculdade de Medicina de Ribeirão Preto - USP"
+date: "2025"
+output:
+  xaringan::moon_reader: # new kind of output!
+    css: 
+      - default # default xaringan theme CSS file
+      - css/nhsr.css # custom primary CSS file
+      - css/nhsr-fonts.css # custom font CSS file
+    lib_dir: libs # creates directory for libraries
+    seal: false # false: mean you have to choose a custom title slide
+    # seal: true creates a title slide with inverse colors using metadata from your YAML
+    nature:
+      highlightStyle: googlecode # highlighting syntax for code
+        # Other highlightStyle options from remark.js are: arta, ascetic, dark, default, far, github, googlecode, idea, ir-black, magula, monokai, rainbow, solarized-dark, solarized-light, sunburst, tomorrow, tomorrow-night-blue, tomorrow-night-bright, tomorrow-night, tomorrow-night-eighties, vs, zenburn.
+        # [https://github.com/gnab/remark/wiki/Configuration#highlighting].
+      highlightLines: true # true: enables code line highlighting 
+      highlightLanguage: ["r"] # languages to highlight
+      countIncrementalSlides: true # false: disables counting of incremental slides
+      ratio: "16:9" # 4:3 for standard size
+    includes:
+      after_body: [css/insert-logo.html] # html file that adds NHS logo to slides
+---
 
+```{r setup, include = FALSE}
+library(xaringan)
+library(knitr)
+library(tidyverse)
+library(NHSRtheme)
+# set default options
+opts_chunk$set(echo = FALSE,
+               fig.width = 7.252,
+               fig.height = 4,
+               dpi = 300)
 
-
+# uncomment the following lines if you want to use the NHS-R theme colours by default
+scale_fill_continuous <- partial(scale_fill_nhs, discrete = FALSE)
+scale_fill_discrete <- partial(scale_fill_nhs, discrete = TRUE)
+scale_colour_continuous <- partial(scale_colour_nhs, discrete = FALSE)
+scale_colour_discrete <- partial(scale_colour_nhs, discrete = TRUE)
+```
 
 class: title-slide, left, bottom
 
-# Ensaio clínico randomizado:
+# `r rmarkdown::metadata$title`
 ----
-## **efeito da droga vegetal de *Eclipta prostrata* (L.) L. (*Asteraceae*) no ângulo de fase em adultos com obesidade grau I**
-### Gustavo Santos Paiva Laender Moura
-### 2025
+## **`r rmarkdown::metadata$subtitle`**
+### `r rmarkdown::metadata$author`
+### `r rmarkdown::metadata$date`
 
 ---
 class: inverse, middle, center
@@ -38,11 +65,11 @@ layout:true
 ---
 
 - A obesidade está associada à .my-blue[inflamação crônica de baixo grau]  
-  .small[*(LUO &amp; LIN, 2021; KINLEN, CODY &amp; O’SHEA, 2018)*]
+  .small[*(LUO & LIN, 2021; KINLEN, CODY & O’SHEA, 2018)*]
 
 --
 
-- A inflamação é proposta como o mecanismo central que liga a obesidade às .my-blue[complicações metabólicas e cardiovasculares] .small[*(KINLEN, CODY &amp; O’SHEA, 2018; LUO &amp; LIN, 2021)*]
+- A inflamação é proposta como o mecanismo central que liga a obesidade às .my-blue[complicações metabólicas e cardiovasculares] .small[*(KINLEN, CODY & O’SHEA, 2018; LUO & LIN, 2021)*]
 
 --
 
@@ -50,7 +77,7 @@ layout:true
 
 --
 
-- A *Eclipta prostrata* apresenta atividade .my-blue[anti-inflamatória] documentada .small[*(BHATTACHARYYA &amp; LAW, 2022; KANG et al., 2022)*]
+- A *Eclipta prostrata* apresenta atividade .my-blue[anti-inflamatória] documentada .small[*(BHATTACHARYYA & LAW, 2022; KANG et al., 2022)*]
 
 --
 
@@ -147,7 +174,7 @@ ____
 ## Determinação da Dose 
 Droga Vegetal de *Eclipta Prostrata*
 
-- **Regulação:** Ensaios clínicos devem utilizar a mesma dose e posologia do .my-coral[uso tradicional] &lt;br/&gt;.small[[ANVISA (2014), MS (2008) e WHO (2005)]].
+- **Regulação:** Ensaios clínicos devem utilizar a mesma dose e posologia do .my-coral[uso tradicional] <br/>.small[[ANVISA (2014), MS (2008) e WHO (2005)]].
 
 - **Uso Tradicional (Ayurveda):** A dose tradicional para *Eclipta prostrata* é de 2 a 3 g/dia, administrada de forma fracionada .small[(Kambli; Khaires; Kushwaha, 2022)].
 
@@ -170,10 +197,10 @@ Droga Vegetal de *Eclipta Prostrata*
 
 - **Dados Populacionais:**  
   Banco de dados de 214.732 adultos na Alemanha: ângulo de fase estratificados por idade, sexo e IMC.  
-  .my-coral[_Indivíduos com ângulo de fase abaixo do percentil 10 apresentaram proteína C reativa significativamente elevada_.]&lt;/br&gt; .small[(BOSY-WESTPHAL et al., 2006)].
+  .my-coral[_Indivíduos com ângulo de fase abaixo do percentil 10 apresentaram proteína C reativa significativamente elevada_.]</br> .small[(BOSY-WESTPHAL et al., 2006)].
 
 - **População Brasileira:**  
-  Resultados semelhantes em estudo com 2122 indivíduos, dos quais 478 tinham IMC &gt; 30 kg/m² .small[(MATTIELLO; MUNDSTOCK; ZIEGELMANN, 2022)].
+  Resultados semelhantes em estudo com 2122 indivíduos, dos quais 478 tinham IMC > 30 kg/m² .small[(MATTIELLO; MUNDSTOCK; ZIEGELMANN, 2022)].
 
 - **Relação entre Média e Percentil 10:**  
   A média populacional do AF é 15% maior que o valor do AF correspondente ao percentil 10, com diferença média de 0,84° .small[(0,78° para mulheres e 0,89° para homens)].
@@ -277,21 +304,27 @@ class: middle, left
 class: middle, left
 ## Procedimentos
 .small[
-
-|Procedimentos                                                                            | T1 | T2 | T3 |
-|:----------------------------------------------------------------------------------------|:--:|:--:|:--:|
-|Avaliação clínica                                                                        | ✕  | ✕  | ✕  |
-|Coleta de dados demográficos                                                             | ✕  |    |    |
-|Parâmetros de segurança: clínicos, eletrocardiográficos, laboratoriais, pressão arterial | ✕  | ✕  | ✕  |
-|Avaliação e quantificação da ingestão de etanol e uso de tabaco                          | ✕  |    | ✕  |
-|Avaliação da prática de atividade física                                                 | ✕  | ✕  | ✕  |
-|Dispensação dos frascos contendo as cápsulas designadas                                  | ✕  | ✕  |    |
-|Avaliação da adesão à intervenção                                                        |    | ✕  | ✕  |
-|Avaliação nutricional                                                                    | ✕  | ✕  | ✕  |
-|Avaliação do recordatório alimentar e intervenção nutricional                            | ✕  |    | ✕  |
-|Aferição de peso, altura e circunferência abdominal                                      | ✕  | ✕  | ✕  |
-|Aferição da força de preensão palmar e BIA                                               | ✕  |    | ✕  |
-|Aplicação dos escores WHOQOL-BREF, DASS-21, ECAP                                         | ✕  |    | ✕  |
+```{r tabela-procedimentos, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+tabela <- data.frame(
+  Procedimentos = c("Avaliação clínica",
+                    "Coleta de dados demográficos",
+                    "Parâmetros de segurança: clínicos, eletrocardiográficos, laboratoriais, pressão arterial",
+                    "Avaliação e quantificação da ingestão de etanol e uso de tabaco",
+                    "Avaliação da prática de atividade física",
+                    "Dispensação dos frascos contendo as cápsulas designadas",
+                    "Avaliação da adesão à intervenção",
+                    "Avaliação nutricional",
+                    "Avaliação do recordatório alimentar e intervenção nutricional",
+                    "Aferição de peso, altura e circunferência abdominal",
+                    "Aferição da força de preensão palmar e BIA",
+                    "Aplicação dos escores WHOQOL-BREF, DASS-21, ECAP"),
+  T1 = c("✕", "✕", "✕", "✕", "✕", "✕", "", "✕", "✕", "✕", "✕", "✕"),
+  T2 = c("✕", "", "✕", "", "✕", "✕", "✕", "✕", "", "✕", "", ""),
+  T3 = c("✕", "", "✕", "✕", "✕", "", "✕", "✕", "✕", "✕", "✕", "✕")
+)
+kable(tabela, format = "markdown", align = "lccc")
+```
 Legenda: T1 – primeira avaliação clínica (dia 0); T2 – segunda avaliação clínica (dia 45); T3 – terceira avaliação clínica (dia 90)
 ]
 
@@ -299,7 +332,7 @@ Legenda: T1 – primeira avaliação clínica (dia 0); T2 – segunda avaliaçã
 
 ## Medidas de Segurança
 
-A *Eclipta prostrata* é considerada segura em humanos &lt;br/&gt;
+A *Eclipta prostrata* é considerada segura em humanos <br/>
 .small[Farmacopeia Caribenha (GERMOSÉN ROBINEAU et al., 2014), instrução normativa nº 5 (ANVISA, 2010) e RDC nº 26 (ANVISA, 2014)].
 
 - **Medidas adotadas no estudo:**  
@@ -383,245 +416,3 @@ _Fonte: MINISTÉRIO DA SAÚDE, 2008_
     - **Métodos:** avaliação de outliers, manejo de dados faltantes, avaliação de possíveis vieses relacionados à adesão ao tratamento e ao impacto de valores extremos.
 - **Apresentação dos resultados**: estimativas com intervalos de confiança de 95%, valores de p ajustados para múltiplas comparações via método de Bonferroni.
 - **Visualização:** tendências longitudinais e diferenças entre grupos ilustradas com gráficos [(**ggplot2**)](https://cran.r-project.org/web/packages/ggplot2/index.html)
-
----
-class: inverse, middle, center
-
-# Resultados e Discussão  
-____
---
-
-## Características Basais dos Participantes
-
----
-
-### Características Demográficas
-
-- O estudo incluiu .my-coral[**75 participantes**], sendo .my-coral[**86,6%] do sexo feminino**.
-- A **idade média** foi de .my-coral[**40,6 anos] (IC 95%: 38,3–43,0)**.
-- Distribuição dos participantes entre os grupos:
-  - **Grupo Placebo**: 37 (49,3%)
-  - **Grupo _Eclipta_**: 38 (50,7%)
-- O recrutamento ocorreu entre **agosto de 2023 e julho de 2024**.
-- A intervenção teve duração média de .my-coral[**94,4 dias] (IC 95%: 88,8–99,9)**.
-
----
-
-#### Comparação entre Grupos
-
-- **Não houve diferenças significativas** entre os grupos para:
-  - Idade
-  - Sexo
-  - Etnia
-  - Estado civil
-  - Situação de emprego
-  - Histórico de hipertensão arterial e resistência insulínica
-  - Uso de medicamentos de uso contínuo com potencial influência no peso
-  
-- **Exceção**: O **nível de renda** foi significativamente diferente (_p_ = 0,01).
-- A distribuição de **renda mensal** foi:
-  - **Grupo Placebo**: maior proporção na faixa de **R$3.001,00 - R$5.000,00**.
-  - **Grupo _Eclipta_**: maior proporção na faixa de **R$1.001,00 - R$3.000,00**.
-  
----
-
-#### Tabela: Características Basais dos Participantes
-
-.left[
-
-|Característica                          |  Grupo Placebo   | Grupo *Eclipta* |  Valor p   |
-|:---------------------------------------|:----------------:|:---------------:|:----------:|
-|Idade em anos [média (IC95%)]           | 39,9 (37,1–42,8) | 41,3 (37,7–45)  |   0,5641   |
-|Sexo feminino (%)                       |       81,1       |      92,1       |   0,1908   |
-|Etnia branca (%)                        |       73,0       |      81,6       |   0,4864   |
-|Estado civil: Casado (%)                |       59,5       |      71,1       |   0,1227   |
-|Emprego em tempo integral (%)           |       73,0       |      65,8       |   0,4160   |
-|Número de coabitantes [média (IC95%)]   |  3,6 (3,2–3,9)   |  3,4 (3,0–3,8)  |   0,4623   |
-|Tempo de estudo em anos [média (IC95%)] | 11,6 (10,8–12,4) | 10,5 (9,5–11,5) |   0,1085   |
-|Renda mensal &lt; R$3.000 (%)              |       48,6       |      65,8       | **0,0101** |
-|Hipertensão (%)                         |       16,2       |      31,6       |   0,1981   |
-|Resistência Insulínica ou DM2 (%)       |       24,3       |      23,7       |   1,000    |
-] .small[Legenda: DM2: Diabetes Mellitus tipo 2.]
-
-
----
-
-exclude: true
-
-![](Slides_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
-
----
-
-Discussão dos Resultados
-
-A aleatorização foi bem-sucedida, pois não houve diferenças significativas entre os grupos para a maioria das características basais.
-A diferença na renda mensal deve ser interpretada com cautela:
-Perguntas baseadas em faixas podem não refletir com precisão a situação socioeconômica.
-Alternativamente, questões como "Sua renda é suficiente para atender suas necessidades?" poderiam ser mais relevantes.
-A comparação entre grupos confirma que as diferenças nos desfechos observados no estudo podem ser atribuídas à intervenção, sem viés de fatores basais.
-    </textarea>
-<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
-<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
-<script>var slideshow = remark.create({
-"highlightStyle": "googlecode",
-"highlightLines": true,
-"highlightLanguage": "r",
-"countIncrementalSlides": true,
-"ratio": "16:9"
-});
-if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
-  window.dispatchEvent(new Event('resize'));
-});
-(function(d) {
-  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
-  if (!r) return;
-  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
-  d.head.appendChild(s);
-})(document);
-
-(function(d) {
-  var el = d.getElementsByClassName("remark-slides-area");
-  if (!el) return;
-  var slide, slides = slideshow.getSlides(), els = el[0].children;
-  for (var i = 1; i < slides.length; i++) {
-    slide = slides[i];
-    if (slide.properties.continued === "true" || slide.properties.count === "false") {
-      els[i - 1].className += ' has-continuation';
-    }
-  }
-  var s = d.createElement("style");
-  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
-  d.head.appendChild(s);
-})(document);
-// delete the temporary CSS (for displaying all slides initially) when the user
-// starts to view slides
-(function() {
-  var deleted = false;
-  slideshow.on('beforeShowSlide', function(slide) {
-    if (deleted) return;
-    var sheets = document.styleSheets, node;
-    for (var i = 0; i < sheets.length; i++) {
-      node = sheets[i].ownerNode;
-      if (node.dataset["target"] !== "print-only") continue;
-      node.parentNode.removeChild(node);
-    }
-    deleted = true;
-  });
-})();
-// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
-// screen reader (see PR #262)
-(function(d) {
-  let res = {};
-  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
-    const t = tr.querySelector('td:nth-child(2)').innerText;
-    tr.querySelectorAll('td:first-child .key').forEach(key => {
-      const k = key.innerText;
-      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
-    });
-  });
-  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
-})(document);
-(function() {
-  "use strict"
-  // Replace <script> tags in slides area to make them executable
-  var scripts = document.querySelectorAll(
-    '.remark-slides-area .remark-slide-container script'
-  );
-  if (!scripts.length) return;
-  for (var i = 0; i < scripts.length; i++) {
-    var s = document.createElement('script');
-    var code = document.createTextNode(scripts[i].textContent);
-    s.appendChild(code);
-    var scriptAttrs = scripts[i].attributes;
-    for (var j = 0; j < scriptAttrs.length; j++) {
-      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
-    }
-    scripts[i].parentElement.replaceChild(s, scripts[i]);
-  }
-})();
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
-// adds .remark-code-has-line-highlighted class to <pre> parent elements
-// of code chunks containing highlighted lines with class .remark-code-line-highlighted
-(function(d) {
-  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
-  const preParents = [];
-  const findPreParent = function(line, p = 0) {
-    if (p > 1) return null; // traverse up no further than grandparent
-    const el = line.parentElement;
-    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
-  };
-
-  for (let line of hlines) {
-    let pre = findPreParent(line);
-    if (pre && !preParents.includes(pre)) preParents.push(pre);
-  }
-  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
-})(document);</script>
-<!--Hat-tip: https://www.garrickadenbuie.com/blog/xaringan-tip-logo-all-slides/-->
-<style>
-.logo {
-  background-image: url(img/logo-blue.png);
-  background-size: contain;
-  background-repeat: no-repeat;
-  position: absolute;
-  top: 1em;
-  right: 1em;
-  width: 110px;
-  height: 128px;
-  z-index: 0;
-}
-</style>
-
-<script>
-document
-  .querySelectorAll(
-    '.remark-slide-content' +
-    ':not(.title-slide)' +
-    // add additional classes to exclude here, e.g.
-    ':not(.inverse)' +
-    ':not(.hide-logo)'
-  )
-  .forEach(el => {
-    el.innerHTML += '<div class="logo"></div>';
-  });
-</script>
-
-<script>
-slideshow._releaseMath = function(el) {
-  var i, text, code, codes = el.getElementsByTagName('code');
-  for (i = 0; i < codes.length;) {
-    code = codes[i];
-    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
-      text = code.textContent;
-      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
-          /^\$\$(.|\s)+\$\$$/.test(text) ||
-          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
-        code.outerHTML = code.innerHTML;  // remove <code></code>
-        continue;
-      }
-    }
-    i++;
-  }
-};
-slideshow._releaseMath(document);
-</script>
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-(function () {
-  var script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
-  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
-    script.src  = script.src.replace(/^https?:/, '');
-  document.getElementsByTagName('head')[0].appendChild(script);
-})();
-</script>
-  </body>
-</html>
