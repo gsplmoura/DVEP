@@ -28,3 +28,14 @@ plot(pressure)
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
+## Discussão dos Resultados
+
+-   A **aleatorização foi bem-sucedida**, pois não houve diferenças significativas entre os grupos para a maioria das características basais.
+
+-   A **diferença na renda mensal** deve ser interpretada com cautela:
+
+    -   Perguntas baseadas em faixas podem não refletir com precisão a situação socioeconômica.
+
+    -   Alternativamente, questões como *"Sua renda é suficiente para atender suas necessidades?"* poderiam ser mais relevantes.
+
+-   **A comparação entre grupos confirma que as diferenças nos desfechos observados no estudo podem ser atribuídas à intervenção**, sem viés de fatores basais.
