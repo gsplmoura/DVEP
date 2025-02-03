@@ -2371,7 +2371,7 @@ dyslipidemia_conditions &lt;- I21_conditions_R |&gt;
     filter(str_detect(common_comorbidities, &quot;C37967|C37971&quot;)) |&gt;
     pull(record_id)
 
-#### Extract record IDs associated with antihypertensive drugs
+#### Extract record IDs associated with antilipemic drugs
 dyslipidemia_drugs &lt;- I22_drugs_R |&gt; 
     filter(str_detect(drugs_sql, 
         &quot;C29454|C66523_2|C47529|C61527|C87471&quot;
