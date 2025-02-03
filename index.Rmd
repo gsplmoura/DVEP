@@ -83,3 +83,8 @@ Os seguintes arquivos contêm os Codebooks dos projetos do **REDCap**:
   [REDCap DVEP Logging.csv](REDCap/REDCap%20DVEP%20logging.csv)
 
 ---
+
+### Tabelas
+
+#### Baseline
+- [Variáveis antropométricas e composição corporal: sexo masculino, estratificados segundo o grupo de alocação](Output/Baseline/Tables/bia_males.html)
