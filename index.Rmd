@@ -1,91 +1,116 @@
 ---
-title: "Ensaio clínico randomizado: efeito da droga vegetal de _Eclipta prostrata_ (L.) L. (_Asteraceae_) no ângulo de fase em adultos com obesidade grau I"
+title: "Ensaio clínico randomizado"
+subtitle: "Efeito da droga vegetal de _Eclipta prostrata_ (L.) L. (_Asteraceae_) no ângulo de fase em adultos com obesidade grau I"
 author: "Gustavo Santos Paiva Laender Moura"
 date: "`r format(Sys.Date(), '%d de %B de %Y')`"
 output: html_document
 ---
 
-# Bem-vindo ao Projeto DVEP
-
-Este repositório contém materiais relacionados ao projeto DVEP, incluindo relatórios de análise, código-fonte, documentos e apresentações.
-
-🚀 **GitHub Pages URL:** [https://gsplmoura.github.io/DVEP/](https://gsplmoura.github.io/DVEP/) </br>
-🚀 **Repositório GitHub:** [https://github.com/gsplmoura/DVEP/](https://github.com/gsplmoura/DVEP/)
- 
----
-
-## 📊 Relatórios de Análise
-
-- **Manipulação de Dados**  
-  Relatório com o pré-processamento e limpeza de dados.<br/>
-  [Arquivo em html](1_DVEP.html)<br/>
-  [Código R markdown](1_DVEP.Rmd)
+```{=html}
+<style>
+  body {
+    background-color: #f0f0f0;
+  }
   
+.pull-right {
+    float: right;
+    margin-left: 10px;
+  }
+ 
+</style>
+```
 
-- **Análise Exploratória de Dados**  
-  Análise descritiva e gráficos exploratórios.<br/>
-  [Arquivo em html](2_DVEP_Results.html)<br/>
-  [Código R markdown](2_DVEP_Results.html)  
+# `r fontawesome::fa("seedling")` Bem-vindo ao Projeto DVEP
 
----
+**Este repositório contém materiais relacionados ao projeto DVEP, incluindo relatórios de análise, código-fonte, documentos e apresentações.**
 
-## 📂 Documentação e Recursos
+::: pull-right
+## `r fontawesome::fa("github")` GitHub
 
----
+### `r fontawesome::fa("file-lines")` **Github Page:**
 
-### 📑 Slides e Apresentações
+<https://gsplmoura.github.io/DVEP/>
 
-- 📢 **Slides do Projeto**  
-  Os slides foram criados na IDE RStudio utilizando R Markdown. O pacote xaringan foi usado para configurar o remark.js, e o knitr foi responsável para convertê-los em HTML.
-  <br/>[Visualizar Apresentação de Slides](Slides/Slides.html)
-  <br/>[Código R markdown utilizado](Slides/Slides.Rmd)
+### `r fontawesome::fa("database")` **Repositório GitHub:**
 
----
+<https://github.com/gsplmoura/DVEP/>
+:::
 
-### 📖 Materiais da Tese
+------------------------------------------------------------------------
 
-- 📄 **Tese Completa**  
-  [Arquivo em pdf](Docs/Tese%20Eclipta%20prostrata.pdf)
+## `r fontawesome::fa("r-project")` Relatórios de Análise em R
 
-- 📄 **Documento Word da Tese**  
-  [Arquivo em word](Docs/Thesis.docx)
+-   **Manipulação de Dados**\
+    Relatório com o pré-processamento e limpeza de dados.<br/> [Arquivo em html](1_DVEP.html)<br/> [Código R markdown](1_DVEP.Rmd)
 
----
+-   **Análise Exploratória de Dados**\
+    Análise descritiva e gráficos exploratórios.<br/> [Arquivo em html](2_DVEP_Results.html)<br/> [Código R markdown](2_DVEP_Results.html)
 
-### 📜 Dicionário de dados
+------------------------------------------------------------------------
+
+## `r fontawesome::fa("slideshare")` Slides e Apresentações
+
+-   **Slides do Projeto**\
+    Os slides foram criados na IDE RStudio utilizando R Markdown. O pacote xaringan foi usado para configurar o remark.js, e o knitr foi responsável para convertê-los em HTML. <br/>[Visualizar Apresentação de Slides](Slides/Slides.html) <br/>[Código R markdown utilizado](Slides/Slides.Rmd)
+
+------------------------------------------------------------------------
+
+## `r fontawesome::fa("folder-open")` Materiais da Tese
+
+-   📄 **Tese Completa**\
+    [Arquivo em pdf](Docs/Tese%20Eclipta%20prostrata.pdf)
+
+-   📄 **Documento Word da Tese**\
+    [Arquivo em word](Docs/Thesis.docx)
+
+------------------------------------------------------------------------
+
+### `r fontawesome::fa("book")` Dicionário de dados
 
 Esses arquivos nos formatos .csv e Excel (.xlsx) contêm a estrutura de variáveis e suas descrições para os projetos criados no REDCap e utilizados na coleta de dados. Além disso, representam a estrutura dos bancos de dados utilizados na análise.
 
-- [Codebook BIA](Codebooks/codebook_bia.xlsx)  
-- [Codebook DVEP](Codebooks/codebook_dvep.xlsx)  
-- [Codebook NCIT](Codebooks/codebook_ncit.csv)  
-- [Codebook Estrutural](Codebooks/codebook_structure.csv)  
+-   [Codebook BIA](Codebooks/codebook_bia.xlsx)\
+-   [Codebook DVEP](Codebooks/codebook_dvep.xlsx)\
+-   [Codebook NCIT](Codebooks/codebook_ncit.csv)\
+-   [Codebook Estrutural](Codebooks/codebook_structure.csv)
 
----
+------------------------------------------------------------------------
 
-### 📜 Codebooks do REDCap
+### `r fontawesome::fa("code")` Codebooks do REDCap
 
 Os seguintes arquivos contêm os Codebooks dos projetos do **REDCap**:
 
-- **Registro de Pacientes**  
-  [PID 1958 DVEP.pdf](REDCap/PID%201958%20DVEP.pdf)
+-   **Registro de Pacientes**\
+    [PID 1958 DVEP.pdf](REDCap/PID%201958%20DVEP.pdf)
 
-- **Contato com Pacientes**  
-  [PID 2184 Patient Outreach.pdf](REDCap/PID%202184%20Patient%20outreach.pdf)
+-   **Contato com Pacientes**\
+    [PID 2184 Patient Outreach.pdf](REDCap/PID%202184%20Patient%20outreach.pdf)
 
-- **Tesauro do Instituto Nacional do Câncer**  
-  [PID 2205 NCIT Thesaurus](REDCap/PID%202205%20National%20Cancer%20Institute%20Thesaurus%20%7C%20REDCap.pdf)
+-   **Tesauro do Instituto Nacional do Câncer**\
+    [PID 2205 NCIT Thesaurus](REDCap/PID%202205%20National%20Cancer%20Institute%20Thesaurus%20%7C%20REDCap.pdf)
 
-- **Critérios de Elegibilidade**  
-  [PID 2246 Eligibility Assessment.pdf](REDCap/PID%202246%20Eligibility%20assessment.pdf)
+-   **Critérios de Elegibilidade**\
+    [PID 2246 Eligibility Assessment.pdf](REDCap/PID%202246%20Eligibility%20assessment.pdf)
 
-- **Registro de Eventos REDCap**  
-  [REDCap DVEP Logging.csv](REDCap/REDCap%20DVEP%20logging.csv)
+-   **Registro de Eventos REDCap**\
+    [REDCap DVEP Logging.csv](REDCap/REDCap%20DVEP%20logging.csv)
 
----
+------------------------------------------------------------------------
 
-### Tabelas
+### `r fontawesome::fa("table")` Tabelas
 
 #### Baseline
-- [Variáveis antropométricas e composição corporal: sexo masculino, estratificados segundo o grupo de alocação](Output/Baseline/Tables/bia_males.html)
-- [Variáveis antropométricas e composição corporal: sexo feminino, estratificados segundo o grupo de alocação](Output/Baseline/Tables/bia_females.html)
+
+-   **Variáveis antropométricas e composição corporal**
+    -   [sexo masculino, estratificados segundo o grupo de alocação](Output/Baseline/Tables/bia_males.html)
+    -   [sexo feminino, estratificados segundo o grupo de alocação](Output/Baseline/Tables/bia_females.html)
+
+<br/>
+---
+<br/>
+---
+<br/>
+---
+<br/>
+---
+<br/>
