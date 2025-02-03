@@ -757,7 +757,7 @@ kable(tabela_af_res_reat, format = "markdown", align = "lccc",
 layout:true
 
     ### Variáveis antropométricas e composição corporal
-#### Sexo masculino, estratificados segundo o grupo de alocação
+#### [Sexo masculino, estratificados segundo o grupo de alocação](Output/Baseline/Tables/bia_males.html)
 
 ---
 Não houve associação entre o sexo e o grupo de alocação (p = 0,19).
