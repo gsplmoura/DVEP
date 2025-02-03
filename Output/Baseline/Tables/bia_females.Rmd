@@ -6,8 +6,11 @@ output:
     html_document
 ---
 
-```{r}
+```{r, echo=FALSE, results='hide'}
 library(here)
+```
+
+```{r}
 library(readr)
 library(knitr)
 

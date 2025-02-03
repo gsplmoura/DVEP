@@ -1,7 +1,7 @@
 ---
 title: "DVEP_2_Analysis"
 author: "Moura, G.S.P.L"
-date: "2025-01-07"
+date: "`r format(Sys.Date(), '%d de %B de %Y')`"
 output: html_document
 ---
 
