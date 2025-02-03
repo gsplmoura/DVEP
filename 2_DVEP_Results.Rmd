@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ```{r, eval= FALSE}
+library(here)
 library(tidyverse)
 library(readxl)
 library(lubridate)
@@ -21,7 +22,7 @@ library(skimr)
 ## summarize_numerical_wider
 Returns the dataframe in wide format
 ```{r}
-summarize_numerical_wider <- function(data, group_col = NULL, use_labels = TRUE) {
+summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
   # Extract variable labels, falling back to variable names if labels are missing
   variable_labels <- sapply(names(data), function(var) {
     label <- attr(data[[var]], "label")
@@ -408,7 +409,7 @@ bia_baseline <- data_bia |>
     select(
         record_id, phaseangle:w_ecw
         ) |> 
-    left_join(
+    dplyr::left_join(
         data_d1_exclusive |> 
             select(record_id, allocation_group, sex),
                    by = "record_id"
@@ -416,7 +417,7 @@ bia_baseline <- data_bia |>
 ```
 
 ### Comparing between males and females
-```{r}
+```{r, eval=FALSE}
 #by sex
 bia_baseline_sex <- summarize_numerical(bia_baseline, "sex") 
 bia_baseline_sex_compare <- compare_groups(bia_baseline,"sex") # compare
@@ -424,7 +425,7 @@ print(bia_baseline_sex_compare) # print
 ```
 
 ### Males
-```{r}
+```{r, eval=FALSE}
 # Filter males
 BIA_V1_M <- bia_baseline |> 
     filter(
@@ -496,34 +497,83 @@ bia_males <- BIA_V1_M_SN %>%
     ) %>% 
     arrange(Parâmetro)
 
-clipr::write_clip(bia_males)
-write_csv(bia_males, "Slides/data/bia_males.csv")
+write_csv(bia_males, here("Output", "Baseline", "Tables", "bia_males.csv"))
 ```
 
-#### Females
-```{r}
-## females
-bia_baseline_females <- bia_baseline |> 
+### Females
+```{r, eval=FALSE}
+# Filter males
+BIA_V1_F <- bia_baseline |> 
     filter(
         sex == "Feminino"
     )
-bia_baseline_females_groups <- summarize_numerical(bia_baseline_females, "allocation_group") #females, by group
-bia_baseline_females_groups_compare <- compare_groups(bia_baseline_females) #females, compare
-print(bia_baseline_females_groups_compare)
 
-```
+#summarize_numerical()
+BIA_V1_F_SN <- summarize_numerical(BIA_V1_F, "allocation_group",use_labels = TRUE)
 
-**Clear** BIA
-```{r, eval=FALSE}
-rm(bia_baseline)
-rm(bia_baseline_sex)
-rm(bia_baseline_sex_compare)
-rm(bia_baseline_males)
-rm(bia_baseline_males_groups)
-rm(bia_baseline_males_groups_compare)
-rm(bia_baseline_females)
-rm(bia_baseline_females_groups)
-rm(bia_baseline_females_groups_compare)
+# compare_groups()
+BIA_V1_F_C <- compare_groups(BIA_V1_F, group_col = "allocation_group",use_labels = TRUE, return_df = TRUE) 
+
+# join tables
+bia_females <- BIA_V1_F_SN %>%
+    left_join(y = BIA_V1_F_C %>% 
+                  select(Variable, P_value),
+              by = join_by(Variable)
+    ) %>%
+    mutate(
+        P_value = round(P_value,3)
+    ) %>% 
+    filter(
+        Variable != "Nome do arquivo"
+    ) %>% 
+    rename(
+         Parâmetro = Variable,
+         `Grupo placebo [média (IC 95%)]` = `Grupo A`,
+         `Grupo Eclipta [média (IC 95%)]` = `Grupo B`,
+         `Valor p [Teste t]` = P_value
+    ) %>% 
+    mutate(Parâmetro = recode(Parâmetro, 
+                            "Altura" = "Altura (m)", 
+                            "Peso" = "Peso (kg)", 
+                            "Índice de Massa Corporal" = "Índice de Massa Corporal (kg/m²)", 
+                            "Cintura" = "Circunferência Abdominal (m)", 
+                            "Nível de Atividade Física" = "Nível de Atividade Física (PAL)", 
+                            "Ângulo de Fase" = "Ângulo de Fase (°)", 
+                            "Média de Resistência" = "Resistência (Ω)", 
+                            "Média de Reatância" = "Reatância (Ω)", 
+                            "Massa de Gordura Absoluta" = "Massa gorda Absoluta (kg)", 
+                            "Índice de Massa de Gordura" = "Índice de Massa gorda (kg/m²)", 
+                            "Massa de Gordura Relativa" = "Massa gorda Relativa (%)", 
+                            "Tecido Adiposo Visceral" = "Tecido Adiposo Visceral (kg)", 
+                            "Massa Livre de Gordura Absoluta" = "Massa Livre de Gordura Absoluta (kg)", 
+                            "Índice de Massa Livre de Gordura" = "Índice de Massa Livre de Gordura (kg/m²)", 
+                            "Massa Livre de Gordura Relativa" = "Massa Livre de Gordura Relativa (%)", 
+                            "Massa Muscular Esquelética do Corpo" = "MME Corporal Total (kg)", 
+                            "Massa Muscular Esquelética do Tronco" = "MME do Tronco (kg)", 
+                            "Massa Muscular Esquelética do Braço Direito" = "MME do Braço Direito (kg)", 
+                            "Massa Muscular Esquelética do Braço Esquerdo" = "MME do Braço Esquerdo (kg)", 
+                            "Massa Muscular Esquelética da Perna Direita" = "MME da Perna Direita (kg)", 
+                            "Massa Muscular Esquelética da Perna Esquerda" = "MME da Perna Esquerda (kg)", 
+                            "Água Corporal Total" = "Água Corporal Total (L)", 
+                            "Água Extracelular" = "Água Extracelular (L)", 
+                            "Gasto Energético Total" = "Gasto Energético Total (kcal)", 
+                            "Gasto Energético em Repouso" = "Gasto Energético em Repouso (kcal)", 
+                            "Energia Armazenada" = "Energia Armazenada (kcal)")
+        ) %>%
+    mutate(Parâmetro = factor(Parâmetro, levels = c(
+    "Altura (m)", "Peso (kg)", "Índice de Massa Corporal (kg/m²)", "Circunferência Abdominal (m)", 
+    "Nível de Atividade Física (PAL)", "Ângulo de Fase (°)", "Resistência (Ω)", "Reatância (Ω)", 
+    "Massa gorda Absoluta (kg)", "Índice de Massa gorda (kg/m²)", "Massa gorda Relativa (%)", 
+    "Tecido Adiposo Visceral (kg)", "Massa Livre de Gordura Absoluta (kg)", 
+    "Índice de Massa Livre de Gordura (kg/m²)", "Massa Livre de Gordura Relativa (%)", 
+    "MME Corporal Total (kg)", "MME do Tronco (kg)", "MME do Braço Direito (kg)", 
+    "MME do Braço Esquerdo (kg)", "MME da Perna Direita (kg)", "MME da Perna Esquerda (kg)", 
+    "Água Corporal Total (L)", "Água Extracelular (L)", "Gasto Energético Total (kcal)", 
+    "Gasto Energético em Repouso (kcal)", "Energia Armazenada (kcal)"))
+    ) %>% 
+    arrange(Parâmetro)
+
+write_csv(bia_females, here("Output", "Baseline", "Tables", "bia_females.csv"))
 ```
 
 ## Handgrip

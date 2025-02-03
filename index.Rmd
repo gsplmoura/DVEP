@@ -88,3 +88,4 @@ Os seguintes arquivos contêm os Codebooks dos projetos do **REDCap**:
 
 #### Baseline
 - [Variáveis antropométricas e composição corporal: sexo masculino, estratificados segundo o grupo de alocação](Output/Baseline/Tables/bia_males.html)
+- [Variáveis antropométricas e composição corporal: sexo feminino, estratificados segundo o grupo de alocação](Output/Baseline/Tables/bia_females.html)

@@ -1,5 +1,5 @@
 ---
-title: "Variáveis antropométricas e composição corporal: sexo masculino, estratificados segundo o grupo de alocação"
+title: "Variáveis antropométricas e composição corporal: sexo feminino, estratificados segundo o grupo de alocação"
 author: "Gustavo Santos Paiva Laender Moura"
 date: "`r Sys.Date()`"
 output: 
@@ -11,9 +11,9 @@ library(here)
 library(readr)
 library(knitr)
 
-bia_males <- read_csv(here("Output", "Baseline", "Tables", "bia_males.csv"))
+bia_females <- read_csv(here("Output", "Baseline", "Tables", "bia_females.csv"))
 
-kable(bia_males, 
+kable(bia_females, 
       format = "html",
       col.names = c("Parâmetro",
                     "Grupo placebo<br/>[média (IC 95%)]", 

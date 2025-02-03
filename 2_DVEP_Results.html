@@ -357,7 +357,8 @@ display: none;
 </div>
 
 
-<pre class="r"><code>library(tidyverse)
+<pre class="r"><code>library(here)
+library(tidyverse)
 library(readxl)
 library(lubridate)
 library(stringr)
@@ -365,6 +366,148 @@ library(purrr)
 library(gt)
 library(jmv)
 library(skimr)</code></pre>
+<div id="modifying-functions" class="section level1">
+<h1>Modifying functions</h1>
+<div id="summarize_numerical_wider" class="section level2">
+<h2>summarize_numerical_wider</h2>
+<p>Returns the dataframe in wide format</p>
+<pre class="r"><code>summarize_numerical &lt;- function(data, group_col = NULL, use_labels = TRUE) {
+  # Extract variable labels, falling back to variable names if labels are missing
+  variable_labels &lt;- sapply(names(data), function(var) {
+    label &lt;- attr(data[[var]], &quot;label&quot;)
+    if (is.null(label) || !use_labels) var else label
+  }, simplify = TRUE)
+  
+  # Identify numeric columns
+  numeric_cols &lt;- data %&gt;% select(where(is.numeric)) %&gt;% names()
+  
+  if (!is.null(group_col)) {
+    # Grouped summary
+    summary &lt;- data %&gt;%
+      group_by(across(all_of(group_col))) %&gt;%
+      summarise(across(
+        all_of(numeric_cols),
+        ~ paste0(
+          round(mean(.x, na.rm = TRUE), 1), 
+          &quot; (&quot;, 
+          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          &quot;–&quot;, 
+          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          &quot;)&quot;
+        ),
+        .names = &quot;{.col}&quot;
+      )) %&gt;%
+      pivot_longer(-all_of(group_col), names_to = &quot;Variable&quot;, values_to = &quot;Value&quot;) %&gt;%
+      mutate(Variable = variable_labels[Variable]) %&gt;%
+      pivot_wider(names_from = all_of(group_col), values_from = Value)  # Pivot to wide format
+  } else {
+    # Ungrouped summary
+    summary &lt;- data %&gt;%
+      summarise(across(
+        all_of(numeric_cols),
+        ~ paste0(
+          round(mean(.x, na.rm = TRUE), 1), 
+          &quot; (&quot;, 
+          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          &quot;–&quot;, 
+          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          &quot;)&quot;
+        ),
+        .names = &quot;{.col}&quot;
+      )) %&gt;%
+      pivot_longer(everything(), names_to = &quot;Variable&quot;, values_to = &quot;Value&quot;) %&gt;%
+      mutate(Variable = variable_labels[Variable])
+  }
+  
+  return(summary)
+}</code></pre>
+</div>
+<div id="compare_groups" class="section level2">
+<h2>compare_groups</h2>
+<p>Added an additional argument <code>return_df</code>, which, if set to
+TRUE, extracts the gt table into a data.frame</p>
+<pre class="r"><code>compare_groups &lt;- function(data, group_col = &quot;allocation_group&quot;, use_labels = TRUE, return_df = FALSE) {
+  
+  # Extract variable labels, default to variable names if labels are missing
+  variable_labels &lt;- sapply(names(data), function(var) {
+    label &lt;- attr(data[[var]], &quot;label&quot;) # Check for the &#39;label&#39; attribute
+    if (is.null(label) || !use_labels) var else label # Use variable name if label is missing
+  }, simplify = TRUE)
+  
+  # Prepare results storage
+  results &lt;- data.frame(
+    Variable = character(), # The variable being tested
+    Test = character(),     # The type of test (t-test or chi-squared/Fisher&#39;s)
+    Statistic = numeric(),  # The test statistic value
+    P_value = numeric(),    # The p-value from the test
+    stringsAsFactors = FALSE # Ensure strings are not converted to factors
+  )
+  
+  # Loop through all columns in the data, excluding the grouping column
+  for (var in setdiff(names(data), group_col)) {
+    if (is.numeric(data[[var]])) {
+      # Run t-test for numeric variables
+      test_result &lt;- t.test(data[[var]] ~ data[[group_col]])
+      
+      # Append the t-test results to the results data.frame
+      results &lt;- rbind(results, data.frame(
+        Variable = variable_labels[var], # Use label or name
+        Test = &quot;t-test&quot;,                 
+        Statistic = round(test_result$statistic, 2), 
+        P_value = round(test_result$p.value, 4)
+      ))
+    } else if (is.factor(data[[var]]) || is.character(data[[var]])) {
+      # Run chi-squared or Fisher&#39;s exact test
+      contingency_table &lt;- table(data[[var]], data[[group_col]])
+      
+      if (any(chisq.test(contingency_table)$expected &lt; 5)) {
+        # Use Fisher&#39;s exact test
+        test_result &lt;- fisher.test(contingency_table)
+        results &lt;- rbind(results, data.frame(
+          Variable = variable_labels[var],
+          Test = &quot;Fisher&#39;s exact test&quot;,
+          Statistic = NA,
+          P_value = round(test_result$p.value, 4)
+        ))
+      } else {
+        # Use chi-squared test
+        test_result &lt;- tryCatch(
+          chisq.test(contingency_table), 
+          error = function(e) list(statistic = NA, p.value = NA)
+        )
+        results &lt;- rbind(results, data.frame(
+          Variable = variable_labels[var],
+          Test = &quot;Chi-squared test&quot;,
+          Statistic = round(test_result$statistic, 2),
+          P_value = round(test_result$p.value, 4)
+        ))
+      }
+    }
+  }
+  
+  # If return_df = TRUE, return the results as a data frame
+  if (return_df) {
+    return(results)
+  }
+  
+  # Return results as a gt table
+  gt_table &lt;- results %&gt;%
+    gt() %&gt;%
+    tab_header(
+      title = &quot;Hypothesis Test Results&quot;,
+      subtitle = paste(&quot;Comparison of&quot;, group_col)
+    ) %&gt;%
+    cols_label(
+      Variable = &quot;Variable&quot;,
+      Test = &quot;Test Type&quot;,
+      Statistic = &quot;Test Statistic&quot;,
+      P_value = &quot;P-value&quot;
+    )
+  
+  return(gt_table) # Return the formatted gt table
+}</code></pre>
+</div>
+</div>
 <div id="baseline" class="section level1">
 <h1>Baseline</h1>
 <pre class="r"><code>file_path_baseline &lt;- &quot;Output/Baseline/Data_files&quot;</code></pre>
@@ -571,6 +714,8 @@ rm(labs_baseline$labs_crp_log)</code></pre>
 </div>
 <div id="bia" class="section level2">
 <h2>BIA</h2>
+<div id="baseline-1" class="section level3">
+<h3>Baseline</h3>
 <pre class="r"><code>bia_baseline &lt;- data_bia |&gt;
     filter(
         visit == 1
@@ -578,45 +723,169 @@ rm(labs_baseline$labs_crp_log)</code></pre>
     select(
         record_id, phaseangle:w_ecw
         ) |&gt; 
-    left_join(
+    dplyr::left_join(
         data_d1_exclusive |&gt; 
             select(record_id, allocation_group, sex),
                    by = &quot;record_id&quot;
-        )
-
-#by sex
+        )</code></pre>
+</div>
+<div id="comparing-between-males-and-females" class="section level3">
+<h3>Comparing between males and females</h3>
+<pre class="r"><code>#by sex
 bia_baseline_sex &lt;- summarize_numerical(bia_baseline, &quot;sex&quot;) 
 bia_baseline_sex_compare &lt;- compare_groups(bia_baseline,&quot;sex&quot;) # compare
-print(bia_baseline_sex_compare) # print
-
-# by groups, by sex
-## males
-bia_baseline_males &lt;- bia_baseline |&gt; 
+print(bia_baseline_sex_compare) # print</code></pre>
+</div>
+<div id="males" class="section level3">
+<h3>Males</h3>
+<pre class="r"><code># Filter males
+BIA_V1_M &lt;- bia_baseline |&gt; 
     filter(
         sex == &quot;Masculino&quot;
     )
-bia_baseline_males_groups &lt;- summarize_numerical(bia_baseline_males, &quot;allocation_group&quot;) #males, by group
-bia_baseline_males_groups_compare &lt;- compare_groups(bia_baseline_males) #males, comapre
-print(bia_baseline_males_groups_compare)
 
-## females
-bia_baseline_females &lt;- bia_baseline |&gt; 
+#summarize_numerical()
+BIA_V1_M_SN &lt;- summarize_numerical(BIA_V1_M, &quot;allocation_group&quot;,use_labels = TRUE)
+
+# compare_groups()
+BIA_V1_M_C &lt;- compare_groups(BIA_V1_M, group_col = &quot;allocation_group&quot;,use_labels = TRUE, return_df = TRUE) 
+
+# join tables
+bia_males &lt;- BIA_V1_M_SN %&gt;%
+    left_join(y = BIA_V1_M_C %&gt;% 
+                  select(Variable, P_value),
+              by = join_by(Variable)
+    ) %&gt;%
+    mutate(
+        P_value = round(P_value,3)
+    ) %&gt;% 
+    filter(
+        Variable != &quot;Nome do arquivo&quot;
+    ) %&gt;% 
+    rename(
+         Parâmetro = Variable,
+         `Grupo placebo [média (IC 95%)]` = `Grupo A`,
+         `Grupo Eclipta [média (IC 95%)]` = `Grupo B`,
+         `Valor p [Teste t]` = P_value
+    ) %&gt;% 
+    mutate(Parâmetro = recode(Parâmetro, 
+                            &quot;Altura&quot; = &quot;Altura (m)&quot;, 
+                            &quot;Peso&quot; = &quot;Peso (kg)&quot;, 
+                            &quot;Índice de Massa Corporal&quot; = &quot;Índice de Massa Corporal (kg/m²)&quot;, 
+                            &quot;Cintura&quot; = &quot;Circunferência Abdominal (m)&quot;, 
+                            &quot;Nível de Atividade Física&quot; = &quot;Nível de Atividade Física (PAL)&quot;, 
+                            &quot;Ângulo de Fase&quot; = &quot;Ângulo de Fase (°)&quot;, 
+                            &quot;Média de Resistência&quot; = &quot;Resistência (Ω)&quot;, 
+                            &quot;Média de Reatância&quot; = &quot;Reatância (Ω)&quot;, 
+                            &quot;Massa de Gordura Absoluta&quot; = &quot;Massa gorda Absoluta (kg)&quot;, 
+                            &quot;Índice de Massa de Gordura&quot; = &quot;Índice de Massa gorda (kg/m²)&quot;, 
+                            &quot;Massa de Gordura Relativa&quot; = &quot;Massa gorda Relativa (%)&quot;, 
+                            &quot;Tecido Adiposo Visceral&quot; = &quot;Tecido Adiposo Visceral (kg)&quot;, 
+                            &quot;Massa Livre de Gordura Absoluta&quot; = &quot;Massa Livre de Gordura Absoluta (kg)&quot;, 
+                            &quot;Índice de Massa Livre de Gordura&quot; = &quot;Índice de Massa Livre de Gordura (kg/m²)&quot;, 
+                            &quot;Massa Livre de Gordura Relativa&quot; = &quot;Massa Livre de Gordura Relativa (%)&quot;, 
+                            &quot;Massa Muscular Esquelética do Corpo&quot; = &quot;MME Corporal Total (kg)&quot;, 
+                            &quot;Massa Muscular Esquelética do Tronco&quot; = &quot;MME do Tronco (kg)&quot;, 
+                            &quot;Massa Muscular Esquelética do Braço Direito&quot; = &quot;MME do Braço Direito (kg)&quot;, 
+                            &quot;Massa Muscular Esquelética do Braço Esquerdo&quot; = &quot;MME do Braço Esquerdo (kg)&quot;, 
+                            &quot;Massa Muscular Esquelética da Perna Direita&quot; = &quot;MME da Perna Direita (kg)&quot;, 
+                            &quot;Massa Muscular Esquelética da Perna Esquerda&quot; = &quot;MME da Perna Esquerda (kg)&quot;, 
+                            &quot;Água Corporal Total&quot; = &quot;Água Corporal Total (L)&quot;, 
+                            &quot;Água Extracelular&quot; = &quot;Água Extracelular (L)&quot;, 
+                            &quot;Gasto Energético Total&quot; = &quot;Gasto Energético Total (kcal)&quot;, 
+                            &quot;Gasto Energético em Repouso&quot; = &quot;Gasto Energético em Repouso (kcal)&quot;, 
+                            &quot;Energia Armazenada&quot; = &quot;Energia Armazenada (kcal)&quot;)
+        ) %&gt;%
+    mutate(Parâmetro = factor(Parâmetro, levels = c(
+    &quot;Altura (m)&quot;, &quot;Peso (kg)&quot;, &quot;Índice de Massa Corporal (kg/m²)&quot;, &quot;Circunferência Abdominal (m)&quot;, 
+    &quot;Nível de Atividade Física (PAL)&quot;, &quot;Ângulo de Fase (°)&quot;, &quot;Resistência (Ω)&quot;, &quot;Reatância (Ω)&quot;, 
+    &quot;Massa gorda Absoluta (kg)&quot;, &quot;Índice de Massa gorda (kg/m²)&quot;, &quot;Massa gorda Relativa (%)&quot;, 
+    &quot;Tecido Adiposo Visceral (kg)&quot;, &quot;Massa Livre de Gordura Absoluta (kg)&quot;, 
+    &quot;Índice de Massa Livre de Gordura (kg/m²)&quot;, &quot;Massa Livre de Gordura Relativa (%)&quot;, 
+    &quot;MME Corporal Total (kg)&quot;, &quot;MME do Tronco (kg)&quot;, &quot;MME do Braço Direito (kg)&quot;, 
+    &quot;MME do Braço Esquerdo (kg)&quot;, &quot;MME da Perna Direita (kg)&quot;, &quot;MME da Perna Esquerda (kg)&quot;, 
+    &quot;Água Corporal Total (L)&quot;, &quot;Água Extracelular (L)&quot;, &quot;Gasto Energético Total (kcal)&quot;, 
+    &quot;Gasto Energético em Repouso (kcal)&quot;, &quot;Energia Armazenada (kcal)&quot;))
+    ) %&gt;% 
+    arrange(Parâmetro)
+
+write_csv(bia_males, here(&quot;Output&quot;, &quot;Baseline&quot;, &quot;Tables&quot;, &quot;bia_males.csv&quot;))</code></pre>
+</div>
+<div id="females" class="section level3">
+<h3>Females</h3>
+<pre class="r"><code># Filter males
+BIA_V1_F &lt;- bia_baseline |&gt; 
     filter(
         sex == &quot;Feminino&quot;
     )
-bia_baseline_females_groups &lt;- summarize_numerical(bia_baseline_females, &quot;allocation_group&quot;) #females, by group
-bia_baseline_females_groups_compare &lt;- compare_groups(bia_baseline_females) #females, compare
-print(bia_baseline_females_groups_compare)</code></pre>
-<p><strong>Clear</strong> BIA</p>
-<pre class="r"><code>rm(bia_baseline)
-rm(bia_baseline_sex)
-rm(bia_baseline_sex_compare)
-rm(bia_baseline_males)
-rm(bia_baseline_males_groups)
-rm(bia_baseline_males_groups_compare)
-rm(bia_baseline_females)
-rm(bia_baseline_females_groups)
-rm(bia_baseline_females_groups_compare)</code></pre>
+
+#summarize_numerical()
+BIA_V1_F_SN &lt;- summarize_numerical(BIA_V1_F, &quot;allocation_group&quot;,use_labels = TRUE)
+
+# compare_groups()
+BIA_V1_F_C &lt;- compare_groups(BIA_V1_F, group_col = &quot;allocation_group&quot;,use_labels = TRUE, return_df = TRUE) 
+
+# join tables
+bia_females &lt;- BIA_V1_F_SN %&gt;%
+    left_join(y = BIA_V1_F_C %&gt;% 
+                  select(Variable, P_value),
+              by = join_by(Variable)
+    ) %&gt;%
+    mutate(
+        P_value = round(P_value,3)
+    ) %&gt;% 
+    filter(
+        Variable != &quot;Nome do arquivo&quot;
+    ) %&gt;% 
+    rename(
+         Parâmetro = Variable,
+         `Grupo placebo [média (IC 95%)]` = `Grupo A`,
+         `Grupo Eclipta [média (IC 95%)]` = `Grupo B`,
+         `Valor p [Teste t]` = P_value
+    ) %&gt;% 
+    mutate(Parâmetro = recode(Parâmetro, 
+                            &quot;Altura&quot; = &quot;Altura (m)&quot;, 
+                            &quot;Peso&quot; = &quot;Peso (kg)&quot;, 
+                            &quot;Índice de Massa Corporal&quot; = &quot;Índice de Massa Corporal (kg/m²)&quot;, 
+                            &quot;Cintura&quot; = &quot;Circunferência Abdominal (m)&quot;, 
+                            &quot;Nível de Atividade Física&quot; = &quot;Nível de Atividade Física (PAL)&quot;, 
+                            &quot;Ângulo de Fase&quot; = &quot;Ângulo de Fase (°)&quot;, 
+                            &quot;Média de Resistência&quot; = &quot;Resistência (Ω)&quot;, 
+                            &quot;Média de Reatância&quot; = &quot;Reatância (Ω)&quot;, 
+                            &quot;Massa de Gordura Absoluta&quot; = &quot;Massa gorda Absoluta (kg)&quot;, 
+                            &quot;Índice de Massa de Gordura&quot; = &quot;Índice de Massa gorda (kg/m²)&quot;, 
+                            &quot;Massa de Gordura Relativa&quot; = &quot;Massa gorda Relativa (%)&quot;, 
+                            &quot;Tecido Adiposo Visceral&quot; = &quot;Tecido Adiposo Visceral (kg)&quot;, 
+                            &quot;Massa Livre de Gordura Absoluta&quot; = &quot;Massa Livre de Gordura Absoluta (kg)&quot;, 
+                            &quot;Índice de Massa Livre de Gordura&quot; = &quot;Índice de Massa Livre de Gordura (kg/m²)&quot;, 
+                            &quot;Massa Livre de Gordura Relativa&quot; = &quot;Massa Livre de Gordura Relativa (%)&quot;, 
+                            &quot;Massa Muscular Esquelética do Corpo&quot; = &quot;MME Corporal Total (kg)&quot;, 
+                            &quot;Massa Muscular Esquelética do Tronco&quot; = &quot;MME do Tronco (kg)&quot;, 
+                            &quot;Massa Muscular Esquelética do Braço Direito&quot; = &quot;MME do Braço Direito (kg)&quot;, 
+                            &quot;Massa Muscular Esquelética do Braço Esquerdo&quot; = &quot;MME do Braço Esquerdo (kg)&quot;, 
+                            &quot;Massa Muscular Esquelética da Perna Direita&quot; = &quot;MME da Perna Direita (kg)&quot;, 
+                            &quot;Massa Muscular Esquelética da Perna Esquerda&quot; = &quot;MME da Perna Esquerda (kg)&quot;, 
+                            &quot;Água Corporal Total&quot; = &quot;Água Corporal Total (L)&quot;, 
+                            &quot;Água Extracelular&quot; = &quot;Água Extracelular (L)&quot;, 
+                            &quot;Gasto Energético Total&quot; = &quot;Gasto Energético Total (kcal)&quot;, 
+                            &quot;Gasto Energético em Repouso&quot; = &quot;Gasto Energético em Repouso (kcal)&quot;, 
+                            &quot;Energia Armazenada&quot; = &quot;Energia Armazenada (kcal)&quot;)
+        ) %&gt;%
+    mutate(Parâmetro = factor(Parâmetro, levels = c(
+    &quot;Altura (m)&quot;, &quot;Peso (kg)&quot;, &quot;Índice de Massa Corporal (kg/m²)&quot;, &quot;Circunferência Abdominal (m)&quot;, 
+    &quot;Nível de Atividade Física (PAL)&quot;, &quot;Ângulo de Fase (°)&quot;, &quot;Resistência (Ω)&quot;, &quot;Reatância (Ω)&quot;, 
+    &quot;Massa gorda Absoluta (kg)&quot;, &quot;Índice de Massa gorda (kg/m²)&quot;, &quot;Massa gorda Relativa (%)&quot;, 
+    &quot;Tecido Adiposo Visceral (kg)&quot;, &quot;Massa Livre de Gordura Absoluta (kg)&quot;, 
+    &quot;Índice de Massa Livre de Gordura (kg/m²)&quot;, &quot;Massa Livre de Gordura Relativa (%)&quot;, 
+    &quot;MME Corporal Total (kg)&quot;, &quot;MME do Tronco (kg)&quot;, &quot;MME do Braço Direito (kg)&quot;, 
+    &quot;MME do Braço Esquerdo (kg)&quot;, &quot;MME da Perna Direita (kg)&quot;, &quot;MME da Perna Esquerda (kg)&quot;, 
+    &quot;Água Corporal Total (L)&quot;, &quot;Água Extracelular (L)&quot;, &quot;Gasto Energético Total (kcal)&quot;, 
+    &quot;Gasto Energético em Repouso (kcal)&quot;, &quot;Energia Armazenada (kcal)&quot;))
+    ) %&gt;% 
+    arrange(Parâmetro)
+
+write_csv(bia_females, here(&quot;Output&quot;, &quot;Baseline&quot;, &quot;Tables&quot;, &quot;bia_females.csv&quot;))</code></pre>
+</div>
 </div>
 <div id="handgrip" class="section level2">
 <h2>Handgrip</h2>

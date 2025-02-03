@@ -1,0 +1,27 @@
+Parâmetro,Grupo placebo [média (IC 95%)],Grupo Eclipta [média (IC 95%)],Valor p [Teste t]
+Altura (m),1.6 (1.6–1.7),1.6 (1.6–1.7),0.727
+Peso (kg),92 (87.5–96.4),88.7 (85.7–91.7),0.243
+Índice de Massa Corporal (kg/m²),35.2 (31–39.4),33.1 (32.4–33.9),0.349
+Circunferência Abdominal (m),1 (1–1),1 (0.9–1),0.139
+Nível de Atividade Física (PAL),1.3 (1.3–1.4),1.4 (1.3–1.4),0.645
+Ângulo de Fase (°),6.5 (6.1–6.8),6.3 (5.9–6.6),0.354
+Resistência (Ω),538.2 (519.3–557),556.6 (537.3–575.9),0.185
+Reatância (Ω),60.8 (57.8–63.8),60.8 (57.5–64.1),0.988
+Massa gorda Absoluta (kg),41.6 (37.6–45.6),43.1 (40–46.1),0.571
+Índice de Massa gorda (kg/m²),16.5 (12.7–20.2),16.1 (14.9–17.3),0.869
+Massa gorda Relativa (%),44.7 (42.6–46.8),48.6 (45.2–52.1),0.062
+Tecido Adiposo Visceral (kg),2.2 (1.9–2.5),2.3 (2–2.5),0.785
+Massa Livre de Gordura Absoluta (kg),50.4 (48.1–52.7),45.6 (42.4–48.9),0.025
+Índice de Massa Livre de Gordura (kg/m²),18.7 (18–19.5),17 (15.9–18.2),0.016
+Massa Livre de Gordura Relativa (%),55.3 (53.2–57.4),51.4 (47.9–54.8),0.062
+MME Corporal Total (kg),24.4 (23–25.8),21.9 (19.9–24),0.054
+MME do Tronco (kg),11.1 (10.3–11.8),9.7 (8.6–10.8),0.044
+MME do Braço Direito (kg),1.4 (1.2–1.5),1.3 (1.2–1.3),0.165
+MME do Braço Esquerdo (kg),1.3 (1.2–1.5),1.3 (1.1–1.4),0.3
+MME da Perna Direita (kg),5.2 (4.9–5.4),4.8 (4.3–5.2),0.116
+MME da Perna Esquerda (kg),5.4 (5.1–5.7),4.9 (4.4–5.4),0.102
+Água Corporal Total (L),37.8 (36.2–39.4),34.2 (31.6–36.8),0.024
+Água Extracelular (L),16.6 (16.1–17.2),15.3 (14.2–16.3),0.031
+Gasto Energético Total (kcal),9.1 (8.7–9.4),9.2 (8.8–9.6),0.644
+Gasto Energético em Repouso (kcal),6.8 (6.6–7),6.8 (6.6–6.9),0.99
+Energia Armazenada (kcal),1879.9 (1720.9–2039),1915.8 (1803.4–2028.3),0.719
