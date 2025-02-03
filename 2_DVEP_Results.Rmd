@@ -497,7 +497,7 @@ bia_males <- BIA_V1_M_SN %>%
     arrange(Parâmetro)
 
 clipr::write_clip(bia_males)
-saveRDS(bia_males, file = "Slides/data/bia_males.rds")
+write_csv(bia_males, "Slides/data/bia_males.csv")
 ```
 
 #### Females

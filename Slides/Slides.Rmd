@@ -665,42 +665,60 @@ layout:true
 #### Sexo masculino, estratificados segundo o grupo de alocação
 
 ---
-
-- Dos dez participantes do sexo masculino, sete foram alocados no grupo placebo.
-- Não houve associação significativa entre o sexo e o grupo de alocação (Teste exato de Fisher, p = 0,19).
-- Algumas variáveis de composição corporal apresentaram diferenças significativas entre os grupos.
-- O grupo *Eclipta* apresentou maior **peso** e **IMC**, enquanto o grupo placebo teve **ângulo de fase** significativamente maior.
-
----
-
-Tabela: - Comparação da análise de impedância bioelétrica corporal basal dos participantes de pesquisa do sexo masculino, conforme o grupo de alocação.
-
+Não houve associação entre o sexo e o grupo de alocação (p = 0,19).
+.pull-left[
+- **Grupo *Eclipta*** (N=3)
+  - Maior peso e IMC  
+  - Menor ângulo de fase 
+]
+.pull-right[
+- **Grupo Placebo** (N=7)
+  - Maior reatância e ângulo de fase  
+  - Menor massa livre de gordura
+]
 .small[
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-library(knitr)
-tabela_masc <- data.frame(
-  "Parâmetro" = c(
-    "Índice de Massa Corporal (kg/m²)", "Nível de Atividade Física (PAL)", 
-    "Ângulo de Fase (°)", "Resistência (Ω)", "Reatância (Ω)", 
-    "Índice de Massa Gorda (kg/m²)", "Índice de Massa Livre de Gordura (kg/m²)",
-    "Água Corporal Total (L)", "Água Extracelular (L)"
-  ),
-  "Grupo Placebo Média (IC 95%)" = c(
-    "35,2 (31–39,4)", "1,3 (1,3–1,4)", "6,5 (6,1–6,8)", 
-    "538,2 (519,3–557)", "60,8 (57,8–63,8)", "16,5 (12,7–20,2)", 
-    "18,7 (17,8–19,5)", "37,8 (36,2–39,4)", "16,6 (16,1–17,2)"
-  ),
-  "Grupo Eclipta Média (IC 95%)" = c(
-    "33,1 (32,4–33,9)", "1,4 (1,3–1,4)", "6,3 (5,9–6,6)", 
-    "556,6 (537,3–575,9)", "60,8 (57,5–64,1)", "16,1 (14,9–17,3)", 
-    "17 (15,9–18,2)", "34,2 (31,6–36,8)", "15,3 (14,2–16,3)"
-  ),
-  "Valor p" = c(
-    "0,349", "0,645", "0,354", "0,185", "0,988", 
-    "0,869", "**0,016**", "**0,024**", "**0,031**"
-  )
-)
-kable(tabela_masc, format = "markdown", align = "lccc",
-      col.names = c("Parâmetro", "Grupo Placebo (n=7)", "Grupo *Eclipta* (N=3)", "Valor p"))
+bia_males <- read_csv('/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/DVEP/Slides/data/bia_males.csv')
+bia_males %>% 
+    slice(c(2, 3, 6, 7, 8)) %>%
+    mutate(across(where(is.numeric), ~format(.x, decimal.mark = ","))) %>% 
+    mutate(across(where(is.character), ~ str_replace_all(.x, "\\.", ","))) %>% 
+    knitr::kable(format = "markdown", align = "lccc")
 ```
 ]
+---
+***Limitações***
+- Pequena amostra e desequilíbrio limitam comparações:
+  - variações em estado nutricional/metabólico?
+  - Força de preensão similar (p=0,66)<br/>
+    Influência de fatores neuromusculares?<br/>
+    Limitações da análise de BIA?
+- Necessidade de estudos com amostras maiores
+---
+.small[
+```{r, echo=FALSE, results='asis'}
+library(knitr)
+
+cat('<div style="height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">')
+
+kable(bia_males, format = "html") 
+
+cat('</div>')
+```
+]
+
+---
+exclude: true
+
+.small[
+```{r, echo=FALSE, eval=FALSE}
+library(DT)
+
+datatable(bia_males, options = list(
+  scrollY = "400px",  # Fixed height with scrolling
+  paging = FALSE
+  )
+```
+]
+---
