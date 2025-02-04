@@ -27,10 +27,6 @@ output: html_document
 ::: pull-right
 ## `r fontawesome::fa("github")` GitHub
 
-### `r fontawesome::fa("file-lines")` **Github Page:**
-
-<https://gsplmoura.github.io/DVEP/>
-
 ### `r fontawesome::fa("database")` **Repositório GitHub:**
 
 <https://github.com/gsplmoura/DVEP/>
@@ -57,10 +53,10 @@ output: html_document
 
 ## `r fontawesome::fa("folder-open")` Materiais da Tese
 
--   📄 **Tese Completa**\
+-   **Tese Completa**\
     [Arquivo em pdf](Docs/Tese%20Eclipta%20prostrata.pdf)
 
--   📄 **Documento Word da Tese**\
+-   **Documento Word da Tese**\
     [Arquivo em word](Docs/Thesis.docx)
 
 ------------------------------------------------------------------------
