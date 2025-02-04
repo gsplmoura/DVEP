@@ -5,24 +5,30 @@ date: "`r Sys.Date()`"
 output: 
     html_document
 ---
-```{r, echo=FALSE, results='hide'}
+```{r}
 library(here)
+library(readr)
+library(knitr)
+library(kableExtra)
 ```
 
 ```{r}
-library(readr)
-library(knitr)
-
 bia_males <- read_csv(here("Output", "Baseline", "Tables", "bia_males.csv"))
 
 kable(bia_males, 
       format = "html",
+      row.names = TRUE,
       col.names = c("Parâmetro",
                     "Grupo placebo<br/>[média (IC 95%)]", 
                     "Grupo Eclipta<br/>[média (IC 95%)]", 
                     "Valor p<br/>[Teste t]"),
       escape = FALSE,
       align = "lccc"
-)
+) %>%
+  kable_styling(full_width = FALSE) %>%
+  column_spec(1, width = "1cm") %>%  
+  column_spec(2, width = "8cm") %>%  
+  column_spec(3, width = "6cm") %>%  
+  column_spec(4, width = "6cm")  
 ```
 
