@@ -1,9 +1,9 @@
 ---
-title: "Ensaio clínico randomizado:"
-subtitle: "efeito da droga vegetal de *Eclipta prostrata* (L.) L. (*Asteraceae*) no ângulo de fase em adultos com obesidade grau I"
+title: "Ensaio clínico randomizado"
+subtitle: "Efeito da droga vegetal de *Eclipta prostrata* (L.) L. (*Asteraceae*) no ângulo de fase em adultos com obesidade grau I"
 author: "Gustavo Santos Paiva Laender Moura"
 institute: "Faculdade de Medicina de Ribeirão Preto - USP"
-date: "2025"
+date: "03 de fevereiro de 2025"
 output:
   xaringan::moon_reader: # new kind of output!
     css: 
@@ -45,13 +45,18 @@ scale_colour_continuous <- partial(scale_colour_nhs, discrete = FALSE)
 scale_colour_discrete <- partial(scale_colour_nhs, discrete = TRUE)
 ```
 
-class: title-slide, left, bottom
+class: title-slide, left, middle
+background-image: url(img/xaringan.png), url(img/logo-title-slide.png)
+background-position: 97% 95%, 95% 7%
+background-size: 10%, 33%
 
-# `r rmarkdown::metadata$title`
+<br/>
+# .my-blue[`r rmarkdown::metadata$title`]
 ----
 ## **`r rmarkdown::metadata$subtitle`**
-### `r rmarkdown::metadata$author`
-### `r rmarkdown::metadata$date`
+<br/>
+### .blue[`r rmarkdown::metadata$author`]
+### .blue[`r rmarkdown::metadata$date`]
 
 ---
 class: inverse, middle, center
@@ -66,6 +71,9 @@ layout:true
 
 ---
 class: top, left
+background-image: url(img/eclipta.png)
+background-position: 95% 65%
+background-size: 25%
 
 .pull-left-wide[
 <br/>
@@ -79,11 +87,8 @@ class: top, left
 <br/>.small[(Feng et al., 2019; Kaur et al., 2020; Kyaw et al., 2021)].
 
 ]
-.pull-right-narrow[
-<br/><br/>
-![](img/eclipta.png)
-.small[Fonte: arquivo pessoal, Farmácia da Natureza, Jardinópolis - SP]
-]
+
+.footnote[Fonte: arquivo pessoal, Farmácia da Natureza, Jardinópolis - SP]
 
 ---
 class: top, left
@@ -96,7 +101,7 @@ Mais de 150 fitoconstituintes já foram identificados .small[(Timalsina & Devkot
 - **Principal marcador:** Wedelolactona .small[([PubChem CID 5281813](https://pubchem.ncbi.nlm.nih.gov/compound/Wedelolactone); Kim et al., 2023)]
 ]
 .pull-right[
-![](img/wedelo.png)
+<br/>![](img/wedelo.png)
 .small[Fonte: [PubChem](https://pubchem.ncbi.nlm.nih.gov/compound/Wedelolactone)]
 ]
 
@@ -162,23 +167,18 @@ layout: false
 - A obesidade está associada à .my-blue[inflamação crônica de baixo grau]  
   .small[*(LUO & LIN, 2021; KINLEN, CODY & O’SHEA, 2018)*]
 
---
 
 - A inflamação é proposta como o mecanismo central que liga a obesidade às .my-blue[complicações metabólicas e cardiovasculares] .small[*(KINLEN, CODY & O’SHEA, 2018; LUO & LIN, 2021)*]
 
---
 
 - A OMS e o Ministério da Saúde incentivam pesquisas clínicas com .my-blue[fitoterápicos] .small[*(WHO, 2005; MINISTÉRIO DA SAÚDE, 2008)*]
 
---
 
 - A *Eclipta prostrata* apresenta atividade .my-blue[anti-inflamatória] documentada .small[*(BHATTACHARYYA & LAW, 2022; KANG et al., 2022)*]
 
---
 
 - A segurança do uso em humanos está documentada, sem registros de .my-blue[toxicidade] nas doses tradicionais .small[*(GERMOSÉN-ROBINEAU, 2005; PEREIRA et al., 2020a)*]
 
---
 
 - O .my-blue[ângulo de fase] é um marcador sensível para detectar inflamação crônica de baixo grau .small[*(BOSY-WESTPHAL et al., 2006; YAMADA et al., 2022)*]
 
@@ -252,20 +252,44 @@ layout: false
 ____
 
 ---
-
+name: ethics
 ## Aspectos Éticos
+
+.pull-left[
+- **Boas Práticas para Pesquisa Clínicas**
+  ([ICH Guidelines](http://www.ich.org/home.html))
 
 - **Aprovação Ética:** Comitê de Ética em Pesquisa da FMRP-USP  
   
-- **Boas Práticas para Pesquisa Clínicas**
-  ([ICH Guidelines](http://www.ich.org/home.html))
-  
-- **Registro do Estudo na plataforma REBEC  **
+- **Registro do Estudo na plataforma [REBEC](https://ensaiosclinicos.gov.br/rg/RBR-5wy4vhx)  **
   
 - **Acesso ao Patrimônio Genético** da *Eclipta prostrata*  conforme a Lei nº 13.123/2015 (Atestado de Regularidade de Acesso nº A7CDD30)
+]
+---
+
+template: ethics
+count: false
+
+.pull-right[
+![](img/cep.png)]
 
 ---
 
+template: ethics
+count: false
+
+.pull-right[
+![](img/rebec.png)]
+---
+
+template: ethics
+count: false
+
+.pull-right[
+![](img/acesso.png)]
+---
+
+layout: false
 ## Determinação da Dose 
 Droga Vegetal de *Eclipta Prostrata*
 
@@ -319,18 +343,15 @@ Droga Vegetal de *Eclipta Prostrata*
 
 ## Gestão de Dados
 
-**Plano de Gestão de Dados:** DMPTool usando o template Digital Curation Centre.  
-  [Plano completo](https://doi.org/10.48321/D1N34D) .small[(APÊNDICE A)].
+**[Plano de Gestão de Dados](https://doi.org/10.48321/D1N34D):** DMPTool usando o template Digital Curation Centre.  
 
-**Plataforma de Coleta:** Instância FMRP do REDCap.
+**Plataforma de Coleta:** Instância FMRP do <img src="img/redcap.png" alt="Logo REDCap" style="width:100px; vertical-align:middle;" />
 
-**Estrutura dos Projetos REDCap:**  
-- **Projeto Principal (PID 1958):** 34 instrumentos de coleta e 821 campos .small[(APÊNDICE C)]
-
-**Projetos Adicionais:**
-- PID 2184: Para o público verificar elegibilidade .small[(APÊNDICE D)];
-- PID 2246: Para avaliação completa de elegibilidade pela equipe de pesquisa .small[(APÊNDICE E)];
-- PID 2205: Suporte operacional com códigos do NCIT para indexação de comorbidades e medicamentos .small[(APÊNDICE F)].
+**Projetos REDCap:** .my-coral[*os links dão acesso direto aos codebooks*]
+- **Projeto Principal ([PID 1958](https://gsplmoura.github.io/DVEP/REDCap/PID%201958%20DVEP.pdf)):** 34 instrumentos de coleta e 821 campos
+- [PID 2184](https://gsplmoura.github.io/DVEP/REDCap/PID%202184%20Patient%20outreach.pdf): Para o público verificar elegibilidade;
+- [PID 2246](https://gsplmoura.github.io/DVEP/REDCap/PID%202246%20Eligibility%20assessment.pdf): Para avaliação completa de elegibilidade pela equipe de pesquisa .small[(APÊNDICE E)];
+- [PID 2205](https://gsplmoura.github.io/DVEP/REDCap/PID%202205%20National%20Cancer%20Institute%20Thesaurus%20%7C%20REDCap.pdf): Suporte operacional com códigos do NCIT para indexação de comorbidades e medicamentos.
 
 **Confiabilidade na coleta de dados:**  
   Lógicas condicionais, campos calculados, campos redundantes e alertas para validação de resultados, assegurando a integridade dos dados.
@@ -703,12 +724,9 @@ tabela_hep_ren <- data.frame(
 kable(tabela_hep_ren, format = "markdown", align = "lcccc",
       col.names = c("Exame Laboratorial", "Global (N=75)", "Grupo Placebo", "Grupo *Eclipta*", "Valor p"))
 ```
-]]
-.pull-right-narrow[.small[Legenda. <br/> AST – Aspartato aminotransferase (U/L);<br/> ALT – Alanina aminotransferase (U/L); <br/>GGT – Gama-glutamil transferase (U/L); <br/>CPK – Creatina fosfoquinase (U/L). <br/>A última coluna corresponde a comparação entre o grupo placebo e grupo Eclipta, realizada através do teste T de Student.]
-
+Legenda.  AST – Aspartato aminotransferase (U/L); ALT – Alanina aminotransferase (U/L); GGT – Gama-glutamil transferase (U/L); CPK – Creatina fosfoquinase (U/L). A última coluna corresponde a comparação entre o grupo placebo e grupo Eclipta, realizada através do teste T de Student.]]<br/>
 
 Os participantes não apresentavam alterações significativas nestes marcadores, contribuindo para a segurança do estudo e minimizando riscos de toxicidade.
-]
 
 ---
 
@@ -771,8 +789,8 @@ Não houve associação entre o sexo e o grupo de alocação (p = 0,19).
   - Maior reatância e ângulo de fase  
   - Menor massa livre de gordura
 ]
-.small[
 
+.small[
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 bia_males <- read_csv(here("Output", "Baseline", "Tables", "bia_males.csv"))
 bia_males %>% 
@@ -799,8 +817,95 @@ bia_males %>%
 layout:true
 
     ### Variáveis antropométricas e composição corporal
-#### [Sexo feminino, categorizado por grupo de alocação](https://gsplmoura.github.io/DVEP/Output/Baseline/Tables/bia_females.html)
+#### [Sexo feminino (n=65), categorizado por grupo de alocação](https://gsplmoura.github.io/DVEP/Output/Baseline/Tables/bia_females.html)
 
 ---
 
+_Peso, IMC, ângulo de fase e seus componentes não diferiram entre os grupos._
+.small[
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+bia_females <- read_csv(here("Output", "Baseline", "Tables", "bia_females.csv"))
+bia_females %>% 
+    slice(c(2, 3, 6, 7, 8)) %>%
+    mutate(across(where(is.numeric), ~format(.x, decimal.mark = ","))) %>% 
+    mutate(across(where(is.character), ~ str_replace_all(.x, "\\.", ","))) %>% 
+    knitr::kable(format = "markdown", align = "lccc")
+```
+]
 
+---
+
+.pull-left-narrow[<br/>**Grupo Placebo**]
+.pull-right-wide[
+Maior .my-coral[índice de massa livre de gordura]<br/>
+Maior .my-coral[água corporal total e água extracelular]
+]
+.small[
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+bia_females <- read_csv(here("Output", "Baseline", "Tables", "bia_females.csv"))
+bia_females %>% 
+    slice(c(14, 22, 23)) %>%
+    mutate(across(where(is.numeric), ~format(.x, decimal.mark = ","))) %>% 
+    mutate(across(where(is.character), ~ str_replace_all(.x, "\\.", ","))) %>% 
+    knitr::kable(format = "markdown", align = "lccc")
+```
+]
+
+***No entanto:***
+- A .my-coral[**reatância**] não diferiu entre os grupos, contrariando a expectativa de uma reatância mais elevada no grupo com maior massa muscular.
+- A .my-coral[**força de preensão palmar**] não diferiu entre os grupos ➜ Limitação no tamanho amostral? Sensibilidade da BIA? Influência de fatores neuromusculares?
+
+---
+layout: false
+
+### Participantes que Não Completaram a Intervenção
+
+23 participantes (30,6%) não completaram os 3 meses.
+- **Por Sexo:**
+  - *Homens:* 4 abandonos (40% dos homens; 2 de cada grupo de alocação).
+  - *Mulheres:* 19 abandonos (29,2%; 8 no grupo placebo e 11 no grupo intervenção).
+  
+- **Testes Estatísticos** para associações entre sexo e conclusão da intervenção:
+  - *Qui-quadrado de Pearson:* p = 0,750.
+  - Controlando pelo grupo de alocação:<br/> *Mantel-Haenszel* p = 0,664; OR = 0,559 (IC 95%: 0,137–2,287).
+
+???
+Não houve associação entre sexo e conclusão da intervenção. 
+
+Embora a taxa de abandono tenha sido maior nos homens, essa diferença pode ser atribuída ao acaso
+
+---
+layout:true
+
+## Eventos Adversos e Monitoramento
+
+---
+
+**Avaliações Clínicas:**  
+- 184 realizadas; 134 (72,8%) sem ocorrências  
+- 50 registros de eventos (27,1%) em 36 participantes (1–3 eventos/participante)
+
+**Momento e Gravidade dos Eventos:**  
+- 46% dos eventos ocorreram na 3ª visita (90 dias)  
+- Testes estatísticos - momento da avaliação clínica vs. gravidade dos eventos   
+  - Fisher: p = 1  
+  - Mantel-Haenszel (controlando pelo grupo): p = 0,956  
+.my-coral[O uso da *Eclipta* não aumentou o risco de eventos graves comparado ao placebo].
+
+---
+
+**Tipos e Geveridade:**  
+- 64% dos eventos foram leves;
+- Gastrointestinais foram os mais prevalentes (36%; 88% leves);
+- Eventos infecciosos representaram 12% dos registros.
+- Dois eventos graves (infecciosos), ambos não associados com a intervenção.
+
+**Monitoramento Dinâmico:**  
+  - Comitê de Monitoramento teve acesso, em tempo real, a relatórios dinâmicos do <img src="img/redcap.png" alt="Logo REDCap" style="width:100px; vertical-align:middle;" /> <br/> (incluindo registro completo dos eventos adversos, exames laboratoriais, ECGs, etc.)  
+  - Nenhuma intervenção (interrupção ou exclusão de participantes) foi necessária
+ 
+---
+layout:false
+class:inverse
+background-image:url(img/hex.png)
+background-size:contain
