@@ -268,7 +268,7 @@ name: ethics
 ---
 
 template: ethics
-count: false
+
 
 .pull-right[
 ![](img/cep.png)]
@@ -276,14 +276,14 @@ count: false
 ---
 
 template: ethics
-count: false
+
 
 .pull-right[
 ![](img/rebec.png)]
 ---
 
 template: ethics
-count: false
+
 
 .pull-right[
 ![](img/acesso.png)]
@@ -951,6 +951,7 @@ class: top, left
 ---
 
 layout:false
+
 class:inverse
 background-image:url(img/hex.png)
 background-size:contain
