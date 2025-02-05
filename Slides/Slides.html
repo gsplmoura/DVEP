@@ -198,8 +198,8 @@ layout: true
 ### Avaliar a segurança da intervenção
 
 1. Parâmetros clínicos;
-1. Parâmetros laboratoriais para monitorizar sinais de toxicidade assintomática hepática, renal, metabólica, hematológica;
-1. Monitorar cardiotoxicidade com eletrocardiografia.
+1. Exames laboratoriais para monitorizar sinais de toxicidade assintomática
+1. Eletrocardiografia.
 
 ---
 
@@ -387,6 +387,7 @@ background-size: 35%, 40%
 background-image:url(img/survey_1.png)
 background-size:contain
 ---
+exclude: true
 background-image:url(img/survey_2.png)
 background-size:contain
 ---
@@ -397,13 +398,15 @@ exclude: true
 background-image:url(img/survey_4.png)
 background-size:contain
 ---
+exclude: true
 background-image:url(img/survey_5.png)
 background-size:contain
 ---
+exclude: true
 background-image:url(img/survey_6.png)
 background-size:contain
 ---
-
+exclude: true
  ###**Parceria Institucional:** 
  Colaboração com a Secretaria de Saúde de Jardinópolis-SP e divulgação via ESF.
  
@@ -454,18 +457,17 @@ Legenda: T1 – primeira avaliação clínica (dia 0); T2 – segunda avaliaçã
 
 ## Medidas de Segurança
 
-A *Eclipta prostrata* é considerada segura em humanos &lt;br/&gt;
-.small[Farmacopeia Caribenha (GERMOSÉN ROBINEAU et al., 2014), instrução normativa nº 5 (ANVISA, 2010) e RDC nº 26 (ANVISA, 2014)].
-
 - **Medidas adotadas no estudo:**  
+  - A *Eclipta prostrata* é considerada segura em humanos .small[Instrução Normativa Nº 5 (ANVISA, 2010) e RDC nº 26 (ANVISA, 2014), GERMOSÉN ROBINEAU et al. (2014)].
   - Diretrizes da OMS .small[(WHO, 2005)] e do Ministério da Saúde .small[(MS, 2008)] para **ensaios clínicos com fitoterápicos**.
   
 - **Avaliações presenciais:**  
-  - Em cada visita, foram coletados exames laboratoriais para pesquisa de toxicidade assintomática hepática, renal, musculoesquelética, hematológica e endócrino-metabólica.
+  - Avaliação clínica completa
+  - Exames laboratoriais para pesquisa de toxicidade assintomática hepática, renal, musculoesquelética, hematológica e endócrino-metabólica.
   - Monitorização de toxicidade cardiovascular com avaliação clínica e ECG.
   
 - **Monitoramento Contínuo:**  
-  - Questionário semanal automático via REDCap avalia sintomas, adesão e esclarece dúvidas.  
+  - Questionário semanal automático via REDCap: sintomas, adesão e dúvidas.  
   - Notificações (via e-mail) enviadas ao pesquisador principal caso ocorram sintomas.
 
 ---
@@ -496,31 +498,23 @@ _Fonte: MINISTÉRIO DA SAÚDE, 2008_
 
 - **Funções e Ações:**  
   - Recebemam relatórios periódicos sobre recrutamento, seguimento e parâmetros de segurança.
-  - Autonomia de decidir pela exclusão de participantes ou interrupção do estudo
+  - Autonomia de decidir pela exclusão de participantes ou interrupção do estudo.
 
 ---
 
 ## Manejo dos Dados e Análise Estatística
 
 - **Definição dos Desfechos:**  
-  - Primário: Ângulo de fase pós-intervenção.
-  - Secundário principal: Concentração sérica de PCR.
-  - Outros desfechos exploratórios: pressão arterial média, parâmetros de segurança, perfil lipídico/glicêmico.
-
-- **Variáveis Independentes:** Intervenção (fitoterápico ou placebo); IMC pré-intervenção; sexo; idade; concentrações séricas pré-intervenção (glicose, insulina, lipídios, PCR); hábitos de vida (qualidade da dieta, atividade física, tabagismo).
-
-- **Métodos Estatísticos:** Descrição dos dados (médias, desvios, medianas, IC, proporções), testes de normalidade (Shapiro-Wilk) e comparações (t de Student, Mann-Whitney, qui-quadrado/Fisher).  
-
-- **Controle de Confundidores:** Modelos de regressão multivariável.
-
----
-
-### Preparação e Organização dos Dados
+  - *Primário*: ângulo de fase pós-intervenção.
+  - *Secundário*: concentração sérica de PCR.
+  - *Desfechos exploratórios*: pressão arterial, parâmetros de segurança, perfil lipídico/glicêmico.
 
 - **Fonte dos Dados:** Banco de dados longitudinal.
+
 - **Processamento:** .small[[(APÊNDICE H – Código R)](https://gsplmoura.github.io/DVEP/1_DVEP.html)]
-  - Importação e limpeza dos dados em R utilizando pacotes da família [**tidyverse**](https://cran.r-project.org/web/packages/tidyverse/index.html).
+  - Importação e limpeza dos dados em R.
   - Recodificação e padronização das variáveis.
+
 - **Análise exploratória** .small[[(APÊNDICE I – Código R)](https://gsplmoura.github.io/DVEP/2_DVEP_Results.html)]
 
 ---
@@ -544,24 +538,40 @@ class: inverse, middle, center
 
 # Resultados e Discussão  
 ____
---
+
+---
+## Recrutamento
+
+O recrutamento ocorreu entre **agosto de 2023 e julho de 2024**:
+  - 668 candidatos manifestaram interesse;
+  - 147 avaliações completas de elegibilidade;
+  - 102 participantes elegíveis.
+  - .my-coral[75 participantes incluídos]
+
+---
+class: inverse, middle, center
+# Resultados e Discussão  
+____
 
 ## Características Basais dos Participantes
 
 ---
-
 layout:true
 
 ### Características Demográficas
 
 ---
+____
 
-- O estudo incluiu .my-coral[**75 participantes**], sendo .my-coral[**86,6%] do sexo feminino**.
-- A **idade média** foi de .my-coral[**40,6 anos] (IC 95%: 38,3–43,0)**.
+
+- .my-coral[**75 participantes**], sendo .my-coral[**86,6%] do sexo feminino**.
+
+- A **idade média** foi de .my-coral[**40,6 anos**] (IC 95% 38,3–43,0).
+
 - Distribuição dos participantes entre os grupos:
   - **Grupo Placebo**: 37 (49,3%)
   - **Grupo _Eclipta_**: 38 (50,7%)
-- O recrutamento ocorreu entre **agosto de 2023 e julho de 2024**.
+
 - A intervenção teve duração média de .my-coral[**94,4 dias] (IC 95%: 88,8–99,9)**.
 
 ---
@@ -617,8 +627,6 @@ exclude: true
 
     -   Perguntas baseadas em faixas podem não refletir com precisão a situação socioeconômica.  Alternativamente, questões como *"Sua renda é suficiente para atender suas necessidades?"* poderiam ser mais relevantes 
 .small[(SILVEIRA, 2016)].
-
--   **A comparação entre grupos confirma que as diferenças nos desfechos observados no estudo podem ser atribuídas à intervenção**, sem viés de fatores basais.
 
 ---
 
@@ -687,7 +695,7 @@ layout:true
 Legenda. Média e o intervalo de confiança de 95% das variáveis IMC e nível de atividade física dos participantes, estratificados por sexo. Comparação entre os realizada através do teste T de Student.
 ]
 
-Como esperado, todas as variáveis avaliadas diferiram entre os sexos, à exceção do nível de atividade física e IMC.
+Como esperado, as variáveis de composição corporal diferiram entre os sexos, à exceção do IMC.
 
 .small[
 
@@ -705,7 +713,7 @@ layout:true
 #### [Sexo masculino, categorizado por grupo de alocação](https://gsplmoura.github.io/DVEP/Output/Baseline/Tables/bia_males.html)
 
 ---
-Não houve associação entre o sexo e o grupo de alocação (p = 0,19).
+
 .pull-left[
 - **Grupo *Eclipta*** (N=3)
   - Maior peso e IMC  
@@ -716,6 +724,8 @@ Não houve associação entre o sexo e o grupo de alocação (p = 0,19).
   - Maior reatância e ângulo de fase  
   - Menor massa livre de gordura
 ]
+
+_Não houve associação entre o sexo e o grupo de alocação (p = 0,19)._
 
 .small[
 
@@ -788,7 +798,7 @@ layout: false
 23 participantes (30,6%) não completaram os 3 meses.
 - **Por Sexo:**
   - *Homens:* 4 abandonos (40% dos homens; 2 de cada grupo de alocação).
-  - *Mulheres:* 19 abandonos (29,2%; 8 no grupo placebo e 11 no grupo intervenção).
+  - *Mulheres:* 19 abandonos (8 no grupo placebo e 11 no grupo intervenção).
   
 - **Testes Estatísticos** para associações entre sexo e conclusão da intervenção:
   - *Qui-quadrado de Pearson:* p = 0,750.
@@ -874,9 +884,17 @@ class: top, left
 - Concluir os testes estatísticos, incluindo análises de sensibilidade e de subgrupos, para confirmar a robustez dos achados finais.
 
 ---
+layout: false
+class: title-slide, left, top
+background-image: url(img/farmacianatureza.png), url(img/logo-title-slide.png), url(img/jardinopolis.png), url(img/vivian.png), url(img/fabio.png), url(img/mariana.png)
+background-position: 90% 55%, 90% 20%, 90% 85%, 5% 25%, 25% 25%, 5% 80%
+background-size: 35%, 33%, 35%, 14%, 15%, 14%
+
+## .my-blue[_Agradecimentos_]
+
+---
 
 layout:false
-
 class:inverse
 background-image:url(img/hex.png)
 background-size:contain
