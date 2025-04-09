@@ -13,7 +13,13 @@ project: Effect of Eclipta prostrata (L.) L. (Asteraceae) on bioelectrical imped
 
 ## Getting started with R
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r setup}
+knitr::opts_chunk$set(
+  results = 'hide',
+  message = FALSE,
+  warning = FALSE
+)
+
 # 1. Getting started with R
 ## Clear existing data and graphics
 
@@ -30,11 +36,12 @@ library(purrr)
 library(gt)
 library(jmv)
 library(skimr)
+library(here)
 ```
 
 ## Read CSV data files (Tidyverse)
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 # 2. Read CSV data files (Tidyverse)
 codebook_dvep <- read_excel(
         "Codebooks/codebook_dvep.xlsx",
@@ -104,7 +111,7 @@ data_bia_D1 <- read_csv(
 
 ## Remove identifying data from record_id
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 # 3. Remove identifying data from record_id
 data$record_id <- substr(data$record_id,1,2)
 data_bia_D3 $File <- substr(data_bia_D3 $File,1,2)
@@ -113,7 +120,7 @@ data_bia_D1$File <- substr(data_bia_D1$File,1,2)
 
 ## Renaming variables
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 # 4. Renaming variables
 # 4.1 data
 rename_data <- setNames(object = colnames(data), codebook_dvep$variable)
@@ -136,7 +143,7 @@ rm(rename_bia)
 
 ## record_id as.integer
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 # 5. record_id as.integer
 data$record_id <- as.integer(data$record_id)
 data_bia_D3 $record_id <- as.integer(data_bia_D3 $record_id)
@@ -145,7 +152,7 @@ data_bia_D1$record_id <- as.integer(data_bia_D1$record_id)
 
 ## Assign labels to variables
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 # 6. Assign labels to variables with base R attr()
 data <- data |> 
   mutate(across(
@@ -166,7 +173,7 @@ data_bia_D3 <- data_bia_D3 |>
   ))
 ```
 
-## Creating functions
+## Creating functions for data wrangling
 
 #### filter_variables()
 
@@ -188,7 +195,7 @@ Arguments:
 
 -   `filter_included = TRUE`: Whether to filter by the 'included' column (default: TRUE)
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 filter_variables <- function(
         visit = c("eleg", "V1", "V2", "V3"),  
         include_repeating = NULL,            
@@ -257,7 +264,7 @@ Arguments:
 
 -   `form_name = NULL`: The name of the form to filter on. **Will only work for repeating instruments.**
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 
 ## 7.2 filter_data() based on visit, repeating instrument and form
 filter_data <- function(
@@ -345,7 +352,7 @@ Arguments
 
 -   `included = 1`: defaults to 1, filtering variables by `included` column. If set to 0, will include all variables
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 ## 7.3 filter_codebook()
 filter_codebook <- function(form_name = c(
     "eleg", "tcle", "demographic", "whoqol", "dass", "ecap", "measures", 
@@ -397,7 +404,7 @@ Tips:
     -   Use as.numeric(as.character()) if you're performing mathematical operations (e.g., calculating proportions, averages).
 -   For ordinal data (1, Ruim \| 2, Regular \| 3, Boa \| 4, Excelente): use as.factor() with ordered levels (ordered()) if you need to preserve the ranking.
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 ## 7.4 convert_col_type()
 convert_col_type <- function(data, codebook = codebook_dvep) {
     # Nested function to convert a single column
@@ -442,7 +449,8 @@ Arguments:
 
 -   `language = "pt"`: defaults to portuguese (`"pt"`); set `"en"` for english
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
+
 label_variables <- function(data, codebook, language = "pt") {
   # Determine the label column based on the language argument
   label_column <- ifelse(language == "en", "label_en", "label_pt")
@@ -464,9 +472,13 @@ label_variables <- function(data, codebook, language = "pt") {
 }
 ```
 
-label_variables2()
-
 ```{r, eval=FALSE, echo=FALSE}
+# ** VERSION 2, NOT IN USE
+# Verifies if label_column exists; throws stop () if not
+# Uses trimws () on codebook$variable to avoid mismatch due to leading/trailing spaces
+# stop () with informative message if no matching vars found
+# Warns if variable has multiple labels (non-unique match)
+
 label_variables2 <- function(data, codebook, language = "pt") {
   # Determine the label column based on the language argument
   label_column <- ifelse(language == "en", "label_en", "label_pt")
@@ -514,7 +526,7 @@ Arguments:
 
 -   `codebook = codebook_dvep`: source codebook (dafaults to `codebook_dvep`)
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 ## 7.5 label_choices()
 label_choices <- function(data, codebook = codebook_dvep) {
   # Ensure required libraries are loaded
@@ -571,13 +583,17 @@ label_choices <- function(data, codebook = codebook_dvep) {
 }
 ```
 
-## Bioimpedance data
+## Bioimpedance data (DIRECT IMPORT FROM BIOIMPEDANCE DEVICE)
+
+This corresponds to the first version of the code. However, it relies on data directly imported from the bioimpedance device, and contains one to three measurements per participant. Therefore, the data needs to be wrangled to obtain the mean of the measurements for each participant.
+
+However, for now (April 09th, 2025), I will depracate this code and analyse the data directly recorded into the REDCap project by the research collaborators. The code below is kept for reference, but will not be used in the analysis as of now. If needed, I will re-implement it in the future.
 
 #### Data from first/third visit
 
 Applies to participants who completed the intervention
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r, eval=FALSE, echo=FALSE}
 # 8. Wrangling Bioimpedance data
 ## 8.1 D3 DATA (contains data from first and third visits for participants who completed the intervention)
 ### Filter lines for which phaseangle is <> ""
@@ -613,7 +629,7 @@ data_bia_D3_filtered <- data_bia_D3_filtered |>
 
 Applies to participants who did not complete the intervention
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r, eval=FALSE, echo=FALSE}
 ## 8.2 D1 DATA (data from the first visit for participants who did not complete the intervention)
 ## Filter lines for which phaseangle is <> ""
 data_bia_D1_filtered <- data_bia_D1 |> 
@@ -651,7 +667,7 @@ data_bia_D1_filtered <- data_bia_D1_filtered |>
 
 #### Merging to single tibble
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r, eval=FALSE, echo=FALSE}
 ## 8.3 MERGE D1/D3 BIA data into a single tibble
 data_bia <- bind_rows(
     data_bia_D1_filtered, data_bia_D3_filtered
@@ -670,7 +686,7 @@ data_bia <- label_variables(data_bia, codebook_bia)
 
 #### Drop intermediate tibbles
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r, eval=FALSE, echo=FALSE}
 # 8.4. DROP intermediate tibbles
 rm(data_bia_D1)
 rm(data_bia_D1_filtered)
@@ -682,7 +698,7 @@ rm(data_bia_D3_filtered)
 
 #### Adding NCIT labels
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 ## 9.2 Repeating instruments
 ### 9.2.1. Concatenating NCIT labels (from codebook_ncit) to NCIT codes
 #### Conditions (commorbidities)
@@ -760,7 +776,7 @@ I22_drugs_R <- label_variables(I22_drugs_R, codebook_dvep)
 
 #### Exclusive variables from Eleg/D1 `data_d1_exclusive`
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 ## 9.1 Eclusive variables from Eleg/D1 (`data_d1_exclusive`) to be replicated to d2 and d3
 eleg_exclusive <- filter_data("eleg",0) |> 
     mutate(
@@ -791,12 +807,12 @@ rm(visit_1_exclusive)
 
 ### Repeating instruments
 
-#### Creating relevant binary variables\*
+#### Creating relevant binary variables
 
-Hypertension
+##### Hypertension
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
-### 9.3.1 HYPERTENSION
+```{r}
+### HYPERTENSION
 #### Extract record IDs associated with hypertension diagnosis
 hypertension_conditions <- I21_conditions_R |> 
     filter(str_detect(common_comorbidities, "C3117")) |> 
@@ -826,10 +842,13 @@ rm(hypertension_conditions)
 rm(hypertension_drugs)
 ```
 
-Dyslipidemia
+##### Dyslipidemia
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
-### 9.3.2 DYSLIPIDEMIA
+```{r, eval=FALSE, echo=FALSE}
+
+# This corresponds to the first version of the code. However, it creates a single variable (dyslipidemia) encompassing both hypercholesterolemia and hypertrigliceridemia. For now, this is deprecated
+
+### DYSLIPIDEMIA
 #### Extract record IDs associated with dyslipidemia conditions
 dyslipidemia_conditions <- I21_conditions_R |> 
     filter(str_detect(common_comorbidities, "C37967|C37971")) |>
@@ -859,16 +878,127 @@ rm(dyslipidemia_conditions)
 rm(dyslipidemia_drugs)
 ```
 
+###### Hypercolesterolemia
+
+```{r}
+# This new version creates two variable: hypercolesterolemia and hypertrigliceridemia
+
+#### Extract record IDs associated with hypercholesterolemia
+#### Hipercolesterolemia (LDL ≥ 130 ou não-HDL ≥ 160 ou CT ≥ 190 mg/dl)
+
+# I21_conditions_R %>% distinct(common_comorbidities, descriptive) %>% view()
+
+hypercholesterolemia_conditions <- I21_conditions_R |> 
+    filter(str_detect(common_comorbidities, "C37967")) |> 
+    # C37967 = Hipercolesterolemia isolada (LDL ≥ 160)
+    pull(record_id)
+
+#### Extract record IDs associated with antihypercholesterolemia drugs
+
+# I22_drugs_R %>% filter(drugs_sql %in% c("C29454", "C66523_2", "C47529", "C61527", "C87471")) %>% distinct(drugs_sql, descriptive)
+#>   A tibble: 5 × 2
+#>   drugs_sql descriptive                
+#>   <chr>     <chr>                      
+#> 1 C87471    Ciprofibrato 100 mg (Comp.) removed
+#> 2 C29454    Sinvastatina 20 mg (Comp.) 
+#> 3 C66523_2  Rosuvastatina 10 mg (Comp.)
+#> 4 C61527    Atorvastatina 40 mg (Comp.)
+#> 5 C47529    Ezetimiba 10 mg  
+
+hypercholesterolemia_drugs <- I22_drugs_R |> 
+    filter(str_detect(drugs_sql, 
+        "C29454|C66523_2|C47529|C61527")
+        ) |> 
+    pull(record_id)
+
+#### Extract record IDs associated with abnormal lab results on first lab
+hypercolesterolemia_labs <- data |> 
+    filter(labs_ldl >= 130 | labs_cholesterol >= 190 | labs_cholesterol - labs_hdl >= 160) |>
+    pull(record_id)
+
+#### Assign hypercholesterolemia based on conditions, drugs, or first labs
+data_d1_exclusive <- data_d1_exclusive |> 
+    mutate(hypercholesterolemia = 
+               if_else(record_id %in% hypercholesterolemia_conditions, 1, 
+                       if_else(record_id %in% hypercholesterolemia_drugs, 1,
+                               if_else(record_id %in% hypercolesterolemia_labs, 1, 0))))
+
+rm(hypercholesterolemia_conditions)
+rm(hypercholesterolemia_drugs)
+rm(hypercolesterolemia_labs)
+
+```
+
+###### Hypertrigliceridemia
+
+```{r}
+#### Extract record IDs associated with hypertrigliceridemia
+#### Hipertrigliceridemia (TAG ≥ 150 mg/dl)
+
+# I21_conditions_R %>% distinct(common_comorbidities, descriptive) %>% view()
+
+hypertrigliceridemia_conditions <- I21_conditions_R |> 
+    filter(str_detect(common_comorbidities, "C37971")) |> 
+    # C37971 = Hipertrigliceridemia (TAG ≥ 150 mg/dl)
+    pull(record_id)
+
+#### Extract record IDs associated with antihypercholesterolemia drugs
+
+# I22_drugs_R %>% filter(drugs_sql %in% c("C29454", "C66523_2", "C47529", "C61527", "C87471")) %>% distinct(drugs_sql, descriptive)
+#>   A tibble: 5 × 2
+#>   drugs_sql descriptive                
+#>   <chr>     <chr>                      
+#> 1 C87471    Ciprofibrato 100 mg (Comp.) removed
+#> 2 C29454    Sinvastatina 20 mg (Comp.) 
+#> 3 C66523_2  Rosuvastatina 10 mg (Comp.)
+#> 4 C61527    Atorvastatina 40 mg (Comp.)
+#> 5 C47529    Ezetimiba 10 mg  
+
+hypertrigliceridemia_drugs <- I22_drugs_R |> 
+    filter(str_detect(drugs_sql, 
+        "C87471")
+        ) |> 
+    pull(record_id)
+
+#### Extract record IDs associated with abnormal lab results on first lab
+hypertrigliceridemia_labs <- data |> 
+    filter(labs_triglycerides >= 150) |> 
+    pull(record_id)
+
+#### Assign hypercholesterolemia based on conditions, drugs, or first labs
+data_d1_exclusive <- data_d1_exclusive |> 
+    mutate(hypertrigliceridemia = 
+               if_else(record_id %in% hypertrigliceridemia_conditions, 1, 
+                       if_else(record_id %in% hypertrigliceridemia_drugs, 1,
+                               if_else(record_id %in% hypertrigliceridemia_labs, 1, 0))))
+
+rm(hypertrigliceridemia_conditions)
+rm(hypertrigliceridemia_drugs)
+rm(hypertrigliceridemia_labs)
+
+```
+
 Insulin resistance
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
-### 9.3.3 INSULIN RESISTANCE
-#### Extract record IDs associated with insulin resistance or diabetes
+```{r}
+
+#### Extract record IDs associated with insulin resistance
+
 insulin_conditions <- I21_conditions_R |> 
     filter(str_detect(common_comorbidities, "C113101|C26747")) |>
     pull(record_id)
 
 #### Extract record IDs associated with anti-hyperglycemic / hypoglycemic drugs
+
+# I22_drugs_R %>% filter(drugs_sql %in% c("C61612", "C61612_2", "C87618", "C180533")) %>% distinct(drugs_sql, descriptive)
+#> # A tibble: 4 × 2
+#>   drugs_sql descriptive                         
+#>   <chr>     <chr>                               
+#> 1 C61612_2  Metformina 850 mg (Comp.) (Glifage) 
+#> 2 C61612    Metformina 500 mg (Comp.) (Glifage) 
+#> 3 C87618    Gliclazida 30 mg (Comp. de lib. pr.)
+#> 4 C180533   Empagliflozin/Linagliptin (GLYXAMBI)
+
 insulin_drugs <- I22_drugs_R |> 
     filter(str_detect(drugs_sql, 
         "C61612|C61612_2|C87618|C180533"
@@ -876,7 +1006,7 @@ insulin_drugs <- I22_drugs_R |>
         ) |> 
     pull(record_id)
 
-#### Assign dyslipidemia based on conditions or drugs
+#### Assign INSULIN RESISTANCE based on conditions or drugs
 data_d1_exclusive <- data_d1_exclusive |> 
     mutate(insulin = if_else(
         record_id %in% insulin_conditions, 
@@ -894,9 +1024,25 @@ rm(insulin_drugs)
 
 Drugs that might induce weight loss
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 ### 9.3.4 DRUGS THAT MIGHT INDUCE WEIGHT LOSS
 #### Extract record IDs
+
+# I22_drugs_R %>% filter(drugs_sql %in% c("C61939", "C62012", "C506_1", "C1278_2", "C1278_1", "C1278_3", "C47764_1", "C47764_2", "C61680")) %>% distinct(drugs_sql, descriptive)
+
+#> # A tibble: 9 × 2
+#>   drugs_sql descriptive                
+#>   <chr>     <chr>                      
+#> 1 C61939    Sertralina 50 mg (Comp.)   
+#> 2 C47764_2  Topiramato 50 mg (Comp.)   
+#> 3 C62012    Bupropiona 150 mg (Comp.)  
+#> 4 C47764_1  Topiramato 25 mg (Comp.)   
+#> 5 C61680    Citalopram 20 mg (Comp.)   
+#> 6 C506_1    Fluoxetina 20 mg (Cáps.)   
+#> 7 C1278_2   Venlafaxina 75 mg (Caps.)  
+#> 8 C1278_1   Venlafaxina 37,5 mg (Caps.)
+#> 9 C1278_3   Venlafaxina 150 mg (Cáps.) 
+
 drugs_w_loss <- I22_drugs_R |> 
     filter(str_detect(drugs_sql, 
         "C61939|C62012|C506_1|C1278_2|C1278_1|C1278_3|C47764_1|C47764_2|C61680"
@@ -915,9 +1061,21 @@ rm(drugs_w_loss)
 
 Drugs that might induce weight gain
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
-### 9.3.5 DRUGS THAT MIGHT INDUCE WEIGHT GAIN
+```{r}
+### DRUGS THAT MIGHT INDUCE WEIGHT GAIN
+
 #### Extract record IDs
+
+# I22_drugs_R %>% filter(drugs_sql %in% c("C61879", "C62005", "C61917_2", "C29416", "C29536_2")) %>% distinct(drugs_sql, descriptive)
+#> # A tibble: 5 × 2
+#>   drugs_sql descriptive                   
+#>   <chr>     <chr>                         
+#> 1 C62005    Amitriptilina 25 mg (Comp.)   
+#> 2 C61879    Paroxetina 20 mg (Comp.)      
+#> 3 C29536_2  Ácido Valpróico 250 mg (Cáps.)
+#> 4 C29416    Risperidona 2 mg (Comp.)      
+#> 5 C61917_2  Quetiapina 50 mg (Comp.)    
+
 drugs_w_gain <- I22_drugs_R |> 
     filter(str_detect(drugs_sql, 
         "C61879|C62005|C61917_2|C29416|C29536_2"
@@ -935,28 +1093,16 @@ rm(drugs_w_gain)
 
 ```
 
-\*Relevant binary variables:
-
--   Hypertension present if: C3117 Hipertensão C66869 Losartana C29098 Hidroclorotiazida C61635 Anlodipino C47640_2 Olmesartana C28836 Atenolol C29254 Metoprolol C62027 Enalapril 10 mg C62027_2 Enalapril 20 mg
-
--   Dyslipidemia present if: C37967 Hipercolesterolemia C37971 Hipertrigliceridemia C29454 Sinvastatina C66523_2 Rosuvastatina C47529 Ezetimiba C61527 Atorvastatina C87471 Ciprofibrato
-
--   Insulin resistance present if: C113101 Resistência insulínica C26747 DM2 C61612 Metformina 500 mg C61612_2 Metformina 850 mg C87618 Gliclazida 30 mg C180533 Empagliflozin/Linagliptin
-
--   Drugs that might induce weight loss C61939 Sertralina C62012 Bupropiona C506_1 Fluoxetina C1278_2 Venlafaxina 75 mg C1278_1 Venlafaxina 37,5 mg C1278_3 Venlafaxina 150 mg C47764_1 Topiramato 25 mg C47764_2 Topiramato 50 mg C61680 Citalopram 20 mg
-
--   Drugs that might induce weight gain C61879 Paroxetina 20 mg C62005 Amitriptilina 25 mg C61917_2 Quetiapina 50 mg C29416 Risperidona 2 mg C29536_2 Ácido Valpróico 250 mg "C61879\|C62005\|C61917_2\|C29416\|C29536_2"
-
 ###### Wrapping up `data_d1_exclusive`
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
-
+```{r}
 data_d1_exclusive <- label_choices(data_d1_exclusive, codebook_dvep)
 data_d1_exclusive <- convert_col_type(data_d1_exclusive, codebook_dvep)
 data_d1_exclusive <- data_d1_exclusive |> 
     mutate(
         hypertension = as.factor(hypertension),
-        dyslipidemia = as.factor(dyslipidemia),
+        hypercholesterolemia = as.factor(hypercholesterolemia),
+        hypertrigliceridemia = as.factor(hypertrigliceridemia),
         insulin = as.factor(insulin),
         drugs_w_loss = as.factor(drugs_w_loss),
         drugs_w_gain = as.factor(drugs_w_gain)
@@ -967,7 +1113,7 @@ data_d1_exclusive <- label_variables(data_d1_exclusive, codebook_dvep)
 
 #### Lab exames
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 I27_labs_R <- filter_data(c("V1","V2","V3"),1,"labs") |> 
     mutate(
         visit = case_when(
@@ -983,7 +1129,7 @@ I27_labs_R <- filter_data(c("V1","V2","V3"),1,"labs") |>
 
 #### Compliance
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 compliance_V2 <- data |> 
     select(
         record_id, event_name,
@@ -1047,8 +1193,9 @@ I29_compliance <- label_choices(I29_compliance, codebook_dvep)
 
 #### Adverse events
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 ## 9.9 Adverse events
+
 I30_events_R <- filter_data(,1,"events") |> 
     filter(
         cp_adverse_event_this_cycle_yn == 1
@@ -1071,11 +1218,12 @@ I30_events_R <- label_choices(I30_events_R, codebook_dvep)
 
 #### Data common to V1 and V3 (`d1d3`)
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 
 ### Non-repeating data common to V1 and V3 (`d1d3`)
 # calculate mean of handgrip strenght
 # select relevant variables
+
 d1d3 <- filter_data(c("V1","V3"),0) |> 
     mutate(
         handgrip = if_else(
@@ -1115,14 +1263,17 @@ d1d3 <- filter_data(c("V1","V3"),0) |>
         intervention_prevention_reason_yn, # 31. medical
         specify_intervention_prevention_reasons, # 31. medical
         intervention_delivered_yn, # 31. medical
-        explain_intervention_not_delivered # 31. medical
-        )
+        explain_intervention_not_delivered, # 31. medical
+        # April 19th, 2025: since we are simplifying BIA data and using collected variables on REDCAP:
+        # 10. BIA
+        phase_angle, resistance, reactance, smoked_24h_yn, exercised_24h_yn, alcohol_24h_yn, light_clothes_yn, time_fasted_food, time_fasted_liquid)
 ```
 
 #### Data from the second visit (`d2`)
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 ## 9.5 Non-repeating data from the second visit (`d2`)
+
 d2 <- filter_data("V2",0) |> 
     mutate(
         visit = case_when(
@@ -1147,7 +1298,7 @@ d2 <- filter_data("V2",0) |>
 
 #### Bind rows from `d1d3` and `d2`: `data_filtered`
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 ## 9.6 Bind rows for non-repeating variables from D1/D2/D3
 data_filtered <- bind_rows(
     d1d3,d2
@@ -1167,9 +1318,10 @@ rm(d2)
 
 #### Left_joins
 
+```{r, eval=FALSE, echo=FALSE}
 ##### BIA data to `data_filtered`
+##### As of April 09th, 2025: BIA data is being collected on REDCap and not on the BIA device. Therefore, we are using the variables collected on REDCap, and this code is deprecated.
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
 ## 9.7. Left_join BIA data to `data_filtered`
 data_filtered <- data_filtered |> 
     left_join(
@@ -1188,7 +1340,7 @@ data_filtered <- data_filtered |>
 
 ##### Compliance data to `data_filtered`
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 data_filtered <- data_filtered |> 
     left_join(
         I29_compliance,
@@ -1199,7 +1351,7 @@ data_filtered <- data_filtered |>
 
 ##### data_d1_exclusive to `all data`
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 data_filtered <- data_d1_exclusive |> 
     right_join(
         data_filtered,
@@ -1214,7 +1366,7 @@ data_filtered <- data_d1_exclusive |>
 
 ##### Labs to `data_filtered`
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 data_filtered <- data_filtered |> 
     left_join(I27_labs_R,
               by = join_by(record_id, visit)
@@ -1232,7 +1384,7 @@ data_filtered <- data_filtered |>
 
 Creates a supertibble with one tibble for each instrument
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 form_names <- unique(codebook_dvep$form_name_en)
 form_names <- form_names[-2]
 
@@ -1294,7 +1446,7 @@ rm(instruments)
 
 ### Exports tibbles to `Generated data` folder
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 output_dir <- 'Output/Baseline/Instruments'
 
 
@@ -1311,7 +1463,7 @@ for (instr_name in names(data_instruments)) {
 }
 
 # Additional tibbles
-write_csv(data_bia, file.path(output_dir, "data_bia.csv"))
+# write_csv(data_bia, file.path(output_dir, "data_bia.csv"))
 write_csv(data_d1_exclusive, file.path(output_dir, "data_d1_exclusive.csv"))
 write_csv(data_filtered, file.path(output_dir, "data_filtered.csv"))
 
@@ -1324,9 +1476,9 @@ rm(instr_name)
 
 # DATA ANALYSIS
 
+```{r, eval=FALSE, echo=FALSE}
 ## Simplifying Environment
-
-```{r}
+## Optional
 codebooks <- tibble(
     name = c("bia", "dvep", "ncit", "structure"),
     data = list(codebook_bia, codebook_dvep, codebook_ncit, codebook_structure)
@@ -1338,27 +1490,28 @@ names(codebooks$data) <- codebooks$name
 # Remove the individual tibbles from the environment
 rm(codebook_bia, codebook_dvep, codebook_ncit, codebook_structure)
 
-
+# Pull individual codebooks. You can pull each individual codebook by running:
+# codebooks\$data[["bia"]]
+# codebooks\$data[["dvep"]]
+# codebooks\$data[["ncit"]]
+# codebooks\$data[["structure"]]
 ```
 
-### Pull individual codebooks
-
-You can pull each individual codebook by:
-
--   codebooks\$data[["bia"]]
--   codebooks\$data[["dvep"]]
--   codebooks\$data[["ncit"]]
--   codebooks\$data[["structure"]]
-
-## Functions
+## Functions for data analysis
 
 ### summarize_numerical()
 
-`summarize_numerical(data, group_col = NULL, use_labels = TRUE)`
+```{r, eval=FALSE, echo=FALSE}
 
-Arguments: `data`: dataframe `group_col = NULL`: grouping column; defaults to NULL `use_labels = TRUE`: If set to true, uses labels instead of variable names
+# ------------------
+# ### DEPRECATED on April 09th, 2025 ###
+# ------------------
+# Reasons for deprecation 
+# Output Format: The newer version provides better output by pivoting to wide format for grouped summaries, making it more user-friendly.
+# Consistent Logic: Both versions use the same approach for calculating the mean and 95% confidence intervals, extracting variable labels, and handling numeric columns.
+# Improved Presentation: The wide format in the newer version improves readability for reports and # publications.
+# If you need the long format, consider adapting the workflow to the new version or adding an option to toggle between formats.
 
-```{r, results = 'hide', message = FALSE, warning = FALSE, eval=FALSE}
 summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
   # Extract variable labels, falling back to variable names if labels are missing
   variable_labels <- sapply(names(data), function(var) {
@@ -1410,6 +1563,78 @@ summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
 }
 ```
 
+*Description*
+
+Summarize numeric variables with their means and 95% confidence intervals. Optionally groups results by a grouping variable and uses variable labels for readability. Output is returned as a tidy data frame in either long or wide format depending on grouping.
+
+*Usage*
+
+`summarize_numerical(data, group_col = NULL, use_labels = TRUE)`
+
+*Arguments*
+
+-   data: a data frame containing the dataset to summarize.
+-   group_col: an optional string indicating the name of the grouping variable. If NULL, the summary is ungrouped.
+-   use_labels (Logical): If TRUE, uses the variable's label attribute (if available). If FALSE, uses the variable name. Defaults to TRUE.
+
+*Value*
+
+A `data.frame` containing summary statistics for numeric variables. If `group_col` is specified, the output is in wide format with one column per group. Each value is formatted as `"mean (lower–upper)"`, where the interval is a 95% confidence interval.
+
+```{r}
+summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
+  # Extract variable labels, falling back to variable names if labels are missing
+  variable_labels <- sapply(names(data), function(var) {
+    label <- attr(data[[var]], "label")
+    if (is.null(label) || !use_labels) var else label
+  }, simplify = TRUE)
+  
+  # Identify numeric columns
+  numeric_cols <- data %>% select(where(is.numeric)) %>% names()
+  
+  if (!is.null(group_col)) {
+    # Grouped summary
+    summary <- data %>%
+      group_by(across(all_of(group_col))) %>%
+      summarise(across(
+        all_of(numeric_cols),
+        ~ paste0(
+          round(mean(.x, na.rm = TRUE), 1), 
+          " (", 
+          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          "–", 
+          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          ")"
+        ),
+        .names = "{.col}"
+      )) %>%
+      pivot_longer(-all_of(group_col), names_to = "Variable", values_to = "Value") %>%
+      mutate(Variable = variable_labels[Variable]) %>%
+      pivot_wider(names_from = all_of(group_col), values_from = Value)  # Pivot to wide format
+  } else {
+    # Ungrouped summary
+    summary <- data %>%
+      summarise(across(
+        all_of(numeric_cols),
+        ~ paste0(
+          round(mean(.x, na.rm = TRUE), 1), 
+          " (", 
+          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          "–", 
+          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
+          ")"
+        ),
+        .names = "{.col}"
+      )) %>%
+      pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
+      mutate(Variable = variable_labels[Variable])
+  }
+  
+  return(summary)
+}
+
+```
+
 ------------------------------------------------------------------------
 
 ### summarize_categorical()
@@ -1418,7 +1643,7 @@ summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
 
 Arguments: - `data`: dataframe - `group_col = NULL`: grouping column; defaults to NULL - `use_labels = TRUE`: If set to true, uses labels instead of variable names
 
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r}
 summarize_categorical <- function(data, group_col = NULL, use_labels = TRUE) {
   # Extract variable labels, falling back to variable names if labels are missing
   variable_labels <- sapply(names(data), function(var) {
@@ -1470,7 +1695,12 @@ summarize_categorical <- function(data, group_col = NULL, use_labels = TRUE) {
 
 ### compare_groups()
 
-```{r, results = 'hide', message = FALSE, warning = FALSE, eval=FALSE}
+```{r, eval=FALSE, echo=FALSE}
+
+# --------------------------------------
+# ### DEPRECATED on April 09th, 2025 ###
+# --------------------------------------
+
 compare_groups <- function(data, group_col = "allocation_group", use_labels = TRUE) {
   
   # Extract variable labels, default to variable names if labels are missing
@@ -1559,31 +1789,163 @@ compare_groups <- function(data, group_col = "allocation_group", use_labels = TR
 }
 ```
 
-1.  **Extract Variable Labels**:
-    -   Fetches the `label` attribute for each variable.
-    -   If no label exists or if `use_labels = FALSE`, defaults to the variable name.
-2.  **Prepare Results Storage**:
-    -   An empty `data.frame` is created to store test results, including the variable name/label, test type, test statistic, and p-value.
-3.  **Loop Through Variables**:
-    -   **Numeric Variables**:
-        -   A two-sample t-test is run to compare means between groups.
-        -   Test results (t-statistic and p-value) are appended to the results `data.frame`.
-    -   **Categorical Variables**:
-        -   A contingency table is created for the variable and the grouping column.
-        -   If expected counts in the table are too small, Fisher's exact test is used.
-        -   Otherwise, a chi-squared test is performed.
-        -   Results are appended to the results `data.frame`.
-4.  **Error Handling**:
-    -   The chi-squared test may fail for certain edge cases (e.g., empty levels). Errors are caught and handled gracefully by returning `NA` for the statistic and p-value.
-5.  **Output as a `gt` Table**:
-    -   The `results` `data.frame` is converted to a nicely formatted `gt` table with a title and custom column labels.
+*Description*
+
+Compare variables across groups using appropriate statistical tests. Performs t-tests for numeric variables and chi-squared or Fisher's exact tests for categorical variables. Optionally uses variable labels for better readability and outputs results as a nicely formatted `gt` table or raw data frame.
+
+*Usage*
+
+`compare_groups(data, group_col = "allocation_group", use_labels = TRUE, return_df = FALSE)`
+
+*Arguments*
+
+-   data: a data frame containing the dataset to analyze.
+-   group_col: a string indicating the name of the grouping variable. Defaults to "allocation_group".
+-   use_labels (Logical): If TRUE, uses the variable's label attribute (if available). If FALSE, uses the variable name. Defaults to TRUE.
+-   return_df (Logical): If TRUE, returns a raw data frame. If FALSE, returns a formatted `gt` table. Defaults to FALSE.
+
+*Value*
+
+A `gt` table or a `data.frame` containing the results of statistical comparisons. Each row includes: - Variable: the name or label of the variable - Test: the type of statistical test used - Statistic: the test statistic (if available) - P_value: the p-value from the test
+
+```{r}
+compare_groups <- function(data, group_col = "allocation_group", use_labels = TRUE, return_df = FALSE) {
+  
+  # Extract variable labels, default to variable names if labels are missing
+  variable_labels <- sapply(names(data), function(var) {
+    label <- attr(data[[var]], "label") # Check for the 'label' attribute
+    if (is.null(label) || !use_labels) var else label # Use variable name if label is missing
+  }, simplify = TRUE)
+  
+  # Prepare results storage
+  results <- data.frame(
+    Variable = character(), # The variable being tested
+    Test = character(),     # The type of test (t-test or chi-squared/Fisher's)
+    Statistic = numeric(),  # The test statistic value
+    P_value = numeric(),    # The p-value from the test
+    stringsAsFactors = FALSE # Ensure strings are not converted to factors
+  )
+  
+  # Loop through all columns in the data, excluding the grouping column
+  for (var in setdiff(names(data), group_col)) {
+    if (is.numeric(data[[var]])) {
+      # Run t-test for numeric variables
+      test_result <- t.test(data[[var]] ~ data[[group_col]])
+      
+      # Append the t-test results to the results data.frame
+      results <- rbind(results, data.frame(
+        Variable = variable_labels[var], # Use label or name
+        Test = "t-test",                 
+        Statistic = round(test_result$statistic, 2), 
+        P_value = round(test_result$p.value, 4)
+      ))
+    } else if (is.factor(data[[var]]) || is.character(data[[var]])) {
+      # Run chi-squared or Fisher's exact test
+      contingency_table <- table(data[[var]], data[[group_col]])
+      
+      if (any(chisq.test(contingency_table)$expected < 5)) {
+        # Use Fisher's exact test
+        test_result <- fisher.test(contingency_table)
+        results <- rbind(results, data.frame(
+          Variable = variable_labels[var],
+          Test = "Fisher's exact test",
+          Statistic = NA,
+          P_value = round(test_result$p.value, 4)
+        ))
+      } else {
+        # Use chi-squared test
+        test_result <- tryCatch(
+          chisq.test(contingency_table), 
+          error = function(e) list(statistic = NA, p.value = NA)
+        )
+        results <- rbind(results, data.frame(
+          Variable = variable_labels[var],
+          Test = "Chi-squared test",
+          Statistic = round(test_result$statistic, 2),
+          P_value = round(test_result$p.value, 4)
+        ))
+      }
+    }
+  }
+  
+  # If return_df = TRUE, return the results as a data frame
+  if (return_df) {
+    return(results)
+  }
+  
+  # Return results as a gt table
+  gt_table <- results %>%
+    gt() %>%
+    tab_header(
+      title = "Hypothesis Test Results",
+      subtitle = paste("Comparison of", group_col)
+    ) %>%
+    cols_label(
+      Variable = "Variable",
+      Test = "Test Type",
+      Statistic = "Test Statistic",
+      P_value = "P-value"
+    )
+  
+  return(gt_table) # Return the formatted gt table
+}
+
+```
+
+*Step-by-step Explanation of the compare_groups() Function*
+
+1.  Extract Variable Labels
+
+    -   The function loops through names(data) and tries to get the "label" attribute of each variable using attr().
+    -   If the label is NULL or if use_labels = FALSE, it uses the variable name instead.
+    -   This ensures the results will display either readable labels (if available) or default names.
+
+2.  Prepare Results Storage
+
+    -   A new, empty data.frame is created with columns:
+        -   Variable – will store the label or name of the tested variable.
+        -   Test – describes the type of test used (t-test, Chi-squared, or Fisher's exact).
+        -   Statistic – the numerical value of the test statistic (e.g., t or χ² value).
+        -   P_value – the resulting p-value.
+    -   stringsAsFactors = FALSE is specified to avoid automatic factor conversion.
+
+3.  Loop Through Variables
+
+    -   The function skips the grouping variable (group_col) and loops over the remaining columns.
+
+    For Numeric Variables:
+
+    -   Performs a two-sample t-test using the formula interface data[[var]] \~ data[[group_col]].
+    -   Appends results with t.test$statistic and t.test$p.value (rounded).
+
+    For Categorical Variables:
+
+    -   Creates a contingency table with table(data[[var]], data[[group_col]]).
+    -   Checks the expected frequencies using chisq.test(contingency_table)\$expected.
+    -   If any expected cell count \< 5, switches to Fisher’s exact test.
+    -   Otherwise, performs a Chi-squared test, with a tryCatch() to prevent errors in edge cases (e.g., sparse data or empty levels).
+
+4.  Error Handling
+
+    -   For the chi-squared test, any errors (e.g., structural issues with the table) are caught using tryCatch().
+    -   If an error occurs, Statistic and P_value are both returned as NA, allowing the function to continue without breaking.
+
+5.  Output as a gt Table
+
+    -   If return_df = TRUE, the raw results dataframe is returned.
+    -   Otherwise, the results are passed to the gt() package to create a styled, publication-ready table with:
+        -   A title: "Hypothesis Test Results"
+        -   A subtitle: "Comparison of {group_col}"
+        -   Custom column labels using cols_label()
 
 Example Usage
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 # Run the function and display results
 test_results <- compare_groups(data_d1_exclusive)
 
 # Print the results
 print(test_results)
 ```
+
+# RESULTS
