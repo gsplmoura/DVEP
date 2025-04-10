@@ -1501,68 +1501,6 @@ rm(codebook_bia, codebook_dvep, codebook_ncit, codebook_structure)
 
 ### summarize_numerical()
 
-```{r, eval=FALSE, echo=FALSE}
-
-# ------------------
-# ### DEPRECATED on April 09th, 2025 ###
-# ------------------
-# Reasons for deprecation 
-# Output Format: The newer version provides better output by pivoting to wide format for grouped summaries, making it more user-friendly.
-# Consistent Logic: Both versions use the same approach for calculating the mean and 95% confidence intervals, extracting variable labels, and handling numeric columns.
-# Improved Presentation: The wide format in the newer version improves readability for reports and # publications.
-# If you need the long format, consider adapting the workflow to the new version or adding an option to toggle between formats.
-
-summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
-  # Extract variable labels, falling back to variable names if labels are missing
-  variable_labels <- sapply(names(data), function(var) {
-    label <- attr(data[[var]], "label")
-    if (is.null(label) || !use_labels) var else label
-  }, simplify = TRUE)
-  
-  # Identify numeric columns
-  numeric_cols <- data %>% select(where(is.numeric)) %>% names()
-  
-  if (!is.null(group_col)) {
-    # Grouped summary
-    summary <- data %>%
-      group_by(across(all_of(group_col))) %>%
-      summarise(across(
-        all_of(numeric_cols),
-        ~ paste0(
-          round(mean(.x, na.rm = TRUE), 1), 
-          " (", 
-          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-          "–", 
-          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-          ")"
-        ),
-        .names = "{.col}"
-      )) %>%
-      pivot_longer(-all_of(group_col), names_to = "Variable", values_to = "Value") %>%
-      mutate(Variable = variable_labels[Variable]) # Replace variable names with labels/names
-  } else {
-    # Ungrouped summary
-    summary <- data %>%
-      summarise(across(
-        all_of(numeric_cols),
-        ~ paste0(
-          round(mean(.x, na.rm = TRUE), 1), 
-          " (", 
-          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-          "–", 
-          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-          ")"
-        ),
-        .names = "{.col}"
-      )) %>%
-      pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
-      mutate(Variable = variable_labels[Variable]) # Replace variable names with labels/names
-  }
-  
-  return(summary)
-}
-```
-
 *Description*
 
 Summarize numeric variables with their means and 95% confidence intervals. Optionally groups results by a grouping variable and uses variable labels for readability. Output is returned as a tidy data frame in either long or wide format depending on grouping.
@@ -1694,100 +1632,6 @@ summarize_categorical <- function(data, group_col = NULL, use_labels = TRUE) {
 ------------------------------------------------------------------------
 
 ### compare_groups()
-
-```{r, eval=FALSE, echo=FALSE}
-
-# --------------------------------------
-# ### DEPRECATED on April 09th, 2025 ###
-# --------------------------------------
-
-compare_groups <- function(data, group_col = "allocation_group", use_labels = TRUE) {
-  
-  # Extract variable labels, default to variable names if labels are missing
-  # If use_labels = TRUE, fetch the 'label' attribute for each variable. 
-  # If no label exists or use_labels = FALSE, default to the variable name.
-  variable_labels <- sapply(names(data), function(var) {
-    label <- attr(data[[var]], "label") # Check for the 'label' attribute
-    if (is.null(label) || !use_labels) var else label # Use variable name if label is missing
-  }, simplify = TRUE)
-  
-  # Prepare results storage
-  # Create an empty data.frame to store test results with predefined columns
-  results <- data.frame(
-    Variable = character(), # The variable being tested
-    Test = character(),     # The type of test (t-test or chi-squared/Fisher's)
-    Statistic = numeric(),  # The test statistic value
-    P_value = numeric(),    # The p-value from the test
-    stringsAsFactors = FALSE # Ensure strings are not converted to factors
-  )
-  
-  # Loop through all columns in the data, excluding the grouping column
-  for (var in setdiff(names(data), group_col)) {
-    if (is.numeric(data[[var]])) {
-      # Run t-test for numeric variables
-      # Compares the means of the variable between the groups in group_col
-      test_result <- t.test(data[[var]] ~ data[[group_col]])
-      
-      # Append the t-test results to the results data.frame
-      results <- rbind(results, data.frame(
-        Variable = variable_labels[var], # Use label or name
-        Test = "t-test",                 # Specify the test type
-        Statistic = round(test_result$statistic, 2), # Round the t-statistic
-        P_value = round(test_result$p.value, 4)     # Round the p-value
-      ))
-    } else if (is.factor(data[[var]]) || is.character(data[[var]])) {
-      # Run chi-squared test for categorical variables
-      # Create a contingency table for the variable and the group_col
-      contingency_table <- table(data[[var]], data[[group_col]])
-      
-      # Check expected counts to decide between chi-squared and Fisher's test
-      if (any(chisq.test(contingency_table)$expected < 5)) {
-        # Use Fisher's exact test when expected counts are too small
-        test_result <- fisher.test(contingency_table)
-        
-        # Append the Fisher's exact test results to the results data.frame
-        results <- rbind(results, data.frame(
-          Variable = variable_labels[var], # Use label or name
-          Test = "Fisher's exact test",    # Specify the test type
-          Statistic = NA,                  # No statistic for Fisher's test
-          P_value = round(test_result$p.value, 4) # Round the p-value
-        ))
-      } else {
-        # Use chi-squared test when expected counts are sufficient
-        test_result <- tryCatch(
-          chisq.test(contingency_table), # Perform the chi-squared test
-          error = function(e) list(statistic = NA, p.value = NA) # Handle potential errors
-        )
-        
-        # Append the chi-squared test results to the results data.frame
-        results <- rbind(results, data.frame(
-          Variable = variable_labels[var], # Use label or name
-          Test = "Chi-squared test",       # Specify the test type
-          Statistic = round(test_result$statistic, 2), # Round the chi-squared statistic
-          P_value = round(test_result$p.value, 4)     # Round the p-value
-        ))
-      }
-    }
-  }
-  
-  # Return results as a gt table
-  # Convert the results data.frame into a gt table for better visualization
-  gt_table <- results %>%
-    gt() %>%
-    tab_header(
-      title = "Hypothesis Test Results",       # Main title for the table
-      subtitle = paste("Comparison of", group_col) # Subtitle indicating the grouping variable
-    ) %>%
-    cols_label(
-      Variable = "Variable",          # Rename the Variable column
-      Test = "Test Type",             # Rename the Test column
-      Statistic = "Test Statistic",   # Rename the Statistic column
-      P_value = "P-value"             # Rename the P_value column
-    )
-  
-  return(gt_table) # Return the formatted gt table
-}
-```
 
 *Description*
 
@@ -1949,3 +1793,4 @@ print(test_results)
 ```
 
 # RESULTS
+
