@@ -3,6 +3,7 @@ title: "DVEP_2_Analysis"
 author: "Moura, G.S.P.L"
 date: "`r format(Sys.Date(), '%d de %B de %Y')`"
 output: html_document
+engine: knitr::rmarkdown
 ---
 
 ```{r, eval= FALSE}
@@ -20,11 +21,14 @@ library(skimr)
 # Baseline
 ```{r}
 file_path_baseline <- "Output/Baseline/Data_files"
+database <- data
 ```
 
 ```{r, eval=FALSE}
 # Datas de inclusão e conclusão
 summary(data$consent_date)
+
+max(data$consent_date, na.rm = TRUE)
 
 summary(data["conclusion_date"])
 
@@ -704,3 +708,5 @@ rm()
 
 
 
+
+Os participantes foram recrutados entre 9 de agosto de 2023 e `r max(database$consent_date, na.rm = TRUE)`. O estudo foi concluído em 26 de julho de 2024.
