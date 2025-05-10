@@ -1,0 +1,172 @@
+---
+title: "seca_bioimpedance_data"
+output: html_document
+---
+
+```{r}
+codebook_bia <- read_excel(
+    "Codebooks/codebook_bia.xlsx",
+    col_names = TRUE,
+    col_types = NULL,
+        na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+        trim_ws = TRUE,
+        skip = 0, # Number of lines to skip before reading data
+        n_max = Inf, # Maximum number of lines to read.
+        guess_max = 1000
+    ) |>
+    arrange(index)
+
+data_bia_D3 <- read_csv(
+    "Data/data_bia_D3.csv",
+    col_names = TRUE)
+
+data_bia_D1 <- read_csv(
+    "Data/data_bia_D1.csv",
+    col_names = TRUE)
+```
+
+## record_id as.integer
+
+```{r}
+# 5. record_id as.integer
+data_bia_D3 $record_id <- as.integer(data_bia_D3 $record_id)
+data_bia_D1$record_id <- as.integer(data_bia_D1$record_id)
+```
+
+## Renaming variables
+```{r}
+# 4.2 bia
+rename_bia <- setNames(object = colnames(data_bia_D3 ), codebook_bia$variable)
+
+data_bia_D3 <- data_bia_D3 |>
+    rename(!!!rename_bia)
+
+data_bia_D1 <- data_bia_D1 |>
+    rename(!!!rename_bia)
+
+rm(rename_bia)
+```
+
+## Assign labels to variables
+
+```{r}
+data_bia_D3 <- data_bia_D3 |> 
+  mutate(across(
+    all_of(codebook_bia$variable),
+    ~ {
+      attr(., "label") <- codebook_bia$label_pt[codebook_bia$variable == cur_column()]
+      .
+    }
+  ))
+```
+
+## Bioimpedance data (DIRECT IMPORT FROM BIOIMPEDANCE DEVICE)
+
+This corresponds to the first version of the code. However, it relies on data directly imported from the bioimpedance device, and contains one to three measurements per participant. Therefore, the data needs to be wrangled to obtain the mean of the measurements for each participant.
+
+However, for now (April 09th, 2025), I will depracate this code and analyse the data directly recorded into the REDCap project by the research collaborators. The code below is kept for reference, but will not be used in the analysis as of now. If needed, I will re-implement it in the future.
+
+#### Data from first/third visit
+
+Applies to participants who completed the intervention
+
+```{r, eval=FALSE, echo=FALSE}
+# 8. Wrangling Bioimpedance data
+## 8.1 D3 DATA (contains data from first and third visits for participants who completed the intervention)
+### Filter lines for which phaseangle is <> ""
+data_bia_D3_filtered <- data_bia_D3 |> 
+    filter(!is.na(phaseangle)) |> 
+    mutate(
+        date = as.Date(timestamp),           # Extract the date
+        time = format(timestamp, "%H:%M:%S") # Extract the time
+    ) |> 
+    select(all_of(codebook_bia$variable)[codebook_bia$included == 1], date, time) |> 
+    relocate(record_id, date, time, phaseangle, raverage, xcaverage, weight:w_ecwbytbw) |> 
+    arrange(record_id, date, time)
+
+### Group by record_id and date and obtain mean of multiple measurements from the same day
+data_bia_D3_filtered <- data_bia_D3_filtered |> 
+    group_by(record_id, date) |>
+    summarise(
+        across(c(phaseangle:m_tohimaginary), \(x) mean(x, na.rm = TRUE)),
+        .groups = "drop"
+    ) |>
+    group_by(record_id) |> # Add coding for visit number
+    mutate(
+        visit = case_when(
+            date == min(date) ~ 1,  # Assign 1 to the earliest date
+            date == max(date) ~ 3,  # Assign 3 to the latest date
+            TRUE ~ NA_real_         # Default to NA for unexpected cases
+        ),
+        .after = record_id
+    )
+```
+
+#### Data from first visit
+
+Applies to participants who did not complete the intervention
+
+```{r, eval=FALSE, echo=FALSE}
+## 8.2 D1 DATA (data from the first visit for participants who did not complete the intervention)
+## Filter lines for which phaseangle is <> ""
+data_bia_D1_filtered <- data_bia_D1 |> 
+    filter(!is.na(phaseangle)) |> 
+    mutate(
+        date = as.Date(timestamp),           # Extract the date
+        time = format(timestamp, "%H:%M:%S") # Extract the time
+    ) |> 
+    select(all_of(codebook_bia$variable)[codebook_bia$included == 1], date, time) |> 
+    relocate(record_id, date, time, phaseangle, raverage, xcaverage, weight:w_ecwbytbw) |> 
+    arrange(record_id, date, time)
+
+### Group by record_id and date and obtain mean of multiple measurements from the same day
+data_bia_D1_filtered <- data_bia_D1_filtered |> 
+    group_by(record_id, date) |>
+    summarise(
+        across(c(phaseangle:m_tohimaginary), \(x) mean(x, na.rm = TRUE)),
+        .groups = "drop"
+    ) |>
+    group_by(record_id) |> # Add coding for visit number
+    mutate(
+        visit = case_when(
+            date == min(date) ~ 1,  # Assign 1 to the earliest date
+            date == max(date) ~ 3,  # Assign 3 to the latest date
+            TRUE ~ NA_real_         # Default to NA for unexpected cases
+        ),
+        .after = record_id
+    )
+### Selecting BIA data from D1 not present in D3
+data_bia_D1_filtered <- data_bia_D1_filtered |> 
+    filter(
+     record_id %in% setdiff(1:75, data_bia_D3_filtered$record_id)   
+    )
+```
+
+#### Merging to single tibble
+
+```{r, eval=FALSE, echo=FALSE}
+## 8.3 MERGE D1/D3 BIA data into a single tibble
+data_bia <- bind_rows(
+    data_bia_D1_filtered, data_bia_D3_filtered
+) |> 
+    mutate(
+        visit = as.integer(visit)
+    ) |> 
+    arrange(
+        record_id, visit
+    ) |> 
+    ungroup()
+
+### label_variables
+data_bia <- label_variables(data_bia, codebook_bia)
+```
+
+#### Drop intermediate tibbles
+
+```{r, eval=FALSE, echo=FALSE}
+# 8.4. DROP intermediate tibbles
+rm(data_bia_D1)
+rm(data_bia_D1_filtered)
+rm(data_bia_D3)
+rm(data_bia_D3_filtered)
+```
