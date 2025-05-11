@@ -9,10 +9,6 @@ project: Effect of Eclipta prostrata (L.) L. (Asteraceae) on bioelectrical imped
   phase angle in adults with grade I obesity (DVEP)
 ---
 
-# DATA WRANGLING
-
-## Setup
-
 ```{r setup}
 knitr::opts_chunk$set(
   results = 'hide',
@@ -33,13 +29,15 @@ library(readxl)
 library(lubridate)
 library(stringr)
 library(purrr)
-library(gt)
-library(jmv)
-library(skimr)
 library(here)
+
+# Load functions from external script
+source("helper_functions.R")
 ```
 
-## Read CSV
+# First Steps
+## Read Files
+### Codebooks
 
 ```{r}
 codebook_dvep <- read_excel(
@@ -51,24 +49,38 @@ codebook_dvep <- read_excel(
         skip = 0, # Number of lines to skip before reading data
         n_max = Inf, # Maximum number of lines to read.
         guess_max = 1000
-    ) |>
+    ) %>%
     arrange(index)
 
 codebook_structure  <- read_csv(
   "Codebooks/codebook_structure.csv",
-  col_names = TRUE) |> 
-    select(
-        form_name_en:V3
-    )
+  col_names = TRUE)
 
 codebook_ncit  <- read_csv(
   "Codebooks/codebook_ncit.csv",
   col_names = TRUE)
 
+codebook_bia <- read_excel(
+    "Codebooks/codebook_bia.xlsx",
+    col_names = TRUE,
+    col_types = NULL,
+        na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+        trim_ws = TRUE,
+        skip = 0, # Number of lines to skip before reading data
+        n_max = Inf, # Maximum number of lines to read.
+        guess_max = 1000
+    ) %>%
+    arrange(index)
+```
+
+### Data
+
+```{r}
+
 data  <- read_csv(
   "Data/data_dvep.csv",
   col_names = TRUE,
-  col_types = NULL,
+  col_types = NULL, #column types will be inferred from guess_max
   col_select = NULL,
   id = NULL,
   locale = default_locale(),
@@ -87,33 +99,57 @@ data  <- read_csv(
   lazy = should_read_lazy()
 )
 
+data_bia_D3_raw <- read_csv(
+    "Data/data_bia_D3.csv",
+    col_names = TRUE)
+
+data_bia_D1_raw <- read_csv(
+    "Data/data_bia_D1.csv",
+    col_names = TRUE)
+
 ```
 
 ## Remove identifying data from record_id
 
 ```{r}
 data$record_id <- substr(data$record_id,1,2)
+data_bia_D3_raw $File <- substr(data_bia_D3_raw $File,1,2)
+data_bia_D1_raw$File <- substr(data_bia_D1_raw$File,1,2)
 ```
 
 ## Renaming variables
 
 ```{r}
+# DATA
 rename_data <- setNames(object = colnames(data), codebook_dvep$variable)
-data <- data |>
+data <- data %>%
     rename(!!!rename_data)
 rm(rename_data)
+
+#BIA
+rename_bia <- setNames(object = colnames(data_bia_D3_raw ), codebook_bia$variable)
+
+data_bia_D3_raw <- data_bia_D3_raw %>%
+    rename(!!!rename_bia)
+
+data_bia_D1_raw <- data_bia_D1_raw %>%
+    rename(!!!rename_bia)
+
+rm(rename_bia)
 ```
 
 ## record_id as.integer
 
 ```{r}
 data$record_id <- as.integer(data$record_id)
+data_bia_D3_raw $record_id <- as.integer(data_bia_D3_raw $record_id)
+data_bia_D1_raw$record_id <- as.integer(data_bia_D1_raw$record_id)
 ```
 
 ## Assign labels to variables
 
 ```{r}
-data <- data |> 
+data <- data %>% 
   mutate(across(
     all_of(codebook_dvep$variable),
     ~ {
@@ -122,431 +158,221 @@ data <- data |>
     }
   ))
 
-```
-
-## Creating functions for data wrangling
-
-#### filter_variables()
-
-`filter_variables(visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL, filter_included = TRUE)`
-
-Arguments:
-
--   `visit`: A vector of visit names to filter (default: all visits)
-
--   `include_repeating = NULL`
-
-    -   If NULL, includes all variables
-
-    -   If 0, does not include repeating variables
-
-    -   If 1, only shows repeating variables
-
--   `form_name = NULL`: The name of the form to filter on (NULL means no filtering by form)
-
--   `filter_included = TRUE`: Whether to filter by the 'included' column (default: TRUE)
-
-```{r}
-filter_variables <- function(
-        visit = c("eleg", "V1", "V2", "V3"),  
-        include_repeating = NULL,            
-        form_name = NULL,                    
-        filter_included = TRUE              
-        ) {
-  
-  # Validate the 'visit' input: Ensure all provided visit names are valid
-  if (!all(visit %in% c("eleg", "V1", "V2", "V3"))) {
-    stop("Invalid visit name. Choose from 'eleg', 'V1', 'V2', or 'V3'.")
-  }
-  
-  # Define valid form names for validation
-  valid_form_names <- c(
-    "eleg", "demographic", "whoqol", "dass", "ecap", "measures", "bp_limb", "bp", 
-    "bia", "handgrip", "eliminations", "evs", "alcohol", "tobacco", "diet_recall", 
-    "intake", "dates", "allocation", "conditions", "drugs", "old.drugs", "history", 
-    "symptoms", "phy.exam", "labs", "ecg", "compliance", "events", "medical", 
-    "followup", "conclusion"
-  )
-  
-  # Validate the 'form_name' input: Ensure it contains only valid form names
-  if (!is.null(form_name) && !all(form_name %in% valid_form_names)) {
-    stop("Invalid form_name. Choose from: ", paste(valid_form_names, collapse = ", "))
-  }
-  
-  # Filter the 'codebook_dvep' based on the specified criteria
-  filtered_codebook <- codebook_dvep |> 
-    filter(
-      # If filter_included is TRUE, filter for rows where 'included' equals 1
-      if (filter_included) included == 1 else TRUE,
-      
-      # Retain rows where at least one of the selected visits has a value greater than 0
-      rowSums(across(all_of(visit))) > 0,
-      
-      # If 'include_repeating' is specified, filter by the repeating_instrument column
-      if (!is.null(include_repeating)) repeating_instrument == include_repeating else TRUE,
-      
-      # If 'form_name' is specified, filter by the form_name_en column
-      if (!is.null(form_name)) form_name_en == form_name else TRUE
-    )
-  
-  # Extract and return the 'variable' column from the filtered codebook
-  filtered_vars <- filtered_codebook$variable
-  
-  return(filtered_vars)  # Return the filtered variable names
-}
+data_bia_D3_raw <- data_bia_D3_raw %>% 
+  mutate(across(
+    all_of(codebook_bia$variable),
+    ~ {
+      attr(., "label") <- codebook_bia$label_pt[codebook_bia$variable == cur_column()]
+      .
+    }
+  ))
 
 ```
 
-#### filter_data()
+# DATA WRANGLING
+## SECA BIA DATA 
 
-`filter_data <- function( visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL)`
+(DIRECT IMPORT FROM BIOIMPEDANCE DEVICE)
 
-Arguments:
+This corresponds to the first version of the code. However, it relies on data directly imported from the bioimpedance device, and contains one to three measurements per participant. Therefore, the data needs to be wrangled to obtain the mean of the measurements for each participant.
 
--   `visit`: A vector of visit names to filter (default: all visits)
+However, for now (April 09th, 2025), I will depracate this code and analyse the data directly recorded into the REDCap project by the research collaborators. The code below is kept for reference, but will not be used in the analysis as of now. If needed, I will re-implement it in the future.
 
--   `include_repeating = NULL`
+#### Data from first/third visit
 
-    -   If NULL, includes all variables
-
-    -   If 0, does not include repeating variables
-
-    -   If 1, only shows repeating variables
-
--   `form_name = NULL`: The name of the form to filter on. **Will only work for repeating instruments.**
+Applies to participants who completed the intervention
 
 ```{r}
-## filter_data() based on visit, repeating instrument and form
-filter_data <- function(
-        visit = c("eleg", "V1", "V2", "V3"), 
-        include_repeating = NULL, 
-        form_name = NULL) {
-  
-  # Map visit names to actual event_name values
-  mapped_visits <- case_when(
-    visit == "eleg" ~ "eleg_arm_1",
-    visit == "V1" ~ "1visit_arm_1",
-    visit == "V2" ~ "2visit_arm_1",
-    visit == "V3" ~ "3visit_arm_1",
-    TRUE ~ visit
-  )
-  
-  # Map form_name to repeat_instrument values using a case_when structure
-  mapped_form_name <- if (!is.null(form_name)) {
-    case_when(
-      form_name == "eleg" ~ "elegibilidade",
-      form_name == "demographic" ~ "dados_demogrficos",
-      form_name == "whoqol" ~ "questionrio_qualidade_de_vida",
-      form_name == "dass" ~ "escore_de_depresso_ansiedade_e_estresse",
-      form_name == "ecap" ~ "escala_de_compulso_alimentar",
-      form_name == "measures" ~ "antropometria",
-      form_name == "bp_limb" ~ "presso_arterial_determinao_do_membro_de_referncia",
-      form_name == "bp" ~ "presso_arterial",
-      form_name == "bia" ~ "impedncia_bioeltrica_corporal",
-      form_name == "handgrip" ~ "fora_de_preenso_palmar",
-      form_name == "eliminations" ~ "avaliao_nutricional",
-      # form_name == "allergies" ~ "alergia_alimentar",
-      form_name == "evs" ~ "exercise_vital_sign",
-      form_name == "alcohol" ~ "consumo_alcool",
-      form_name == "tobacco" ~ "consumo_tabaco",
-      form_name == "diet_recall" ~ "recordatrio_alimentar",
-      form_name == "intake" ~ "avaliao_da_ingesto_alimentar",
-      form_name == "dates" ~ "datas_importantes",
-      form_name == "allocation" ~ "nmero_do_participante",
-      form_name == "conditions" ~ "comorbidades",
-      form_name == "drugs" ~ "medicamentos_de_uso_habitual",
-      form_name == "old.drugs" ~ "medicamentos_prvios",
-      form_name == "history" ~ "antecedentes_pessoais",
-      form_name == "symptoms" ~ "sintomas",
-      form_name == "phy.exam" ~ "exame_fsico",
-      form_name == "labs" ~ "exames_laboratoriais",
-      form_name == "ecg" ~ "eletrocardiograma",
-      form_name == "compliance" ~ "adeso",
-      form_name == "events" ~ "eventos_adversos",
-      form_name == "medical" ~ "avaliao_mdica",
-      form_name == "followup" ~ "contato_semanal",
-      form_name == "conclusion" ~ "concluso",
-      # form_name == "annex" ~ "anexos",
-      TRUE ~ form_name
-    )
-  } else {
-    NULL
-  }
-  
-  # Get the filtered variable names using the filter_variables function
-  filtered_vars <- filter_variables(visit, include_repeating, form_name)
-  
-  # Filter the raw data to only include these columns and match event_name and form_name
-  filtered_data <- data %>% 
-    filter(event_name %in% mapped_visits) %>%
-    filter(if (!is.null(include_repeating) && include_repeating == 0) is.na(repeat_instrument) | repeat_instrument == "" else TRUE) %>%
-    filter(if (!is.null(include_repeating) && include_repeating == 1) !is.na(repeat_instrument) & repeat_instrument != "" else TRUE) %>%
-    filter(if (!is.null(mapped_form_name)) repeat_instrument == mapped_form_name else TRUE) %>%
-    select(record_id, event_name, repeat_instrument, repeat_instance, all_of(filtered_vars)) %>%
-    mutate(
-      repeat_instrument = ifelse(is.na(repeat_instrument), "", repeat_instrument),
-      repeat_instance = ifelse(repeat_instrument == "", NA, repeat_instance)
-    )
-  
-  return(filtered_data)
-}
-```
-
-#### filter_codebook()
-
-`filter_codebook(form_name = c(...), included = 1)`
-
-Arguments
-
--   `form_name`
-
--   `included = 1`: defaults to 1, filtering variables by `included` column. If set to 0, will include all variables
-
-```{r}
-## 7.3 filter_codebook()
-filter_codebook <- function(form_name = c(
-    "eleg", "tcle", "demographic", "whoqol", "dass", "ecap", "measures", 
-  "bp_limb", "bp", "bia", "handgrip", "eliminations", "allergies", 
-  "evs", "alcohol", "tobacco", "diet_recall", "intake", "dates", 
-  "allocation", "conditions", "drugs", "old.drugs", "history", 
-  "symptoms", "phy.exam", "labs", "ecg", "compliance", "events", 
-  "medical", "followup", "conclusion", "annex"),
-  included = 1) {
+# Filter by rows with values for phase angles
+data_bia_D3 <- data_bia_D3_raw %>% 
+    dplyr::filter(!is.na(phaseangle)) %>% 
+    dplyr::mutate(
+        date = as.Date(timestamp),           # Extract the date
+        time = format(timestamp, "%H:%M:%S") # Extract the time
+    ) %>% 
+    dplyr::select(all_of(codebook_bia$variable)[codebook_bia$included == 1], date, time) %>% 
+    dplyr::relocate(record_id, date, time, phaseangle, raverage, xcaverage, weight:w_ecwbytbw) %>% 
+    dplyr::arrange(record_id, date, time) %>% 
+    dplyr::group_by(record_id) %>% 
+    dplyr::mutate(
+        visit = dplyr::dense_rank(date),
+        .after = record_id) %>% 
+  dplyr::ungroup()
     
-    # Ensure input is valid
-    if (!all(form_name %in% c("eleg", "tcle", "demographic", "whoqol", "dass", "ecap", "measures", 
-  "bp_limb", "bp", "bia", "handgrip", "eliminations", "allergies", 
-  "evs", "alcohol", "tobacco", "diet_recall", "intake", "dates", 
-  "allocation", "conditions", "drugs", "old.drugs", "history", 
-  "symptoms", "phy.exam", "labs", "ecg", "compliance", "events", 
-  "medical", "followup", "conclusion", "annex"))) 
-        {
-      stop("Invalid form name")
-    }
-    
-    if (included == 1) {
-        codebook_form <- codebook_dvep |> 
-        filter(form_name_en %in% form_name & included == 1)
-    } else {
-        codebook_form <- codebook_dvep |> 
-        filter(form_name_en %in% form_name)
-    }
 
-    return(codebook_form)
-}
+# Mean of multiple measurements from the same day
+# Group by record_id and visit
+
+data_bia_D3_mean <- data_bia_D3 %>% 
+    dplyr::group_by(record_id, visit) %>%
+    dplyr::summarise(
+        across(c(phaseangle:m_tohimaginary), \(x) mean(x, na.rm = TRUE)),
+        .groups = "drop"
+    ) # %>% This chunk was removed since coding was added to the last call
+    #dplyr::group_by(record_id) %>% # Add coding for visit number
+    #dplyr::mutate(
+    #    visit = case_when(
+    #        date == min(date) ~ 1,  # Assign 1 to the earliest date
+    #        date == max(date) ~ 3,  # Assign 3 to the latest date
+    #        TRUE ~ NA_real_         # Default to NA for unexpected cases
+    #    ),
+    #    .after = record_id
+    #)
 ```
 
-#### convert_col_type()
+#### Data from first visit
 
-`convert_col_type(data, codebook = codebook_dvep)`
-
-Arguments:
-
--   `data`: dataframe to apply the function
-
--   `codebook = codebook_dvep`: codebook source. Defaults to `codebook_dvep`
-
-Tips:
-
--   as.factor(): categorical data where the label (e.g., "6 cápsulas ao dia") is more meaningful than numeric code.
--   binary data (0, Não \| 1, Sim):
-    -   Use as.factor() if the "label" (Não or Sim) is important.
-    -   Use as.numeric(as.character()) if you're performing mathematical operations (e.g., calculating proportions, averages).
--   For ordinal data (1, Ruim \| 2, Regular \| 3, Boa \| 4, Excelente): use as.factor() with ordered levels (ordered()) if you need to preserve the ranking.
+Applies to participants who did not complete the intervention
 
 ```{r}
-## 7.4 convert_col_type()
-convert_col_type <- function(data, codebook = codebook_dvep) {
-    # Nested function to convert a single column
-    convert_column <- function(column, type) {
-        switch(type,
-           f = as.factor(column),                      # Factor
-           o = as.factor(column),                      # Factor
-           c = as.character(column),                   # Character
-           d = as.numeric(column),                     # Numeric
-           i = as.integer(column),                     # Integer
-           k = lubridate::ymd(column),                 # Date (YYYY-MM-DD)
-           t = lubridate::ymd_hms(column),             # Date-Time (YYYY-MM-DD HH:MM:SS)
-           h = lubridate::hms(column),                 # Time only (HH:MM:SS)
-           n = as.numeric(as.character(column)),       # Coerce to Numeric
-           l = as.logical(column),                     # Logical
-           D = as.Date(column, format = "%Y-%m-%d"),   # Date with specified format
-           T = as.POSIXct(column, format = "%Y-%m-%d %H:%M:%S"),  # Date-Time
-           column  # Default (no change)
+# Filter by rows with values for phase angles
+data_bia_D1 <- data_bia_D1_raw %>% 
+    dplyr::filter(!is.na(phaseangle)) %>% 
+    dplyr::mutate(
+        date = as.Date(timestamp),           # Extract the date
+        time = format(timestamp, "%H:%M:%S") # Extract the time
+    ) %>% 
+    dplyr::select(all_of(codebook_bia$variable)[codebook_bia$included == 1], date, time) %>% 
+    dplyr::relocate(record_id, date, time, phaseangle, raverage, xcaverage, weight:w_ecwbytbw) %>% 
+    dplyr::arrange(record_id, date, time) %>% 
+    dplyr::group_by(record_id) %>% 
+    dplyr::mutate(
+        visit = dplyr::dense_rank(date),
+        .after = record_id) %>% 
+    dplyr::ungroup()
+
+# Selecting data from D1 not present in D3
+data_bia_D1 <- data_bia_D1 %>% 
+    dplyr::filter(
+     record_id %in% setdiff(1:75, data_bia_D3$record_id)   
     )
-    }
-    # Apply conversion
-    data <- data |>
-        mutate(
-            across(
-                .cols = all_of(intersect(colnames(data), codebook$variable)), # Ensures only common variables are processed
-                .fns = ~ convert_column(.x, codebook$col_types[which(codebook$variable == cur_column())])
-            )
-        )
-}
-convert_col_type(data)
+
+# Mean of multiple measurements from the same day
+# Group by record_id and visit
+
+data_bia_D1_mean <- data_bia_D1 %>% 
+    dplyr::group_by(record_id, visit) %>%
+    dplyr::summarise(
+        across(c(phaseangle:m_tohimaginary), \(x) mean(x, na.rm = TRUE)),
+        .groups = "drop"
+    ) # %>% This chunk was removed since coding was added to the last call
+    # dplyr::group_by(record_id) %>% # Add coding for visit number
+    # mutate(
+    #     visit = case_when(
+    #         date == min(date) ~ 1,  # Assign 1 to the earliest date
+    #         date == max(date) ~ 3,  # Assign 3 to the latest date
+    #         TRUE ~ NA_real_         # Default to NA for unexpected cases
+    #     ),
+    #     .after = record_id
+    # )
+
 ```
 
-#### label_variables()
+#### Merging D1/D3 to single tibble
 
-`label_variables(data, codebook, language = "pt")`
-
-Arguments:
-
--   `data`: dataframe to which function will be applied
-
--   `codebook`: source codebook
-
--   `language = "pt"`: defaults to portuguese (`"pt"`); set `"en"` for english
+All measurements
 
 ```{r}
+data_bia <- bind_rows(
+    data_bia_D1, data_bia_D3
+) %>% 
+    dplyr::mutate(
+        visit = as.integer(visit)
+    ) %>% 
+    dplyr::arrange(
+        record_id, visit
+    ) %>% 
+    ungroup()
 
-label_variables <- function(data, codebook, language = "pt") {
-  # Determine the label column based on the language argument
-  label_column <- ifelse(language == "en", "label_en", "label_pt")
-
-  # Ensure column names are consistent
-  codebook_vars <- codebook$variable
-  codebook_labels <- codebook[[label_column]]
-
-  # Identify common variables in both data and codebook
-  common_vars <- intersect(names(data), codebook_vars)
-
-  # Loop through the common variables and assign labels
-  for (var in common_vars) {
-    label <- codebook_labels[codebook_vars == var]
-    attr(data[[var]], "label") <- label
-  }
-
-  return(data)
-}
+# label_variables()
+data_bia <- label_variables(data_bia, codebook_bia)
 ```
 
-#### label_choices()
-
-`label_choices(data, codebook = codebook_dvep)`
-
-Arguments:
-
--   `data`: dataframe to which function will be applied
-
--   `codebook = codebook_dvep`: source codebook (dafaults to `codebook_dvep`)
+Mean of measurements
 
 ```{r}
-## 7.5 label_choices()
-label_choices <- function(data, codebook = codebook_dvep) {
-  # Ensure required libraries are loaded
-  if (!requireNamespace("dplyr") || !requireNamespace("tidyr") ||
-      !requireNamespace("stringr") || !requireNamespace("purrr")) {
-    stop("Required libraries: dplyr, tidyr, stringr, purrr")
-  }
-  
-  # 1. Filter codebook for relevant variables with col_types in "f" or "o"
-  selected_codebook <- codebook |> 
-    filter(
-      variable %in% colnames(data) &  # Variables present in data
-      col_types %in% c("f", "o")     # col_types in "f" or "o"
-    )
-  
-  # 2. Parse the `choices` column
-  parsed_choices <- selected_codebook |>
-    rowwise() |> 
-    mutate(
-      parsed = list(
-        str_split(choices, " \\| ") |>   # Split choices by "|"
-          unlist() |>
-          map(~ str_split_fixed(.x, ", ", 2) |>  # Split by ", " into two columns
-            as_tibble(.name_repair = "unique") |>  # Ensure unique column names
-            setNames(c("raw_value", "label"))    # Name columns
-          ) |>
-          bind_rows()  # Combine into a tibble
-      )
-    ) |>
-    select(variable, parsed) |>
-    unnest(parsed)  # Expand parsed choices into rows
-  
-  # 3. Create lookup tables for selected variables
-  lookup_tables <- parsed_choices |>
-    group_by(variable) |>
-    summarize(
-      lookup = list(setNames(label, raw_value)), .groups = "drop"
-    ) |>
-    deframe()
-  
-  # 4. Replace raw values with labels in data, using "Unmatched" for unmatched values
-  for (column_name in names(lookup_tables)) {
-    if (column_name %in% colnames(data)) {  # Ensure column exists in data
-      data[[column_name]] <- recode(        # Apply recode using the lookup table
-        data[[column_name]],
-        !!!lookup_tables[[column_name]],
-        .default = "Unmatched"             # Set "Unmatched" as the placeholder for unmatched values
-      )
-    }
-  }
-  
-  # Explicitly return the modified data
-  return(data)
-}
+data_bia_mean <- bind_rows(
+    data_bia_D1_mean, data_bia_D3_mean
+) %>% 
+    dplyr::mutate(
+        visit = as.integer(visit)
+    ) %>% 
+    dplyr::arrange(
+        record_id, visit
+    ) %>% 
+    ungroup()
+
+### label_variables
+data_bia_mean <- label_variables(data_bia, codebook_bia)
 ```
 
-## Wrangling DVEP REDCap data
+#### Drop intermediate tibbles
 
-#### Adding NCIT labels
+```{r, eval=FALSE}
+rm(data_bia_D1_raw)
+rm(data_bia_D1)
+rm(data_bia_D3_raw)
+rm(data_bia_D3)
+```
+
+
+## REDCAP DATA
+
+**LEFT JOIN NCIT LABELS**
+
+Left join NCIT labels to I21_conditions_R and I22_drugs_R and add variable labels
 
 ```{r}
-## 9.2 Repeating instruments
-### 9.2.1. Concatenating NCIT labels (from codebook_ncit) to NCIT codes
-#### Conditions (commorbidities)
-I21_conditions_R  <- filter_data("eleg",1,"conditions")  |> 
-    left_join(
-        codebook_ncit |> select(ncit_code, descriptive),
-        # by = c("common_comorbidities" = "ncit_code")
-        join_by(common_comorbidities == ncit_code)
-    ) |>
-    relocate(
-        descriptive, .after = common_comorbidities
-    )
+I21_conditions_R <- filter_data("eleg", 1, "conditions") %>%
+  left_join(
+    dplyr::select(codebook_ncit, ncit_code, descriptive),
+    join_by(common_comorbidities == ncit_code)
+  ) %>%
+  dplyr::relocate(descriptive, .after = common_comorbidities)
 
 I21_conditions_R <- label_variables(I21_conditions_R, codebook_dvep)
 
 #### Drugs in regular use
-I22_drugs_R  <- filter_data("eleg",1,"drugs")  |> 
+I22_drugs_R  <- filter_data("eleg",1,"drugs")  %>% 
     left_join(
-        codebook_ncit |> select(ncit_code, descriptive),
+        codebook_ncit %>% dplyr::select(ncit_code, descriptive),
         join_by(drugs_sql == ncit_code)
-    ) |>
-    relocate(
+    ) %>%
+    dplyr::relocate(
         descriptive, .after = drugs_sql
     )
 
 I22_drugs_R <- label_variables(I22_drugs_R, codebook_dvep)
+```
 
+
+```{r, eval=FALSE}
 # # 1.3 Previous drugs
-# I23_old_drugs_R <- filter_data("eleg",1,"old.drugs") |> 
+# I23_old_drugs_R <- filter_data("eleg",1,"old.drugs") %>% 
 #     left_join(
-#         codebook_ncit |> select(ncit_code, descriptive),
+#         codebook_ncit %>% dplyr::select(ncit_code, descriptive),
 #         join_by(common_previous_medications == ncit_code)
-#     )|>
-#     relocate(
+#     )%>%
+#     dplyr::relocate(
 #         descriptive, .after = common_previous_medications
 #     )
 # 
 # # 1.4 Past medical conditions
-# I24_old_conditions_R <- filter_data("eleg",1,"history") |> 
+# I24_old_conditions_R <- filter_data("eleg",1,"history") %>% 
 #     left_join(
-#         codebook_ncit |> select(ncit_code, descriptive),
+#         codebook_ncit %>% dplyr::select(ncit_code, descriptive),
 #         join_by(common_medical_history == ncit_code)
-#     )|>
-#     relocate(
+#     )%>%
+#     dplyr::relocate(
 #         descriptive, .after = common_medical_history
 #     )
 
 
 # Most common comorbidities
-# I21_conditions_R |> 
-#     group_by(common_comorbidities, descriptive) |> 
-#     count(common_comorbidities, sort = TRUE, name = "frequency") |> 
-#     mutate(percentage = round((frequency/75 * 100),1)) |> 
+# I21_conditions_R %>% 
+#     group_by(common_comorbidities, descriptive) %>% 
+#     count(common_comorbidities, sort = TRUE, name = "frequency") %>% 
+#     mutate(percentage = round((frequency/75 * 100),1)) %>% 
 #     view()
 
 # NCIT    Condition   
@@ -562,36 +388,40 @@ I22_drugs_R <- label_variables(I22_drugs_R, codebook_dvep)
  
 # Most common drugs
 # ```{r, eval = FALSE}
-# I22_drugs_R |> 
-#     group_by(drugs_sql, descriptive) |> 
-#     count(drugs_sql, sort = TRUE, name = "frequency") |> 
-#     mutate(percentage = round((frequency/75 * 100),1)) |> 
+# I22_drugs_R %>% 
+#     group_by(drugs_sql, descriptive) %>% 
+#     count(drugs_sql, sort = TRUE, name = "frequency") %>% 
+#     mutate(percentage = round((frequency/75 * 100),1)) %>% 
 #     view()
 ```
 
-#### Exclusive variables from Eleg/D1 `data_d1_exclusive`
+### DEMOGRAPHICS AND INTERVENTION DATA 
+
+To be replicated to d2 and d3
 
 ```{r}
-## 9.1 Eclusive variables from Eleg/D1 (`data_d1_exclusive`) to be replicated to d2 and d3
-eleg_exclusive <- filter_data("eleg",0) |> 
-    mutate(
-        intervention_duration = as.numeric(conclusion_date - intervention_start_date)
-        )|> 
-    select(record_id, allocation_group, completed_intervention, intervention_duration, non_completion_reason, age, sex)
 
-visit_1_exclusive <- filter_data("V1",0) |> 
-    select(
+eleg_exclusive <- filter_data("eleg",0) %>% 
+    dplyr::mutate(
+        intervention_duration = as.numeric(conclusion_date - intervention_start_date)
+        )%>% 
+    dplyr::select(record_id, allocation_group, completed_intervention, intervention_duration, non_completion_reason, age, sex)
+
+visit_1_exclusive <- filter_data("V1",0) %>% 
+    dplyr::select(
         record_id,
         race:income_level
-    ) |> 
-# codebook_dvep$choices[codebook_dvep$variable == "race"]
-# [1] "c41260, Asiático | c41261, Branco origem europeia | c128994, Branco origem América do Sul | c16352, Negro | c17998, desconhecido | c17649, Outro"
-    mutate(
+    ) %>% 
+        # codebook_dvep$choices[codebook_dvep$variable == "race"]
+        # [1] "c41260, Asiático | c41261, Branco origem europeia |
+        # c128994, Branco origem América do Sul | c16352, Negro | 
+        # c17998, desconhecido | c17649, Outro"
+    dplyr::mutate(
         race = if_else(race == "c41261", "c128994", race)
     )
 
-data_d1_exclusive <- eleg_exclusive |> 
-    left_join(
+data_d1_exclusive <- eleg_exclusive %>% 
+    dplyr::left_join(
         visit_1_exclusive,
         by = join_by(record_id)
 )
@@ -600,30 +430,28 @@ rm(eleg_exclusive)
 rm(visit_1_exclusive)
 ```
 
-### Repeating instruments
-
+### REPEATING INSTRUMENTS
 #### Creating relevant binary variables
 
-##### Hypertension
-
+1. Hypertension
 ```{r}
 ### HYPERTENSION
 #### Extract record IDs associated with hypertension diagnosis
-hypertension_conditions <- I21_conditions_R |> 
-    filter(str_detect(common_comorbidities, "C3117")) |> 
-    pull(record_id)
+hypertension_conditions <- I21_conditions_R %>% 
+    dplyr::filter(str_detect(common_comorbidities, "C3117")) %>% 
+    dplyr::pull(record_id)
 
 #### Extract record IDs associated with antihypertensive drugs
-hypertension_drugs <- I22_drugs_R |> 
-    filter(str_detect(drugs_sql, 
+hypertension_drugs <- I22_drugs_R %>% 
+    dplyr::filter(str_detect(drugs_sql, 
         "C66869|C29098|C61635|C47640_2|C28836|C29254|C62027|C62027_2"
         )
-        ) |> 
-    pull(record_id)
+        ) %>% 
+    dplyr::pull(record_id)
 
 #### Assign hypertension based on conditions or drugs
-data_d1_exclusive <- data_d1_exclusive |> 
-    mutate(hypertension = if_else(
+data_d1_exclusive <- data_d1_exclusive %>% 
+    dplyr::mutate(hypertension = if_else(
         record_id %in% hypertension_conditions, 
         1, 
         if_else(
@@ -637,10 +465,7 @@ rm(hypertension_conditions)
 rm(hypertension_drugs)
 ```
 
-##### Dyslipidemia
-
-###### Hypercolesterolemia
-
+2. Hypercolesterolemia
 ```{r}
 # This new version creates two variable: hypercolesterolemia and hypertrigliceridemia
 
@@ -649,10 +474,10 @@ rm(hypertension_drugs)
 
 # I21_conditions_R %>% distinct(common_comorbidities, descriptive) %>% view()
 
-hypercholesterolemia_conditions <- I21_conditions_R |> 
-    filter(str_detect(common_comorbidities, "C37967")) |> 
+hypercholesterolemia_conditions <- I21_conditions_R %>% 
+    dplyr::filter(str_detect(common_comorbidities, "C37967")) %>% 
     # C37967 = Hipercolesterolemia isolada (LDL ≥ 160)
-    pull(record_id)
+    dplyr::pull(record_id)
 
 #### Extract record IDs associated with antihypercholesterolemia drugs
 
@@ -666,20 +491,20 @@ hypercholesterolemia_conditions <- I21_conditions_R |>
 #> 4 C61527    Atorvastatina 40 mg (Comp.)
 #> 5 C47529    Ezetimiba 10 mg  
 
-hypercholesterolemia_drugs <- I22_drugs_R |> 
-    filter(str_detect(drugs_sql, 
+hypercholesterolemia_drugs <- I22_drugs_R %>% 
+    dplyr::filter(str_detect(drugs_sql, 
         "C29454|C66523_2|C47529|C61527")
-        ) |> 
-    pull(record_id)
+        ) %>% 
+    dplyr::pull(record_id)
 
 #### Extract record IDs associated with abnormal lab results on first lab
-hypercolesterolemia_labs <- data |> 
-    filter(labs_ldl >= 130 | labs_cholesterol >= 190 | labs_cholesterol - labs_hdl >= 160) |>
-    pull(record_id)
+hypercolesterolemia_labs <- data %>% 
+    dplyr::filter(labs_ldl >= 130 | labs_cholesterol >= 190 | labs_cholesterol - labs_hdl >= 160) %>%
+    dplyr::pull(record_id)
 
 #### Assign hypercholesterolemia based on conditions, drugs, or first labs
-data_d1_exclusive <- data_d1_exclusive |> 
-    mutate(hypercholesterolemia = 
+data_d1_exclusive <- data_d1_exclusive %>% 
+    dplyr::mutate(hypercholesterolemia = 
                if_else(record_id %in% hypercholesterolemia_conditions, 1, 
                        if_else(record_id %in% hypercholesterolemia_drugs, 1,
                                if_else(record_id %in% hypercolesterolemia_labs, 1, 0))))
@@ -690,7 +515,7 @@ rm(hypercolesterolemia_labs)
 
 ```
 
-###### Hypertrigliceridemia
+3. Hypertrigliceridemia
 
 ```{r}
 #### Extract record IDs associated with hypertrigliceridemia
@@ -698,10 +523,10 @@ rm(hypercolesterolemia_labs)
 
 # I21_conditions_R %>% distinct(common_comorbidities, descriptive) %>% view()
 
-hypertrigliceridemia_conditions <- I21_conditions_R |> 
-    filter(str_detect(common_comorbidities, "C37971")) |> 
+hypertrigliceridemia_conditions <- I21_conditions_R %>% 
+    dplyr::filter(str_detect(common_comorbidities, "C37971")) %>% 
     # C37971 = Hipertrigliceridemia (TAG ≥ 150 mg/dl)
-    pull(record_id)
+    dplyr::pull(record_id)
 
 #### Extract record IDs associated with antihypercholesterolemia drugs
 
@@ -715,20 +540,20 @@ hypertrigliceridemia_conditions <- I21_conditions_R |>
 #> 4 C61527    Atorvastatina 40 mg (Comp.)
 #> 5 C47529    Ezetimiba 10 mg  
 
-hypertrigliceridemia_drugs <- I22_drugs_R |> 
-    filter(str_detect(drugs_sql, 
+hypertrigliceridemia_drugs <- I22_drugs_R %>% 
+    dplyr::filter(str_detect(drugs_sql, 
         "C87471")
-        ) |> 
-    pull(record_id)
+        ) %>% 
+    dplyr::pull(record_id)
 
 #### Extract record IDs associated with abnormal lab results on first lab
-hypertrigliceridemia_labs <- data |> 
-    filter(labs_triglycerides >= 150) |> 
-    pull(record_id)
+hypertrigliceridemia_labs <- data %>% 
+    dplyr::filter(labs_triglycerides >= 150) %>% 
+    dplyr::pull(record_id)
 
 #### Assign hypercholesterolemia based on conditions, drugs, or first labs
-data_d1_exclusive <- data_d1_exclusive |> 
-    mutate(hypertrigliceridemia = 
+data_d1_exclusive <- data_d1_exclusive %>% 
+    dplyr::mutate(hypertrigliceridemia = 
                if_else(record_id %in% hypertrigliceridemia_conditions, 1, 
                        if_else(record_id %in% hypertrigliceridemia_drugs, 1,
                                if_else(record_id %in% hypertrigliceridemia_labs, 1, 0))))
@@ -739,15 +564,15 @@ rm(hypertrigliceridemia_labs)
 
 ```
 
-Insulin resistance
+4. Insulin resistance
 
 ```{r}
 
 #### Extract record IDs associated with insulin resistance
 
-insulin_conditions <- I21_conditions_R |> 
-    filter(str_detect(common_comorbidities, "C113101|C26747")) |>
-    pull(record_id)
+insulin_conditions <- I21_conditions_R %>% 
+    dplyr::filter(str_detect(common_comorbidities, "C113101|C26747")) %>%
+    dplyr::pull(record_id)
 
 #### Extract record IDs associated with anti-hyperglycemic / hypoglycemic drugs
 
@@ -760,16 +585,16 @@ insulin_conditions <- I21_conditions_R |>
 #> 3 C87618    Gliclazida 30 mg (Comp. de lib. pr.)
 #> 4 C180533   Empagliflozin/Linagliptin (GLYXAMBI)
 
-insulin_drugs <- I22_drugs_R |> 
-    filter(str_detect(drugs_sql, 
+insulin_drugs <- I22_drugs_R %>% 
+    dplyr::filter(str_detect(drugs_sql, 
         "C61612|C61612_2|C87618|C180533"
         )
-        ) |> 
-    pull(record_id)
+        ) %>% 
+    dplyr::pull(record_id)
 
 #### Assign INSULIN RESISTANCE based on conditions or drugs
-data_d1_exclusive <- data_d1_exclusive |> 
-    mutate(insulin = if_else(
+data_d1_exclusive <- data_d1_exclusive %>% 
+    dplyr::mutate(insulin = if_else(
         record_id %in% insulin_conditions, 
         1, 
         if_else(
@@ -783,7 +608,7 @@ rm(insulin_conditions)
 rm(insulin_drugs)
 ```
 
-Drugs that might induce weight loss
+5. Drugs that might induce weight loss
 
 ```{r}
 ### 9.3.4 DRUGS THAT MIGHT INDUCE WEIGHT LOSS
@@ -804,23 +629,23 @@ Drugs that might induce weight loss
 #> 8 C1278_1   Venlafaxina 37,5 mg (Caps.)
 #> 9 C1278_3   Venlafaxina 150 mg (Cáps.) 
 
-drugs_w_loss <- I22_drugs_R |> 
-    filter(str_detect(drugs_sql, 
+drugs_w_loss <- I22_drugs_R %>% 
+    dplyr::filter(str_detect(drugs_sql, 
         "C61939|C62012|C506_1|C1278_2|C1278_1|C1278_3|C47764_1|C47764_2|C61680"
         )
-        ) |> 
-    pull(record_id)
+        ) %>% 
+    dplyr::pull(record_id)
 
 #### Assign drugs_w_loss based on drugs
-data_d1_exclusive <- data_d1_exclusive |> 
-    mutate(drugs_w_loss = if_else(
+data_d1_exclusive <- data_d1_exclusive %>% 
+    dplyr::mutate(drugs_w_loss = if_else(
         record_id %in% drugs_w_loss, 1, 0)
     )
 
 rm(drugs_w_loss)
 ```
 
-Drugs that might induce weight gain
+6. Drugs that might induce weight gain
 
 ```{r}
 ### DRUGS THAT MIGHT INDUCE WEIGHT GAIN
@@ -837,16 +662,16 @@ Drugs that might induce weight gain
 #> 4 C29416    Risperidona 2 mg (Comp.)      
 #> 5 C61917_2  Quetiapina 50 mg (Comp.)    
 
-drugs_w_gain <- I22_drugs_R |> 
-    filter(str_detect(drugs_sql, 
+drugs_w_gain <- I22_drugs_R %>% 
+    dplyr::filter(str_detect(drugs_sql, 
         "C61879|C62005|C61917_2|C29416|C29536_2"
         )
-        ) |> 
-    pull(record_id)
+        ) %>% 
+    dplyr::pull(record_id)
 
 #### Assign drugs_w_loss based on drugs
-data_d1_exclusive <- data_d1_exclusive |> 
-    mutate(drugs_w_gain = if_else(
+data_d1_exclusive <- data_d1_exclusive %>% 
+    dplyr::mutate(drugs_w_gain = if_else(
         record_id %in% drugs_w_gain, 1, 0)
     )
 
@@ -854,13 +679,13 @@ rm(drugs_w_gain)
 
 ```
 
-###### Wrapping up `data_d1_exclusive`
+**Wrapping up `data_d1_exclusive`**
 
 ```{r}
 data_d1_exclusive <- label_choices(data_d1_exclusive, codebook_dvep)
 data_d1_exclusive <- convert_col_type(data_d1_exclusive, codebook_dvep)
-data_d1_exclusive <- data_d1_exclusive |> 
-    mutate(
+data_d1_exclusive <- data_d1_exclusive %>% 
+    dplyr::mutate(
         hypertension = as.factor(hypertension),
         hypercholesterolemia = as.factor(hypercholesterolemia),
         hypertrigliceridemia = as.factor(hypertrigliceridemia),
@@ -875,73 +700,72 @@ data_d1_exclusive <- label_variables(data_d1_exclusive, codebook_dvep)
 #### Lab exames
 
 ```{r}
-I27_labs_R <- filter_data(c("V1","V2","V3"),1,"labs") |> 
-    mutate(
+I27_labs_R <- filter_data(c("V1","V2","V3"),1,"labs") %>% 
+    dplyr::mutate(
         visit = case_when(
             event_name == "1visit_arm_1"    ~ 1,
             event_name == "2visit_arm_1"    ~ 2,
             event_name == "3visit_arm_1"    ~ 3
         ),
         .after = record_id
-        )|> 
+        )%>% 
     select(-event_name, -repeat_instrument, -repeat_instance, -labs_checked_results_yn)
 
 ```
 
 #### Compliance
-
 ```{r}
-compliance_V2 <- data |> 
+compliance_V2 <- data %>% 
     select(
         record_id, event_name,
         filter_variables("V2",1,"compliance")
-        ) |> 
-    filter(event_name == "2visit_arm_1" & cp_compliance_complete == 2) |> 
-    left_join(data |>
-                  filter(event_name == "eleg_arm_1" & !is.na(intervention_start_date)) |> 
+        ) %>% 
+    filter(event_name == "2visit_arm_1" & cp_compliance_complete == 2) %>% 
+    left_join(data %>%
+                  filter(event_name == "eleg_arm_1" & !is.na(intervention_start_date)) %>% 
                   select(record_id,intervention_start_date, conclusion_date),
               by = join_by(record_id)
-              ) |> 
-    left_join(data |>
-                  filter(event_name == "2visit_arm_1" & !is.na(evaluation_date)) |> 
+              ) %>% 
+    left_join(data %>%
+                  filter(event_name == "2visit_arm_1" & !is.na(evaluation_date)) %>% 
                   select(record_id,evaluation_date),
               by = join_by(record_id)
-        ) |> 
+        ) %>% 
     rename(evaluation_date_2 = evaluation_date)
 
-compliance_V3 <- data |> 
+compliance_V3 <- data %>% 
     select(
         record_id, event_name,
         filter_variables("V3",,"compliance")
-        ) |> 
-    filter(event_name == "3visit_arm_1" & cp_compliance_complete == 2) |> 
-    left_join(data |>
-                  filter(event_name == "eleg_arm_1" & !is.na(intervention_start_date)) |> 
+        ) %>% 
+    filter(event_name == "3visit_arm_1" & cp_compliance_complete == 2) %>% 
+    left_join(data %>%
+                  filter(event_name == "eleg_arm_1" & !is.na(intervention_start_date)) %>% 
                   select(record_id,intervention_start_date, conclusion_date),
               by = join_by(record_id)
-              ) |> 
-    left_join(data |>
-                  filter(event_name == "2visit_arm_1" & !is.na(evaluation_date)) |> 
+              ) %>% 
+    left_join(data %>%
+                  filter(event_name == "2visit_arm_1" & !is.na(evaluation_date)) %>% 
                   select(record_id,evaluation_date),
               by = join_by(record_id)
-        ) |> 
+        ) %>% 
     rename(evaluation_date_2 = evaluation_date)
 
 I29_compliance <- bind_rows(
     compliance_V2,compliance_V3
-) |> 
+) %>% 
     mutate(
         record_id = as.integer(record_id)
-    ) |> 
+    ) %>% 
     mutate(
         visit = case_when(
             event_name == "2visit_arm_1"    ~ 2,
             event_name == "3visit_arm_1"    ~ 3
         ),
         .after = record_id
-    ) |> 
-    arrange(record_id,visit) |> 
-    select(record_id, visit, intervention_start_date, evaluation_date_2, conclusion_date, cp_taking_as_directed_yn, cp_schedule, cp_schedule_other, cp_missed_dose_yn, cp_missed_dose_count, cp_discontinued_yn, cp_discontinued_n_days, cp_discontinued_reason_other, cp_ran_out_of_drug_yn, cp_ran_out_reason, cp_perceived_improvement_yn, cp_perceived_improvement, cp_medication_confidence_scale, cp_self_reported_compliance_rate)  |> 
+    ) %>% 
+    arrange(record_id,visit) %>% 
+    select(record_id, visit, intervention_start_date, evaluation_date_2, conclusion_date, cp_taking_as_directed_yn, cp_schedule, cp_schedule_other, cp_missed_dose_yn, cp_missed_dose_count, cp_discontinued_yn, cp_discontinued_n_days, cp_discontinued_reason_other, cp_ran_out_of_drug_yn, cp_ran_out_reason, cp_perceived_improvement_yn, cp_perceived_improvement, cp_medication_confidence_scale, cp_self_reported_compliance_rate)  %>% 
     convert_col_type()
 
 rm(compliance_V2)
@@ -953,14 +777,11 @@ I29_compliance <- label_choices(I29_compliance, codebook_dvep)
 ```
 
 #### Adverse events
-
 ```{r}
-## 9.9 Adverse events
-
-I30_events_R <- filter_data(,1,"events") |> 
+I30_events_R <- filter_data(,1,"events") %>% 
     filter(
         cp_adverse_event_this_cycle_yn == 1
-    ) |>
+    ) %>%
     mutate(
         visit = case_when(
             event_name == "1visit_arm_1"    ~ 1,
@@ -968,24 +789,22 @@ I30_events_R <- filter_data(,1,"events") |>
             event_name == "3visit_arm_1"    ~ 3
         ),
         .after = record_id
-        )|> 
+        )%>% 
     select(-event_name, -repeat_instrument, -cp_additional_adverse_events_yn,  -cp_adverse_event_this_cycle_yn)
 
 I30_events_R <- label_variables(I30_events_R, codebook_dvep)
 I30_events_R <- label_choices(I30_events_R, codebook_dvep) 
 ```
 
-### Non-repeating instruments
+### NON-REPEATING INSTRUMENTS
 
-#### Data common to V1 and V3 (`d1d3`)
-
+#### RELEVANT VARIABLES FROM V1 & V3
 ```{r}
-
-### Non-repeating data common to V1 and V3 (`d1d3`)
+# Non-repeating data common to V1 and V3 (`d1d3`)
 # calculate mean of handgrip strenght
 # select relevant variables
 
-d1d3 <- filter_data(c("V1","V3"),0) |> 
+d1d3 <- filter_data(c("V1","V3"),0) %>% 
     mutate(
         handgrip = if_else(
             is.na(handgrip_right_mean) & is.na(handgrip_left_mean),
@@ -1000,13 +819,13 @@ d1d3 <- filter_data(c("V1","V3"),0) |>
                     )
                 )
             )
-        ) |> 
+        ) %>% 
     mutate(
         visit = case_when(
             event_name == "1visit_arm_1"    ~ 1,
             event_name == "3visit_arm_1"    ~ 3
         )
-    ) |> 
+    ) %>% 
     select(
         record_id, visit,
         whoqol_score_overall, # 4. whoqol
@@ -1030,17 +849,17 @@ d1d3 <- filter_data(c("V1","V3"),0) |>
         phase_angle, resistance, reactance, smoked_24h_yn, exercised_24h_yn, alcohol_24h_yn, light_clothes_yn, time_fasted_food, time_fasted_liquid)
 ```
 
-#### Data from the second visit (`d2`)
+#### RELEVANT VARIABLES FROM V2
 
 ```{r}
-## 9.5 Non-repeating data from the second visit (`d2`)
+##Non-repeating data from the second visit
 
-d2 <- filter_data("V2",0) |> 
+d2 <- filter_data("V2",0) %>% 
     mutate(
         visit = case_when(
             event_name == "2visit_arm_1"    ~ 2
         )
-    ) |> 
+    ) %>% 
     select(
         record_id, visit,
         height, weight, abdomen, arm, bmi, # 7. measures
@@ -1055,38 +874,68 @@ d2 <- filter_data("V2",0) |>
         )
 ```
 
-### Joining
+### JOINS
 
-#### Bind rows from `d1d3` and `d2`: `data_filtered`
+#### bind_rows() from `d1d3` and `d2` to create `data_filtered`
 
 ```{r}
 ## 9.6 Bind rows for non-repeating variables from D1/D2/D3
 data_filtered <- bind_rows(
     d1d3,d2
-) |> 
+) %>% 
     mutate(
         record_id = as.integer(record_id),
         visit = as.integer(visit)
-) |> 
+) %>% 
     arrange(
         record_id, visit
-    ) |> 
+    ) %>% 
     convert_col_type()
 
 rm(d1d3)
 rm(d2)
 ```
 
-#### Left_joins
+#### left_join() to `data_filtered`
 
-```{r, eval=FALSE, echo=FALSE}
-##### BIA data to `data_filtered`
-##### As of April 09th, 2025: BIA data is being collected on REDCap and not on the BIA device. Therefore, we are using the variables collected on REDCap, and this code is deprecated.
+```{r}
 
-## 9.7. Left_join BIA data to `data_filtered`
-data_filtered <- data_filtered |> 
+# COMPLIANCE DATA
+data_filtered <- data_filtered %>% 
     left_join(
-        data_bia |> 
+        I29_compliance,
+        by = join_by(record_id, visit)
+    )
+
+# data_d1_exclusive
+data_filtered <- data_d1_exclusive %>% 
+    right_join(
+        data_filtered,
+        by = join_by(record_id)
+    ) %>% 
+    relocate(
+        visit,
+        .after = record_id
+    )
+
+# LAB EXAMS
+data_filtered <- data_filtered %>% 
+    left_join(I27_labs_R,
+              by = join_by(record_id, visit)
+    )
+
+data_filtered <- label_variables(data_filtered, codebook_dvep)
+data_filtered <- data_filtered %>% 
+    mutate(
+        visit = as.integer(visit)
+    )
+```
+
+#### left_join() **SECA BIA DATA** to `data_filtered_seca`
+```{r}
+data_filtered_seca <- data_filtered %>% 
+    left_join(
+        data_bia %>% 
             select(
                 record_id, visit,
                 phaseangle, raverage, xcaverage, 
@@ -1099,49 +948,9 @@ data_filtered <- data_filtered |>
 
 ```
 
-##### Compliance data to `data_filtered`
 
-```{r}
-data_filtered <- data_filtered |> 
-    left_join(
-        I29_compliance,
-        by = join_by(record_id, visit)
-    )
 
-```
-
-##### data_d1_exclusive to `all data`
-
-```{r}
-data_filtered <- data_d1_exclusive |> 
-    right_join(
-        data_filtered,
-        by = join_by(record_id)
-    ) |> 
-    relocate(
-        visit,
-        .after = record_id
-    )
-
-```
-
-##### Labs to `data_filtered`
-
-```{r}
-data_filtered <- data_filtered |> 
-    left_join(I27_labs_R,
-              by = join_by(record_id, visit)
-    )
-
-data_filtered <- label_variables(data_filtered, codebook_dvep)
-data_filtered <- data_filtered |> 
-    mutate(
-        visit = as.integer(visit)
-    )
-```
-
-### Supertible (`data_instruments`)
-
+# SUPERTIBLE (`data_instruments`)
 Creates a supertibble with one tibble for each instrument
 
 ```{r}
@@ -1172,9 +981,9 @@ data_instruments <- lapply(names(instruments), function(instr_name) {
     vars_to_check <- setdiff(selected_vars, always_present_vars)
     
     # Filtrar os dados para o instrumento atual
-    filtered_tibble <- data  |> 
+    filtered_tibble <- data  %>% 
         # Seleciona as colunas correspondentes às variáveis do instrumento atual
-        select(all_of(selected_vars))  |> 
+        select(all_of(selected_vars))  %>% 
         
         # Filtra as linhas onde pelo menos uma das variáveis relevantes (não constantes) não é NA
         filter(
@@ -1232,9 +1041,12 @@ rm(file_path)
 rm(instr_name)
 ```
 
-------------------------------------------------------------------------
-
 # DATA ANALYSIS
+
+```{r}
+library(skimr)
+```
+
 
 ```{r, eval=FALSE, echo=FALSE}
 ## Simplifying Environment
@@ -1257,304 +1069,10 @@ rm(codebook_bia, codebook_dvep, codebook_ncit, codebook_structure)
 # codebooks\$data[["structure"]]
 ```
 
-## Functions for data analysis
-
-### summarize_numerical()
-
-*Description*
-
-Summarize numeric variables with their means and 95% confidence intervals. Optionally groups results by a grouping variable and uses variable labels for readability. Output is returned as a tidy data frame in either long or wide format depending on grouping.
-
-*Usage*
-
-`summarize_numerical(data, group_col = NULL, use_labels = TRUE)`
-
-*Arguments*
-
--   data: a data frame containing the dataset to summarize.
--   group_col: an optional string indicating the name of the grouping variable. If NULL, the summary is ungrouped.
--   use_labels (Logical): If TRUE, uses the variable's label attribute (if available). If FALSE, uses the variable name. Defaults to TRUE.
-
-*Value*
-
-A `data.frame` containing summary statistics for numeric variables. If `group_col` is specified, the output is in wide format with one column per group. Each value is formatted as `"mean (lower–upper)"`, where the interval is a 95% confidence interval.
-
-```{r}
-summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
-  # Extract variable labels, falling back to variable names if labels are missing
-  variable_labels <- sapply(names(data), function(var) {
-    label <- attr(data[[var]], "label")
-    if (is.null(label) || !use_labels) var else label
-  }, simplify = TRUE)
-  
-  # Identify numeric columns
-  numeric_cols <- data %>% select(where(is.numeric)) %>% names()
-  
-  if (!is.null(group_col)) {
-    # Grouped summary
-    summary <- data %>%
-      group_by(across(all_of(group_col))) %>%
-      summarise(across(
-        all_of(numeric_cols),
-        ~ paste0(
-          round(mean(.x, na.rm = TRUE), 1), 
-          " (", 
-          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-          "–", 
-          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-          ")"
-        ),
-        .names = "{.col}"
-      )) %>%
-      pivot_longer(-all_of(group_col), names_to = "Variable", values_to = "Value") %>%
-      mutate(Variable = variable_labels[Variable]) %>%
-      pivot_wider(names_from = all_of(group_col), values_from = Value)  # Pivot to wide format
-  } else {
-    # Ungrouped summary
-    summary <- data %>%
-      summarise(across(
-        all_of(numeric_cols),
-        ~ paste0(
-          round(mean(.x, na.rm = TRUE), 1), 
-          " (", 
-          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-          "–", 
-          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-          ")"
-        ),
-        .names = "{.col}"
-      )) %>%
-      pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
-      mutate(Variable = variable_labels[Variable])
-  }
-  
-  return(summary)
-}
-
-```
-
-------------------------------------------------------------------------
-
-### summarize_categorical()
-
-`summarize_categorical(data, group_col = NULL, use_labels = TRUE)`
-
-Arguments: - `data`: dataframe - `group_col = NULL`: grouping column; defaults to NULL - `use_labels = TRUE`: If set to true, uses labels instead of variable names
-
-```{r}
-summarize_categorical <- function(data, group_col = NULL, use_labels = TRUE) {
-  # Extract variable labels, falling back to variable names if labels are missing
-  variable_labels <- sapply(names(data), function(var) {
-    label <- attr(data[[var]], "label")
-    if (is.null(label) || !use_labels) var else label
-  }, simplify = TRUE)
-  
-  # Identify categorical columns
-  categorical_cols <- data %>% select(where(~ is.character(.x) || is.factor(.x))) %>% names()
-  
-  if (!is.null(group_col)) {
-    # For grouped data
-    summary <- lapply(categorical_cols, function(col) {
-      data %>%
-        group_by(across(all_of(group_col)), .drop = FALSE) %>%
-        count(!!sym(col), .drop = FALSE, name = "Freq") %>%
-        mutate(
-          Percent = round(100 * Freq / sum(Freq), 1),
-          Variable = variable_labels[col] # Use labels or names
-        ) %>%
-        rename(Level = !!sym(col)) %>%
-        ungroup()
-    }) %>%
-      bind_rows()
-  } else {
-    # For ungrouped data
-    summary <- lapply(categorical_cols, function(col) {
-      data %>%
-        count(!!sym(col), .drop = FALSE, name = "Freq") %>%
-        mutate(
-          Percent = round(100 * Freq / sum(Freq), 1),
-          Variable = variable_labels[col] # Use labels or names
-        ) %>%
-        rename(Level = !!sym(col))
-    }) %>%
-      bind_rows()
-  }
-  
-  # Arrange columns for consistency
-  summary <- summary %>%
-    select(Variable, Level, Freq, Percent, everything())
-  
-  return(summary)
-}
-
-```
-
-------------------------------------------------------------------------
-
-### compare_groups()
-
-*Description*
-
-Compare variables across groups using appropriate statistical tests. Performs t-tests for numeric variables and chi-squared or Fisher's exact tests for categorical variables. Optionally uses variable labels for better readability and outputs results as a nicely formatted `gt` table or raw data frame.
-
-*Usage*
-
-`compare_groups(data, group_col = "allocation_group", use_labels = TRUE, return_df = FALSE)`
-
-*Arguments*
-
--   data: a data frame containing the dataset to analyze.
--   group_col: a string indicating the name of the grouping variable. Defaults to "allocation_group".
--   use_labels (Logical): If TRUE, uses the variable's label attribute (if available). If FALSE, uses the variable name. Defaults to TRUE.
--   return_df (Logical): If TRUE, returns a raw data frame. If FALSE, returns a formatted `gt` table. Defaults to FALSE.
-
-*Value*
-
-A `gt` table or a `data.frame` containing the results of statistical comparisons. Each row includes: - Variable: the name or label of the variable - Test: the type of statistical test used - Statistic: the test statistic (if available) - P_value: the p-value from the test
-
-```{r}
-compare_groups <- function(data, group_col = "allocation_group", use_labels = TRUE, return_df = FALSE) {
-  
-  # Extract variable labels, default to variable names if labels are missing
-  variable_labels <- sapply(names(data), function(var) {
-    label <- attr(data[[var]], "label") # Check for the 'label' attribute
-    if (is.null(label) || !use_labels) var else label # Use variable name if label is missing
-  }, simplify = TRUE)
-  
-  # Prepare results storage
-  results <- data.frame(
-    Variable = character(), # The variable being tested
-    Test = character(),     # The type of test (t-test or chi-squared/Fisher's)
-    Statistic = numeric(),  # The test statistic value
-    P_value = numeric(),    # The p-value from the test
-    stringsAsFactors = FALSE # Ensure strings are not converted to factors
-  )
-  
-  # Loop through all columns in the data, excluding the grouping column
-  for (var in setdiff(names(data), group_col)) {
-    if (is.numeric(data[[var]])) {
-      # Run t-test for numeric variables
-      test_result <- t.test(data[[var]] ~ data[[group_col]])
-      
-      # Append the t-test results to the results data.frame
-      results <- rbind(results, data.frame(
-        Variable = variable_labels[var], # Use label or name
-        Test = "t-test",                 
-        Statistic = round(test_result$statistic, 2), 
-        P_value = round(test_result$p.value, 4)
-      ))
-    } else if (is.factor(data[[var]]) || is.character(data[[var]])) {
-      # Run chi-squared or Fisher's exact test
-      contingency_table <- table(data[[var]], data[[group_col]])
-      
-      if (any(chisq.test(contingency_table)$expected < 5)) {
-        # Use Fisher's exact test
-        test_result <- fisher.test(contingency_table)
-        results <- rbind(results, data.frame(
-          Variable = variable_labels[var],
-          Test = "Fisher's exact test",
-          Statistic = NA,
-          P_value = round(test_result$p.value, 4)
-        ))
-      } else {
-        # Use chi-squared test
-        test_result <- tryCatch(
-          chisq.test(contingency_table), 
-          error = function(e) list(statistic = NA, p.value = NA)
-        )
-        results <- rbind(results, data.frame(
-          Variable = variable_labels[var],
-          Test = "Chi-squared test",
-          Statistic = round(test_result$statistic, 2),
-          P_value = round(test_result$p.value, 4)
-        ))
-      }
-    }
-  }
-  
-  # If return_df = TRUE, return the results as a data frame
-  if (return_df) {
-    return(results)
-  }
-  
-  # Return results as a gt table
-  gt_table <- results %>%
-    gt() %>%
-    tab_header(
-      title = "Hypothesis Test Results",
-      subtitle = paste("Comparison of", group_col)
-    ) %>%
-    cols_label(
-      Variable = "Variable",
-      Test = "Test Type",
-      Statistic = "Test Statistic",
-      P_value = "P-value"
-    )
-  
-  return(gt_table) # Return the formatted gt table
-}
-
-```
-
-*Step-by-step Explanation of the compare_groups() Function*
-
-1.  Extract Variable Labels
-
-    -   The function loops through names(data) and tries to get the "label" attribute of each variable using attr().
-    -   If the label is NULL or if use_labels = FALSE, it uses the variable name instead.
-    -   This ensures the results will display either readable labels (if available) or default names.
-
-2.  Prepare Results Storage
-
-    -   A new, empty data.frame is created with columns:
-        -   Variable – will store the label or name of the tested variable.
-        -   Test – describes the type of test used (t-test, Chi-squared, or Fisher's exact).
-        -   Statistic – the numerical value of the test statistic (e.g., t or χ² value).
-        -   P_value – the resulting p-value.
-    -   stringsAsFactors = FALSE is specified to avoid automatic factor conversion.
-
-3.  Loop Through Variables
-
-    -   The function skips the grouping variable (group_col) and loops over the remaining columns.
-
-    For Numeric Variables:
-
-    -   Performs a two-sample t-test using the formula interface data[[var]] \~ data[[group_col]].
-    -   Appends results with t.test$statistic and t.test$p.value (rounded).
-
-    For Categorical Variables:
-
-    -   Creates a contingency table with table(data[[var]], data[[group_col]]).
-    -   Checks the expected frequencies using chisq.test(contingency_table)\$expected.
-    -   If any expected cell count \< 5, switches to Fisher’s exact test.
-    -   Otherwise, performs a Chi-squared test, with a tryCatch() to prevent errors in edge cases (e.g., sparse data or empty levels).
-
-4.  Error Handling
-
-    -   For the chi-squared test, any errors (e.g., structural issues with the table) are caught using tryCatch().
-    -   If an error occurs, Statistic and P_value are both returned as NA, allowing the function to continue without breaking.
-
-5.  Output as a gt Table
-
-    -   If return_df = TRUE, the raw results dataframe is returned.
-    -   Otherwise, the results are passed to the gt() package to create a styled, publication-ready table with:
-        -   A title: "Hypothesis Test Results"
-        -   A subtitle: "Comparison of {group_col}"
-        -   Custom column labels using cols_label()
-
-Example Usage
-
-```{r, eval=FALSE, echo=FALSE}
-# Run the function and display results
-test_results <- compare_groups(data_d1_exclusive)
-
-# Print the results
-print(test_results)
-```
-
 # RESULTS
 
 # Baseline
+
 ```{r}
 file_path_baseline <- "Output/Baseline/Data_files"
 database <- data
@@ -1572,8 +1090,8 @@ summary(data["conclusion_date"])
 summary(data_d1_exclusive$completed_intervention)
 ```
 
-
 ## Abandonos
+
 Dos participantes incluídos, 23 (30.6%) não completaram os três meses de intervenção. A taxa de abandono foi maior nos homens, com 4 abandonos (40% dos homens incluídos), sendo 2 de cada grupo. No sexo feminino, a taxa de abandono foi de 29.2%, sendo oito do grupo placebo e 11 do grupo intervenção.
 
 ```{r, eval=FALSE}
@@ -1582,8 +1100,8 @@ Dos participantes incluídos, 23 (30.6%) não completaram os três meses de inte
 (23/75)*100 
 
 ## Abandono por sexo e grupo de alocação
-data_d1_exclusive |> 
-    filter(completed_intervention == "Não") |> 
+data_d1_exclusive %>% 
+    filter(completed_intervention == "Não") %>% 
     count(sex, allocation_group, name = "Total")
 
 ## Taxa de abandono por sexo
@@ -1594,6 +1112,7 @@ table(data$non_completion_reason)
 ```
 
 ### Contingency table by sex
+
 ```{r, eval=FALSE}
 # Criar a tabela de contingência
 tabela <- table(data_d1_exclusive$sex, data_d1_exclusive$completed_intervention)
@@ -1610,6 +1129,7 @@ print(teste_qui2)
 ```
 
 ### Contingency table by sex, controlling for allocation group
+
 ```{r, eval=FALSE}
 # Criar a tabela de contingência estratificada por allocation_group
 tabela <- table(data_d1_exclusive$sex, 
@@ -1627,8 +1147,8 @@ print(resultado_mh)
 
 ```
 
-
 ### Log reg
+
 ```{r, eval=FALSE}
 model <- glm(completed_intervention ~ sex * allocation_group, data = data_d1_exclusive, family = binomial)
 
@@ -1639,6 +1159,7 @@ exp(cbind(OR = coef(model), confint(model)))
 ```
 
 ## Participant's characteristics (data_d1_exclusive)
+
 ```{r, eval=FALSE}
 # ALL
 baseline_num <- summarize_numerical(data_d1_exclusive) # `summarize_numerical()`
@@ -1679,31 +1200,31 @@ group_comparison <- compare_groups(data_d1_exclusive) #`compare_groups`
 print(group_comparison)
 ```
 
-Descriptive:
-Drugs that might induce weight loss
+Descriptive: Drugs that might induce weight loss
+
 ```{r, eval=FALSE}
-drugs_w_loss_descriptive <- I22_drugs_R |> 
+drugs_w_loss_descriptive <- I22_drugs_R %>% 
     dplyr::filter(stringr::str_detect(drugs_sql, 
         "C61939|C62012|C506_1|C1278_2|C1278_1|C1278_3|C47764_1|C47764_2|C61680"
-    )) |> 
-    dplyr::pull(descriptive) |> 
-    stringr::str_extract("^[^0-9]+") |> 
-    stringr::str_trim() |> 
-    base::unique() |> 
+    )) %>% 
+    dplyr::pull(descriptive) %>% 
+    stringr::str_extract("^[^0-9]+") %>% 
+    stringr::str_trim() %>% 
+    base::unique() %>% 
     cat(sep = ", ")
 
-drugs_w_gain <- I22_drugs_R |> 
+drugs_w_gain <- I22_drugs_R %>% 
     filter(str_detect(drugs_sql, 
-        "C61879|C62005|C61917_2|C29416|C29536_2")) |> 
-    dplyr::pull(descriptive) |> 
-    stringr::str_extract("^[^0-9]+") |> 
-    stringr::str_trim() |> 
-    base::unique() |> 
+        "C61879|C62005|C61917_2|C29416|C29536_2")) %>% 
+    dplyr::pull(descriptive) %>% 
+    stringr::str_extract("^[^0-9]+") %>% 
+    stringr::str_trim() %>% 
+    base::unique() %>% 
     cat(sep = ", ")
 ```
 
-
 **Clear** Participant's characteristics (data_d1_exclusive)
+
 ```{r, eval=FALSE}
 # CLEAR
 rm(baseline_num)
@@ -1715,14 +1236,14 @@ rm(drugs_w_loss_descriptive)
 
 ```
 
-Comparação da proporção do sexo dos participantes segundo o grupo de alocação
-Na verdade essa análise foi redundante - já foi feita em `baseline_cat_group`
+Comparação da proporção do sexo dos participantes segundo o grupo de alocação Na verdade essa análise foi redundante - já foi feita em `baseline_cat_group`
+
 ```{r, eval=FALSE}
-group_by_sex <- data_d1_exclusive |> 
-    group_by(sex, allocation_group) |> 
-    count() |> 
-    pivot_wider(names_from = allocation_group, values_from = n, values_fill = 0) |>
-    column_to_rownames(var = "sex") |> # Converts the 'sex' column into row names
+group_by_sex <- data_d1_exclusive %>% 
+    group_by(sex, allocation_group) %>% 
+    count() %>% 
+    pivot_wider(names_from = allocation_group, values_from = n, values_fill = 0) %>%
+    column_to_rownames(var = "sex") %>% # Converts the 'sex' column into row names
     as.matrix()
 
 group_by_sex_chisq <- chisq.test(group_by_sex)
@@ -1735,18 +1256,18 @@ rm(group_by_sex_chisq)
 rm(group_by_sex_FET)
 ```
 
-
 ## Lab exames
+
 ```{r, eval=FALSE}
 # filter first visit and relevant variables
-labs_baseline <- I27_labs_R |> 
+labs_baseline <- I27_labs_R %>% 
     filter(
         visit == 1
-    ) |> 
+    ) %>% 
     select(
         -visit, -labs_date, -labs_beta_hcg , -labs_notes
-    ) |> left_join(
-        data_d1_exclusive |> 
+    ) %>% left_join(
+        data_d1_exclusive %>% 
             select(record_id, allocation_group),
                    by = "record_id"
                   )
@@ -1758,6 +1279,7 @@ print(baseline_labs_baseline_groups_compare) #print
 ```
 
 **Clear** Lab exams
+
 ```{r, eval=FALSE}
 rm(labs_baseline)
 rm(baseline_labs_baseline)
@@ -1766,6 +1288,7 @@ rm(baseline_labs_baseline_groups_compare)
 ```
 
 **CPR**
+
 ```{r, eval=FALSE}
 
 plot(labs_baseline$labs_crp)
@@ -1791,25 +1314,27 @@ rm(cpr_bp)
 rm(labs_baseline$labs_crp_log)
 ```
 
-
 ## BIA
+
 ### Baseline
+
 ```{r, eval=FALSE}
-bia_baseline <- data_bia |>
+bia_baseline <- data_bia %>%
     filter(
         visit == 1
-    ) |> 
+    ) %>% 
     select(
         record_id, phaseangle:w_ecw
-        ) |> 
+        ) %>% 
     dplyr::left_join(
-        data_d1_exclusive |> 
+        data_d1_exclusive %>% 
             select(record_id, allocation_group, sex),
                    by = "record_id"
         )
 ```
 
 ### Comparing between males and females
+
 ```{r, eval=FALSE}
 #by sex
 bia_baseline_sex <- summarize_numerical(bia_baseline, "sex") 
@@ -1818,9 +1343,10 @@ print(bia_baseline_sex_compare) # print
 ```
 
 ### Males
+
 ```{r, eval=FALSE}
 # Filter males
-BIA_V1_M <- bia_baseline |> 
+BIA_V1_M <- bia_baseline %>% 
     filter(
         sex == "Masculino"
     )
@@ -1894,9 +1420,10 @@ write_csv(bia_males, here("Output", "Baseline", "Tables", "bia_males.csv"))
 ```
 
 ### Females
+
 ```{r, eval=FALSE}
 # Filter males
-BIA_V1_F <- bia_baseline |> 
+BIA_V1_F <- bia_baseline %>% 
     filter(
         sex == "Feminino"
     )
@@ -1970,22 +1497,23 @@ write_csv(bia_females, here("Output", "Baseline", "Tables", "bia_females.csv"))
 ```
 
 ## Handgrip
+
 ```{r, eval=FALSE}
-handgrip <- data |> 
-    select(record_id, event_name, handgrip_right_mean, handgrip_left_mean) |> 
+handgrip <- data %>% 
+    select(record_id, event_name, handgrip_right_mean, handgrip_left_mean) %>% 
     filter(
         event_name == "1visit_arm_1"
-    ) |> 
+    ) %>% 
     filter(
         !is.na(handgrip_right_mean) | !is.na(handgrip_left_mean)
-    ) |> 
+    ) %>% 
     left_join(
-        data_d1_exclusive |> 
+        data_d1_exclusive %>% 
             select(
                 record_id, sex, allocation_group
             ),
         by = "record_id"
-    ) |> 
+    ) %>% 
     mutate(
         handgrip = rowMeans(
             across(c(handgrip_left_mean, handgrip_right_mean)),
@@ -1997,13 +1525,13 @@ handgrip <- data |>
 summarize_numerical(handgrip,"sex")
 compare_groups(handgrip,"sex")
 
-# handgrip |> 
+# handgrip %>% 
     filter(
         sex == "Masculino"
-    ) |> 
+    ) %>% 
     group_by(
         allocation_group
-    ) |> 
+    ) %>% 
     summarize(
         `Média da mão direita` = mean(handgrip_right_mean, na.rm = TRUE),
         `Média da mão esquerda` = mean(handgrip_left_mean, na.rm = TRUE),
@@ -2011,7 +1539,7 @@ compare_groups(handgrip,"sex")
     )
 
 # Males
-handgrip_man <- handgrip |> 
+handgrip_man <- handgrip %>% 
     filter(
         sex == "Masculino"
     )
@@ -2019,7 +1547,7 @@ handgrip_man_num <- print(summarize_numerical(handgrip_man, "allocation_group"))
 handgrip_man_compare <- print(compare_groups(handgrip_man, "allocation_group"))
 
 # Females
-handgrip_fem <- handgrip |> 
+handgrip_fem <- handgrip %>% 
     filter(
         sex == "Feminino"
     )
@@ -2027,15 +1555,14 @@ handgrip_fem_num <- print(summarize_numerical(handgrip_fem, "allocation_group"))
 handgrip_fem_compare <- print(compare_groups(handgrip_fem, "allocation_group"))
 ```
 
-
-
 ## Questionnaires
+
 ```{r, eval=FALSE}
-questionnaires <- data_filtered |> 
-    ungroup() |> 
+questionnaires <- data_filtered %>% 
+    ungroup() %>% 
     filter(
         visit == 1
-    ) |> 
+    ) %>% 
     select(
         record_id, allocation_group, sex, whoqol_score_overall:ecap_score
     )
@@ -2069,25 +1596,27 @@ anova_ecap <- aov(ecap_score ~ sex * allocation_group, data = questionnaires)
 summary(anova_ecap)
 
 ```
+
 ## Adverse Events
+
 ```{r, eval=FALSE}
 adverse_events <- read_csv('/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Analysis/adverse_events.csv')
 
 adverse_events$`Nome completo` <- substr(adverse_events$`Nome completo`,1,2)
 colnames(adverse_events) <- trimws(colnames(adverse_events))
 
-adverse_events_yes <- adverse_events |>
+adverse_events_yes <- adverse_events %>%
     filter(
         `Algum Evento Adverso neste ciclo?` == "Sim"
-    ) |> 
+    ) %>% 
     mutate(
         `Nome completo` = as.integer(`Nome completo`)
-    ) |>
+    ) %>%
     left_join(
-        data_d1_exclusive |>
+        data_d1_exclusive %>%
             select(record_id, sex, allocation_group),
         by = join_by(`Nome completo` == record_id)
-    ) |> 
+    ) %>% 
     mutate(
         `Event Name` = as.factor(`Event Name`),
         `Evento Adverso Grave?  ` = as.factor(`Evento Adverso Grave?  `),
@@ -2107,8 +1636,8 @@ adverse_events_cat <- summarize_categorical(adverse_events_yes)
 summary(adverse_events_yes)
 ```
 
-**Association between visit (time point) and severity of adverse event**
-Testing for an association between visit (time point) and severity of adverse events to evaluate whether the likelihood of experiencing severe adverse events changes as the intervention progresses (Chi-squared test of independence)
+**Association between visit (time point) and severity of adverse event** Testing for an association between visit (time point) and severity of adverse events to evaluate whether the likelihood of experiencing severe adverse events changes as the intervention progresses (Chi-squared test of independence)
+
 ```{r, eval=FALSE}
 # contingency table
 table_ae <- table(adverse_events_yes$`Event Name`, adverse_events_yes$Grau)
@@ -2126,7 +1655,8 @@ adverse_events_yes$allocation_group
 
 ```
 
---> Running Mantel-Haenszel test to control for the intervention group
+--\> Running Mantel-Haenszel test to control for the intervention group
+
 ```{r, eval=FALSE}
 library(gmodels)
 
@@ -2153,28 +1683,31 @@ print(mantel_test)
 
 ```
 
-
-
 **By severity**
+
 ```{r, eval=FALSE}
 table_ae <- table(adverse_events_yes$Classificação, adverse_events_yes$Grau)
 print(table_ae)
 ```
+
 **By causality**
+
 ```{r, eval=FALSE}
 table_ae <- table(adverse_events_yes$Classificação, adverse_events_yes$`Atribuição de causalidade`)
 View(table_ae)
 ```
 
 **Gastrointestinal**
+
 ```{r, eval=FALSE}
-ae_gastrointestinal <- adverse_events_yes |> 
+ae_gastrointestinal <- adverse_events_yes %>% 
     filter(
         Classificação == "Gastrointestinal"
     )
 ```
 
 **Grouping events by classification**
+
 ```{r, eval=FALSE}
 
 # Group by Classificação and Evento Adverso, count occurrences, and calculate percentages
@@ -2202,8 +1735,8 @@ write_lines(paste(formatted_output$Result, collapse = "\n"), paste0(file_path_ba
 
 ```
 
-
 **Clear**
+
 ```{r, eval=FALSE}
 rm(questionnaires)
 rm(questionnaires_num)
@@ -2211,8 +1744,8 @@ rm(questionnaires_compare)
 
 ```
 
-
 **Clear**
+
 ```{r, eval=FALSE}
 rm()
 rm()
@@ -2221,8 +1754,8 @@ rm()
 rm()
 ```
 
-
 **Clear**
+
 ```{r, eval=FALSE}
 rm()
 rm()
@@ -2231,8 +1764,8 @@ rm()
 rm()
 ```
 
-
 **Clear**
+
 ```{r, eval=FALSE}
 rm()
 rm()
@@ -2240,11 +1773,449 @@ rm()
 rm()
 rm()
 ```
-
 
 Os participantes foram recrutados entre 9 de agosto de 2023 e `r max(database$consent_date, na.rm = TRUE)`. O estudo foi concluído em 26 de julho de 2024.
 
 ## Desfecho Primário
 
 ### Efeito sobre o ângulo de fase
+
+```{r}
+filter_codebook(form_name = "bia", included = 1) %>% pull(variable)
+filter_data(visit = c("V1","V3"), form_name = "bia")
+```
+
+```{r}
+data %>% filter(
+    !is.na(phase_angle) 
+) %>% 
+    select(
+        filter_codebook(form_name = "bia", included = 1) %>% pull(variable)
+    ) %>% 
+    skimr::skim()
+```
+
+```{r}
+typeof(data$smoked_24h_yn)
+```
+
+```{r}
+library(lme4)
+library(lmerTest) # Adds p-values to summary()
+# model <- lmer(outcome ~ time + group + (1 | id), data = df)
+
+model1 <- lmer(phase_angle ~ visit + allocation_group + (1 | record_id), data = data_filtered)
+model1
+
+summary(model1)
+
+plot(model1)
+
+res <- resid(model1, type = "pearson")
+fitted_vals <- fitted(model1)
+plot(fitted_vals, res, 
+     xlab = "Fitted values", ylab = "Pearson residuals")
+abline(h = 0, col = "gray")
+```
+
+```{r}
+library(ggplot2)
+ggplot(data_filtered, aes(x = visit, y = phase_angle, group = record_id, color = allocation_group)) +
+  geom_line(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE)
+
+```
+
+```{r}
+model2 <- lmer(phase_angle ~ visit * allocation_group + (1 | record_id), data = data_filtered)
+summary(model2)
+```
+
+```{r}
+model3 <- lmer(labs_crp ~ visit + allocation_group + (1 | record_id), data = data_filtered)
+
+summary(model3)
+
+plot(model3)  # Residuals vs. fitted
+
+qqnorm(resid(model3)); qqline(resid(model3))  # Normality check
+```
+
+.
+
+```{r}
+model3_log <- lmer(log1p(labs_crp) ~ visit + allocation_group + (1 | record_id), data = data_filtered)
+summary(model3_log)
+
+plot(model3_log)
+
+qqnorm(resid(model3_log)); qqline(resid(model3_log))  # Normality check
+```
+
+**log+1 transformation** to the skewed CRP variable, and the results show clear improvement.
+
+| **Term** | **Estimate** | **p-value** | **Interpretation** |
+|----------------|----------------|----------------|--------------------------|
+| **Intercept** | 1.82 | \<0.001 | Mean **log(CRP + 1)** at baseline in Grupo A |
+| **Visit** | –0.099 | 0.036 | **CRP decreases significantly over time** |
+| **Grupo B (vs A)** | +0.139 | 0.405 | No significant difference at baseline |
+
+The **effect of visit became statistically significant** (p = 0.036), whereas it was borderline before (p = 0.072).
+
+**Diagnostic Plots** **Residuals vs. Fitted**
+
+-   More **symmetrical and homoscedastic** than before.
+
+-   No clear fan shape or funnel — much better than untransformed.
+
+**Q-Q Plot**
+
+-   **Much closer to the line**, indicating that residuals are approximately **normally distributed**.
+
+-   A few expected mild deviations at the tails, but very acceptable.
+
+**What does this mean in original CRP scale?**
+
+Let’s back-transform the time effect:
+
+-   Estimate for visit = –0.099
+
+-   Since you’re modeling log1p(CRP), to interpret in original scale:
+
+$$\\text{exp}(-0.099) = 0.9056$$
+
+This means: **each visit is associated with \~9.4% decrease** in CRP over time, **on average**.
+
+**Summary**
+
+| **Point**          | **Result**                                |
+|--------------------|-------------------------------------------|
+| Residuals          | Look better: less heteroscedasticity      |
+| Q-Q plot           | Much closer to normal                     |
+| Time effect        | Now statistically significant (p = 0.036) |
+| Log transformation | Successfully improved model performance   |
+
+The idea is to explore the antiinflamatory effect of the intervention. Currently, the model assumes parallel time trends for both groups, i.e., it estimates:
+
+-   A main effect of time (CRP changes over time),
+
+-   A main effect of group (baseline difference),
+
+-   But no interaction (i.e., it assumes both groups change equally over time).
+
+*Why this is not enough*
+
+If the intervention is effective, we expect:
+
+-   CRP to decrease faster in the intervention group (Grupo B),
+
+-   Which means there should be a significant interaction between visit and allocation_group.
+
+*Model with interaction:*
+
+-   Adds visit:allocation_groupGrupo B as an interaction term,
+
+-   Tests whether CRP changes differently over time in Grupo B vs Grupo A.
+
+```{r}
+model3_log_inter <- lmer(log1p(labs_crp) ~ visit * allocation_group + (1 | record_id), data = data_filtered)
+
+summary(model3_log_inter)
+
+plot(model3_log_inter)
+
+qqnorm(resid(model3_log_inter)); qqline(resid(model3_log_inter))  # Normality check
+```
+
+Key Result: No Significant Interaction • The term visit:allocation_groupGrupo B has p = 0.620, meaning: There is no statistical evidence that the intervention led to a greater reduction in CRP over time compared to control. • The trend for CRP decrease over time is similar in both groups.
+
+Interpretation
+
+Despite applying a more appropriate transformation and including the interaction: • Time still shows a mild (non-significant) decreasing trend in CRP. • No baseline difference between groups. • No enhanced effect in the intervention group.
+
+This means that, based on your data, the intervention did not show a measurable anti-inflammatory effect on CRP.
+
+*PLOT* plot shows: • Predicted log(CRP + 1) at each visit for each group. • Makes it easy to compare time trends across intervention and control groups on the same scale used in the model. • Useful for statistical interpretation and checking for meaningful differences.
+
+```{r}
+# Create a new data frame for prediction: all combinations of visit × group
+new_data <- expand.grid(
+  visit = unique(data_filtered$visit),
+  allocation_group = unique(data_filtered$allocation_group)
+)
+
+# Predict fixed effects (marginal means, no random effects)
+new_data$pred_log_crp <- predict(model3_log_inter, newdata = new_data, re.form = NA)
+
+# Plot predicted log(CRP + 1)
+ggplot(new_data, aes(x = visit, y = pred_log_crp, color = allocation_group, group = allocation_group)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  labs(
+    title = "Predicted CRP over Time (log scale)",
+    y = "Predicted log(CRP + 1)",
+    x = "Visit",
+    color = "Group"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+*Visual Insights*
+
+-   Both groups show a downward trend in CRP over time, suggesting a general anti-inflammatory progression.
+
+-   Grupo B starts at a higher baseline and appears to have a slightly steeper decline in log(CRP), although:
+
+    > 🔸 The interaction term was not statistically significant (p = 0.620).
+
+This means that although Grupo B appears to improve more, this difference in slopes is not statistically supported.
+
+*Grupo B's Higher Baseline*
+
+Baseline imbalance may be a concern, particularly when:
+
+1.  The groups were supposed to be randomized and equivalent at baseline, and
+
+2.  The outcome variable (CRP, in this case) is already higher in one group before the intervention starts.
+
+If Grupo B starts with higher CRP, then:
+
+-   Any greater absolute reduction over time may be due to regression to the mean, not the intervention.
+
+-   It violates the assumption that both groups are comparable at baseline, which undermines causal inference.
+
+*Adjust for baseline differences:*
+
+What this model does:
+
+-   Adjusts for baseline CRP directly, reducing bias from initial imbalance.
+
+-   The coefficient for allocation_groupGrupo B now reflects the difference at follow-up, controlling for baseline.
+
+-   The time effect (visit) still captures change over time.
+
+-   The model tests whether the intervention group had lower CRP over time than expected based on their higher starting levels.
+
+If log1p_baseline_crp is significant, it means initial inflammation strongly predicts future levels — expected in longitudinal biomarkers.
+
+If allocation_groupGrupo B or the visit:group interaction becomes significant after adjustment, that strengthens the case for a true treatment effect.
+
+Let me know if you’d like to: • Visualize adjusted predictions • Back-transform to original CRP scale • Handle this in a subset of visits (e.g. only V1 and V3)
+
+```{r}
+# Adjusting for Baseline CRP in the Mixed Model (on log scale)
+
+# Step 1: Create a baseline CRP variable (log-transformed)
+# You should ensure that baseline CRP is correctly identified from your data
+
+# Example: assuming visit 1 is baseline
+data_filtered <- data_filtered %>%
+  group_by(record_id) %>%
+  mutate(log1p_baseline_crp = first(log1p(labs_crp[visit == 1]))) %>%
+  ungroup()
+
+# Step 2: Fit the adjusted model
+model3_log_adj <- lmer(
+  log1p(labs_crp) ~ visit + allocation_group + log1p_baseline_crp + (1 | record_id),
+  data = data_filtered
+)
+
+# Step 3: Summarize the results
+summary(model3_log_adj)
+```
+
+This model directly controls for **baseline differences in CRP**, correcting the bias introduced by the fact that **Grupo B started with higher inflammation**.
+
+**Fixed Effects Summary**
+
+| **Term** | **Estimate** | **p-value** | **Interpretation** |
+|---------------|---------------|---------------|-----------------------------|
+| **(Intercept)** | 0.529 | \<0.001 | Estimated log(CRP+1) for Grupo A at baseline when baseline CRP is 0 |
+| **visit** | –0.106 | **0.015** | CRP significantly **decreases over time** |
+| **Grupo B (vs Grupo A)** | –0.008 | 0.919 | No difference between groups **after adjusting for baseline** |
+| **log1p_baseline_crp** | +0.772 | \<0.001 | Strong predictor: higher baseline CRP leads to higher follow-up CRP |
+
+------------------------------------------------------------------------
+
+**Key Takeaways**
+
+-   **Time effect (visit) is now significant (p = 0.015)**:
+
+    > CRP decreases over time **even after accounting for baseline**.
+
+-   **Grupo B effect disappears (p = 0.919)**:
+
+    > Once you adjust for baseline CRP, there’s **no evidence the intervention had a distinct effect** on CRP reduction compared to control.
+
+-   **Baseline CRP is a major driver** of later CRP (β = 0.77, p \< 0.001).
+
+**Interpretation**
+
+The original difference in CRP trends between groups was likely due to **baseline imbalance**, not the intervention itself.
+
+This adjusted model is **more reliable**, and the results suggest:
+
+-   CRP decreases over time for all participants,
+
+-   But the intervention **did not produce a differential anti-inflammatory effect**.
+
+**Dropout Influence**
+
+```{r}
+#Step 1: Check the distribution of visits per subject
+# Count number of observations per subject
+dropout_check <- data_filtered %>%
+  group_by(record_id) %>%
+  summarize(n_visits = n_distinct(visit)) %>%
+  count(n_visits)
+
+
+#Step 2: Compare dropout by group
+## Last visit per subject
+last_visit_by_group <- data_filtered %>%
+  group_by(record_id, allocation_group) %>%
+  summarize(last_visit = max(visit)) %>%
+  ungroup()
+
+# Table: proportion reaching visit 3
+table(last_visit_by_group$allocation_group, last_visit_by_group$last_visit)
+# This checks whether Grupo B had more missing data at later visits than Grupo A — which could confound the CRP trajectory comparison.
+
+#Step 3: Is dropout related to baseline CRP?
+# If participants who dropped out had higher baseline CRP, your results may be biased due to non-random missingness (MNAR).
+
+# Use the baseline CRP and check whether it's different in dropouts
+baseline_dropout <- data_filtered %>%
+  group_by(record_id) %>%
+  mutate(last_visit = max(visit)) %>%
+  filter(visit == 1) %>%
+  mutate(dropped_out = last_visit < 3)
+
+# Compare baseline CRP by dropout status
+t.test(log1p(labs_crp) ~ dropped_out, data = baseline_dropout)
+```
+
+	•	Participants who dropped out had slightly lower CRP at baseline, but the difference is not statistically significant.
+	•	There’s no evidence that dropout was related to baseline inflammation.
+	•	Dropout appears to be random with respect to baseline CRP, which supports the Missing at Random (MAR) assumption.
+	
+Because:
+	•	The mixed-effects model (LMM) is valid under MAR,
+	•	There’s no significant baseline CRP difference between those who stayed and those who dropped out,
+
+➡️ Your model results are likely unbiased with respect to dropout.
+
+```{r}
+# Back-transforming predicted log(CRP + 1) values to CRP (mg/L)
+
+# Step 1: Create a prediction grid for all combinations of visit × group
+# Use the median baseline CRP for prediction (in log1p scale)
+baseline_crp_median <- median(log1p(baseline_dropout$labs_crp), na.rm = TRUE)
+
+# Create grid of new data
+new_data <- expand.grid(
+  visit = unique(data_filtered$visit),
+  allocation_group = unique(data_filtered$allocation_group)
+) %>%
+  mutate(log1p_baseline_crp = baseline_crp_median)
+
+# Step 2: Predict from the adjusted model (fixed effects only)
+new_data$pred_log <- predict(model3_log_adj, newdata = new_data, re.form = NA)
+
+# Step 3: Back-transform
+new_data$pred_crp <- exp(new_data$pred_log) - 1
+
+# Step 4: Plot back-transformed predictions
+ggplot(new_data, aes(x = visit, y = pred_crp, color = allocation_group, group = allocation_group)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2.5) +
+  labs(
+    title = "Predicted CRP Levels Over Time (Back-Transformed)",
+    x = "Visit",
+    y = "Predicted CRP (mg/L)",
+    color = "Group"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+What this plot shows
+
+	•	Predicted CRP levels in mg/L, adjusted for the median baseline CRP.
+	•	Makes the model output clinically interpretable.
+
+You can clearly see:
+	•	The overall downward trend in CRP over time.
+	•	That Grupo B does not differ from Grupo A in rate of CRP decline after adjusting for baseline.
+	
+```{r}
+# ✅ Add confidence intervals to predicted CRP plot (back-transformed)
+
+# Load required packages
+library(ggplot2)
+library(dplyr)
+library(merTools)  # for predictInterval
+
+# Step 1: Create new data with baseline CRP held at median
+baseline_crp_median <- median(log1p(baseline_dropout$labs_crp), na.rm = TRUE)
+
+new_data <- expand.grid(
+  visit = unique(data_filtered$visit),
+  allocation_group = unique(data_filtered$allocation_group)
+) %>%
+  mutate(
+    log1p_baseline_crp = baseline_crp_median,
+    record_id = "dummy"  # 👈 Add a dummy ID to match model's grouping variable
+  )
+
+# Step 2: Get prediction intervals on log scale (includes uncertainty)
+set.seed(123)  # for reproducibility
+pred_int <- predictInterval(
+  model3_log_adj,
+  newdata = new_data,
+  level = 0.95,
+  n.sims = 1000,
+  stat = "mean",
+  type = "linear.prediction",
+  include.resid.var = FALSE
+)
+
+# Combine with original new_data
+new_data <- bind_cols(new_data, pred_int)
+
+# Step 3: Back-transform
+new_data <- new_data %>%
+  mutate(
+    fit = exp(fit) - 1,
+    lwr = exp(lwr) - 1,
+    upr = exp(upr) - 1
+  )
+
+# Step 4: Plot with ribbons (CI)
+ggplot(new_data, aes(x = visit, y = fit, color = allocation_group, group = allocation_group)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2.5) +
+  geom_ribbon(aes(ymin = lwr, ymax = upr, fill = allocation_group), alpha = 0.2, color = NA) +
+  labs(
+    title = "Predicted CRP Levels with 95% CI (Back-Transformed)",
+    y = "Predicted CRP (mg/L)",
+    x = "Visit",
+    color = "Group",
+    fill = "Group"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+```{r}
+# Optional: Line plot of individual trajectories
+ggplot(data_filtered, aes(x = visit, y = labs_crp, group = record_id, color = allocation_group)) +
+  geom_line(alpha = 0.3) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Individual CRP Trajectories (Raw Data)",
+    y = "Observed CRP (mg/L)",
+    x = "Visit",
+    color = "Group"
+  ) +
+  theme_minimal(base_size = 14)
+```
 
