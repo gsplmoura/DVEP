@@ -1,0 +1,712 @@
+---
+title: "Results_descriptive"
+output: html_document
+---
+
+# RESULTS
+
+# Baseline
+
+```{r}
+file_path_baseline <- "Output/Baseline/Data_files"
+database <- data
+```
+
+```{r, eval=FALSE}
+# Datas de inclusão e conclusão
+summary(data$consent_date)
+
+max(data$consent_date, na.rm = TRUE)
+
+summary(data["conclusion_date"])
+
+# Completaram a intervenção
+summary(data_d1_exclusive$completed_intervention)
+```
+
+## Abandonos
+
+Dos participantes incluídos, 23 (30.6%) não completaram os três meses de intervenção. A taxa de abandono foi maior nos homens, com 4 abandonos (40% dos homens incluídos), sendo 2 de cada grupo. No sexo feminino, a taxa de abandono foi de 29.2%, sendo oito do grupo placebo e 11 do grupo intervenção.
+
+```{r, eval=FALSE}
+# Abandonos
+## Taxa de abandono
+(23/75)*100 
+
+## Abandono por sexo e grupo de alocação
+data_d1_exclusive %>% 
+    filter(completed_intervention == "Não") %>% 
+    count(sex, allocation_group, name = "Total")
+
+## Taxa de abandono por sexo
+(4/10)*100 # Homens
+(19/65)*100 # Mulheres
+
+table(data$non_completion_reason)
+```
+
+### Contingency table by sex
+
+```{r, eval=FALSE}
+# Criar a tabela de contingência
+tabela <- table(data_d1_exclusive$sex, data_d1_exclusive$completed_intervention)
+
+# Exibir a tabela
+print(tabela)
+
+# Teste do qui-quadrado
+teste_qui2 <- chisq.test(tabela)
+teste_qui2$expected
+
+# Exibir os resultados do teste do qui-quadrado
+print(teste_qui2)
+```
+
+### Contingency table by sex, controlling for allocation group
+
+```{r, eval=FALSE}
+# Criar a tabela de contingência estratificada por allocation_group
+tabela <- table(data_d1_exclusive$sex, 
+                data_d1_exclusive$completed_intervention, 
+                data_d1_exclusive$allocation_group)
+
+# Exibir a tabela para verificar se está correta
+print(tabela)
+
+# Realizar o teste de Mantel-Haenszel
+resultado_mh <- mantelhaen.test(tabela)
+
+# Exibir o resultado do teste
+print(resultado_mh)
+
+```
+
+### Log reg
+
+```{r, eval=FALSE}
+model <- glm(completed_intervention ~ sex * allocation_group, data = data_d1_exclusive, family = binomial)
+
+summary(model)
+
+exp(cbind(OR = coef(model), confint(model)))
+
+```
+
+## Participant's characteristics (data_d1_exclusive)
+
+```{r, eval=FALSE}
+# ALL
+baseline_num <- summarize_numerical(data_d1_exclusive) # `summarize_numerical()`
+baseline_num %>%
+  gt() %>%
+  tab_header(
+    title = "Numerical Variable Summary",
+    subtitle = "Overall Summary"
+  )
+
+baseline_cat <- summarize_categorical(data_d1_exclusive) # `summarize_categorical()`
+baseline_cat %>%
+  gt() %>%
+  tab_header(
+    title = "Categorical Variable Summary",
+    subtitle = "Overall Summary"
+  )
+
+# BY GROUP
+baseline_num_group <- summarize_numerical(data_d1_exclusive, "allocation_group") # `summarize_numerical()`
+baseline_num_group %>%
+  gt() %>%
+  tab_header(
+    title = "Numerical Variable Summary",
+    subtitle = "Overall Summary"
+  )
+
+baseline_cat_group <- summarize_categorical(data_d1_exclusive, "allocation_group") # `summarize_categorical()`
+baseline_cat_group %>%
+  gt() %>%
+  tab_header(
+    title = "Categorical Variable Summary",
+    subtitle = "Overall Summary"
+  )
+
+# COMPARE GROUPS
+group_comparison <- compare_groups(data_d1_exclusive) #`compare_groups`
+print(group_comparison)
+```
+
+Descriptive: Drugs that might induce weight loss
+
+```{r, eval=FALSE}
+drugs_w_loss_descriptive <- I22_drugs_R %>% 
+    dplyr::filter(stringr::str_detect(drugs_sql, 
+        "C61939|C62012|C506_1|C1278_2|C1278_1|C1278_3|C47764_1|C47764_2|C61680"
+    )) %>% 
+    dplyr::pull(descriptive) %>% 
+    stringr::str_extract("^[^0-9]+") %>% 
+    stringr::str_trim() %>% 
+    base::unique() %>% 
+    cat(sep = ", ")
+
+drugs_w_gain <- I22_drugs_R %>% 
+    filter(str_detect(drugs_sql, 
+        "C61879|C62005|C61917_2|C29416|C29536_2")) %>% 
+    dplyr::pull(descriptive) %>% 
+    stringr::str_extract("^[^0-9]+") %>% 
+    stringr::str_trim() %>% 
+    base::unique() %>% 
+    cat(sep = ", ")
+```
+
+**Clear** Participant's characteristics (data_d1_exclusive)
+
+```{r, eval=FALSE}
+# CLEAR
+rm(baseline_num)
+rm(baseline_cat)
+rm(baseline_num_group)
+rm(baseline_cat_group)
+rm(group_comparison)
+rm(drugs_w_loss_descriptive)
+
+```
+
+Comparação da proporção do sexo dos participantes segundo o grupo de alocação Na verdade essa análise foi redundante - já foi feita em `baseline_cat_group`
+
+```{r, eval=FALSE}
+group_by_sex <- data_d1_exclusive %>% 
+    group_by(sex, allocation_group) %>% 
+    count() %>% 
+    pivot_wider(names_from = allocation_group, values_from = n, values_fill = 0) %>%
+    column_to_rownames(var = "sex") %>% # Converts the 'sex' column into row names
+    as.matrix()
+
+group_by_sex_chisq <- chisq.test(group_by_sex)
+group_by_sex_chisq
+group_by_sex_FET <- fisher.test(group_by_sex)
+group_by_sex_FET
+
+rm(group_by_sex)
+rm(group_by_sex_chisq)
+rm(group_by_sex_FET)
+```
+
+## Lab exames
+
+```{r, eval=FALSE}
+# filter first visit and relevant variables
+labs_baseline <- I27_labs_R %>% 
+    filter(
+        visit == 1
+    ) %>% 
+    select(
+        -visit, -labs_date, -labs_beta_hcg , -labs_notes
+    ) %>% left_join(
+        data_d1_exclusive %>% 
+            select(record_id, allocation_group),
+                   by = "record_id"
+                  )
+
+baseline_labs_baseline <- summarize_numerical(labs_baseline) #all
+baseline_labs_baseline_groups <- summarize_numerical(labs_baseline,"allocation_group") #groups
+baseline_labs_baseline_groups_compare <- compare_groups(labs_baseline) #compare
+print(baseline_labs_baseline_groups_compare) #print
+```
+
+**Clear** Lab exams
+
+```{r, eval=FALSE}
+rm(labs_baseline)
+rm(baseline_labs_baseline)
+rm(baseline_labs_baseline_groups)
+rm(baseline_labs_baseline_groups_compare)
+```
+
+**CPR**
+
+```{r, eval=FALSE}
+
+plot(labs_baseline$labs_crp)
+
+cpr_bp <- boxplot(labs_baseline$labs_crp_log)
+cpr_bp$out
+
+par(mfrow = c(1, 2)) 
+hist(labs_baseline$labs_crp)
+hist(labs_baseline$labs_crp_log)
+
+labs_baseline$labs_crp_log <- log(labs_baseline$labs_crp)
+
+summary(labs_baseline$labs_crp_log)
+
+plot(labs_baseline$labs_crp_log, data_filtered$phaseangle[data_filtered$visit == 1])
+
+
+skim(labs_baseline)
+
+
+rm(cpr_bp)
+rm(labs_baseline$labs_crp_log)
+```
+
+## BIA
+
+### Baseline
+
+```{r, eval=FALSE}
+bia_baseline <- data_bia %>%
+    filter(
+        visit == 1
+    ) %>% 
+    select(
+        record_id, phaseangle:w_ecw
+        ) %>% 
+    dplyr::left_join(
+        data_d1_exclusive %>% 
+            select(record_id, allocation_group, sex),
+                   by = "record_id"
+        )
+```
+
+### Comparing between males and females
+
+```{r, eval=FALSE}
+#by sex
+bia_baseline_sex <- summarize_numerical(bia_baseline, "sex") 
+bia_baseline_sex_compare <- compare_groups(bia_baseline,"sex") # compare
+print(bia_baseline_sex_compare) # print
+```
+
+### Males
+
+```{r, eval=FALSE}
+# Filter males
+BIA_V1_M <- bia_baseline %>% 
+    filter(
+        sex == "Masculino"
+    )
+
+#summarize_numerical()
+BIA_V1_M_SN <- summarize_numerical(BIA_V1_M, "allocation_group",use_labels = TRUE)
+
+# compare_groups()
+BIA_V1_M_C <- compare_groups(BIA_V1_M, group_col = "allocation_group",use_labels = TRUE, return_df = TRUE) 
+
+# join tables
+bia_males <- BIA_V1_M_SN %>%
+    left_join(y = BIA_V1_M_C %>% 
+                  select(Variable, P_value),
+              by = join_by(Variable)
+    ) %>%
+    mutate(
+        P_value = round(P_value,3)
+    ) %>% 
+    filter(
+        Variable != "Nome do arquivo"
+    ) %>% 
+    rename(
+         Parâmetro = Variable,
+         `Grupo placebo [média (IC 95%)]` = `Grupo A`,
+         `Grupo Eclipta [média (IC 95%)]` = `Grupo B`,
+         `Valor p [Teste t]` = P_value
+    ) %>% 
+    mutate(Parâmetro = recode(Parâmetro, 
+                            "Altura" = "Altura (m)", 
+                            "Peso" = "Peso (kg)", 
+                            "Índice de Massa Corporal" = "Índice de Massa Corporal (kg/m²)", 
+                            "Cintura" = "Circunferência Abdominal (m)", 
+                            "Nível de Atividade Física" = "Nível de Atividade Física (PAL)", 
+                            "Ângulo de Fase" = "Ângulo de Fase (°)", 
+                            "Média de Resistência" = "Resistência (Ω)", 
+                            "Média de Reatância" = "Reatância (Ω)", 
+                            "Massa de Gordura Absoluta" = "Massa gorda Absoluta (kg)", 
+                            "Índice de Massa de Gordura" = "Índice de Massa gorda (kg/m²)", 
+                            "Massa de Gordura Relativa" = "Massa gorda Relativa (%)", 
+                            "Tecido Adiposo Visceral" = "Tecido Adiposo Visceral (kg)", 
+                            "Massa Livre de Gordura Absoluta" = "Massa Livre de Gordura Absoluta (kg)", 
+                            "Índice de Massa Livre de Gordura" = "Índice de Massa Livre de Gordura (kg/m²)", 
+                            "Massa Livre de Gordura Relativa" = "Massa Livre de Gordura Relativa (%)", 
+                            "Massa Muscular Esquelética do Corpo" = "MME Corporal Total (kg)", 
+                            "Massa Muscular Esquelética do Tronco" = "MME do Tronco (kg)", 
+                            "Massa Muscular Esquelética do Braço Direito" = "MME do Braço Direito (kg)", 
+                            "Massa Muscular Esquelética do Braço Esquerdo" = "MME do Braço Esquerdo (kg)", 
+                            "Massa Muscular Esquelética da Perna Direita" = "MME da Perna Direita (kg)", 
+                            "Massa Muscular Esquelética da Perna Esquerda" = "MME da Perna Esquerda (kg)", 
+                            "Água Corporal Total" = "Água Corporal Total (L)", 
+                            "Água Extracelular" = "Água Extracelular (L)", 
+                            "Gasto Energético Total" = "Gasto Energético Total (kcal)", 
+                            "Gasto Energético em Repouso" = "Gasto Energético em Repouso (kcal)", 
+                            "Energia Armazenada" = "Energia Armazenada (kcal)")
+        ) %>%
+    mutate(Parâmetro = factor(Parâmetro, levels = c(
+    "Altura (m)", "Peso (kg)", "Índice de Massa Corporal (kg/m²)", "Circunferência Abdominal (m)", 
+    "Nível de Atividade Física (PAL)", "Ângulo de Fase (°)", "Resistência (Ω)", "Reatância (Ω)", 
+    "Massa gorda Absoluta (kg)", "Índice de Massa gorda (kg/m²)", "Massa gorda Relativa (%)", 
+    "Tecido Adiposo Visceral (kg)", "Massa Livre de Gordura Absoluta (kg)", 
+    "Índice de Massa Livre de Gordura (kg/m²)", "Massa Livre de Gordura Relativa (%)", 
+    "MME Corporal Total (kg)", "MME do Tronco (kg)", "MME do Braço Direito (kg)", 
+    "MME do Braço Esquerdo (kg)", "MME da Perna Direita (kg)", "MME da Perna Esquerda (kg)", 
+    "Água Corporal Total (L)", "Água Extracelular (L)", "Gasto Energético Total (kcal)", 
+    "Gasto Energético em Repouso (kcal)", "Energia Armazenada (kcal)"))
+    ) %>% 
+    arrange(Parâmetro)
+
+write_csv(bia_males, here("Output", "Baseline", "Tables", "bia_males.csv"))
+```
+
+### Females
+
+```{r, eval=FALSE}
+# Filter males
+BIA_V1_F <- bia_baseline %>% 
+    filter(
+        sex == "Feminino"
+    )
+
+#summarize_numerical()
+BIA_V1_F_SN <- summarize_numerical(BIA_V1_F, "allocation_group",use_labels = TRUE)
+
+# compare_groups()
+BIA_V1_F_C <- compare_groups(BIA_V1_F, group_col = "allocation_group",use_labels = TRUE, return_df = TRUE) 
+
+# join tables
+bia_females <- BIA_V1_F_SN %>%
+    left_join(y = BIA_V1_F_C %>% 
+                  select(Variable, P_value),
+              by = join_by(Variable)
+    ) %>%
+    mutate(
+        P_value = round(P_value,3)
+    ) %>% 
+    filter(
+        Variable != "Nome do arquivo"
+    ) %>% 
+    rename(
+         Parâmetro = Variable,
+         `Grupo placebo [média (IC 95%)]` = `Grupo A`,
+         `Grupo Eclipta [média (IC 95%)]` = `Grupo B`,
+         `Valor p [Teste t]` = P_value
+    ) %>% 
+    mutate(Parâmetro = recode(Parâmetro, 
+                            "Altura" = "Altura (m)", 
+                            "Peso" = "Peso (kg)", 
+                            "Índice de Massa Corporal" = "Índice de Massa Corporal (kg/m²)", 
+                            "Cintura" = "Circunferência Abdominal (m)", 
+                            "Nível de Atividade Física" = "Nível de Atividade Física (PAL)", 
+                            "Ângulo de Fase" = "Ângulo de Fase (°)", 
+                            "Média de Resistência" = "Resistência (Ω)", 
+                            "Média de Reatância" = "Reatância (Ω)", 
+                            "Massa de Gordura Absoluta" = "Massa gorda Absoluta (kg)", 
+                            "Índice de Massa de Gordura" = "Índice de Massa gorda (kg/m²)", 
+                            "Massa de Gordura Relativa" = "Massa gorda Relativa (%)", 
+                            "Tecido Adiposo Visceral" = "Tecido Adiposo Visceral (kg)", 
+                            "Massa Livre de Gordura Absoluta" = "Massa Livre de Gordura Absoluta (kg)", 
+                            "Índice de Massa Livre de Gordura" = "Índice de Massa Livre de Gordura (kg/m²)", 
+                            "Massa Livre de Gordura Relativa" = "Massa Livre de Gordura Relativa (%)", 
+                            "Massa Muscular Esquelética do Corpo" = "MME Corporal Total (kg)", 
+                            "Massa Muscular Esquelética do Tronco" = "MME do Tronco (kg)", 
+                            "Massa Muscular Esquelética do Braço Direito" = "MME do Braço Direito (kg)", 
+                            "Massa Muscular Esquelética do Braço Esquerdo" = "MME do Braço Esquerdo (kg)", 
+                            "Massa Muscular Esquelética da Perna Direita" = "MME da Perna Direita (kg)", 
+                            "Massa Muscular Esquelética da Perna Esquerda" = "MME da Perna Esquerda (kg)", 
+                            "Água Corporal Total" = "Água Corporal Total (L)", 
+                            "Água Extracelular" = "Água Extracelular (L)", 
+                            "Gasto Energético Total" = "Gasto Energético Total (kcal)", 
+                            "Gasto Energético em Repouso" = "Gasto Energético em Repouso (kcal)", 
+                            "Energia Armazenada" = "Energia Armazenada (kcal)")
+        ) %>%
+    mutate(Parâmetro = factor(Parâmetro, levels = c(
+    "Altura (m)", "Peso (kg)", "Índice de Massa Corporal (kg/m²)", "Circunferência Abdominal (m)", 
+    "Nível de Atividade Física (PAL)", "Ângulo de Fase (°)", "Resistência (Ω)", "Reatância (Ω)", 
+    "Massa gorda Absoluta (kg)", "Índice de Massa gorda (kg/m²)", "Massa gorda Relativa (%)", 
+    "Tecido Adiposo Visceral (kg)", "Massa Livre de Gordura Absoluta (kg)", 
+    "Índice de Massa Livre de Gordura (kg/m²)", "Massa Livre de Gordura Relativa (%)", 
+    "MME Corporal Total (kg)", "MME do Tronco (kg)", "MME do Braço Direito (kg)", 
+    "MME do Braço Esquerdo (kg)", "MME da Perna Direita (kg)", "MME da Perna Esquerda (kg)", 
+    "Água Corporal Total (L)", "Água Extracelular (L)", "Gasto Energético Total (kcal)", 
+    "Gasto Energético em Repouso (kcal)", "Energia Armazenada (kcal)"))
+    ) %>% 
+    arrange(Parâmetro)
+
+write_csv(bia_females, here("Output", "Baseline", "Tables", "bia_females.csv"))
+```
+
+## Handgrip
+
+```{r, eval=FALSE}
+handgrip <- data %>% 
+    select(record_id, event_name, handgrip_right_mean, handgrip_left_mean) %>% 
+    filter(
+        event_name == "1visit_arm_1"
+    ) %>% 
+    filter(
+        !is.na(handgrip_right_mean) | !is.na(handgrip_left_mean)
+    ) %>% 
+    left_join(
+        data_d1_exclusive %>% 
+            select(
+                record_id, sex, allocation_group
+            ),
+        by = "record_id"
+    ) %>% 
+    mutate(
+        handgrip = rowMeans(
+            across(c(handgrip_left_mean, handgrip_right_mean)),
+            na.rm = TRUE
+        )
+    )
+#write_excel_csv(handgrip,paste0(file_path_baseline,"handgrip.csv"))
+
+summarize_numerical(handgrip,"sex")
+compare_groups(handgrip,"sex")
+
+# handgrip %>% 
+    filter(
+        sex == "Masculino"
+    ) %>% 
+    group_by(
+        allocation_group
+    ) %>% 
+    summarize(
+        `Média da mão direita` = mean(handgrip_right_mean, na.rm = TRUE),
+        `Média da mão esquerda` = mean(handgrip_left_mean, na.rm = TRUE),
+        `Média das mãos` = mean(handgrip, na.rm = TRUE),
+    )
+
+# Males
+handgrip_man <- handgrip %>% 
+    filter(
+        sex == "Masculino"
+    )
+handgrip_man_num <- print(summarize_numerical(handgrip_man, "allocation_group"))
+handgrip_man_compare <- print(compare_groups(handgrip_man, "allocation_group"))
+
+# Females
+handgrip_fem <- handgrip %>% 
+    filter(
+        sex == "Feminino"
+    )
+handgrip_fem_num <- print(summarize_numerical(handgrip_fem, "allocation_group"))
+handgrip_fem_compare <- print(compare_groups(handgrip_fem, "allocation_group"))
+```
+
+## Questionnaires
+
+```{r, eval=FALSE}
+questionnaires <- data_filtered %>% 
+    ungroup() %>% 
+    filter(
+        visit == 1
+    ) %>% 
+    select(
+        record_id, allocation_group, sex, whoqol_score_overall:ecap_score
+    )
+
+# write_excel_csv(questionnaires, paste0(file_path_baseline,"questionnaires.csv"))
+
+questionnaires_num <- summarize_numerical(questionnaires)
+questionnaires_num_groups <- summarize_numerical(questionnaires,"allocation_group")
+questionnaires_num_groups_compare <- compare_groups(questionnaires,"allocation_group")
+
+# By sex
+questionnaires_sex <- summarize_numerical(questionnaires,"sex")
+questionnaires_sex_compare <- compare_groups(questionnaires,"sex")
+print(questionnaires_sex_compare)
+
+# By allocation_group
+questionnaires_num <- summarize_numerical(questionnaires,"allocation_group")
+questionnaires_num_compare <- compare_groups(questionnaires,"allocation_group")
+print(questionnaires_sex_compare)
+
+# ANOVA to search for interaction between sex and allocation
+anova_whoqol <- aov(whoqol_score_overall ~ sex * allocation_group, data = questionnaires)
+summary(anova_whoqol)
+anova_depression <- aov(dass_score_depression ~ sex * allocation_group, data = questionnaires)
+summary(anova_depression)
+anova_anxiety <- aov(dass_score_anxiety ~ sex * allocation_group, data = questionnaires)
+summary(anova_anxiety)
+anova_stress <- aov(dass_score_stress ~ sex * allocation_group, data = questionnaires)
+summary(anova_stress)
+anova_ecap <- aov(ecap_score ~ sex * allocation_group, data = questionnaires)
+summary(anova_ecap)
+
+```
+
+## Adverse Events
+
+```{r, eval=FALSE}
+adverse_events <- read_csv('/Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Research/Data Science/Data Science/PROJECTS/DVEP/Analysis/adverse_events.csv')
+
+adverse_events$`Nome completo` <- substr(adverse_events$`Nome completo`,1,2)
+colnames(adverse_events) <- trimws(colnames(adverse_events))
+
+adverse_events_yes <- adverse_events %>%
+    filter(
+        `Algum Evento Adverso neste ciclo?` == "Sim"
+    ) %>% 
+    mutate(
+        `Nome completo` = as.integer(`Nome completo`)
+    ) %>%
+    left_join(
+        data_d1_exclusive %>%
+            select(record_id, sex, allocation_group),
+        by = join_by(`Nome completo` == record_id)
+    ) %>% 
+    mutate(
+        `Event Name` = as.factor(`Event Name`),
+        `Evento Adverso Grave?  ` = as.factor(`Evento Adverso Grave?  `),
+        Grau = as.factor(Grau),
+        Classificação = as.factor(Classificação),
+        `Atribuição de causalidade` = as.factor(`Atribuição de causalidade`),
+        `Ação Realizada` = as.factor(`Ação Realizada`),
+        Seguimento = as.factor(Seguimento),
+        `Nome completo` = as.character(`Nome completo`)
+    )
+
+#summarize_categorical
+adverse_events_cat <- summarize_categorical(adverse_events_yes)
+## write_excel_csv(adverse_events_cat, paste0(file_path_baseline, "adverse_events_cat.csv"))
+
+#baseR: summary
+summary(adverse_events_yes)
+```
+
+**Association between visit (time point) and severity of adverse event** Testing for an association between visit (time point) and severity of adverse events to evaluate whether the likelihood of experiencing severe adverse events changes as the intervention progresses (Chi-squared test of independence)
+
+```{r, eval=FALSE}
+# contingency table
+table_ae <- table(adverse_events_yes$`Event Name`, adverse_events_yes$Grau)
+print(table_ae)
+
+# Chi-square
+chisq_test <- chisq.test(table_ae)
+print(chisq_test)
+chisq_test$expected
+## Many cells with expected counts < 5 -> FET would be more appropriate
+fisher_test <- fisher.test(table_ae)
+print(fisher_test)
+
+adverse_events_yes$allocation_group
+
+```
+
+--\> Running Mantel-Haenszel test to control for the intervention group
+
+```{r, eval=FALSE}
+library(gmodels)
+
+# CrossTable to explore the stratified data
+CrossTable(
+  x = adverse_events_yes$`Event Name`, 
+  y = adverse_events_yes$Grau, 
+  strata = adverse_events_yes$allocation_group,
+  prop.chisq = FALSE, 
+  prop.r = FALSE, 
+  prop.c = FALSE, 
+  prop.t = FALSE
+)
+
+# Create a 3D contingency table stratified by allocation group
+table_visit_severity_allocation <- table(
+    adverse_events_yes$`Event Name`, adverse_events_yes$Grau, adverse_events_yes$allocation_group
+    )
+print(table_visit_severity_allocation)
+
+# Mantel-Haenszel test
+mantel_test <- mantelhaen.test(table_visit_severity_allocation)
+print(mantel_test)
+
+```
+
+**By severity**
+
+```{r, eval=FALSE}
+table_ae <- table(adverse_events_yes$Classificação, adverse_events_yes$Grau)
+print(table_ae)
+```
+
+**By causality**
+
+```{r, eval=FALSE}
+table_ae <- table(adverse_events_yes$Classificação, adverse_events_yes$`Atribuição de causalidade`)
+View(table_ae)
+```
+
+**Gastrointestinal**
+
+```{r, eval=FALSE}
+ae_gastrointestinal <- adverse_events_yes %>% 
+    filter(
+        Classificação == "Gastrointestinal"
+    )
+```
+
+**Grouping events by classification**
+
+```{r, eval=FALSE}
+
+# Group by Classificação and Evento Adverso, count occurrences, and calculate percentages
+summary_data <- adverse_events_yes %>%
+  group_by(Classificação, `Evento Adverso`) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Percentage = (Count / sum(Count)) * 100) %>%
+  arrange(Classificação, desc(Count))
+
+# Create the formatted output
+formatted_output <- summary_data %>%
+  group_by(Classificação) %>%
+  summarise(
+    Events = paste0(`Evento Adverso`, " (", round(Percentage, 1), "%)", collapse = ", "),
+    .groups = "drop"
+  ) %>%
+  mutate(Result = paste0(Classificação, ": ", Events))
+
+# Print the result
+cat(paste(formatted_output$Result, collapse = "\n"))
+
+# Save file
+write_lines(paste(formatted_output$Result, collapse = "\n"), paste0(file_path_baseline, "eventos_adversos_por_sistema.txt"))
+
+
+```
+
+**Clear**
+
+```{r, eval=FALSE}
+rm(questionnaires)
+rm(questionnaires_num)
+rm(questionnaires_compare)
+
+```
+
+**Clear**
+
+```{r, eval=FALSE}
+rm()
+rm()
+rm()
+rm()
+rm()
+```
+
+**Clear**
+
+```{r, eval=FALSE}
+rm()
+rm()
+rm()
+rm()
+rm()
+```
+
+**Clear**
+
+```{r, eval=FALSE}
+rm()
+rm()
+rm()
+rm()
+rm()
+```
+
+Os participantes foram recrutados entre 9 de agosto de 2023 e `r max(database$consent_date, na.rm = TRUE)`. O estudo foi concluído em 26 de julho de 2024.
+
