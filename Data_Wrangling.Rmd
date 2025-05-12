@@ -948,9 +948,59 @@ data_filtered_seca <- data_filtered %>%
 
 ```
 
+## EXPORT TIBBLES
+
+### To RDS
+```{r}
+output_dir <- "Data_processed"
+
+saveRDS(data,                file.path(output_dir, "data.rds"))
+saveRDS(data_bia,            file.path(output_dir, "data_bia.rds"))
+saveRDS(data_bia_D1,         file.path(output_dir, "data_bia_D1.rds"))
+saveRDS(data_bia_D1_mean,    file.path(output_dir, "data_bia_D1_mean.rds"))
+saveRDS(data_bia_D1_raw,     file.path(output_dir, "data_bia_D1_raw.rds"))
+saveRDS(data_bia_D3,         file.path(output_dir, "data_bia_D3.rds"))
+saveRDS(data_bia_D3_mean,    file.path(output_dir, "data_bia_D3_mean.rds"))
+saveRDS(data_bia_D3_raw,     file.path(output_dir, "data_bia_D3_raw.rds"))
+saveRDS(data_bia_mean,       file.path(output_dir, "data_bia_mean.rds"))
+saveRDS(data_d1_exclusive,   file.path(output_dir, "data_d1_exclusive.rds"))
+saveRDS(data_filtered,       file.path(output_dir, "data_filtered.rds"))
+saveRDS(data_filtered_seca,  file.path(output_dir, "data_filtered_seca.rds"))
+
+# Repeating instrument exports
+saveRDS(I21_conditions_R,    file.path(output_dir, "I21_conditions_R.rds"))
+saveRDS(I22_drugs_R,         file.path(output_dir, "I22_drugs_R.rds"))
+saveRDS(I27_labs_R,          file.path(output_dir, "I27_labs_R.rds"))
+saveRDS(I29_compliance,      file.path(output_dir, "I29_compliance.rds"))
+saveRDS(I30_events_R,        file.path(output_dir, "I30_events_R.rds"))
+```
+
+### To CSV
+
+```{r}
+readr::write_csv(data,                file.path(output_dir, "data.csv"))
+readr::write_csv(data_bia,            file.path(output_dir, "data_bia.csv"))
+readr::write_csv(data_bia_D1,         file.path(output_dir, "data_bia_D1.csv"))
+readr::write_csv(data_bia_D1_mean,    file.path(output_dir, "data_bia_D1_mean.csv"))
+readr::write_csv(data_bia_D1_raw,     file.path(output_dir, "data_bia_D1_raw.csv"))
+readr::write_csv(data_bia_D3,         file.path(output_dir, "data_bia_D3.csv"))
+readr::write_csv(data_bia_D3_mean,    file.path(output_dir, "data_bia_D3_mean.csv"))
+readr::write_csv(data_bia_D3_raw,     file.path(output_dir, "data_bia_D3_raw.csv"))
+readr::write_csv(data_bia_mean,       file.path(output_dir, "data_bia_mean.csv"))
+readr::write_csv(data_d1_exclusive,   file.path(output_dir, "data_d1_exclusive.csv"))
+readr::write_csv(data_filtered,       file.path(output_dir, "data_filtered.csv"))
+readr::write_csv(data_filtered_seca,  file.path(output_dir, "data_filtered_seca.csv"))
+
+# Repeating instruments
+readr::write_csv(I21_conditions_R,    file.path(output_dir, "I21_conditions_R.csv"))
+readr::write_csv(I22_drugs_R,         file.path(output_dir, "I22_drugs_R.csv"))
+readr::write_csv(I27_labs_R,          file.path(output_dir, "I27_labs_R.csv"))
+readr::write_csv(I29_compliance,      file.path(output_dir, "I29_compliance.csv"))
+readr::write_csv(I30_events_R,        file.path(output_dir, "I30_events_R.csv"))
+```
 
 
-# SUPERTIBLE (`data_instruments`)
+# SUPERTIBBLE (`data_instruments`)
 Creates a supertibble with one tibble for each instrument
 
 ```{r}
@@ -1013,11 +1063,15 @@ rm(instruments)
 
 ```
 
-### Exports tibbles to `Generated data` folder
+**EXPORT RDS**
+```{r}
+saveRDS(data_instruments, "Data_instruments/data_instruments.rds")
+```
+
+**EXPORT CSV**
 
 ```{r}
-output_dir <- 'Output/Baseline/Instruments'
-
+output_dir <- 'Data_instruments'
 
 # Iterate over `data_instruments`
 for (instr_name in names(data_instruments)) {

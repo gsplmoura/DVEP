@@ -48,3 +48,24 @@ codebook_bia <- read_excel(
     arrange(index)
 
 ## Data
+data <- readRDS("Data_processed/data.rds")
+data_bia <- readRDS("Data_processed/data_bia.rds")
+data_bia_D1 <- readRDS("Data_processed/data_bia_D1.rds")
+data_bia_D1_mean <- readRDS("Data_processed/data_bia_D1_mean.rds")
+data_bia_D1_raw <- readRDS("Data_processed/data_bia_D1_raw.rds")
+data_bia_D3 <- readRDS("Data_processed/data_bia_D3.rds")
+data_bia_D3_mean <- readRDS("Data_processed/data_bia_D3_mean.rds")
+data_bia_D3_raw <- readRDS("Data_processed/data_bia_D3_raw.rds")
+data_bia_mean <- readRDS("Data_processed/data_bia_mean.rds")
+data_d1_exclusive <- readRDS("Data_processed/data_d1_exclusive.rds")
+data_filtered <- readRDS("Data_processed/data_filtered.rds")
+data_filtered_seca <- readRDS("Data_processed/data_filtered_seca.rds")
+I21_conditions_R <- readRDS("Data_processed/I21_conditions_R.rds")
+I22_drugs_R <- readRDS("Data_processed/I22_drugs_R.rds")
+I27_labs_R <- readRDS("Data_processed/I27_labs_R.rds")
+I29_compliance <- readRDS("Data_processed/I29_compliance.rds")
+I30_events_R <- readRDS("Data_processed/I30_events_R.rds")
+
+## SUPERTIBBLE
+data_instruments <- readRDS("Data_instruments/data_instruments.rds")
+
