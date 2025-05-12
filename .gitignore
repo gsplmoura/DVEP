@@ -26,3 +26,5 @@
 
 # Ignore sensitive patient data
 Data/
+Data_processed/
+Data_instruments/
