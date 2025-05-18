@@ -3,36 +3,454 @@ title: "Results_main_outcomes"
 output: html_document
 ---
 
-## Desfecho Primário
-
-### Efeito sobre o ângulo de fase
-
 ```{r}
-filter_codebook(form_name = "bia", included = 1) %>% pull(variable)
-filter_data(visit = c("V1","V3"), form_name = "bia")
+rm(list = ls())
+graphics.off()
+cat("\014")  # Clear any pending RStudio sessions or temporary files
+
+# Load functions from external script
+source("helper_functions.R")
+
+## Load necessary libraries
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(stringr)
+library(purrr)
+library(here)
+library(lme4)
+library(lmerTest)
+library(skimr)
+
+# Read Files ----
+## Codebooks
+codebook_dvep <- read_excel(
+    "Codebooks/codebook_dvep.xlsx",
+    col_names = TRUE,
+    col_types = NULL,
+    na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+    trim_ws = TRUE,
+    skip = 0, # Number of lines to skip before reading data
+    n_max = Inf, # Maximum number of lines to read.
+    guess_max = 1000
+) %>%
+    arrange(index)
+
+codebook_structure  <- read_csv(
+    "Codebooks/codebook_structure.csv",
+    col_names = TRUE)
+
+codebook_ncit  <- read_csv(
+    "Codebooks/codebook_ncit.csv",
+    col_names = TRUE)
+
+codebook_bia <- read_excel(
+    "Codebooks/codebook_bia.xlsx",
+    col_names = TRUE,
+    col_types = NULL,
+    na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+    trim_ws = TRUE,
+    skip = 0, # Number of lines to skip before reading data
+    n_max = Inf, # Maximum number of lines to read.
+    guess_max = 1000
+) %>%
+    arrange(index)
+
+## Data
+data <- readRDS("Data_processed/data.rds")
+data_bia <- readRDS("Data_processed/data_bia.rds")
+data_bia_D1 <- readRDS("Data_processed/data_bia_D1.rds")
+data_bia_D1_mean <- readRDS("Data_processed/data_bia_D1_mean.rds")
+data_bia_D1_raw <- readRDS("Data_processed/data_bia_D1_raw.rds")
+data_bia_D3 <- readRDS("Data_processed/data_bia_D3.rds")
+data_bia_D3_mean <- readRDS("Data_processed/data_bia_D3_mean.rds")
+data_bia_D3_raw <- readRDS("Data_processed/data_bia_D3_raw.rds")
+data_bia_mean <- readRDS("Data_processed/data_bia_mean.rds")
+data_d1_exclusive <- readRDS("Data_processed/data_d1_exclusive.rds")
+data_filtered <- readRDS("Data_processed/data_filtered.rds")
+data_filtered_seca <- readRDS("Data_processed/data_filtered_seca.rds")
+I21_conditions_R <- readRDS("Data_processed/I21_conditions_R.rds")
+I22_drugs_R <- readRDS("Data_processed/I22_drugs_R.rds")
+I27_labs_R <- readRDS("Data_processed/I27_labs_R.rds")
+I29_compliance <- readRDS("Data_processed/I29_compliance.rds")
+I30_events_R <- readRDS("Data_processed/I30_events_R.rds")
+
+## SUPERTIBBLE
+data_instruments <- readRDS("Data_instruments/data_instruments.rds")
 ```
 
+# Variáveis de interesse
+
+(1 \| record_id) + visit + allocation_group + age + sex + race + education +
+
+```         
+# Comorbidities #
+```
+
+hypertension + hypercholesterolemia + hypertrigliceridemia + insulin + drugs_w_loss + drugs_w_gain +
+
+```         
+# Anthro
+```
+
+abdomen + bmi + mean_bp_mean
+
+```         
+# Questionnaires #
+```
+
+whoqol_score_overall + ecap_score + evs_score + dass_score_stress + dass_score_anxiety + dass_score_depression + alcohol_significant + smoke_history + carbs_kcal + protein_kcal + fat_kcal + drugs_dose_change_yn +
+
+```         
+# Adesão #
+```
+
+completed_intervention, intervention_duration, education_years? cp_taking_as_directed_yn, cp_missed_dose_yn, cp_missed_dose_count, cp_discontinued_yn, cp_discontinued_n_days, cp_ran_out_of_drug_yn, cp_medication_confidence_sca
+
+# Adesão
+
+These variables are related to the compliance to the drug intervention.
+
+| variable | label | field type | options |
+|------------------|------------------|------------------|------------------|
+| cp_taking_as_directed_yn | Está tomando conforme orientado? | radio | 0, Não ; 1, Sim |
+| cp_schedule | Cronograma de medicação | dropdown | 1, conforme orientado ; 2, 6 cp/d, em outros horários ; 3, 3 cápsulas ao dia (1 cápsula com café da manhã, 1 com almoço e 1 com o jantar) ; 4, 3 cápsulas ao dia, em outros horários ; 5, Outros (especifique) |
+| cp_schedule_other | Outra forma de tomar (especifique) | text |  |
+| cp_reminder | Método de lembrete para medicamento | dropdown | 1, Alarme no celular ; 2, Caixa de remédios com divisórias para cada horário ; 3, Lembrete escrito em um calendário ; 4, Outro (especificar) |
+| cp_reminder_other | Outro lembrete (especifique) | text |  |
+| cp_missed_dose_yn | Perdeu alguma dose? | radio | 0, Não ; 1, Sim |
+| cp_missed_dose_count | Quantas doses perdidas? | dropdown | 1, 1 vez ; 2, 2 vezes ; 3, 3 a 5 vezes ; 4, 5 a 10 vezes ; 5, mais de 10 vezes |
+| cp_missed_dose_timing | Momentos de doses perdidas | dropdown | 1, Com o café da manhã ; 2, Com o almoço ; 3, Com o jantar ; 4, Outro (especificar) |
+| cp_missed_dose_timing_other | Outros momentos de doses perdidas | text |  |
+| cp_discontinued_yn | Parou de tomar o medicamento? | radio | 0, Não ; 1, Sim |
+| cp_discontinued_n_days | Dias de interrupção | dropdown | 1, 1 dia ; 2, 2 dias ; 3, 3 a 5 dias ; 4, 5 a 10 dias ; 5, mais de 10 dias |
+| cp_discontinued_reason | Motivo da interrupção | dropdown | 1, Efeito colateral ; 2, Esquecimento ; 3, Dificuldade em seguir horários ; 4, Outro (especificar) |
+| cp_discontinued_reason_other | Outra razão (especificar) | notes |  |
+| cp_ran_out_of_drug_yn | Ficou sem medicamento? | radio | 0, Não ; 1, Sim |
+| cp_ran_out_reason | Motivo de falta de medicamento | notes |  |
+| cp_daily_routine_change_medication_adherence_yn | Mudança de rotina afeta adesão ao medicamento? | radio | 0, Não ; 1, Sim |
+| cp_daily_routine_change_specify | Especificar mudança na rotina | notes |  |
+| cp_perceived_improvement_yn | Percebeu melhorias? | radio | 0, Não ; 1, Sim |
+| cp_perceived_improvement | Melhorias relatadas | notes |  |
+| cp_challenges_taking_yn | Dificuldades com medicação? | radio | 0, Não ; 1, Sim |
+| cp_challenges_taking | Desafios na adesão ao medicamento | notes |  |
+| cp_medication_confidence_scale | Confiança no cronograma (1-10) | slider | Nada confiante ; Neutro ; Totalmente confiante |
+| cp_self_reported_compliance_rate | Adesão ao medicamento | radio | 1, Ruim ; 2, Regular ; 3, Boa ; 4, Excelente |
+
+# Correcting values
+
 ```{r}
-data %>% filter(
-    !is.na(phase_angle) 
-) %>% 
+
+# Correcting values --------
+I29_compliance_new <- I29_compliance %>%
     select(
-        filter_codebook(form_name = "bia", included = 1) %>% pull(variable)
+        record_id, visit, cp_taking_as_directed_yn:cp_self_reported_compliance_rate
     ) %>% 
-    skimr::skim()
+    left_join(
+        data_filtered %>% 
+            select(record_id, visit, completed_intervention, intervention_duration),
+        by = c("record_id", "visit")
+    )
+
+#I29_compliance_new %>% glimpse()
+#I29_compliance_new %>% skimr::skim()
+
+
+I29_compliance_new <- I29_compliance_new %>%
+  mutate(
+    cp_taking_as_directed_yn = case_when(
+      record_id == 12 & visit == 3 ~ "Não",
+      record_id == 22 & visit == 3 ~ "Não",
+      record_id == 27 & visit == 2 ~ "Não",
+      record_id == 36 & visit == 2 ~ "Não",
+      record_id == 56 & visit == 2 ~ "Não",
+      record_id == 67 & visit == 2 ~ "Não",
+      TRUE                        ~ cp_taking_as_directed_yn
+    ),
+    cp_schedule = case_when(
+      record_id == 72 & visit == 2 ~ "3 cápsulas uma vez ao dia",
+      record_id == 67 & visit == 2 ~ "6 cp/d, em outros horários",
+      TRUE                        ~ cp_schedule
+    ),
+    cp_missed_dose_yn = case_when(
+      record_id == 56 & visit == 2 ~ "Não",
+      TRUE                        ~ cp_missed_dose_yn
+    ),
+    cp_discontinued_n_days = case_when(
+      record_id == 23 & visit == 3 ~ "5 a 10 dias",
+      record_id == 31 & visit == 2 ~ "3 a 5 dias",
+      record_id == 38 & visit == 3 ~ "5 a 10 dias",
+      record_id == 41 & visit == 2 ~ "5 a 10 dias",
+      record_id == 50 & visit == 2 ~ "3 a 5 dias",
+      record_id == 54 & visit == 3 ~ "5 a 10 dias",
+      record_id == 56 & visit == 2 ~ "mais de 10 dias",
+      record_id == 72 & visit == 3 ~ "mais de 10 dias", 
+      TRUE                        ~ cp_discontinued_n_days
+    )
+  )
 ```
 
+# Simplifying tibble
+
 ```{r}
-typeof(data$smoked_24h_yn)
+I29_compliance_new <- I29_compliance_new %>%
+  mutate(
+    cp_missed_dose_count = if_else(is.na(cp_missed_dose_count), "Não", cp_missed_dose_count),
+    cp_discontinued_n_days = if_else(is.na(cp_discontinued_n_days), "Não", cp_discontinued_n_days),
+  ) %>% 
+    select(
+        record_id, visit, completed_intervention, intervention_duration, 
+        cp_schedule, cp_missed_dose_count, cp_discontinued_n_days,
+        cp_ran_out_of_drug_yn,
+        cp_medication_confidence_scale, cp_self_reported_compliance_rate)
 ```
+
+# Escore composto de adesão (`compliance_score_visit`)
+
+```{r}
+# mapeamentos em vetores nomeados
+schedule_scale <- c(
+  "conforme orientado"                                       = 1,
+  "6 cp/d, em outros horários"                               = 0.75,
+  "3 cápsulas ao dia (1 cápsula com café da manhã, 1 com almoço e 1 com o jantar)" = 0.5,
+  "3 cápsulas ao dia, em outros horários"                    = 0.50,
+  "Outros (especifique)"                                     = 0        # zera o escore
+)
+
+missed_scale <- c(
+  "Não"                 = 1,
+  "1 vez"               = 0.80,
+  "2 vezes"             = 0.60,
+  "3 a 5 vezes"         = 0.40,
+  "5 a 10 vezes"        = 0.20,
+  "mais de 10 vezes"    = 0
+)
+
+discont_scale <- c(
+  "Não"                 = 1,
+  "1 dia"               = 0.80,
+  "2 dias"              = 0.60,
+  "3 a 5 dias"          = 0.40,
+  "5 a 10 dias"         = 0.20,
+  "mais de 10 dias"     = 0
+)
+
+rate_scale <- c(
+  "Excelente" = 1,
+  "Boa"       = 0.75,
+  "Regular"   = 0.50,
+  "Ruim"      = 0.25
+)
+
+I29_compliance_new <- I29_compliance_new %>% 
+  mutate(
+    # Cronograma
+    pts_schedule = schedule_scale[cp_schedule] %>% unname(),
+    
+    # Perda de doses
+    pts_missed   = missed_scale[cp_missed_dose_count] %>% unname(),
+    
+    # Interrupção
+    pts_discont  = discont_scale[cp_discontinued_n_days] %>% unname(),
+    
+    # Ficou sem medicamento
+    pts_ranout   = case_when(
+      cp_ran_out_of_drug_yn == "Não" ~ 1,
+      cp_ran_out_of_drug_yn == "Sim" ~ 0,
+      TRUE                           ~ NA_real_
+    ),
+    
+    # Confiança (somente visita 2)
+    pts_conf     = cp_medication_confidence_scale / 10,
+    
+    # Autoavaliação
+    pts_selfrate = rate_scale[cp_self_reported_compliance_rate] %>% unname()
+  ) %>% 
+  
+    
+    # Soma por visita com atribuição de peso
+  rowwise() %>% 
+  mutate(
+    total_pts   = sum(c_across(starts_with("pts_")), na.rm = TRUE),
+    domains_ok  = sum(!is.na(c_across(starts_with("pts_")))),
+    compliance_score_visit = total_pts / domains_ok
+  ) %>% 
+  ungroup()
+
+### If cp_schedule == Outros (especifique), the final score for that visit should be zero
+
+I29_compliance_new <- I29_compliance_new %>% 
+mutate(
+    compliance_score_visit = if_else(
+      cp_schedule == "Outros (especifique)",
+      0,
+      compliance_score_visit
+    )
+  )
+
+# (opcional) média de adesão por participante
+#compliance_by_id <- I29_compliance_new %>% 
+#  group_by(record_id) %>% 
+#  summarise(compliance_score_mean = mean(compliance_score_visit, na.rm = TRUE))
+```
+
+Converte cada variável em pontos padronizados (0 – 1), soma os pontos obtidos na visita e divide pelo número de domínios válidos.\
+O resultado é um escore contínuo de 0 (pior adesão) a 1 (melhor adesão).
+
+**Regras de pontuação**
+
+| Domínio | Variável | Regra → Pontos |
+|-------------------|---------------------|--------------------------------|
+| **Cronograma** | `cp_schedule` | “conforme orientado” → 1<br>“6 cp/d, em outros horários” → 0.75<br>“3 cápsulas / horário orientado” → 0.75<br>“3 cápsulas / outros horários” → 0.50<br>“Outros (especifique)” → 0 |
+| **Perda de doses – YN** | `cp_missed_dose_count`<br>(valor “Não”) | “Não” → 1 |
+| **Perda de doses – quantas** | `cp_missed_dose_count` | “1 vez” → 0.80<br>“2 vezes” → 0.60<br>“3 a 5 vezes” → 0.40<br>“5 a 10 vezes” → 0.20<br>“mais de 10 vezes” → 0 |
+| **Interrupção – YN** | `cp_discontinued_n_days`<br>(valor “Não”) | “Não” → 1 |
+| **Interrupção – dias** | `cp_discontinued_n_days` | “1 dia” → 0.80<br>“2 dias” → 0.60<br>“3 a 5 dias” → 0.40<br>“5 a 10 dias” → 0.20<br>“mais de 10 dias” → 0 |
+| **Ficou sem medicamento** | `cp_ran_out_of_drug_yn` | Não → 1 · Sim → 0 |
+| **Confiança (1-10)** | `cp_medication_confidence_scale` | escala ÷ 10 (8 → 0.8) |
+| **Autoavaliada** | `cp_self_reported_compliance_rate` | Excelente → 1 · Boa → 0.75 · Regular → 0.50 · Ruim → 0.25 |
+
+*Se o valor for **NA**, o domínio não entra no denominador (não penaliza).*
+
+# Intervention_duration
+
+```{r}
+I29_compliance_new <- I29_compliance_new %>% 
+    mutate(
+        duration_deviation = intervention_duration - 90, # diferença bruta (neg = menos dias)
+        duration_difference = abs(duration_deviation) # desvio absoluto (pior quanto maior)
+        )
+```
+
+# Incorporate compliance into data_filtered
+
+```{r}
+data_filtered <- data_filtered %>% 
+    left_join(
+        I29_compliance_new %>% 
+            select(record_id, visit, compliance_score_visit, duration_difference),
+        by = c("record_id", "visit")
+    ) %>% 
+    
+    group_by(record_id) %>% # Set baseline compliance to 1
+    mutate(compliance_score_visit = if_else(visit == 1, 1, compliance_score_visit)) %>%
+    ungroup() %>%
+    
+    select(
+     record_id, visit, allocation_group, 
+     completed_intervention, compliance_score_visit, duration_difference,
+     age:light_clothes_yn,
+     dplyr::starts_with("labs_")
+    )
+```
+
+# Set duration_difference to 0 for visit 1
+
+```{r}
+data_filtered <- data_filtered %>% 
+    mutate(
+        duration_difference = if_else(visit == 1, 0, duration_difference)
+    )
+```
+
+# Replace NAs for visit 2 with data from visit 1
+
+```{r, eval=FALSE}}
+vars_to_fill <- c("alcohol_significant", "alcohol_dose", "smoke_history", "pack_years", "whoqol_score_overall", "ecap_score", "alcohol_significant", "dass_score_stress", "dass_score_anxiety", "dass_score_depression", "resistance", "reactance", "phase_angle", "handgrip", )
+
+data <- data %>%
+  arrange(record_id, visit) %>%
+  group_by(record_id) %>%
+  mutate(across(all_of(vars_to_fill), ~ if_else(
+    visit == 2 & is.na(.x),
+    .x[visit == 1],
+    .x
+  ))) %>%
+  ungroup()
+```
+
+# REDUCE TIBBLE FOR MODELLING
+
+```{r}
+data_model <- data_filtered %>% 
+    select(
+        record_id:sex,
+        hypertension:ecap_score,
+        abdomen, bmi, mean_bp_mean,
+        resistance:evs_score,
+        alcohol_dose, 
+        carbs_kcal, protein_kcal, fat_kcal,
+        labs_crp:labs_alkp,
+        labs_cholesterol:labs_quick_index
+    )
+
+saveRDS(
+    data_model,
+    "Data_processed/data_model.rds")
+
+vars_to_keep <- names(data_model)
+
+# Step 2: filter codebook_dvep
+codebook_data_model <- codebook_dvep %>%
+    filter(variable %in% vars_to_keep) %>% 
+    select(
+        variable, label_pt, field_type, choices)
+
+saveRDS(
+    codebook_data_model,
+    "Data_processed/codebook_data_model.rds")
+```
+
+# SCALING
+
+$${QUICKI} = \frac{1}{\\log(insulin) + log(glucose)}$$
+
+$$
+HOMA-IR = \frac{insulin * glucose}{405}
+$$
+
+```{r}
+data_model_scaled <- data_model %>%
+  mutate(across(
+    .cols = c(
+      duration_difference, age,
+      whoqol_score_overall, dass_score_depression, dass_score_anxiety,
+      dass_score_stress, ecap_score, 
+      abdomen, bmi, mean_bp_mean,
+      resistance, reactance, 
+      handgrip, evs_score, alcohol_dose,
+      carbs_kcal, protein_kcal, fat_kcal,
+      labs_crp, labs_ast, labs_alt, labs_ggt, labs_alkp,
+      labs_cholesterol, labs_ldl, labs_hba1c, labs_triglycerides,
+      labs_hdl, labs_glucose, labs_insulin, labs_homa_ir, labs_quick_index
+    ),
+    .fns = scale
+  ))
+
+
+```
+
+# Efeito sobre o ângulo de fase
+
+Filtrando D1 and D3
+
+```{r}
+pha_redcap <- data_filtered_davi %>% 
+    filter(
+        visit %in% c(1, 3)
+    ) %>% 
+    mutate(
+        alcohol_dose = if_else(is.na(alcohol_dose), 0, alcohol_dose)
+    )
+```
+
+### All variables
 
 ```{r}
 library(lme4)
 library(lmerTest) # Adds p-values to summary()
-# model <- lmer(outcome ~ time + group + (1 | id), data = df)
 
-model1 <- lmer(phase_angle ~ visit + allocation_group + (1 | record_id), data = data_filtered)
-model1
+pha_1 <- lmer(phase_angle ~ (1 | record_id) + visit + allocation_group + completed_intervention + compliance_score_visit + duration_difference + age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + insulin + drugs_w_loss + drugs_w_gain + abdomen + bmi + mean_bp_mean + handgrip + evs_score + alcohol_dose + carbs_kcal + protein_kcal + fat_kcal + labs_crp + labs_alt + labs_ggt + labs_ldl + labs_hba1c + labs_triglycerides + labs_hdl + labs_glucose + labs_insulin + labs_homa_ir + labs_quick_index, data = pha_redcap)
 
 summary(model1)
 
@@ -53,10 +471,16 @@ ggplot(data_filtered, aes(x = visit, y = phase_angle, group = record_id, color =
 
 ```
 
+### 2
+
 ```{r}
 model2 <- lmer(phase_angle ~ visit * allocation_group + (1 | record_id), data = data_filtered)
 summary(model2)
 ```
+
+## PCR
+
+### 1
 
 ```{r}
 model3 <- lmer(labs_crp ~ visit + allocation_group + (1 | record_id), data = data_filtered)
@@ -82,7 +506,7 @@ qqnorm(resid(model3_log)); qqline(resid(model3_log))  # Normality check
 **log+1 transformation** to the skewed CRP variable, and the results show clear improvement.
 
 | **Term** | **Estimate** | **p-value** | **Interpretation** |
-|----------------|----------------|----------------|--------------------------|
+|------------------|------------------|------------------|------------------|
 | **Intercept** | 1.82 | \<0.001 | Mean **log(CRP + 1)** at baseline in Grupo A |
 | **Visit** | –0.099 | 0.036 | **CRP decreases significantly over time** |
 | **Grupo B (vs A)** | +0.139 | 0.405 | No significant difference at baseline |
@@ -256,7 +680,7 @@ This model directly controls for **baseline differences in CRP**, correcting the
 **Fixed Effects Summary**
 
 | **Term** | **Estimate** | **p-value** | **Interpretation** |
-|---------------|---------------|---------------|-----------------------------|
+|------------------|------------------|------------------|------------------|
 | **(Intercept)** | 0.529 | \<0.001 | Estimated log(CRP+1) for Grupo A at baseline when baseline CRP is 0 |
 | **visit** | –0.106 | **0.015** | CRP significantly **decreases over time** |
 | **Grupo B (vs Grupo A)** | –0.008 | 0.919 | No difference between groups **after adjusting for baseline** |
@@ -322,13 +746,13 @@ baseline_dropout <- data_filtered %>%
 t.test(log1p(labs_crp) ~ dropped_out, data = baseline_dropout)
 ```
 
-	•	Participants who dropped out had slightly lower CRP at baseline, but the difference is not statistically significant.
-	•	There’s no evidence that dropout was related to baseline inflammation.
-	•	Dropout appears to be random with respect to baseline CRP, which supports the Missing at Random (MAR) assumption.
-	
-Because:
-	•	The mixed-effects model (LMM) is valid under MAR,
-	•	There’s no significant baseline CRP difference between those who stayed and those who dropped out,
+```         
+•   Participants who dropped out had slightly lower CRP at baseline, but the difference is not statistically significant.
+•   There’s no evidence that dropout was related to baseline inflammation.
+•   Dropout appears to be random with respect to baseline CRP, which supports the Missing at Random (MAR) assumption.
+```
+
+Because: • The mixed-effects model (LMM) is valid under MAR, • There’s no significant baseline CRP difference between those who stayed and those who dropped out,
 
 ➡️ Your model results are likely unbiased with respect to dropout.
 
@@ -367,13 +791,13 @@ ggplot(new_data, aes(x = visit, y = pred_crp, color = allocation_group, group = 
 
 What this plot shows
 
-	•	Predicted CRP levels in mg/L, adjusted for the median baseline CRP.
-	•	Makes the model output clinically interpretable.
+```         
+•   Predicted CRP levels in mg/L, adjusted for the median baseline CRP.
+•   Makes the model output clinically interpretable.
+```
 
-You can clearly see:
-	•	The overall downward trend in CRP over time.
-	•	That Grupo B does not differ from Grupo A in rate of CRP decline after adjusting for baseline.
-	
+You can clearly see: • The overall downward trend in CRP over time. • That Grupo B does not differ from Grupo A in rate of CRP decline after adjusting for baseline.
+
 ```{r}
 # ✅ Add confidence intervals to predicted CRP plot (back-transformed)
 
@@ -446,3 +870,21 @@ ggplot(data_filtered, aes(x = visit, y = labs_crp, group = record_id, color = al
   theme_minimal(base_size = 14)
 ```
 
+### 2
+
+```{r}
+data_filtered_lmm <- data_filtered %>%
+  group_by(record_id) %>%
+  filter(n() > 1) %>%
+  ungroup()
+
+model4_log <- lmer(log1p(labs_crp) ~ visit + bmi + age + sex + dass_score_stress + 
+     labs_hba1c + labs_ggt + labs_triglycerides + allocation_group + 
+     (1 | record_id), data = data_filtered_lmm)
+
+summary(model4_log)
+
+plot(model3_log)
+
+qqnorm(resid(model3_log)); qqline(resid(model3_log))  # Normality check```
+```

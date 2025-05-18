@@ -1,0 +1,36 @@
+variable,label_pt,field_type,choices
+record_id,Nome completo,text,
+age,Idade,calc,"rounddown(datediff([date_birth], [eleg_date], 'y'))"
+sex,Sexo,radio,"1, Feminino | 0, Masculino"
+whoqol_score_overall,Qualidade de vida geral,text,
+dass_score_depression,Resultado DASS-21 Depressão,text,
+dass_score_anxiety,Resultado DASS-21 Ansiedade,text,
+dass_score_stress,Resultado DASS-21 Stress,text,
+ecap_score,Resultado ECAP,calc,"sum([ecap_score_1], [ecap_score_2], [ecap_score_3], [ecap_score_4], [ecap_score_5], [ecap_score_6], [ecap_score_7], [ecap_score_8], [ecap_score_9], [ecap_score_10], [ecap_score_11], [ecap_score_12], [ecap_score_13], [ecap_score_14], [ecap_score_15], [ecap_score_16])"
+abdomen,Circunferência abdominal (cm),text,
+bmi,IMC (Kg/m²),calc,"if([anthro_chk] = 1, round((([weight])/(([height]/100)^(2))), 2),'')"
+mean_bp_mean,Média MAP,calc,"if([bp_r21s_chk] = '' or [bp_r31s_chk] = '' or [bp_r22d_chk] = '' or [bp_r32d_chk] = '' or [bp_r23m] = '' or [bp_r33m] = '', '', if([bp_diff] = '','', if([bp_diff] <=5, round(mean([bp_r23m], [bp_r33m]), 3), round(mean([bp_r23m], [bp_r33m], [bp_r43m]), 3))))"
+resistance,Resistência (Ω),text,
+reactance,Reatância (Ω),text,
+phase_angle,Ângulo de fase (º),text,
+evs_score,Escore EVS,calc,[evs_days]*[evs_time]
+alcohol_dose,Doses de álcool/semana,calc,"round(sum([alcoholtypeotherdose],[beerdose],[winedose],[destilleddose]),2)"
+carbs_kcal,Kcal de carboidratos,calc,[carboidratos_v2]*4
+protein_kcal,Kcal de proteína,calc,[proteina_v2]*4
+fat_kcal,Kcal de lipídeo,calc,[lipideos_v2]*9
+allocation_group,Grupo randomizado,radio,"1, Grupo A | 2, Grupo B"
+labs_crp,Proteína C Reativa (mg/L),text,
+labs_ast,AST (U/L),text,
+labs_alt,ALT (U/L),text,
+labs_ggt,GGT (U/L),text,
+labs_alkp,Fosfatase alcalina (U/L),text,
+labs_cholesterol,Colesterol total (mg/dL),text,
+labs_ldl,LDL (mg/dL),text,
+labs_hba1c,Hemoglobina A1c (%),text,
+labs_triglycerides,Triglicerídeos (mg/dL),text,
+labs_hdl,HDL (mg/dL),text,
+labs_glucose,Glicemia de jejum (mg/dL),text,
+labs_insulin,Insulina (uIU/mL),text,
+labs_homa_ir,HOMA-IR,text,
+labs_quick_index,QUICK INDEX (Quantitative Insulin sensitivity Check Index),text,
+completed_intervention,Intervenção completa?,radio,"0, Não | 1, Sim | 99, Ainda não"
