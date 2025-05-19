@@ -1,13 +1,18 @@
 ---
 title: "Main outcomes"
 author: "S.P.L.M., Gustavo"
-date: "`r Sys.Date()`"
-output:
-  html_document:
+date: today
+format:
+  html:
     toc: true
-    toc_float:
+    toc-depth: 2
+    toc-float:
       collapsed: false
-      smooth_scroll: true
+      smooth-scroll: true
+  pdf:
+    toc: true
+    toc-depth: 2
+    pdf-engine: xelatex
 ---
 
 ```{r}
@@ -119,7 +124,7 @@ completed_intervention, intervention_duration, education_years? cp_taking_as_dir
 These variables are related to the compliance to the drug intervention.
 
 | variable | label | field type | options |
-|------------|------------|------------|--------------------------------------|
+|--------------|--------------|--------------|-------------------------------|
 | cp_taking_as_directed_yn | Está tomando conforme orientado? | radio | 0, Não ; 1, Sim |
 | cp_schedule | Cronograma de medicação | dropdown | 1, conforme orientado ; 2, 6 cp/d, em outros horários ; 3, 3 cápsulas ao dia (1 cápsula com café da manhã, 1 com almoço e 1 com o jantar) ; 4, 3 cápsulas ao dia, em outros horários ; 5, Outros (especifique) |
 | cp_schedule_other | Outra forma de tomar (especifique) | text |  |
@@ -307,7 +312,7 @@ O resultado é um escore contínuo de 0 (pior adesão) a 1 (melhor adesão).
 **Regras de pontuação**
 
 | Domínio | Variável | Regra → Pontos |
-|--------------|--------------|---------------------------------------------|
+|----------------|----------------|-----------------------------------------|
 | **Cronograma** | `cp_schedule` | “conforme orientado” → 1<br>“6 cp/d, em outros horários” → 0.75<br>“3 cápsulas / horário orientado” → 0.75<br>“3 cápsulas / outros horários” → 0.50<br>“Outros (especifique)” → 0 |
 | **Perda de doses – YN** | `cp_missed_dose_count`<br>(valor “Não”) | “Não” → 1 |
 | **Perda de doses – quantas** | `cp_missed_dose_count` | “1 vez” → 0.80<br>“2 vezes” → 0.60<br>“3 a 5 vezes” → 0.40<br>“5 a 10 vezes” → 0.20<br>“mais de 10 vezes” → 0 |
@@ -500,7 +505,6 @@ library(lme4)
 library(lmerTest) # Adds p-values to summary()
 ```
 
-
 ```{r}
 pha_1 <- lmer(phase_angle ~ (1 | record_id) + visit + allocation_group + completed_intervention + duration_difference + age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal + labs_crp + labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index, data = pha_redcap)
 
@@ -511,22 +515,19 @@ plot(pha_1)
 
 A modelagem estatística foi realizada por meio de modelos lineares mistos com intercepto aleatório por participante (record_id). Todas as variáveis contínuas foram previamente padronizadas (média = 0, desvio-padrão = 1), exceto o índice QUICKI, mantido em sua unidade original para fins de interpretabilidade clínica. A variável duration_difference, que representa o desvio absoluto em dias da duração planejada da intervenção (90 dias), foi ajustada para zero na visita basal e posteriormente padronizada. O modelo pha_2 incluiu 24 preditores fixos e foi ajustado utilizando o método de máxima verossimilhança restrita (REML), com inclusão da variância intraindividual no componente aleatório.
 
-Neste modelo, observou-se que a pressão arterial média (mean_bp_mean) foi positivamente associada ao ângulo de fase (β = 0.19, p = 0.045), sugerindo que níveis mais elevados de pressão podem estar relacionados a um melhor estado funcional da membrana celular. A dose de álcool (alcohol_dose) foi o preditor com maior significância estatística (β = 0.25, p < 0.001), com associação positiva ao ângulo de fase; esse achado deve ser interpretado com cautela, pois pode refletir fatores comportamentais ou nutricionais não capturados diretamente no modelo. Além disso, a proteína C reativa (labs_crp) apresentou associação positiva marginalmente significativa (β = 0.13, p = 0.031), o que pode indicar uma complexa interação entre inflamação subclínica e integridade da membrana celular.
+Neste modelo, observou-se que a pressão arterial média (mean_bp_mean) foi positivamente associada ao ângulo de fase (β = 0.19, p = 0.045), sugerindo que níveis mais elevados de pressão podem estar relacionados a um melhor estado funcional da membrana celular. A dose de álcool (alcohol_dose) foi o preditor com maior significância estatística (β = 0.25, p \< 0.001), com associação positiva ao ângulo de fase; esse achado deve ser interpretado com cautela, pois pode refletir fatores comportamentais ou nutricionais não capturados diretamente no modelo. Além disso, a proteína C reativa (labs_crp) apresentou associação positiva marginalmente significativa (β = 0.13, p = 0.031), o que pode indicar uma complexa interação entre inflamação subclínica e integridade da membrana celular.
 
 Outros preditores como visit, allocation_group, completed_intervention, duration_difference e variáveis laboratoriais como labs_ldl, labs_triglycerides e labs_quick_index não apresentaram associações estatisticamente significativas. A variância do intercepto aleatório por record_id permaneceu elevada (0.72), reforçando a relevância da estrutura longitudinal dos dados. O critério de REML obtido foi 267.6, indicando um ajuste superior ao modelo anterior (REML = 275), e sugerindo avanço na parcimônia e na qualidade do modelo após a redução de preditores.
 
-**Próximos passos sugeridos**:
-- Considerar remoção de variáveis com p > 0.5 e sem base teórica.
-- Avaliar o impacto de variáveis correlacionadas (e.g., `bmi`, `abdomen`).
-- Testar modelos reduzidos orientados por AIC ou p-valor.
+**Próximos passos sugeridos**: - Considerar remoção de variáveis com p \> 0.5 e sem base teórica. - Avaliar o impacto de variáveis correlacionadas (e.g., `bmi`, `abdomen`). - Testar modelos reduzidos orientados por AIC ou p-valor.
 
 *Interpretation clarity* - With all predictors scaled, effect sizes are in SD units. labs_quick_index still in raw units: its coefficient = change in phase angle per unit change in QUICKI, which is very interpretable (and appropriate).
 
-*Random effects* - You can tell that including a random intercept was appropriate by comparing the random effect variance to the residual variance. The random intercept variance for record_id is 0.6846, which represents the variability between participants. The residual variance is 0.1188, which reflects variability within participants (i.e., unexplained by the model and random noise). Now, the random intercept variance is much larger than the residual variance. This indicates that a substantial portion of the total variance in your outcome (phase_angle) is due to differences between individuals, not just random fluctuation within the same person over time. Hence, accounting for individual-level differences via a random intercept helps the model better estimate the effects of your fixed variables by controlling for this inter-individual baseline shift. Summary: Since Var(Intercept for record_id) > Var(Residual), this suggests strong subject-level variation, meaning including (1 | record_id) was a statistically sound choice.
+*Random effects* - You can tell that including a random intercept was appropriate by comparing the random effect variance to the residual variance. The random intercept variance for record_id is 0.6846, which represents the variability between participants. The residual variance is 0.1188, which reflects variability within participants (i.e., unexplained by the model and random noise). Now, the random intercept variance is much larger than the residual variance. This indicates that a substantial portion of the total variance in your outcome (phase_angle) is due to differences between individuals, not just random fluctuation within the same person over time. Hence, accounting for individual-level differences via a random intercept helps the model better estimate the effects of your fixed variables by controlling for this inter-individual baseline shift. Summary: Since Var(Intercept for record_id) \> Var(Residual), this suggests strong subject-level variation, meaning including (1 \| record_id) was a statistically sound choice.
 
 ### Refinements
 
-1. Check for multicollinearity
+1.  Check for multicollinearity
 
 2.  High number of predictors (p = 30+) vs. N = 111 to your sample size. This increases risk of: Overfitting, Inflated standard errors, Instability in estimates. Suggestion: Run a stepwise reduction or penalized regression (e.g., LASSO via glmnet) to select the most stable subset.
 
@@ -534,11 +535,10 @@ Outros preditores como visit, allocation_group, completed_intervention, duration
 
     -   Use performance::check_model() to assess residuals, normality, and homoscedasticity.
     -   Consider using marginal and conditional R² to evaluate model fit.
-    
-4. Plot residuals and check assumptions: Homoscedasticity, Normality of residuals, Influential observations.
 
-5. Refine the role of visit. Currently, visit is not significant, but the study is longitudinal. So ask: Is visit best treated as a linear trend (numeric)? Would a factor with interaction be more appropriate?	Would a random slope for visit help capture subject-specific trajectories?
+4.  Plot residuals and check assumptions: Homoscedasticity, Normality of residuals, Influential observations.
 
+5.  Refine the role of visit. Currently, visit is not significant, but the study is longitudinal. So ask: Is visit best treated as a linear trend (numeric)? Would a factor with interaction be more appropriate? Would a random slope for visit help capture subject-specific trajectories?
 
 ### 1. Check for multicollinearity
 
@@ -550,7 +550,7 @@ check_collinearity(pha_1)
 # r2(pha_1)  # Marginal and conditional R²
 ```
 
-**Interpretation of collinearity results:** No concerning multicollinearity (all VIFs < 3).
+**Interpretation of collinearity results:** No concerning multicollinearity (all VIFs \< 3).
 
 Variance Inflation Factor (VIF) measures how much the variance (i.e., the standard error squared) of a regression coefficient is inflated due to collinearity with other predictors. In other words, it tells you how strongly one predictor is linearly related to the others.
 
@@ -562,30 +562,28 @@ Variance Inflation Factor (VIF) measures how much the variance (i.e., the standa
 | 5–10          | High correlation — **potential problem**       |
 | \>10          | Severe multicollinearity — **likely an issue** |
 
-
 ### 2. Reduce the model
 
-Your model currently includes 30 fixed effects, which may limit statistical power and interpretability due to overfitting. 
+Your model currently includes 30 fixed effects, which may limit statistical power and interpretability due to overfitting.
 
 A abordagem mais sensata para reduzir o modelo depende diretamente do seu objetivo principal.
 
 Se o seu foco for **predição ou performance do modelo**, então a estratégia **data-driven** é mais apropriada, como:
 
-- **(1) Seleção stepwise backward** com base em critérios de informação como AIC ou BIC (AIC favorece modelos com melhor ajuste, BIC penaliza mais a complexidade).
-- **LASSO (via `glmnet`)**, que impõe uma penalização e tende a selecionar um subconjunto estável de variáveis, pode ser especialmente útil quando o número de preditores é alto e há colinearidade moderada.
+-   **(1) Seleção stepwise backward** com base em critérios de informação como AIC ou BIC (AIC favorece modelos com melhor ajuste, BIC penaliza mais a complexidade).
+-   **LASSO (via `glmnet`)**, que impõe uma penalização e tende a selecionar um subconjunto estável de variáveis, pode ser especialmente útil quando o número de preditores é alto e há colinearidade moderada.
 
 Entretanto, se o objetivo for **interpretação e inferência causal ou explicativa** (como é comum em ensaios clínicos e estudos de intervenção), a melhor abordagem é:
 
-- **(2) Simplificação orientada pela teoria e plausibilidade clínica**, removendo variáveis que claramente não contribuem de forma significativa, que se sobrepõem a outras medidas (ex: manter apenas `quick_index` e excluir glicemia/insulina), ou que apresentem comportamento instável nos modelos (como efeitos colineares ou variações negativas no sinal da estimativa ao longo das versões do modelo).
-
+-   **(2) Simplificação orientada pela teoria e plausibilidade clínica**, removendo variáveis que claramente não contribuem de forma significativa, que se sobrepõem a outras medidas (ex: manter apenas `quick_index` e excluir glicemia/insulina), ou que apresentem comportamento instável nos modelos (como efeitos colineares ou variações negativas no sinal da estimativa ao longo das versões do modelo).
 
 Quando eu menciono **"variações negativas no sinal da estimativa ao longo das versões do modelo"**, estou me referindo ao comportamento instável dos coeficientes de algumas variáveis à medida que você modifica o modelo — por exemplo, adicionando ou removendo preditores.
 
 Imagine que, em um modelo mais simples, a variável `bmi` tem um coeficiente **positivo**, sugerindo que quanto maior o IMC, maior o ângulo de fase. Mas ao incluir outras variáveis correlacionadas (como `abdomen` ou `resistance`), o coeficiente de `bmi` se torna **negativo** ou **não significativo**. Essa mudança de sinal pode indicar:
 
-- **Colinearidade**: `bmi` e `abdomen`, por exemplo, podem estar explicando o mesmo componente corporal.
-- **Falta de robustez**: a interpretação do efeito da variável muda conforme outras são incluídas, dificultando conclusões consistentes.
-- **Overfitting ou ajuste instável**, especialmente em amostras pequenas.
+-   **Colinearidade**: `bmi` e `abdomen`, por exemplo, podem estar explicando o mesmo componente corporal.
+-   **Falta de robustez**: a interpretação do efeito da variável muda conforme outras são incluídas, dificultando conclusões consistentes.
+-   **Overfitting ou ajuste instável**, especialmente em amostras pequenas.
 
 Detectar esse comportamento é um sinal de que a variável pode estar redundante ou que há necessidade de ajustes — por exemplo, usar apenas uma das variáveis correlacionadas ou aplicar técnicas de regularização.
 
@@ -593,13 +591,13 @@ Portanto, **"variação no sinal da estimativa"** não é sobre valor negativo e
 
 Uma boa estratégia híbrida é:
 
-1. **Fixar um conjunto mínimo de variáveis-chave teóricas** (ex: sexo, idade, grupo, tempo).
-2. **Aplicar redução stepwise nos demais termos**, guiando-se por BIC (se você deseja maior parcimônia) ou por LASSO.
-3. **Comparar modelos com ANOVA** e gráficos de resíduos para garantir que a simplificação não deteriora o ajuste.
+1.  **Fixar um conjunto mínimo de variáveis-chave teóricas** (ex: sexo, idade, grupo, tempo).
+2.  **Aplicar redução stepwise nos demais termos**, guiando-se por BIC (se você deseja maior parcimônia) ou por LASSO.
+3.  **Comparar modelos com ANOVA** e gráficos de resíduos para garantir que a simplificação não deteriora o ajuste.
 
 Essa abordagem permite alcançar um equilíbrio entre interpretabilidade e estabilidade do modelo.
 
-### 3. Check model fit 
+### 3. Check model fit
 
 A avaliação dos pressupostos do modelo pha_1 foi realizada por meio da função check_model() do pacote performance, a qual indicou que, em linhas gerais, o modelo apresenta adequação estatística razoável. O gráfico de Posterior Predictive Check mostra boa sobreposição entre a densidade dos valores observados e os valores preditos pelo modelo, indicando adequada capacidade preditiva.
 
@@ -611,14 +609,13 @@ A colinearidade foi considerada baixa, com todos os fatores de inflação da var
 
 ### 5. Refine the role of visit
 
-lmer(phase_angle ~ visit + (visit | record_id) + ...
+lmer(phase_angle \~ visit + (visit \| record_id) + ...
 
-Error: number of observations (=111) <= number of random effects (=146) for term (visit | record_id)
+Error: number of observations (=111) \<= number of random effects (=146) for term (visit \| record_id)
 
-lmer(phase_angle ~ visit + (1 + visit || record_id) + ...
+lmer(phase_angle \~ visit + (1 + visit \|\| record_id) + ...
 
 boundary (singular) fit: see help('isSingular')
-
 
 ## Reduce the Model
 
@@ -630,15 +627,9 @@ pha_2 <- lmer(phase_angle ~ (1 | record_id) + visit + allocation_group + age + s
 summary(pha_2)
 ```
 
-> AIC(pha_1, pha_2)
-      df      AIC
-pha_1 26 319.5554
-pha_2 19 313.6283
+> AIC(pha_1, pha_2) df AIC pha_1 26 319.5554 pha_2 19 313.6283
 
-> BIC(pha_1, pha_2)
-      df      BIC
-pha_1 26 390.0032
-pha_2 19 365.1094
+> BIC(pha_1, pha_2) df BIC pha_1 26 390.0032 pha_2 19 365.1094
 
 A comparação entre os modelos pelo critério de informação de Akaike (AIC) e o critério bayesiano de informação (BIC) favoreceu o modelo reduzido (pha_2), que apresentou valores mais baixos de AIC (313,6 vs. 319,6) e BIC (365,1 vs. 390,0) em relação ao modelo completo (pha_1). Isso sugere que a simplificação do modelo resultou em melhor equilíbrio entre ajuste e complexidade, mesmo com a perda de significância estatística de algumas covariáveis previamente relevantes.
 
@@ -657,20 +648,18 @@ BIC(pha_1, pha_2, pha_3)
 r2(pha_3)
 ```
 
-
 ```{r check-model, fig.width=10, fig.height=14}
 plots <- performance::check_model(pha_3)
 print(plots)
 ```
 
-
 Três modelos hierárquicos foram comparados utilizando os critérios de informação AIC e BIC. O modelo pha_3, contendo 22 preditores fixos, apresentou os menores valores de AIC (300,2) e BIC (359,8), superando tanto o modelo completo pha_1 (AIC = 319,6; BIC = 390,0) quanto o modelo reduzido pha_2 (AIC = 313,6; BIC = 365,1). Esses resultados indicam que pha_3 oferece o melhor equilíbrio entre qualidade de ajuste e complexidade do modelo, sendo, portanto, o modelo preferido para interpretação final dos resultados.
 
 Uma versão reduzida do modelo foi desenvolvida com o objetivo de aprimorar o equilíbrio entre parcimônia e desempenho preditivo. A seleção das variáveis foi orientada tanto por critérios teóricos quanto estatísticos, priorizando preditores com plausibilidade clínica e contribuições informativas nas versões anteriores. O novo modelo (pha_final) manteve o intercepto aleatório por participante (record_id) e incluiu 20 preditores fixos, resultando em um critério de máxima verossimilhança restrita (REML) inferior ao dos modelos anteriores (REML = 256,2), indicando melhora no ajuste.
 
-As variáveis mean_bp_mean (p = 0.040), alcohol_dose (p < 0.001) e labs_crp (p = 0.035) mantiveram associação estatisticamente significativa com o ângulo de fase, mesmo após o ajuste multivariado, o que reforça a robustez dessas associações. A variável visit foi mantida como efeito fixo para controle do efeito temporal, embora não tenha mostrado significância estatística (p = 0.432). A variância do intercepto aleatório (σ² = 0.68) permaneceu relevante, o que confirma a presença de heterogeneidade entre os participantes e a adequação do uso de um modelo misto.
+As variáveis mean_bp_mean (p = 0.040), alcohol_dose (p \< 0.001) e labs_crp (p = 0.035) mantiveram associação estatisticamente significativa com o ângulo de fase, mesmo após o ajuste multivariado, o que reforça a robustez dessas associações. A variável visit foi mantida como efeito fixo para controle do efeito temporal, embora não tenha mostrado significância estatística (p = 0.432). A variância do intercepto aleatório (σ² = 0.68) permaneceu relevante, o que confirma a presença de heterogeneidade entre os participantes e a adequação do uso de um modelo misto.
 
-A análise multicolinearidade mostrou valores de VIF < 3 para todos os preditores, descartando problemas relevantes de colinearidade. Os diagnósticos do modelo indicaram distribuição adequada dos resíduos, ausência de observações altamente influentes e normalidade satisfatória dos efeitos aleatórios, corroborando a adequação do modelo ajustado.
+A análise multicolinearidade mostrou valores de VIF \< 3 para todos os preditores, descartando problemas relevantes de colinearidade. Os diagnósticos do modelo indicaram distribuição adequada dos resíduos, ausência de observações altamente influentes e normalidade satisfatória dos efeitos aleatórios, corroborando a adequação do modelo ajustado.
 
 A avaliação dos pressupostos do modelo pha_final foi realizada com base em gráficos diagnósticos. O gráfico de densidade (“Posterior Predictive Check”) indicou que os valores preditos se alinharam adequadamente com a distribuição observada do ângulo de fase. Os resíduos padronizados apresentaram distribuição aproximadamente normal, conforme demonstrado no gráfico de quantis teóricos dos efeitos aleatórios e no gráfico de normalidade dos resíduos, reforçando a adequação do modelo misto com intercepto aleatório por participante.
 
@@ -708,7 +697,7 @@ qqnorm(resid(model3_log)); qqline(resid(model3_log))  # Normality check
 **log+1 transformation** to the skewed CRP variable, and the results show clear improvement.
 
 | **Term** | **Estimate** | **p-value** | **Interpretation** |
-|---------------|---------------|---------------|----------------------------|
+|----------------|----------------|----------------|-------------------------|
 | **Intercept** | 1.82 | \<0.001 | Mean **log(CRP + 1)** at baseline in Grupo A |
 | **Visit** | –0.099 | 0.036 | **CRP decreases significantly over time** |
 | **Grupo B (vs A)** | +0.139 | 0.405 | No significant difference at baseline |
@@ -817,9 +806,7 @@ ggplot(new_data, aes(x = visit, y = pred_log_crp, color = allocation_group, grou
 
 -   Both groups show a downward trend in CRP over time, suggesting a general anti-inflammatory progression.
 
--   Grupo B starts at a higher baseline and appears to have a slightly steeper decline in log(CRP), although:
-
-    > 🔸 The interaction term was not statistically significant (p = 0.620).
+-   Grupo B starts at a higher baseline and appears to have a slightly steeper decline in log(CRP), although the interaction term was not statistically significant (p = 0.620).
 
 This means that although Grupo B appears to improve more, this difference in slopes is not statistically supported.
 
@@ -882,13 +869,12 @@ This model directly controls for **baseline differences in CRP**, correcting the
 **Fixed Effects Summary**
 
 | **Term** | **Estimate** | **p-value** | **Interpretation** |
-|-------------|-------------|-------------|-------------------------------|
+|---------------|---------------|---------------|----------------------------|
 | **(Intercept)** | 0.529 | \<0.001 | Estimated log(CRP+1) for Grupo A at baseline when baseline CRP is 0 |
 | **visit** | –0.106 | **0.015** | CRP significantly **decreases over time** |
 | **Grupo B (vs Grupo A)** | –0.008 | 0.919 | No difference between groups **after adjusting for baseline** |
 | **log1p_baseline_crp** | +0.772 | \<0.001 | Strong predictor: higher baseline CRP leads to higher follow-up CRP |
 
-------------------------------------------------------------------------
 
 **Key Takeaways**
 
@@ -956,7 +942,7 @@ t.test(log1p(labs_crp) ~ dropped_out, data = baseline_dropout)
 
 Because: • The mixed-effects model (LMM) is valid under MAR, • There’s no significant baseline CRP difference between those who stayed and those who dropped out,
 
-➡️ Your model results are likely unbiased with respect to dropout.
+Your model results are likely unbiased with respect to dropout.
 
 ```{r}
 # Back-transforming predicted log(CRP + 1) values to CRP (mg/L)
@@ -1001,7 +987,7 @@ What this plot shows
 You can clearly see: • The overall downward trend in CRP over time. • That Grupo B does not differ from Grupo A in rate of CRP decline after adjusting for baseline.
 
 ```{r}
-# ✅ Add confidence intervals to predicted CRP plot (back-transformed)
+# add confidence intervals to predicted CRP plot (back-transformed)
 
 # Load required packages
 library(ggplot2)
@@ -1017,7 +1003,7 @@ new_data <- expand.grid(
 ) %>%
   mutate(
     log1p_baseline_crp = baseline_crp_median,
-    record_id = "dummy"  # 👈 Add a dummy ID to match model's grouping variable
+    record_id = "dummy"  # Add a dummy ID to match model's grouping variable
   )
 
 # Step 2: Get prediction intervals on log scale (includes uncertainty)
