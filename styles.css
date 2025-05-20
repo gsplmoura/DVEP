@@ -1,0 +1,21 @@
+/* Make TOC scrollable if it's too tall */
+div.tocify {
+  overflow-y: auto;
+  max-height: 90vh; /* Use vertical space better */
+}
+
+/* Collapse TOC on very small screens */
+@media (max-width: 768px) {
+  div.tocify {
+    display: none;
+  }
+
+  .main-container {
+    margin-left: 0 !important;
+  }
+}
+
+/* Shift the main content accordingly */
+div.col-md-9 {
+  margin-left: 320px !important;
+}

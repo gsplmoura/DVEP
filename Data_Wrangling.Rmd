@@ -3,7 +3,20 @@ title: "DVEP Data Analysis"
 author: "Gustavo Santos Paiva Laender Moura"
 date: "`r format(Sys.Date(), '%d de %B de %Y')`"
 output:
-  html_document
+  html_document:
+    toc: true
+    toc_depth: 5
+    toc_float: 
+      collapsed: false
+      smooth_scroll: true
+    number_sections: false
+    theme: cerulean
+    highlight: tango
+    css: styles.css
+  pdf_document:
+    toc: true
+    toc_depth: 5
+    number_sections: true
 PID: REDCap 1958
 project: Effect of Eclipta prostrata (L.) L. (Asteraceae) on bioelectrical impedance
   phase angle in adults with grade I obesity (DVEP)
@@ -35,7 +48,7 @@ library(here)
 source("helper_functions.R")
 ```
 
-# First Steps
+# FIRST STEPS
 ## Read Files
 ### Codebooks
 
@@ -109,7 +122,7 @@ data_bia_D1_raw <- read_csv(
 
 ```
 
-## Remove identifying data from record_id
+## Remove identification
 
 ```{r}
 data$record_id <- substr(data$record_id,1,2)
@@ -395,7 +408,7 @@ I22_drugs_R <- label_variables(I22_drugs_R, codebook_dvep)
 #     view()
 ```
 
-### DEMOGRAPHICS AND INTERVENTION DATA 
+### First visit
 
 To be replicated to d2 and d3
 
@@ -430,8 +443,8 @@ rm(eleg_exclusive)
 rm(visit_1_exclusive)
 ```
 
-### REPEATING INSTRUMENTS
-#### Creating relevant binary variables
+### Repeating instruments
+#### Creating binary variables
 
 1. Hypertension
 ```{r}
@@ -796,9 +809,9 @@ I30_events_R <- label_variables(I30_events_R, codebook_dvep)
 I30_events_R <- label_choices(I30_events_R, codebook_dvep) 
 ```
 
-### NON-REPEATING INSTRUMENTS
+### Non-repeating instruments
 
-#### RELEVANT VARIABLES FROM V1 & V3
+#### V1 & V3
 ```{r}
 # Non-repeating data common to V1 and V3 (`d1d3`)
 # calculate mean of handgrip strenght
@@ -849,7 +862,7 @@ d1d3 <- filter_data(c("V1","V3"),0) %>%
         phase_angle, resistance, reactance, smoked_24h_yn, exercised_24h_yn, alcohol_24h_yn, light_clothes_yn, time_fasted_food, time_fasted_liquid)
 ```
 
-#### RELEVANT VARIABLES FROM V2
+#### V2
 
 ```{r}
 ##Non-repeating data from the second visit
@@ -874,9 +887,11 @@ d2 <- filter_data("V2",0) %>%
         )
 ```
 
-### JOINS
+### Joins
 
-#### bind_rows() from `d1d3` and `d2` to create `data_filtered`
+**1. bind_rows() from `d1d3` and `d2` to create `data_filtered`**
+
+bind_rows() from `d1d3` and `d2` to create `data_filtered`
 
 ```{r}
 ## 9.6 Bind rows for non-repeating variables from D1/D2/D3
@@ -896,7 +911,7 @@ rm(d1d3)
 rm(d2)
 ```
 
-#### left_join() to `data_filtered`
+**left_join() to `data_filtered`**
 
 ```{r}
 
@@ -931,7 +946,7 @@ data_filtered <- data_filtered %>%
     )
 ```
 
-#### left_join() **SECA BIA DATA** to `data_filtered_seca`
+**left_join() **SECA BIA DATA** to `data_filtered_seca`**
 ```{r}
 data_filtered_seca <- data_filtered %>% 
     left_join(
@@ -946,6 +961,275 @@ data_filtered_seca <- data_filtered %>%
         by = join_by(record_id, visit)
     )
 
+```
+
+### Compliance
+
+#### Adesão
+
+These variables are related to the compliance to the drug intervention.
+
+| variable | label | field type | options |
+|--------------|--------------|--------------|-------------------------------|
+| cp_taking_as_directed_yn | Está tomando conforme orientado? | radio | 0, Não ; 1, Sim |
+| cp_schedule | Cronograma de medicação | dropdown | 1, conforme orientado ; 2, 6 cp/d, em outros horários ; 3, 3 cápsulas ao dia (1 cápsula com café da manhã, 1 com almoço e 1 com o jantar) ; 4, 3 cápsulas ao dia, em outros horários ; 5, Outros (especifique) |
+| cp_schedule_other | Outra forma de tomar (especifique) | text |  |
+| cp_reminder | Método de lembrete para medicamento | dropdown | 1, Alarme no celular ; 2, Caixa de remédios com divisórias para cada horário ; 3, Lembrete escrito em um calendário ; 4, Outro (especificar) |
+| cp_reminder_other | Outro lembrete (especifique) | text |  |
+| cp_missed_dose_yn | Perdeu alguma dose? | radio | 0, Não ; 1, Sim |
+| cp_missed_dose_count | Quantas doses perdidas? | dropdown | 1, 1 vez ; 2, 2 vezes ; 3, 3 a 5 vezes ; 4, 5 a 10 vezes ; 5, mais de 10 vezes |
+| cp_missed_dose_timing | Momentos de doses perdidas | dropdown | 1, Com o café da manhã ; 2, Com o almoço ; 3, Com o jantar ; 4, Outro (especificar) |
+| cp_missed_dose_timing_other | Outros momentos de doses perdidas | text |  |
+| cp_discontinued_yn | Parou de tomar o medicamento? | radio | 0, Não ; 1, Sim |
+| cp_discontinued_n_days | Dias de interrupção | dropdown | 1, 1 dia ; 2, 2 dias ; 3, 3 a 5 dias ; 4, 5 a 10 dias ; 5, mais de 10 dias |
+| cp_discontinued_reason | Motivo da interrupção | dropdown | 1, Efeito colateral ; 2, Esquecimento ; 3, Dificuldade em seguir horários ; 4, Outro (especificar) |
+| cp_discontinued_reason_other | Outra razão (especificar) | notes |  |
+| cp_ran_out_of_drug_yn | Ficou sem medicamento? | radio | 0, Não ; 1, Sim |
+| cp_ran_out_reason | Motivo de falta de medicamento | notes |  |
+| cp_daily_routine_change_medication_adherence_yn | Mudança de rotina afeta adesão ao medicamento? | radio | 0, Não ; 1, Sim |
+| cp_daily_routine_change_specify | Especificar mudança na rotina | notes |  |
+| cp_perceived_improvement_yn | Percebeu melhorias? | radio | 0, Não ; 1, Sim |
+| cp_perceived_improvement | Melhorias relatadas | notes |  |
+| cp_challenges_taking_yn | Dificuldades com medicação? | radio | 0, Não ; 1, Sim |
+| cp_challenges_taking | Desafios na adesão ao medicamento | notes |  |
+| cp_medication_confidence_scale | Confiança no cronograma (1-10) | slider | Nada confiante ; Neutro ; Totalmente confiante |
+| cp_self_reported_compliance_rate | Adesão ao medicamento | radio | 1, Ruim ; 2, Regular ; 3, Boa ; 4, Excelente |
+
+#### Correcting values
+
+```{r}
+
+# Correcting values --------
+I29_compliance_new <- I29_compliance %>%
+    select(
+        record_id, visit, cp_taking_as_directed_yn:cp_self_reported_compliance_rate
+    ) %>% 
+    left_join(
+        data_filtered %>% 
+            select(record_id, visit, completed_intervention, intervention_duration),
+        by = c("record_id", "visit")
+    )
+
+#I29_compliance_new %>% glimpse()
+#I29_compliance_new %>% skimr::skim()
+
+
+I29_compliance_new <- I29_compliance_new %>%
+  mutate(
+    cp_taking_as_directed_yn = case_when(
+      record_id == 12 & visit == 3 ~ "Não",
+      record_id == 22 & visit == 3 ~ "Não",
+      record_id == 27 & visit == 2 ~ "Não",
+      record_id == 36 & visit == 2 ~ "Não",
+      record_id == 56 & visit == 2 ~ "Não",
+      record_id == 67 & visit == 2 ~ "Não",
+      TRUE                        ~ cp_taking_as_directed_yn
+    ),
+    cp_schedule = case_when(
+      record_id == 72 & visit == 2 ~ "3 cápsulas uma vez ao dia",
+      record_id == 67 & visit == 2 ~ "6 cp/d, em outros horários",
+      TRUE                        ~ cp_schedule
+    ),
+    cp_missed_dose_yn = case_when(
+      record_id == 56 & visit == 2 ~ "Não",
+      TRUE                        ~ cp_missed_dose_yn
+    ),
+    cp_discontinued_n_days = case_when(
+      record_id == 23 & visit == 3 ~ "5 a 10 dias",
+      record_id == 31 & visit == 2 ~ "3 a 5 dias",
+      record_id == 38 & visit == 3 ~ "5 a 10 dias",
+      record_id == 41 & visit == 2 ~ "5 a 10 dias",
+      record_id == 50 & visit == 2 ~ "3 a 5 dias",
+      record_id == 54 & visit == 3 ~ "5 a 10 dias",
+      record_id == 56 & visit == 2 ~ "mais de 10 dias",
+      record_id == 72 & visit == 3 ~ "mais de 10 dias", 
+      TRUE                        ~ cp_discontinued_n_days
+    )
+  )
+```
+
+#### Simplifying tibble
+
+```{r}
+I29_compliance_new <- I29_compliance_new %>%
+  mutate(
+    cp_missed_dose_count = if_else(is.na(cp_missed_dose_count), "Não", cp_missed_dose_count),
+    cp_discontinued_n_days = if_else(is.na(cp_discontinued_n_days), "Não", cp_discontinued_n_days),
+  ) %>% 
+    select(
+        record_id, visit, completed_intervention, intervention_duration, 
+        cp_schedule, cp_missed_dose_count, cp_discontinued_n_days,
+        cp_ran_out_of_drug_yn,
+        cp_medication_confidence_scale, cp_self_reported_compliance_rate)
+```
+
+#### Escore de adesão 
+
+`compliance_score_visit`
+
+```{r}
+# mapeamentos em vetores nomeados
+schedule_scale <- c(
+  "conforme orientado"                                       = 1,
+  "6 cp/d, em outros horários"                               = 0.75,
+  "3 cápsulas ao dia (1 cápsula com café da manhã, 1 com almoço e 1 com o jantar)" = 0.5,
+  "3 cápsulas ao dia, em outros horários"                    = 0.50,
+  "Outros (especifique)"                                     = 0        # zera o escore
+)
+
+missed_scale <- c(
+  "Não"                 = 1,
+  "1 vez"               = 0.80,
+  "2 vezes"             = 0.60,
+  "3 a 5 vezes"         = 0.40,
+  "5 a 10 vezes"        = 0.20,
+  "mais de 10 vezes"    = 0
+)
+
+discont_scale <- c(
+  "Não"                 = 1,
+  "1 dia"               = 0.80,
+  "2 dias"              = 0.60,
+  "3 a 5 dias"          = 0.40,
+  "5 a 10 dias"         = 0.20,
+  "mais de 10 dias"     = 0
+)
+
+rate_scale <- c(
+  "Excelente" = 1,
+  "Boa"       = 0.75,
+  "Regular"   = 0.50,
+  "Ruim"      = 0.25
+)
+
+I29_compliance_new <- I29_compliance_new %>% 
+  mutate(
+    # Cronograma
+    pts_schedule = schedule_scale[cp_schedule] %>% unname(),
+    
+    # Perda de doses
+    pts_missed   = missed_scale[cp_missed_dose_count] %>% unname(),
+    
+    # Interrupção
+    pts_discont  = discont_scale[cp_discontinued_n_days] %>% unname(),
+    
+    # Ficou sem medicamento
+    pts_ranout   = case_when(
+      cp_ran_out_of_drug_yn == "Não" ~ 1,
+      cp_ran_out_of_drug_yn == "Sim" ~ 0,
+      TRUE                           ~ NA_real_
+    ),
+    
+    # Confiança (somente visita 2)
+    pts_conf     = cp_medication_confidence_scale / 10,
+    
+    # Autoavaliação
+    pts_selfrate = rate_scale[cp_self_reported_compliance_rate] %>% unname()
+  ) %>% 
+  
+    
+    # Soma por visita com atribuição de peso
+  rowwise() %>% 
+  mutate(
+    total_pts   = sum(c_across(starts_with("pts_")), na.rm = TRUE),
+    domains_ok  = sum(!is.na(c_across(starts_with("pts_")))),
+    compliance_score_visit = total_pts / domains_ok
+  ) %>% 
+  ungroup()
+
+### If cp_schedule == Outros (especifique), the final score for that visit should be zero
+
+I29_compliance_new <- I29_compliance_new %>% 
+mutate(
+    compliance_score_visit = if_else(
+      cp_schedule == "Outros (especifique)",
+      0,
+      compliance_score_visit
+    )
+  )
+
+# (opcional) média de adesão por participante
+#compliance_by_id <- I29_compliance_new %>% 
+#  group_by(record_id) %>% 
+#  summarise(compliance_score_mean = mean(compliance_score_visit, na.rm = TRUE))
+```
+
+Converte cada variável em pontos padronizados (0 – 1), soma os pontos obtidos na visita e divide pelo número de domínios válidos.\
+O resultado é um escore contínuo de 0 (pior adesão) a 1 (melhor adesão).
+
+**Regras de pontuação**
+
+| Domínio | Variável | Regra → Pontos |
+|----------------|----------------|-----------------------------------------|
+| **Cronograma** | `cp_schedule` | “conforme orientado” → 1<br>“6 cp/d, em outros horários” → 0.75<br>“3 cápsulas / horário orientado” → 0.75<br>“3 cápsulas / outros horários” → 0.50<br>“Outros (especifique)” → 0 |
+| **Perda de doses – YN** | `cp_missed_dose_count`<br>(valor “Não”) | “Não” → 1 |
+| **Perda de doses – quantas** | `cp_missed_dose_count` | “1 vez” → 0.80<br>“2 vezes” → 0.60<br>“3 a 5 vezes” → 0.40<br>“5 a 10 vezes” → 0.20<br>“mais de 10 vezes” → 0 |
+| **Interrupção – YN** | `cp_discontinued_n_days`<br>(valor “Não”) | “Não” → 1 |
+| **Interrupção – dias** | `cp_discontinued_n_days` | “1 dia” → 0.80<br>“2 dias” → 0.60<br>“3 a 5 dias” → 0.40<br>“5 a 10 dias” → 0.20<br>“mais de 10 dias” → 0 |
+| **Ficou sem medicamento** | `cp_ran_out_of_drug_yn` | Não → 1 · Sim → 0 |
+| **Confiança (1-10)** | `cp_medication_confidence_scale` | escala ÷ 10 (8 → 0.8) |
+| **Autoavaliada** | `cp_self_reported_compliance_rate` | Excelente → 1 · Boa → 0.75 · Regular → 0.50 · Ruim → 0.25 |
+
+*Se o valor for **NA**, o domínio não entra no denominador (não penaliza).*
+
+#### Intervention_duration
+
+```{r}
+I29_compliance_new <- I29_compliance_new %>% 
+    mutate(
+        duration_deviation = intervention_duration - 90, # diferença bruta (neg = menos dias)
+        duration_difference = abs(duration_deviation) # desvio absoluto (pior quanto maior)
+        )
+```
+
+#### Incorporate to data
+
+```{r}
+data_filtered <- data_filtered %>% 
+    left_join(
+        I29_compliance_new %>% 
+            select(record_id, visit, compliance_score_visit, duration_difference),
+        by = c("record_id", "visit")
+    ) %>% 
+    
+    group_by(record_id) %>% # Set baseline compliance to 1
+    ungroup() %>%
+    
+    select(
+     record_id, visit, allocation_group, 
+     completed_intervention, compliance_score_visit, duration_difference,
+     age:light_clothes_yn,
+     dplyr::starts_with("labs_")
+    ) %>% 
+    mutate(
+        alcohol_dose = if_else(is.na(alcohol_dose), 0, alcohol_dose),
+        kcal = carbs_kcal + protein_kcal + fat_kcal,
+    )
+```
+
+**Set duration_difference to 0 for visit 1**
+
+```{r}
+data_filtered <- data_filtered %>% 
+    mutate(
+        duration_difference = if_else(visit == 1, 0, duration_difference)
+    )
+```
+
+**Replace NAs for visit 2 with data from visit 1**
+
+```{r, eval=FALSE}
+vars_to_fill <- c("alcohol_significant", "alcohol_dose", "smoke_history", "pack_years", "whoqol_score_overall", "ecap_score", "alcohol_significant", "dass_score_stress", "dass_score_anxiety", "dass_score_depression", "resistance", "reactance", "phase_angle", "handgrip", )
+
+data <- data %>%
+  arrange(record_id, visit) %>%
+  group_by(record_id) %>%
+  mutate(across(all_of(vars_to_fill), ~ if_else(
+    visit == 2 & is.na(.x),
+    .x[visit == 1],
+    .x
+  ))) %>%
+  ungroup()
 ```
 
 ## EXPORT TIBBLES
@@ -972,6 +1256,7 @@ saveRDS(I21_conditions_R,    file.path(output_dir, "I21_conditions_R.rds"))
 saveRDS(I22_drugs_R,         file.path(output_dir, "I22_drugs_R.rds"))
 saveRDS(I27_labs_R,          file.path(output_dir, "I27_labs_R.rds"))
 saveRDS(I29_compliance,      file.path(output_dir, "I29_compliance.rds"))
+saveRDS(I29_compliance_new,  file.path(output_dir, "I29_compliance_new.rds"))
 saveRDS(I30_events_R,        file.path(output_dir, "I30_events_R.rds"))
 ```
 
@@ -996,12 +1281,14 @@ readr::write_csv(I21_conditions_R,    file.path(output_dir, "I21_conditions_R.cs
 readr::write_csv(I22_drugs_R,         file.path(output_dir, "I22_drugs_R.csv"))
 readr::write_csv(I27_labs_R,          file.path(output_dir, "I27_labs_R.csv"))
 readr::write_csv(I29_compliance,      file.path(output_dir, "I29_compliance.csv"))
+readr::write_csv(I29_compliance_new,  file.path(output_dir, "I29_compliance_new.csv"))
 readr::write_csv(I30_events_R,        file.path(output_dir, "I30_events_R.csv"))
 ```
 
 
-# SUPERTIBBLE (`data_instruments`)
-Creates a supertibble with one tibble for each instrument
+# SUPERTIBBLE 
+
+Creates a supertibble (`data_instruments`) with one tibble for each instrument
 
 ```{r}
 form_names <- unique(codebook_dvep$form_name_en)
@@ -1095,7 +1382,7 @@ rm(file_path)
 rm(instr_name)
 ```
 
-# DATA ANALYSIS
+# Optional - Simplify Environment
 
 ```{r}
 library(skimr)
@@ -1122,3 +1409,4 @@ rm(codebook_bia, codebook_dvep, codebook_ncit, codebook_structure)
 # codebooks\$data[["ncit"]]
 # codebooks\$data[["structure"]]
 ```
+
