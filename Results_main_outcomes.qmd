@@ -4,11 +4,13 @@ author: "S.P.L.M., Gustavo"
 date: today
 format:
   html:
+    page-layout: full
     toc: true
-    toc-depth: 2
+    toc-depth: 4
     toc-float:
       collapsed: false
       smooth-scroll: true
+    css: styles.css
   pdf:
     toc: true
     toc-depth: 2
@@ -136,6 +138,13 @@ saveRDS(
     "Data_processed/codebook_data_model.rds")
 ```
 
+## Filter codebook
+
+```{r}
+codebook_filtered <- codebook_dvep %>%
+  filter(variable %in% colnames(data_model))
+```
+
 ## Scaling
 
 $${QUICKI} = \frac{1}{\\log(insulin) + log(glucose)}$$
@@ -160,7 +169,7 @@ data_model_scaled <- data_model %>%
         labs_hdl, labs_glucose, labs_insulin, labs_homa_ir
     ),
     .fns = ~ as.numeric(scale(.))
-  ))
+  )) 
 
 scaling_params <- data_model %>%
   summarise(across(
@@ -424,8 +433,38 @@ A avaliação dos pressupostos do modelo pha_3 foi realizada com auxílio da fun
 
 # PCR
 
+## Scaling
+
 ```{r}
-data_model_scaled <- data_model_scaled %>%
+data_crp <- data_model %>%
+  mutate(across(
+    .cols = c(
+        duration_difference, age,
+        whoqol_score_overall, dass_score_depression, dass_score_anxiety, dass_score_stress, ecap_score, 
+        abdomen, bmi, mean_bp_mean,
+        phase_angle, resistance, reactance, 
+        handgrip, evs_score, alcohol_dose,
+        carbs_kcal, protein_kcal, fat_kcal, kcal,
+        labs_ast, labs_alt, labs_ggt, labs_alkp,
+        labs_cholesterol, labs_ldl, labs_hba1c, labs_triglycerides,
+        labs_hdl, labs_glucose, labs_insulin, labs_homa_ir
+    ),
+    .fns = ~ as.numeric(scale(.))
+  )) %>% 
+    rename(
+        crp_raw = labs_crp
+    ) %>% 
+    mutate(
+        crp_log = log1p(crp_raw),
+        crp_log_scaled = as.numeric(scale(crp_log))
+    ) %>% 
+    relocate(
+        crp_log, crp_log_scaled, .after = crp_raw
+    )
+```
+
+```{r}
+data_crp <- data_crp %>%
   dplyr::mutate(
     compliance_score_adjusted = dplyr::case_when(
       visit == 1 ~ 1,
@@ -438,8 +477,19 @@ data_model_scaled <- data_model_scaled %>%
 ## Per protocol
 
 ```{r pcr_1_check-model, fig.width=10, fig.height=14}
-pcr_1 <- lmer(log1p(labs_crp) ~ allocation_group + compliance_score_adjusted + duration_difference + completed_intervention + visit + (1 | record_id) + age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal + labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index, data = data_model_scaled)
 
+pcr_1 <- lmer(
+  crp_log ~ 
+      allocation_group + visit + 
+      duration_difference + # compliance_score_adjusted + completed_intervention 
+      (1 | record_id) +
+      age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + 
+      bmi + mean_bp_mean + handgrip + evs_score + # phase angle +
+      # whoqol_score_overall + dass_score_depression + dass_score_anxiety + dass_score_stress + ecap_score
+      alcohol_dose + kcal + 
+      labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index,
+  data = data_crp
+)
 summary(pcr_1)
 
 check_collinearity(pcr_1)
@@ -448,22 +498,370 @@ AIC(pcr_1)
 BIC(pcr_1)
 
 r2(pcr_1)
+```
 
+```{r}
 pcr_1_plots <- performance::check_model(pcr_1)
 print(pcr_1_plots)
-
-
 ```
+
+**Full Analysis of the Final Parsimonious Model**
+
+1.  Model Fit
+
+-   **AIC:** 313.95 (lowest among previous tested models)
+-   **BIC:** 382.13
+-   **Conditional R²:** 0.576 (variance explained by fixed + random effects)
+-   **Marginal R²:** 0.293 (variance explained by fixed effects)
+
+This is a well-balanced model with the best AIC/BIC trade-off seen so far, offering high parsimony without sacrificing explanatory power.
+
+2.  Significant Predictors
+
+| Predictor | Estimate | p-value | Interpretation |
+|-------------|-------------|-------------|-----------------------------------|
+| **Duration difference** | -0.275 | 0.0076 | Each SD increase in deviation from planned duration predicts a \~24% reduction in CRP (exp(-0.275) ≈ 0.76). This suggests that **poor adherence is strongly associated with lower inflammation reduction**. |
+| **EVS score** | 0.168 | 0.0269 | Surprisingly, higher physical activity correlates with **higher CRP**, which may warrant further investigation (possible reverse causality, measurement error, or confounding). |
+| **Labs_quick_index** | -7.897 | 0.0205 | A strong inverse association with CRP, reflecting the metabolic-inflammation relationship where better insulin sensitivity predicts lower CRP. |
+
+Borderline - **BMI:** p = 0.061 — higher BMI tends to associate with higher CRP, close to significance.
+
+3.  Non-Significant Predictors
+
+-   Allocation group, visit number, age, sex, hypertension, cholesterol, triglycerides, blood pressure, handgrip strength, alcohol, kcal intake, and most lab biomarkers (ALT, GGT, LDL, HDL, triglycerides) are **not significant**.
+
+This reinforces that **adherence (duration difference)** and **metabolic status (quick index)** are primary drivers of CRP changes, while the intervention itself (allocation_group) does not show an effect after accounting for adherence.
+
+4.  Diagnostics
+
+-   Posterior Predictive Check: The model-predicted density aligns well with observed CRP log values, suggesting good distributional fit.
+-   Linearity: Residuals are roughly centered but some curvature appears, indicating minor deviations from perfect linearity.
+-   Homogeneity of Variance: Slight funneling with higher fitted values showing slightly more variance, but overall acceptable.
+-   Influential Observations: A few leverage points (IDs 106, 59, 75, 107) exist but are within acceptable Cook's distance boundaries.
+-   Collinearity: All VIFs are low to moderate (max \~3.26 for sex), indicating no problematic collinearity.
+-   Normality: Residuals are reasonably normal with some right-side tails, typical for CRP-type biomarkers.
+-   Random Effects:The QQ plot of random effects shows a reasonable alignment with normality assumptions.
+
+5.  Interpretation
+
+-   The model confirms that **adherence to the study duration (duration_difference)** is a major determinant of CRP reduction, suggesting that participants who better adhered to the study protocol (in terms of time on the intervention) achieved better inflammatory outcomes.
+
+-   **Insulin sensitivity (labs_quick_index)** remains a key independent predictor of CRP, aligning with well-established metabolic-inflammation links.
+
+The unexpected positive association between **EVS (physical activity)** and CRP could be due to:
+
+-   Reverse causality (participants with higher CRP are advised to exercise more)
+-   Measurement limitations of EVS
+-   Confounding from unmeasured variables (e.g., acute inflammatory events or infections)
+
+The lack of direct intervention effect (**allocation_group**) suggests the effect operates through **adherence** rather than treatment allocation per se, fitting a **per-protocol-like** model interpretation.
+
+6.  Conclusion
+
+-   The model is statistically solid, with good fit and no major assumption violations.
+-   The final model captures the essence of this study: **inflammatory outcomes are driven by adherence and metabolic status rather than random allocation alone**.
+-   This model is robust, parsimonious, and clinically interpretable.
+
+7.  Recommendation
+
+-   Report this model as the main per-protocol analysis.
+-   Discuss the adherence effect in the context of real-world clinical applicability.
+-   Consider a sensitivity analysis exploring the unexpected positive EVS-CRP relationship.
+
+### Heteroscedasticity
+
+Heteroscedasticity is a violation of linear mixed model assumptions, and we’re already applying a log transformation on the outcome (log1p(crp)) plus standardizing all numeric predictors. When log-transforming the outcome is not fully sufficient, it indicates either residual skewness, heavy tails, or that the Gaussian error assumption doesn’t capture the data-generating process well.
+
+*Modeling strategies to address this issue:*
+
+**Generalized Linear Mixed Model (GLMM) with Non-Gaussian Distribution**
+
+Given the characteristics of your outcome variable (**CRP**, which is strictly positive, right-skewed, and heteroscedastic), moving from a Gaussian-based LMM to a **Generalized Linear Mixed Model (GLMM)** with an appropriate distribution is both statistically justified and likely to yield better model fit.
+
+1. Theoretical Justification
+
+- **CRP is a continuous, positive, right-skewed variable.**
+- Log-transforming CRP partially addresses skewness but doesn't fully solve: Heteroscedasticity (as your diagnostic plots show); The misspecification from assuming normal residuals.
+- GLMM allows you to model CRP with a distribution that reflects its natural properties rather than forcing it into Gaussian assumptions.
+
+2. Addressing Heteroscedasticity
+
+- Your residual plots still show **variance increasing with fitted values** — a classic signal that a Gaussian model is a poor fit for the scale of your data.
+- GLMMs inherently model mean-variance relationships correctly for non-normal distributions.
+
+3. Precedent in Biomedical Literature. Biomarkers like CRP are frequently modeled with:
+
+- **Gamma distribution with log link** (most common for positive, skewed continuous outcomes).
+- **Inverse Gaussian** (alternative when the data have very heavy tails).
+- This approach is standard in fields like clinical epidemiology, pharmacometrics, and biomarker research.
+
+Practical Advantages. Coefficients remain on the **log scale**, similar to your LMM with log(CRP), but:
+
+- You model CRP in its native distribution rather than relying on transformation.
+- **Heteroscedasticity becomes irrelevant**, because Gamma models naturally assume variance increases with the mean.
+- Interpretation becomes **multiplicative**, which is often more intuitive for clinicians and health scientists (e.g., "a 20% increase in CRP per unit change in X").
+
+Potential Models to Fit
+- `glmer()` from **lme4**
+- `glmmTMB()` from **glmmTMB** — more flexible and often preferred for Gamma models.
+
+If the log-transformed CRP still shows heteroscedasticity, the Gaussian model may be inherently misspecified. A GLMM can explicitly model the distribution of the outcome with an appropriate family. Candidates:
+
+-   Gamma GLMM: For strictly positive, right-skewed outcomes like CRP.
+-   Inverse Gaussian GLMM: Also for skewed continuous data, with heavier tails.
+-   Log-normal GLMM: Another valid approach when a log transformation stabilizes variance but doesn’t fully normalize residuals.
+
+#### GLMM
+
+```{r}
+library(glmmTMB)
+
+pcr_glmm <- glmmTMB(
+  crp_raw ~ 
+      allocation_group + visit + duration_difference + 
+      (1 | record_id) + 
+      age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia +
+      drugs_w_loss + drugs_w_gain + bmi + mean_bp_mean + handgrip + evs_score + 
+      alcohol_dose + kcal + labs_alt + labs_ggt + labs_ldl + labs_triglycerides + 
+      labs_hdl + labs_quick_index,
+  data = data_crp,
+  family = Gamma(link = "log")
+)
+
+summary(pcr_glmm)
+
+check_collinearity(pcr_glmm)
+
+AIC(pcr_glmm)
+BIC(pcr_glmm)
+
+r2(pcr_glmm)
+
+pcr_glmm_plots <- performance::check_model(pcr_1)
+print(pcr_glmm_plots)
+```
+
+**Full Analysis of the GLMM (Gamma, Log-Link)**
+
+*Model Fit and Diagnostics*
+
+- AIC: 636.7
+- BIC: 704.9
+- Marginal R²: 0.385 (variance explained by fixed effects)
+- Conditional R²: 0.676 (variance explained by fixed + random effects)
+
+*Interpretation:*
+
+- This represents a substantial improvement in explained variance relative to the linear mixed model (marginal R² ~0.29).
+- The higher conditional R² suggests that between-subject variability (random intercept) remains important.
+
+*Diagnostics:*
+- Posterior Predictive Check: Good alignment between model-predicted density and observed data. No major distributional misspecification.
+- Linearity: Acceptable. Slight deviations, but no systematic bias.
+- Homoscedasticity: Vastly improved relative to the LMM. The variance is well-behaved along the fitted line, which is expected for a Gamma model.
+- Normality of Residuals: Strong. No heavy tails or skewness issues.
+- Influential Observations: Leverage and residual plots are within safe boundaries. No problematic points.
+- Collinearity: VIFs are all below 3.3, no collinearity concerns.
+
+ Key Fixed Effects
+
+| Variable               | Estimate | p-value  | Interpretation                                 |
+|------------------------|----------|----------|-------------------------------------------------|
+| Intercept          | 4.807    | 0.002    | Baseline CRP level (on log scale)              |
+| Duration Difference| -0.420   | 0.0005   | Significant. Each 1 SD longer than planned duration leads to a 34% reduction in CRP (exp(-0.42) ≈ 0.66) |
+| EVS Score          | 0.233    | 0.012    | Significant. Higher physical activity is associated with 26% higher CRP, which is counterintuitive and requires biological scrutiny. May reflect confounding. |
+| Labs QUICKI        | -11.246  | 0.012    | Strongly significant. Higher insulin sensitivity leads to >99% reduction in CRP, suggesting a very steep relationship in the data. Likely influenced by scaling. |
+| Allocation Group   | 0.174    | 0.407    | Not significant. Consistent with a per-protocol analytical framework. |
+| Visit              | 0.037    | 0.687    | Not significant. No residual time effect beyond the modeled variables. |
+| BMI                | 0.170    | 0.112    | Borderline. Each SD increase in BMI tends to raise CRP by ~18%, but not significant at p<0.05. |
+
+All other clinical covariates (age, sex, hypertension, lipid markers, liver enzymes) were non-significant, indicating that the major drivers in this dataset are related to treatment adherence (duration), metabolic health (QUICKI), and physical activity (EVS).
+
+ Biological Plausibility
+
+- Duration Difference Negative Effect: Completely plausible. Lower deviation from planned duration (i.e., better adherence) leads to reduced inflammation, as expected.
+- QUICKI Negative Effect: Consistent with insulin resistance being a pro-inflammatory state. The very large coefficient likely reflects the scale of QUICKI (small numeric values like ~0.3–0.4).
+- EVS Positive Effect: Counterintuitive. Suggests participants with higher reported physical activity had higher CRP. This could be:
+  - A measurement error in EVS (self-reported bias).
+  - Confounding by illness severity (e.g., those with higher baseline CRP trying to increase activity).
+  - An artifact of the small sample size.
+  - Worth sensitivity testing.
+
+ Model Performance
+
+- This GLMM offers superior handling of heteroscedasticity compared to the LMM.
+- The residual plots confirm that variance increases with the mean, which the Gamma distribution models correctly.
+- The gain in marginal R² from ~0.29 (LMM) to 0.385 (GLMM) is meaningful.
+- Model is stable with no multicollinearity, good residual behavior, and sound random effects distribution.
+
+ Conclusion
+
+- This GLMM is statistically robust and biologically meaningful.
+- The key drivers of CRP in this study are:
+  - Adherence (duration difference).
+  - Insulin sensitivity (QUICKI).
+  - Physical activity (EVS), with a result that warrants further scrutiny.
+
+ Recommendation
+
+- Yes, this model should be your primary model for reporting.
+- Report exponentiated coefficients for clinical interpretability.
+- Consider sensitivity analyses:
+  - Check whether removing outliers or modifying EVS affects results.
+  - Test a simplified model without EVS to observe stability.
+- Prepare Results and Discussion sections reflecting that GLMM offered a better statistical fit than LMM due to the appropriate modeling of the CRP distribution.
+
+ If you want, I can help you draft the precise sentences for the manuscript results and discussion.
+ 
+#### Tweedie
+
+```{r}
+# Load required libraries
+library(glmmTMB)
+library(performance)
+library(ggeffects)
+library(DHARMa)
+
+# Fit the Tweedie GLMM
+pcr_tweedie <- glmmTMB(
+  crp_raw ~ 
+    allocation_group + visit + duration_difference + 
+    (1 | record_id) + 
+    age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + 
+    drugs_w_loss + drugs_w_gain + bmi + mean_bp_mean + handgrip + evs_score + 
+    alcohol_dose + kcal + labs_alt + labs_ggt + labs_ldl + labs_triglycerides + 
+    labs_hdl + labs_quick_index,
+  data = data_crp,
+  family = tweedie(link = "log")
+)
+
+# Summary of the model
+summary(pcr_tweedie)
+
+# Check collinearity
+check_collinearity(pcr_tweedie)
+
+# Model fit indices
+AIC(pcr_tweedie)
+BIC(pcr_tweedie)
+
+# R-squared
+r2(pcr_tweedie)
+
+# Residual diagnostics with DHARMa
+simulation_output <- simulateResiduals(fittedModel = pcr_tweedie)
+plot(simulation_output)
+
+# Model diagnostics with performance
+check_model(pcr_tweedie)
+
+# Plot predicted effects for key variables (example: allocation group)
+ggeffects::ggpredict(pcr_tweedie, terms = "allocation_group") %>%
+  plot()
+
+# Plot for a continuous variable (example: evs_score)
+ggeffects::ggpredict(pcr_tweedie, terms = "evs_score [all]") %>%
+  plot()
+```
+
+Is the Tweedie better than the simple GLMM?
+
+1. Model Fit Comparison
+
+| Model            | AIC   | BIC   | Conditional R² | Marginal R² |
+|------------------|-------|-------|----------------|-------------|
+| GLMM (Gamma)     | 636.7 | 704.9 | 0.676          | 0.385       |
+| GLMM (Tweedie)   | 638.3 | 709.2 | 0.698          | 0.379       |
+
+- The AIC and BIC are slightly better for the Gamma model, but the difference is negligible (<2 points).
+- The Tweedie has a slightly higher Conditional R², meaning it captures slightly more total variance.
+- Marginal R² is essentially the same.
+
+2. Residual Diagnostics
+
+| Diagnostic Aspect      | GLMM (Gamma) | GLMM (Tweedie) |
+|------------------------|---------------|-----------------|
+| Homogeneity            | Some issue    | Some issue      |
+| Normality of residuals | Acceptable    | Slightly better |
+| DHARMa tests           | Passed        | Passed          |
+
+- Both models show mild heteroscedasticity.
+- Tweedie has slightly better QQ residual behavior.
+- Both models pass DHARMa diagnostics.
+
+3. Theoretical Suitability
+
+- Gamma assumes positive continuous data with variance proportional to the mean squared.
+- Tweedie is more flexible, with variance proportional to mean^p (p between 1 and 2 for continuous positive skewed data).
+- Tweedie generalizes Gamma and is conceptually better for heavily right-skewed biomedical data like CRP.
+
+4. Practical Implications
+
+- The estimates of fixed effects are very similar between models.
+- The same predictors are statistically significant in both.
+
+5. Conclusion
+
+- Statistically: Not clearly better. Equivalent fit with negligible differences.
+- Conceptually: Tweedie is preferable because it has a more flexible variance structure suitable for this kind of data.
+- Recommendation: Tweedie is more defensible for publication. Both models yield consistent conclusions, which reinforces the robustness of the results.
+
+Parameter Estimates Comparison
+
+| Predictor              | Gamma Estimate | Tweedie Estimate | Direction  | Significance |
+|------------------------|----------------|------------------|------------|--------------|
+| (Intercept)            | 4.807          | 4.564            | Positive   | **           |
+| allocation_groupGrupoB | 0.174          | 0.155            | Positive   | ns           |
+| visit                  | 0.037          | 0.030            | Positive   | ns           |
+| duration_difference    | -0.420         | -0.414           | Negative   | ***          |
+| age                    | -0.012         | -0.015           | Negative   | ns           |
+| sexMasculino           | -0.510         | -0.504           | Negative   | ns           |
+| hypertension1          | -0.002         | -0.008           | Negative   | ns           |
+| hypercholesterolemia1  | 0.118          | 0.105            | Positive   | ns           |
+| hypertrigliceridemia1  | 0.251          | 0.259            | Positive   | ns           |
+| drugs_w_loss1          | 0.284          | 0.283            | Positive   | ns           |
+| drugs_w_gain1          | 0.337          | 0.320            | Positive   | ns           |
+| bmi                    | 0.170          | 0.169            | Positive   | . (trend)    |
+| mean_bp_mean           | -0.103         | -0.096           | Negative   | ns           |
+| handgrip               | -0.062         | -0.060           | Negative   | ns           |
+| evs_score              | 0.233          | 0.223            | Positive   | *            |
+| alcohol_dose           | -0.005         | -0.009           | Negative   | ns           |
+| kcal                   | 0.118          | 0.110            | Positive   | ns           |
+| labs_alt               | -0.062         | -0.062           | Negative   | ns           |
+| labs_ggt               | 0.042          | 0.038            | Positive   | ns           |
+| labs_ldl               | 0.167          | 0.166            | Positive   | ns           |
+| labs_triglycerides     | -0.144         | -0.134           | Negative   | ns           |
+| labs_hdl               | 0.016          | 0.016            | Positive   | ns           |
+| labs_quick_index       | -11.246        | -10.450          | Negative   | *            |
+
+- Direction of effect is consistent across both models.
+- Significance patterns are identical.
+
+Summary: Tweedie offers slightly better conceptual fit without compromising statistical robustness. Both models are valid and lead to the same scientific conclusions.
+
+#### Other models
+
+1. Linear Mixed Model on ΔCRP (Change Score). Collapse the data to one row per participant and model the change in CRP from baseline to final visit. This often reduces heteroscedasticity since we’re modeling change rather than absolute levels.
+
+2. Quantile Mixed Models. Instead of modeling the mean, quantile models can model medians or other quantiles, which are robust to heteroscedasticity and skewness. Example package: lqmm. Models the median instead of the mean — inherently robust to heteroscedasticity.
+
+3. Robust Mixed Models. Mixed models with robust estimation of residual variance, less sensitive to heteroscedasticity or outliers. Same formula as LMM, but with robust handling of residual variance.
+
+4. Model the Raw CRP with a Two-Part Model (If Many Zeros). If there are many zeros or very low values, a two-part hurdle model or zero-inflated model may better capture the data structure. This is less common for CRP unless a substantial portion is zero or below detection limit.
+
+Recommendation hierarchy: 1. First choice: → Try Gamma GLMM with log link using glmmTMB — best suited for continuous, right-skewed, strictly positive outcomes like CRP. 2. If interest is in change rather than absolute levels: → Model ΔCRP (change score) with LMM. 3. If robustness to outliers is crucial: → Try robust mixed models or quantile mixed models.
+
+## Modeling compliance
 
 Since the goal is to evaluate whether the intervention (allocation_group) reduces inflammation (log1p(labs_crp)), then how compliance-related variables are handled — completed_intervention, compliance_score_adjusted, and duration_difference — fundamentally changes what question the model is answering.
 
 **Key Conceptual Framework**
 
-If we adjust for compliance variables, then we are answering the question: Among those who complied (to varying degrees), does the assigned intervention have an effect on inflammation?”. This estimates the “Effect of Treatment on the Treated” (ETT) or per-protocol effect, rather than the intention-to-treat (ITT) effect. The interpretation shifts towards whether the efficacy of the treatment holds after accounting for how well participants adhered. If participants in the intervention group did not comply, the model adjusts for that, isolating the treatment effect conditional on compliance. However, if compliance is strongly influenced by the intervention (as is common), adjusting for it may introduce **post-treatment bias (collider bias)**, because you’re conditioning on a variable that is downstream of the allocation.
+If we adjust for compliance variables, then we are answering the question: Among those who complied (to varying degrees), does the assigned intervention have an effect on inflammation?”. This estimates the “Effect of Treatment on the Treated” (ETT) or per-protocol effect, rather than the intention-to-treat (ITT) effect. The interpretation shifts towards whether the efficacy of the treatment holds after accounting for how well participants adhered. If participants in the intervention group did not comply, the model adjusts for that, isolating the treatment effect conditional on compliance. However, if compliance is strongly influenced by the intervention (as is common), adjusting for it may introduce **post-treatment bias (collider bias)**, because we’re conditioning on a variable that is downstream of the allocation.
 
 If we do not adjust for compliance, then we are estimating the intention-to-treat (ITT) effect: “Does being assigned to the intervention reduce inflammation, regardless of whether participants fully complied?”. This reflects the real-world effectiveness including factors like dropout, low adherence, etc. This is the primary approach in most randomized trials because it preserves the randomization balance and avoids bias introduced by post-treatment variables.
 
-In the current model, we are conditioning the effect of allocation_group on adherence. The coefficient for allocation_group in this case answers: “Given the same level of adherence (completion, dose, duration), is the intervention effective in reducing inflammation?” In other words, we’re stripping out the pathway by which poor adherence could dilute the intervention effect. If these variables are strong mediators of the intervention’s effect, you are blocking part of the effect of allocation_group, and this might explain why allocation_group is not significant.
+In the current model, we are conditioning the effect of allocation_group on adherence. The coefficient for allocation_group in this case answers: “Given the same level of adherence (completion, dose, duration), is the intervention effective in reducing inflammation?” In other words, we’re stripping out the pathway by which poor adherence could dilute the intervention effect. If these variables are strong mediators of the intervention’s effect, we are blocking part of the effect of allocation_group, and this might explain why allocation_group is not significant.
 
 **Correct Modeling Strategy**
 
@@ -479,7 +877,7 @@ Depends on our goal:
     -   Remove the compliance-related variables from the model.
     -   The coefficient for allocation_group will capture the total effect, including any dilution due to poor adherence.
 
-![](images/DAG: Relationship between Intervention, Compliance, and Inflammation.png)
+![](images/DAG:%20Relationship%20between%20Intervention,%20Compliance,%20and%20Inflammation.png)
 
 The DAG (Directed Acyclic Graph) represents the causal relationships between the intervention, adherence, and inflammation. In this structure, Allocation Group has a direct effect on Inflammation (labs_crp) and also influences Compliance, Completed Intervention, and Duration Difference, which are measures of adherence. These adherence-related variables, in turn, affect Inflammation, indicating that part of the intervention’s effect is mediated through adherence. Additionally, a hypothetical Unmeasured Factors node, representing elements such as motivation, health status, or life circumstances, influences both Compliance and Inflammation. This creates a potential collider if the analysis conditions on adherence-related variables.
 
@@ -491,13 +889,13 @@ This structure demonstrates that the choice between intention-to-treat (ITT) and
 
 1.  Primary Model (ITT) without compliance variables. This estimates whether the offer of the intervention reduces inflammation.
 
-```
+```         
 log1p(labs_crp) \~ allocation_group + visit + (1 \| record_id) + covariates
 ```
 
 2.  Secondary Model (Per-Protocol Sensitivity Analysis) with compliance variables. This estimates whether the intervention works among those who actually adhered to it, or to account for variability in exposure.
 
-```
+```         
 log1p(labs_crp) \~ allocation_group + compliance_score_adjusted + duration_difference + completed_intervention + visit + (1 \| record_id) + covariates
 ```
 
@@ -509,9 +907,9 @@ log1p(labs_crp) \~ allocation_group + compliance_score_adjusted + duration_diffe
 
 **Final Recommendation for Writing in Thesis:**
 
-The primary analysis was conducted under the intention-to-treat principle, evaluating the effect of the randomized intervention on inflammation regardless of adherence. A secondary model adjusted for adherence-related variables (completed_intervention, compliance_score_adjusted, and duration_difference) to explore whether the intervention had an effect among those who maintained adequate compliance. These models capture complementary aspects of intervention effectiveness: the former reflects real-world applicability, while the latter reflects efficacy conditional on adequate adherence. 
+The primary analysis was conducted under the intention-to-treat principle, evaluating the effect of the randomized intervention on inflammation regardless of adherence. A secondary model adjusted for adherence-related variables (completed_intervention, compliance_score_adjusted, and duration_difference) to explore whether the intervention had an effect among those who maintained adequate compliance. These models capture complementary aspects of intervention effectiveness: the former reflects real-world applicability, while the latter reflects efficacy conditional on adequate adherence.
 
-### Ideal condition
+#### Ideal condition
 
 The first model (pcr_1) represents a per-protocol-type model, where the effect of the intervention (allocation_group) is estimated conditional on compliance (through compliance_score_adjusted, completed_intervention, and duration_difference). However, there are other methods that can estimate the effect of the intervention in an ideal condition, where adherence is perfect. These methods go beyond simply conditioning in regression and attempt to more rigorously isolate the causal effect.
 
@@ -521,7 +919,7 @@ The first model (pcr_1) represents a per-protocol-type model, where the effect o
 
 One simple but crude way to perform a per-protocol analysis is to exclude participants who did not complete the intervention or had poor compliance. This creates a model within a population that fully adhered. The limitations are: reduces sample size and breaks randomization, leading to confounding.
 
-```
+```         
 data_pp <- data_model_scaled %>%
   filter(completed_intervention == "Yes", compliance_score_adjusted >= threshold)
 
@@ -532,11 +930,12 @@ pcr_pp <- lmer(log1p(labs_crp) ~ allocation_group + visit + (1 | record_id) + co
 data_pp <- data_model_scaled %>%
   filter(
     completed_intervention == "Sim" &
-      (compliance_score_adjusted > 0.6 | is.na(compliance_score_adjusted))
+      (compliance_score_visit > 0.6 | is.na(compliance_score_visit))
   )
 ```
 
 #### Restrict dataset
+
 ```{r}
 pcr_pp <- lmer(log1p(labs_crp) ~ allocation_group + duration_difference + visit + (1 | record_id) + age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal + labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index, data = data_pp)
 
@@ -545,11 +944,11 @@ summary(pcr_pp)
 
 *2. Instrumental Variable (IV) Approach or Complier Average Causal Effect (CACE)*
 
-Use allocation_group as an instrument for treatment receipt/adherence, under the assumption that randomization affects inflammation only via the intervention. This estimates the effect among compliers, without the collider bias introduced by directly conditioning on post-randomization variables. This estimates the effect of actually completing the intervention, using random allocation as an instrument. In R, this can be implemented using `ivreg()` from the {AER} package or {ivtools}. The syntax is: outcome ~ endogenous + exogenous | instrument + exogenous. However, ivreg does not handle random effects. It assumes independent observations. Since our data has repeated measures (record_id), we should either use only one observation per subject (e.g., endpoint value) or use cluster-robust standard errors to account for within-subject correlation.
+Use allocation_group as an instrument for treatment receipt/adherence, under the assumption that randomization affects inflammation only via the intervention. This estimates the effect among compliers, without the collider bias introduced by directly conditioning on post-randomization variables. This estimates the effect of actually completing the intervention, using random allocation as an instrument. In R, this can be implemented using `ivreg()` from the {AER} package or {ivtools}. The syntax is: outcome \~ endogenous + exogenous \| instrument + exogenous. However, ivreg does not handle random effects. It assumes independent observations. Since our data has repeated measures (record_id), we should either use only one observation per subject (e.g., endpoint value) or use cluster-robust standard errors to account for within-subject correlation.
 
 Collapsing longitudinal data to one observation per subject for instrumental variable (IV) analysis can be done in multiple ways, each answering a slightly different causal question. The gold standard in biostatistics is the ANCOVA approach, which models the outcome at the final time point while adjusting for the baseline value. This has been shown to be statistically more powerful and less biased than simple change scores when baseline and outcome are correlated. Like in the example:
 
-```
+```         
 iv_model <- ivreg(
   log1p(crp_final) ~ completed_intervention + log1p(crp_baseline) + covariates |
   allocation_group + log1p(crp_baseline) + covariates,
@@ -557,10 +956,9 @@ iv_model <- ivreg(
 )
 ```
 
-```{r}
-
+```
 # Extract CRP at baseline
-data_baseline <- data_model_scaled %>%
+data_baseline <- data_crp %>%
   filter(visit == 1) %>%
   select(record_id, labs_crp) %>%
   rename(crp_baseline = labs_crp)
@@ -571,15 +969,18 @@ data_final <- data_model_scaled %>%
   filter(visit == max(visit)) %>%  # This selects the final visit for each participant
   ungroup() %>%
   select(
-    record_id, labs_crp, completed_intervention, compliance_score_adjusted,
+    record_id, labs_crp, crp_raw, completed_intervention, compliance_score_adjusted,
     duration_difference, allocation_group, age, sex, hypertension, hypercholesterolemia,
     hypertrigliceridemia, drugs_w_loss, drugs_w_gain, mean_bp_mean, handgrip, evs_score,
     alcohol_dose, kcal, labs_alt, labs_ggt, labs_ldl, labs_triglycerides, labs_hdl, labs_quick_index
   ) %>%
   rename(crp_final = labs_crp)
 
-data_iv <- data_final %>%
+data_cross_sectional <- data_final %>%
   left_join(data_baseline, by = "record_id")
+
+rm(data_baseline)
+rm(data_final)
 ```
 
 **Primary IV model that estimates the total effect**
@@ -590,7 +991,7 @@ The intent is to answer whether the intervention, when adhered to, leads to a re
 
 #### IV
 
-```{r}
+```
 library(AER)
 
 iv_model_total <- ivreg(
@@ -598,17 +999,15 @@ iv_model_total <- ivreg(
     age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia |
   allocation_group + log1p(crp_baseline) +
     age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia,
-  data = data_iv
+  data = data_cross_sectional
 )
 
 summary(iv_model_total)
 ```
 
-
 *3. G-Computation / G-Formula*
 
 Simulate the outcome under a hypothetical scenario where everyone perfectly adheres to the intervention. This provides an estimate of the expected outcome if all participants had fully complied. R packages: {gfoRmula}, {ltmle}.
-
 
 *4. Marginal Structural Models (MSMs) with Inverse Probability Weighting (IPW)*
 
@@ -618,7 +1017,7 @@ Weight participants based on their probability of adhering, creating a pseudo-po
 
 Complete case analysis (default approach in IPW):
 
-```{r}
+```
 library(ipw)
 
 data_model_ipw <- data_model_scaled %>%
@@ -644,14 +1043,12 @@ model_weights <- ipwpoint(
 
 ```
 
-Use simple imputation (if appropriate for your data). Be cautious: imputation is a valid strategy if missingness is assumed to be Missing At Random (MAR) and the variables used for imputation are adequate.
+Use simple imputation (if appropriate for wer data). Be cautious: imputation is a valid strategy if missingness is assumed to be Missing At Random (MAR) and the variables used for imputation are adequate.
 
-```{r}
+```
 library(mice)
 data_model_ipw <- mice::complete(mice(data_model_scaled, m = 1))
 ```
-
-
 
 *5. Bayesian Models with Compliance Modeling*
 
@@ -665,19 +1062,16 @@ brm(log1p(labs_crp) ~ allocation_group + compliance_score_adjusted + visit + (1 
     family = gaussian())
 ```
 
+*Ways to Make we Current Model More Sensitive to the Intervention*
 
-*Ways to Make Your Current Model More Sensitive to the Intervention*
-
-- Focus the population: subset to high compliers or exclude partial compliers.
-- Model interactions: for example, allocation_group * compliance_score_adjusted to see whether the effect of the intervention depends on levels of compliance.
-- Use longitudinal modeling more fully: include random slopes for visit to capture differential trajectories over time.
-- Explore dose-response: instead of binary completed_intervention, use a continuous adherence measure (compliance_score_adjusted) to model the dose-response effect of adherence.
-- Consider transforming the outcome if distributional assumptions are strained (though log1p() is already a robust choice for skewed variables like CRP).
-
+-   Focus the population: subset to high compliers or exclude partial compliers.
+-   Model interactions: for example, allocation_group \* compliance_score_adjusted to see whether the effect of the intervention depends on levels of compliance.
+-   Use longitudinal modeling more fully: include random slopes for visit to capture differential trajectories over time.
+-   Explore dose-response: instead of binary completed_intervention, use a continuous adherence measure (compliance_score_adjusted) to model the dose-response effect of adherence.
+-   Consider transforming the outcome if distributional assumptions are strained (though log1p() is already a robust choice for skewed variables like CRP).
 
 # PAM
 
 ```{r}
 pam_1 <- lmer(mean_bp_mean ~ (1 | record_id) + visit + allocation_group + completed_intervention + duration_difference + age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal + labs_crp + labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index, data = data_model_scaled)
 ```
-

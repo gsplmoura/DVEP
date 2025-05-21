@@ -19,3 +19,7 @@ div.tocify {
 div.col-md-9 {
   margin-left: 320px !important;
 }
+
+main.content {
+  max-width: 1400px;
+}

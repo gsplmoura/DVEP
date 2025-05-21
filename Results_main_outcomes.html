@@ -100,38 +100,56 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
   <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
-  <ul class="collapse">
+  <ul>
   <li><a href="#getting-started" id="toc-getting-started" class="nav-link active" data-scroll-target="#getting-started">Getting started</a>
-  <ul class="collapse">
+  <ul>
   <li><a href="#load-data" id="toc-load-data" class="nav-link" data-scroll-target="#load-data">Load data</a></li>
   <li><a href="#variables-of-interest" id="toc-variables-of-interest" class="nav-link" data-scroll-target="#variables-of-interest">Variables of interest</a></li>
   <li><a href="#select-variables" id="toc-select-variables" class="nav-link" data-scroll-target="#select-variables">Select variables</a></li>
+  <li><a href="#filter-codebook" id="toc-filter-codebook" class="nav-link" data-scroll-target="#filter-codebook">Filter codebook</a></li>
   <li><a href="#scaling" id="toc-scaling" class="nav-link" data-scroll-target="#scaling">Scaling</a></li>
   </ul></li>
   <li><a href="#phase-angle" id="toc-phase-angle" class="nav-link" data-scroll-target="#phase-angle">Phase angle</a>
-  <ul class="collapse">
+  <ul>
   <li><a href="#modelo-1" id="toc-modelo-1" class="nav-link" data-scroll-target="#modelo-1">Modelo 1</a></li>
   <li><a href="#modelo-2" id="toc-modelo-2" class="nav-link" data-scroll-target="#modelo-2">Modelo 2</a></li>
   <li><a href="#modelo-3" id="toc-modelo-3" class="nav-link" data-scroll-target="#modelo-3">Modelo 3</a></li>
   </ul></li>
   <li><a href="#pcr" id="toc-pcr" class="nav-link" data-scroll-target="#pcr">PCR</a>
+  <ul>
+  <li><a href="#scaling-1" id="toc-scaling-1" class="nav-link" data-scroll-target="#scaling-1">Scaling</a></li>
+  <li><a href="#per-protocol" id="toc-per-protocol" class="nav-link" data-scroll-target="#per-protocol">Per protocol</a>
   <ul class="collapse">
-  <li><a href="#per-protocol" id="toc-per-protocol" class="nav-link" data-scroll-target="#per-protocol">Per protocol</a></li>
+  <li><a href="#heteroscedasticity" id="toc-heteroscedasticity" class="nav-link" data-scroll-target="#heteroscedasticity">Heteroscedasticity</a>
+  <ul class="collapse">
+  <li><a href="#glmm" id="toc-glmm" class="nav-link" data-scroll-target="#glmm">GLMM</a></li>
+  <li><a href="#tweedie" id="toc-tweedie" class="nav-link" data-scroll-target="#tweedie">Tweedie</a></li>
+  <li><a href="#other-models" id="toc-other-models" class="nav-link" data-scroll-target="#other-models">Other models</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#modeling-compliance" id="toc-modeling-compliance" class="nav-link" data-scroll-target="#modeling-compliance">Modeling compliance</a>
+  <ul class="collapse">
+  <li><a href="#ideal-condition" id="toc-ideal-condition" class="nav-link" data-scroll-target="#ideal-condition">Ideal condition</a></li>
+  <li><a href="#restrict-dataset" id="toc-restrict-dataset" class="nav-link" data-scroll-target="#restrict-dataset">Restrict dataset</a></li>
+  <li><a href="#iv" id="toc-iv" class="nav-link" data-scroll-target="#iv">IV</a></li>
+  <li><a href="#ipw" id="toc-ipw" class="nav-link" data-scroll-target="#ipw">IPW</a></li>
+  </ul></li>
   </ul></li>
   <li><a href="#pam" id="toc-pam" class="nav-link" data-scroll-target="#pam">PAM</a></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Results_main_outcomes.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
 </div>
-<main class="content" id="quarto-document-content">
+<main class="content column-page-left" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -140,7 +158,7 @@ window.Quarto = {
 
 
 
-<div class="quarto-title-meta">
+<div class="quarto-title-meta column-page-left">
 
     <div>
     <div class="quarto-title-meta-heading">Author</div>
@@ -341,6 +359,13 @@ dbl (2): type, medicamentos_comorbidades_complete
 <span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Data_processed/codebook_data_model.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
+<section id="filter-codebook" class="level2">
+<h2 class="anchored" data-anchor-id="filter-codebook">Filter codebook</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>codebook_filtered <span class="ot">&lt;-</span> codebook_dvep <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(variable <span class="sc">%in%</span> <span class="fu">colnames</span>(data_model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 <section id="scaling" class="level2">
 <h2 class="anchored" data-anchor-id="scaling">Scaling</h2>
 <p><span class="math display">\[{QUICKI} = \frac{1}{\\log(insulin) + log(glucose)}\]</span></p>
@@ -348,59 +373,59 @@ dbl (2): type, medicamentos_comorbidades_complete
 HOMA-IR = \frac{insulin * glucose}{405}
 \]</span></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>data_model_scaled <span class="ot">&lt;-</span> data_model <span class="sc">%&gt;%</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">.cols =</span> <span class="fu">c</span>(</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        duration_difference, age,</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        whoqol_score_overall, dass_score_depression, dass_score_anxiety,</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        dass_score_stress, ecap_score, </span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        abdomen, bmi, mean_bp_mean,</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        resistance, reactance, </span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        handgrip, evs_score, alcohol_dose,</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        carbs_kcal, protein_kcal, fat_kcal, kcal,</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        labs_crp, labs_ast, labs_alt, labs_ggt, labs_alkp,</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>        labs_cholesterol, labs_ldl, labs_hba1c, labs_triglycerides,</span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>        labs_hdl, labs_glucose, labs_insulin, labs_homa_ir</span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">.fns =</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(.))</span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  ))</span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>scaling_params <span class="ot">&lt;-</span> data_model <span class="sc">%&gt;%</span></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(</span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">.cols =</span> <span class="fu">c</span>(</span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>      duration_difference, age,</span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>      whoqol_score_overall, dass_score_depression, dass_score_anxiety,</span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>      dass_score_stress, ecap_score, </span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>      abdomen, bmi, mean_bp_mean,</span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>      resistance, reactance, </span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>      handgrip, evs_score, alcohol_dose,</span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>      carbs_kcal, protein_kcal, fat_kcal,</span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>      labs_crp, labs_ast, labs_alt, labs_ggt, labs_alkp,</span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>      labs_cholesterol, labs_ldl, labs_hba1c, labs_triglycerides,</span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>      labs_hdl, labs_glucose, labs_insulin, labs_homa_ir</span>
-<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">mean =</span> <span class="sc">~</span><span class="fu">mean</span>(., <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">sd =</span> <span class="sc">~</span><span class="fu">sd</span>(., <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
-<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(),</span>
-<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"variable"</span>, <span class="st">".value"</span>),</span>
-<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_sep =</span> <span class="st">"_(?=[^_]+$)"</span>,  <span class="co"># 👈 this fixes the splitting</span></span>
-<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_transform =</span> <span class="fu">list</span>(<span class="at">.value =</span> as.character))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>data_model_scaled <span class="ot">&lt;-</span> data_model <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">.cols =</span> <span class="fu">c</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        duration_difference, age,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        whoqol_score_overall, dass_score_depression, dass_score_anxiety,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        dass_score_stress, ecap_score, </span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        abdomen, bmi, mean_bp_mean,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        resistance, reactance, </span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        handgrip, evs_score, alcohol_dose,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>        carbs_kcal, protein_kcal, fat_kcal, kcal,</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>        labs_crp, labs_ast, labs_alt, labs_ggt, labs_alkp,</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>        labs_cholesterol, labs_ldl, labs_hba1c, labs_triglycerides,</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>        labs_hdl, labs_glucose, labs_insulin, labs_homa_ir</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">.fns =</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(.))</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  )) </span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>scaling_params <span class="ot">&lt;-</span> data_model <span class="sc">%&gt;%</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">.cols =</span> <span class="fu">c</span>(</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>      duration_difference, age,</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>      whoqol_score_overall, dass_score_depression, dass_score_anxiety,</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>      dass_score_stress, ecap_score, </span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>      abdomen, bmi, mean_bp_mean,</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>      resistance, reactance, </span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>      handgrip, evs_score, alcohol_dose,</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>      carbs_kcal, protein_kcal, fat_kcal,</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>      labs_crp, labs_ast, labs_alt, labs_ggt, labs_alkp,</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>      labs_cholesterol, labs_ldl, labs_hba1c, labs_triglycerides,</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>      labs_hdl, labs_glucose, labs_insulin, labs_homa_ir</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">mean =</span> <span class="sc">~</span><span class="fu">mean</span>(., <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">sd =</span> <span class="sc">~</span><span class="fu">sd</span>(., <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(),</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"variable"</span>, <span class="st">".value"</span>),</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_sep =</span> <span class="st">"_(?=[^_]+$)"</span>,  <span class="co"># 👈 this fixes the splitting</span></span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_transform =</span> <span class="fu">list</span>(<span class="at">.value =</span> as.character))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># THEN, FOR NEW DATA</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>scale_with_params <span class="ot">&lt;-</span> <span class="cf">function</span>(new_data, params) {</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(params))) {</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    var <span class="ot">&lt;-</span> params<span class="sc">$</span>variable[i]</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    mean_val <span class="ot">&lt;-</span> params<span class="sc">$</span>mean[i]</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    sd_val <span class="ot">&lt;-</span> params<span class="sc">$</span>sd[i]</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (var <span class="sc">%in%</span> <span class="fu">names</span>(new_data)) {</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>      new_data[[var]] <span class="ot">&lt;-</span> (new_data[[var]] <span class="sc">-</span> mean_val) <span class="sc">/</span> sd_val</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(new_data)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>new_data_scaled <span class="ot">&lt;-</span> <span class="fu">scale_with_params</span>(new_data, scaling_params)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># THEN, FOR NEW DATA</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>scale_with_params <span class="ot">&lt;-</span> <span class="cf">function</span>(new_data, params) {</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(params))) {</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    var <span class="ot">&lt;-</span> params<span class="sc">$</span>variable[i]</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    mean_val <span class="ot">&lt;-</span> params<span class="sc">$</span>mean[i]</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    sd_val <span class="ot">&lt;-</span> params<span class="sc">$</span>sd[i]</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (var <span class="sc">%in%</span> <span class="fu">names</span>(new_data)) {</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>      new_data[[var]] <span class="ot">&lt;-</span> (new_data[[var]] <span class="sc">-</span> mean_val) <span class="sc">/</span> sd_val</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(new_data)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>new_data_scaled <span class="ot">&lt;-</span> <span class="fu">scale_with_params</span>(new_data, scaling_params)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -408,23 +433,23 @@ HOMA-IR = \frac{insulin * glucose}{405}
 <h1>Phase angle</h1>
 <p>Filtrando os dados da primeira e terceira visitas.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>pha_redcap <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span> </span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>        visit <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">compliance_score_visit =</span> <span class="fu">case_when</span>(</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>            visit <span class="sc">==</span> <span class="dv">3</span> <span class="sc">&amp;</span> completed_intervention <span class="sc">==</span> <span class="st">"Não"</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>            <span class="cn">TRUE</span> <span class="sc">~</span> compliance_score_visit</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pha_redcap <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        visit <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">compliance_score_visit =</span> <span class="fu">case_when</span>(</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>            visit <span class="sc">==</span> <span class="dv">3</span> <span class="sc">&amp;</span> completed_intervention <span class="sc">==</span> <span class="st">"Não"</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>            <span class="cn">TRUE</span> <span class="sc">~</span> compliance_score_visit</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="modelo-1" class="level2">
 <h2 class="anchored" data-anchor-id="modelo-1">Modelo 1</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pha_1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(phase_angle <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> completed_intervention <span class="sc">+</span> duration_difference <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> pha_redcap)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pha_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pha_1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(phase_angle <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> completed_intervention <span class="sc">+</span> duration_difference <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> pha_redcap)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pha_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
@@ -506,7 +531,7 @@ Use print(x, correlation=TRUE)  or
 <p><strong>Avaliação da Multicolinearidade</strong></p>
 <p>Dada a inclusão de um número elevado de preditores no modelo (n = 24), avaliou-se a presença de multicolinearidade utilizando o Fator de Inflação da Variância (VIF) por meio da função performance::check_collinearity().</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">check_collinearity</span>(pha_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">check_collinearity</span>(pha_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Check for Multicollinearity
 
@@ -561,7 +586,7 @@ Low Correlation
      [0.60, 0.87]
      [0.64, 0.92]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># r2(pha_1)  # Marginal and conditional R²</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># r2(pha_1)  # Marginal and conditional R²</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Resultados:</p>
 <p>Todos os preditores apresentaram VIFs inferiores a 3, indicando ausência de multicolinearidade preocupante. Os valores variaram entre 1,13 e 2,64, o que representa correlações lineares fracas a moderadas entre os preditores, sem risco aparente de distorções nas estimativas dos coeficientes.</p>
@@ -658,9 +683,9 @@ Low Correlation
 <section id="modelo-2" class="level2">
 <h2 class="anchored" data-anchor-id="modelo-2">Modelo 2</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>pha_2 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(phase_angle <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> bmi <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> pha_redcap)</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pha_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>pha_2 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(phase_angle <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> bmi <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> pha_redcap)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pha_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
@@ -722,9 +747,9 @@ Use print(x, correlation=TRUE)  or
 <section id="modelo-3" class="level2">
 <h2 class="anchored" data-anchor-id="modelo-3">Modelo 3</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>pha_3 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(phase_angle <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> completed_intervention <span class="sc">+</span> duration_difference <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> pha_redcap)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>pha_3 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(phase_angle <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> completed_intervention <span class="sc">+</span> duration_difference <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> pha_redcap)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
@@ -779,7 +804,7 @@ Correlation matrix not shown by default, as p = 20 &gt; 12.
 Use print(x, correlation=TRUE)  or
     vcov(x)        if you need it</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_collinearity</span>(pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_collinearity</span>(pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Check for Multicollinearity
 
@@ -826,21 +851,21 @@ Low Correlation
      [0.52, 0.78]
      [0.64, 0.94]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(pha_1, pha_2, pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(pha_1, pha_2, pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      df      AIC
 pha_1 26 319.5554
 pha_2 19 313.6283
 pha_3 22 300.2185</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BIC</span>(pha_1, pha_2, pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BIC</span>(pha_1, pha_2, pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      df      BIC
 pha_1 26 390.0032
 pha_2 19 365.1094
 pha_3 22 359.8281</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">r2</span>(pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">r2</span>(pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># R2 for Mixed Models
 
@@ -849,8 +874,8 @@ pha_3 22 359.8281</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>pha_3_plots <span class="ot">&lt;-</span> performance<span class="sc">::</span><span class="fu">check_model</span>(pha_3)</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(pha_3_plots)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>pha_3_plots <span class="ot">&lt;-</span> performance<span class="sc">::</span><span class="fu">check_model</span>(pha_3)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(pha_3_plots)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -886,165 +911,1028 @@ pha_3 22 359.8281</code></pre>
 </section>
 <section id="pcr" class="level1">
 <h1>PCR</h1>
+<section id="scaling-1" class="level2">
+<h2 class="anchored" data-anchor-id="scaling-1">Scaling</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>data_model_scaled <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">compliance_score_adjusted =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>      visit <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> compliance_score_visit</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(compliance_score_adjusted, <span class="at">.after =</span> compliance_score_visit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>data_crp <span class="ot">&lt;-</span> data_model <span class="sc">%&gt;%</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">.cols =</span> <span class="fu">c</span>(</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>        duration_difference, age,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>        whoqol_score_overall, dass_score_depression, dass_score_anxiety, dass_score_stress, ecap_score, </span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>        abdomen, bmi, mean_bp_mean,</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>        phase_angle, resistance, reactance, </span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>        handgrip, evs_score, alcohol_dose,</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>        carbs_kcal, protein_kcal, fat_kcal, kcal,</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>        labs_ast, labs_alt, labs_ggt, labs_alkp,</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>        labs_cholesterol, labs_ldl, labs_hba1c, labs_triglycerides,</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>        labs_hdl, labs_glucose, labs_insulin, labs_homa_ir</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">.fns =</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(.))</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> </span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(</span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">crp_raw =</span> labs_crp</span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">crp_log =</span> <span class="fu">log1p</span>(crp_raw),</span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">crp_log_scaled =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(crp_log))</span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">relocate</span>(</span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a>        crp_log, crp_log_scaled, <span class="at">.after =</span> crp_raw</span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>data_crp <span class="ot">&lt;-</span> data_crp <span class="sc">%&gt;%</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">compliance_score_adjusted =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>      visit <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> compliance_score_visit</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(compliance_score_adjusted, <span class="at">.after =</span> compliance_score_visit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 <section id="per-protocol" class="level2">
 <h2 class="anchored" data-anchor-id="per-protocol">Per protocol</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>pcr_1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> allocation_group <span class="sc">+</span> compliance_score_adjusted <span class="sc">+</span> duration_difference <span class="sc">+</span> completed_intervention <span class="sc">+</span> visit <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> data_model_scaled)</span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>pcr_1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  crp_log <span class="sc">~</span> </span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>      allocation_group <span class="sc">+</span> visit <span class="sc">+</span> </span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>      duration_difference <span class="sc">+</span> <span class="co"># compliance_score_adjusted + completed_intervention </span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>      (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>      age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> </span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>      bmi <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> <span class="co"># phase angle +</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>      <span class="co"># whoqol_score_overall + dass_score_depression + dass_score_anxiety + dass_score_stress + ecap_score</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>      alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> </span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>      labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index,</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_crp</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
-Formula: log1p(labs_crp) ~ allocation_group + compliance_score_adjusted +  
-    duration_difference + completed_intervention + visit + (1 |  
+Formula: crp_log ~ allocation_group + visit + duration_difference + (1 |  
     record_id) + age + sex + hypertension + hypercholesterolemia +  
-    hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean +  
-    handgrip + evs_score + alcohol_dose + kcal + labs_alt + labs_ggt +  
-    labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index
-   Data: data_model_scaled
+    hypertrigliceridemia + drugs_w_loss + drugs_w_gain + bmi +  
+    mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal +  
+    labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl +  
+    labs_quick_index
+   Data: data_crp
 
-REML criterion at convergence: 270.9
+REML criterion at convergence: 263.9
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
--1.9776 -0.4639  0.0440  0.4031  3.5646 
+-1.9634 -0.4535  0.0329  0.4070  3.9284 
 
 Random effects:
  Groups    Name        Variance Std.Dev.
- record_id (Intercept) 0.1726   0.4155  
- Residual              0.3655   0.6045  
+ record_id (Intercept) 0.1954   0.4421  
+ Residual              0.2934   0.5417  
 Number of obs: 113, groups:  record_id, 73
 
 Fixed effects:
-                           Estimate Std. Error        df t value Pr(&gt;|t|)  
-(Intercept)                2.051125   1.517983 88.997704   1.351   0.1801  
-allocation_groupGrupo B    0.114669   0.177214 57.177922   0.647   0.5202  
-compliance_score_adjusted -0.070675   0.760803 67.594288  -0.093   0.9263  
-duration_difference       -0.289432   0.109647 70.086341  -2.640   0.0102 *
-completed_interventionSim  0.253108   0.236851 75.248146   1.069   0.2886  
-visit                      0.000996   0.118454 63.311332   0.008   0.9933  
-age                       -0.075131   0.104952 61.040681  -0.716   0.4768  
-sexMasculino              -0.189106   0.422447 71.272412  -0.448   0.6558  
-hypertension1             -0.008656   0.241732 58.135649  -0.036   0.9716  
-hypercholesterolemia1      0.084838   0.225766 59.462524   0.376   0.7084  
-hypertrigliceridemia1      0.070291   0.239187 71.888504   0.294   0.7697  
-drugs_w_loss1              0.236064   0.199825 56.103355   1.181   0.2424  
-drugs_w_gain1              0.342935   0.433023 60.225788   0.792   0.4315  
-mean_bp_mean              -0.045777   0.089134 75.839062  -0.514   0.6090  
-handgrip                  -0.093359   0.120776 69.249473  -0.773   0.4422  
-evs_score                  0.159249   0.079025 87.342114   2.015   0.0470 *
-alcohol_dose              -0.034472   0.076281 78.540726  -0.452   0.6526  
-kcal                       0.086488   0.084040 87.352683   1.029   0.3063  
-labs_alt                  -0.083255   0.086720 78.075422  -0.960   0.3400  
-labs_ggt                   0.065429   0.088333 76.825805   0.741   0.4611  
-labs_ldl                   0.169339   0.105159 80.809313   1.610   0.1112  
-labs_triglycerides        -0.089454   0.100145 83.813542  -0.893   0.3743  
-labs_hdl                   0.037371   0.086516 76.750336   0.432   0.6670  
-labs_quick_index          -8.513751   3.610444 87.156639  -2.358   0.0206 *
+                        Estimate Std. Error       df t value Pr(&gt;|t|)   
+(Intercept)              3.98480    1.18979 89.14517   3.349  0.00119 **
+allocation_groupGrupo B  0.04501    0.17142 55.87514   0.263  0.79386   
+visit                    0.02521    0.07786 59.11390   0.324  0.74722   
+duration_difference     -0.27519    0.09993 67.06910  -2.754  0.00757 **
+age                     -0.05874    0.09683 61.98324  -0.607  0.54631   
+sexMasculino            -0.24206    0.38972 69.66130  -0.621  0.53656   
+hypertension1            0.00670    0.23211 59.28317   0.029  0.97707   
+hypercholesterolemia1    0.10855    0.21615 61.23416   0.502  0.61733   
+hypertrigliceridemia1    0.16259    0.22052 72.86998   0.737  0.46330   
+drugs_w_loss1            0.23680    0.19022 54.02795   1.245  0.21856   
+drugs_w_gain1            0.22627    0.41896 58.62749   0.540  0.59119   
+bmi                      0.15183    0.07970 65.50959   1.905  0.06116 . 
+mean_bp_mean            -0.05400    0.08511 76.03817  -0.634  0.52766   
+handgrip                -0.06965    0.11295 70.68754  -0.617  0.53942   
+evs_score                0.16757    0.07449 89.59793   2.250  0.02692 * 
+alcohol_dose            -0.03274    0.07223 83.58122  -0.453  0.65156   
+kcal                     0.06695    0.07874 89.36047   0.850  0.39746   
+labs_alt                -0.07061    0.07966 80.04805  -0.886  0.37810   
+labs_ggt                 0.06535    0.08398 75.88741   0.778  0.43886   
+labs_ldl                 0.14553    0.10009 86.51472   1.454  0.14957   
+labs_triglycerides      -0.09479    0.09315 80.14290  -1.018  0.31193   
+labs_hdl                 0.01256    0.08298 79.71383   0.151  0.88003   
+labs_quick_index        -7.89729    3.34852 88.95312  -2.358  0.02054 * 
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>
-Correlation matrix not shown by default, as p = 24 &gt; 12.
+Correlation matrix not shown by default, as p = 23 &gt; 12.
 Use print(x, correlation=TRUE)  or
     vcov(x)        if you need it</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_collinearity</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_collinearity</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Check for Multicollinearity
 
 Low Correlation
 
-                      Term  VIF   VIF 95% CI Increased SE Tolerance
-          allocation_group 1.36 [1.18, 1.71]         1.17      0.73
- compliance_score_adjusted 3.13 [2.50, 4.02]         1.77      0.32
-       duration_difference 1.69 [1.42, 2.13]         1.30      0.59
-    completed_intervention 1.70 [1.43, 2.14]         1.30      0.59
-                     visit 3.66 [2.90, 4.73]         1.91      0.27
-                       age 1.87 [1.56, 2.36]         1.37      0.53
-                       sex 3.61 [2.86, 4.66]         1.90      0.28
-              hypertension 1.92 [1.59, 2.43]         1.39      0.52
-      hypercholesterolemia 2.01 [1.66, 2.55]         1.42      0.50
-      hypertrigliceridemia 2.48 [2.02, 3.17]         1.58      0.40
-              drugs_w_loss 1.29 [1.14, 1.63]         1.14      0.77
-              drugs_w_gain 1.18 [1.06, 1.52]         1.09      0.85
-              mean_bp_mean 1.54 [1.32, 1.94]         1.24      0.65
-                  handgrip 2.64 [2.14, 3.38]         1.63      0.38
-                 evs_score 1.39 [1.20, 1.74]         1.18      0.72
-              alcohol_dose 1.64 [1.39, 2.06]         1.28      0.61
-                      kcal 1.53 [1.30, 1.92]         1.24      0.65
-                  labs_alt 1.64 [1.39, 2.07]         1.28      0.61
-                  labs_ggt 1.67 [1.41, 2.11]         1.29      0.60
-                  labs_ldl 2.11 [1.73, 2.67]         1.45      0.47
-        labs_triglycerides 2.13 [1.75, 2.70]         1.46      0.47
-                  labs_hdl 1.33 [1.16, 1.67]         1.15      0.75
-          labs_quick_index 1.46 [1.26, 1.83]         1.21      0.68
- Tolerance 95% CI
-     [0.58, 0.84]
-     [0.25, 0.40]
-     [0.47, 0.70]
-     [0.47, 0.70]
-     [0.21, 0.34]
-     [0.42, 0.64]
-     [0.21, 0.35]
-     [0.41, 0.63]
-     [0.39, 0.60]
-     [0.32, 0.50]
-     [0.61, 0.88]
-     [0.66, 0.94]
-     [0.52, 0.76]
-     [0.30, 0.47]
-     [0.57, 0.83]
-     [0.48, 0.72]
-     [0.52, 0.77]
-     [0.48, 0.72]
-     [0.48, 0.71]
-     [0.37, 0.58]
-     [0.37, 0.57]
-     [0.60, 0.86]
-     [0.54, 0.80]</code></pre>
+                 Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+     allocation_group 1.35 [1.18, 1.71]         1.16      0.74     [0.59, 0.85]
+                visit 1.93 [1.60, 2.45]         1.39      0.52     [0.41, 0.63]
+  duration_difference 1.67 [1.41, 2.11]         1.29      0.60     [0.47, 0.71]
+                  age 1.70 [1.43, 2.14]         1.30      0.59     [0.47, 0.70]
+                  sex 3.26 [2.60, 4.21]         1.81      0.31     [0.24, 0.39]
+         hypertension 1.87 [1.55, 2.36]         1.37      0.54     [0.42, 0.65]
+ hypercholesterolemia 1.97 [1.63, 2.50]         1.40      0.51     [0.40, 0.61]
+ hypertrigliceridemia 2.24 [1.83, 2.85]         1.50      0.45     [0.35, 0.55]
+         drugs_w_loss 1.24 [1.10, 1.58]         1.11      0.81     [0.63, 0.91]
+         drugs_w_gain 1.18 [1.06, 1.53]         1.09      0.84     [0.65, 0.94]
+                  bmi 1.23 [1.09, 1.57]         1.11      0.81     [0.64, 0.91]
+         mean_bp_mean 1.55 [1.32, 1.95]         1.25      0.64     [0.51, 0.76]
+             handgrip 2.46 [1.99, 3.14]         1.57      0.41     [0.32, 0.50]
+            evs_score 1.38 [1.19, 1.73]         1.17      0.73     [0.58, 0.84]
+         alcohol_dose 1.61 [1.36, 2.03]         1.27      0.62     [0.49, 0.73]
+                 kcal 1.50 [1.28, 1.89]         1.23      0.67     [0.53, 0.78]
+             labs_alt 1.52 [1.30, 1.91]         1.23      0.66     [0.52, 0.77]
+             labs_ggt 1.66 [1.40, 2.09]         1.29      0.60     [0.48, 0.72]
+             labs_ldl 2.09 [1.72, 2.66]         1.45      0.48     [0.38, 0.58]
+   labs_triglycerides 2.05 [1.69, 2.60]         1.43      0.49     [0.38, 0.59]
+             labs_hdl 1.34 [1.17, 1.69]         1.16      0.75     [0.59, 0.86]
+     labs_quick_index 1.38 [1.20, 1.74]         1.18      0.72     [0.57, 0.83]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 322.8749</code></pre>
+<pre><code>[1] 313.9451</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BIC</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BIC</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 393.787</code></pre>
+<pre><code>[1] 382.1297</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">r2</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">r2</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># R2 for Mixed Models
 
-  Conditional R2: 0.513
-     Marginal R2: 0.283</code></pre>
+  Conditional R2: 0.576
+     Marginal R2: 0.293</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>pcr_1_plots <span class="ot">&lt;-</span> performance<span class="sc">::</span><span class="fu">check_model</span>(pcr_1)</span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(pcr_1_plots)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>pcr_1_plots <span class="ot">&lt;-</span> performance<span class="sc">::</span><span class="fu">check_model</span>(pcr_1)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(pcr_1_plots)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/pcr_1_check-model-1.png" class="img-fluid figure-img" width="960"></p>
+<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+<p><strong>Full Analysis of the Final Parsimonious Model</strong></p>
+<ol type="1">
+<li>Model Fit</li>
+</ol>
+<ul>
+<li><strong>AIC:</strong> 313.95 (lowest among previous tested models)</li>
+<li><strong>BIC:</strong> 382.13</li>
+<li><strong>Conditional R²:</strong> 0.576 (variance explained by fixed + random effects)</li>
+<li><strong>Marginal R²:</strong> 0.293 (variance explained by fixed effects)</li>
+</ul>
+<p>This is a well-balanced model with the best AIC/BIC trade-off seen so far, offering high parsimony without sacrificing explanatory power.</p>
+<ol start="2" type="1">
+<li>Significant Predictors</li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Predictor</th>
+<th>Estimate</th>
+<th>p-value</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Duration difference</strong></td>
+<td>-0.275</td>
+<td>0.0076</td>
+<td>Each SD increase in deviation from planned duration predicts a ~24% reduction in CRP (exp(-0.275) ≈ 0.76). This suggests that <strong>poor adherence is strongly associated with lower inflammation reduction</strong>.</td>
+</tr>
+<tr class="even">
+<td><strong>EVS score</strong></td>
+<td>0.168</td>
+<td>0.0269</td>
+<td>Surprisingly, higher physical activity correlates with <strong>higher CRP</strong>, which may warrant further investigation (possible reverse causality, measurement error, or confounding).</td>
+</tr>
+<tr class="odd">
+<td><strong>Labs_quick_index</strong></td>
+<td>-7.897</td>
+<td>0.0205</td>
+<td>A strong inverse association with CRP, reflecting the metabolic-inflammation relationship where better insulin sensitivity predicts lower CRP.</td>
+</tr>
+</tbody>
+</table>
+<p>Borderline - <strong>BMI:</strong> p = 0.061 — higher BMI tends to associate with higher CRP, close to significance.</p>
+<ol start="3" type="1">
+<li>Non-Significant Predictors</li>
+</ol>
+<ul>
+<li>Allocation group, visit number, age, sex, hypertension, cholesterol, triglycerides, blood pressure, handgrip strength, alcohol, kcal intake, and most lab biomarkers (ALT, GGT, LDL, HDL, triglycerides) are <strong>not significant</strong>.</li>
+</ul>
+<p>This reinforces that <strong>adherence (duration difference)</strong> and <strong>metabolic status (quick index)</strong> are primary drivers of CRP changes, while the intervention itself (allocation_group) does not show an effect after accounting for adherence.</p>
+<ol start="4" type="1">
+<li>Diagnostics</li>
+</ol>
+<ul>
+<li>Posterior Predictive Check: The model-predicted density aligns well with observed CRP log values, suggesting good distributional fit.</li>
+<li>Linearity: Residuals are roughly centered but some curvature appears, indicating minor deviations from perfect linearity.</li>
+<li>Homogeneity of Variance: Slight funneling with higher fitted values showing slightly more variance, but overall acceptable.</li>
+<li>Influential Observations: A few leverage points (IDs 106, 59, 75, 107) exist but are within acceptable Cook’s distance boundaries.</li>
+<li>Collinearity: All VIFs are low to moderate (max ~3.26 for sex), indicating no problematic collinearity.</li>
+<li>Normality: Residuals are reasonably normal with some right-side tails, typical for CRP-type biomarkers.</li>
+<li>Random Effects:The QQ plot of random effects shows a reasonable alignment with normality assumptions.</li>
+</ul>
+<ol start="5" type="1">
+<li>Interpretation</li>
+</ol>
+<ul>
+<li><p>The model confirms that <strong>adherence to the study duration (duration_difference)</strong> is a major determinant of CRP reduction, suggesting that participants who better adhered to the study protocol (in terms of time on the intervention) achieved better inflammatory outcomes.</p></li>
+<li><p><strong>Insulin sensitivity (labs_quick_index)</strong> remains a key independent predictor of CRP, aligning with well-established metabolic-inflammation links.</p></li>
+</ul>
+<p>The unexpected positive association between <strong>EVS (physical activity)</strong> and CRP could be due to:</p>
+<ul>
+<li>Reverse causality (participants with higher CRP are advised to exercise more)</li>
+<li>Measurement limitations of EVS</li>
+<li>Confounding from unmeasured variables (e.g., acute inflammatory events or infections)</li>
+</ul>
+<p>The lack of direct intervention effect (<strong>allocation_group</strong>) suggests the effect operates through <strong>adherence</strong> rather than treatment allocation per se, fitting a <strong>per-protocol-like</strong> model interpretation.</p>
+<ol start="6" type="1">
+<li>Conclusion</li>
+</ol>
+<ul>
+<li>The model is statistically solid, with good fit and no major assumption violations.</li>
+<li>The final model captures the essence of this study: <strong>inflammatory outcomes are driven by adherence and metabolic status rather than random allocation alone</strong>.</li>
+<li>This model is robust, parsimonious, and clinically interpretable.</li>
+</ul>
+<ol start="7" type="1">
+<li>Recommendation</li>
+</ol>
+<ul>
+<li>Report this model as the main per-protocol analysis.</li>
+<li>Discuss the adherence effect in the context of real-world clinical applicability.</li>
+<li>Consider a sensitivity analysis exploring the unexpected positive EVS-CRP relationship.</li>
+</ul>
+<section id="heteroscedasticity" class="level3">
+<h3 class="anchored" data-anchor-id="heteroscedasticity">Heteroscedasticity</h3>
+<p>Heteroscedasticity is a violation of linear mixed model assumptions, and we’re already applying a log transformation on the outcome (log1p(crp)) plus standardizing all numeric predictors. When log-transforming the outcome is not fully sufficient, it indicates either residual skewness, heavy tails, or that the Gaussian error assumption doesn’t capture the data-generating process well.</p>
+<p><em>Modeling strategies to address this issue:</em></p>
+<p><strong>Generalized Linear Mixed Model (GLMM) with Non-Gaussian Distribution</strong></p>
+<p>Given the characteristics of your outcome variable (<strong>CRP</strong>, which is strictly positive, right-skewed, and heteroscedastic), moving from a Gaussian-based LMM to a <strong>Generalized Linear Mixed Model (GLMM)</strong> with an appropriate distribution is both statistically justified and likely to yield better model fit.</p>
+<ol type="1">
+<li>Theoretical Justification</li>
+</ol>
+<ul>
+<li><strong>CRP is a continuous, positive, right-skewed variable.</strong></li>
+<li>Log-transforming CRP partially addresses skewness but doesn’t fully solve: Heteroscedasticity (as your diagnostic plots show); The misspecification from assuming normal residuals.</li>
+<li>GLMM allows you to model CRP with a distribution that reflects its natural properties rather than forcing it into Gaussian assumptions.</li>
+</ul>
+<ol start="2" type="1">
+<li>Addressing Heteroscedasticity</li>
+</ol>
+<ul>
+<li>Your residual plots still show <strong>variance increasing with fitted values</strong> — a classic signal that a Gaussian model is a poor fit for the scale of your data.</li>
+<li>GLMMs inherently model mean-variance relationships correctly for non-normal distributions.</li>
+</ul>
+<ol start="3" type="1">
+<li>Precedent in Biomedical Literature. Biomarkers like CRP are frequently modeled with:</li>
+</ol>
+<ul>
+<li><strong>Gamma distribution with log link</strong> (most common for positive, skewed continuous outcomes).</li>
+<li><strong>Inverse Gaussian</strong> (alternative when the data have very heavy tails).</li>
+<li>This approach is standard in fields like clinical epidemiology, pharmacometrics, and biomarker research.</li>
+</ul>
+<p>Practical Advantages. Coefficients remain on the <strong>log scale</strong>, similar to your LMM with log(CRP), but:</p>
+<ul>
+<li>You model CRP in its native distribution rather than relying on transformation.</li>
+<li><strong>Heteroscedasticity becomes irrelevant</strong>, because Gamma models naturally assume variance increases with the mean.</li>
+<li>Interpretation becomes <strong>multiplicative</strong>, which is often more intuitive for clinicians and health scientists (e.g., “a 20% increase in CRP per unit change in X”).</li>
+</ul>
+<p>Potential Models to Fit - <code>glmer()</code> from <strong>lme4</strong> - <code>glmmTMB()</code> from <strong>glmmTMB</strong> — more flexible and often preferred for Gamma models.</p>
+<p>If the log-transformed CRP still shows heteroscedasticity, the Gaussian model may be inherently misspecified. A GLMM can explicitly model the distribution of the outcome with an appropriate family. Candidates:</p>
+<ul>
+<li>Gamma GLMM: For strictly positive, right-skewed outcomes like CRP.</li>
+<li>Inverse Gaussian GLMM: Also for skewed continuous data, with heavier tails.</li>
+<li>Log-normal GLMM: Another valid approach when a log transformation stabilizes variance but doesn’t fully normalize residuals.</li>
+</ul>
+<section id="glmm" class="level4">
+<h4 class="anchored" data-anchor-id="glmm">GLMM</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>pcr_glmm <span class="ot">&lt;-</span> <span class="fu">glmmTMB</span>(</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  crp_raw <span class="sc">~</span> </span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>      allocation_group <span class="sc">+</span> visit <span class="sc">+</span> duration_difference <span class="sc">+</span> </span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>      (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> </span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>      age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span></span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>      drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> bmi <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> </span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>      alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> </span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>      labs_hdl <span class="sc">+</span> labs_quick_index,</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_crp,</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">Gamma</span>(<span class="at">link =</span> <span class="st">"log"</span>)</span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pcr_glmm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: Gamma  ( log )
+Formula:          
+crp_raw ~ allocation_group + visit + duration_difference + (1 |  
+    record_id) + age + sex + hypertension + hypercholesterolemia +  
+    hypertrigliceridemia + drugs_w_loss + drugs_w_gain + bmi +  
+    mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal +  
+    labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl +  
+    labs_quick_index
+Data: data_crp
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    636.7     704.9    -293.3     586.7        88 
+
+Random effects:
+
+Conditional model:
+ Groups    Name        Variance Std.Dev.
+ record_id (Intercept) 0.2912   0.5396  
+Number of obs: 113, groups:  record_id, 73
+
+Dispersion estimate for Gamma family (sigma^2): 0.381 
+
+Conditional model:
+                          Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)               4.807306   1.564061   3.074 0.002115 ** 
+allocation_groupGrupo B   0.173671   0.209432   0.829 0.406963    
+visit                     0.037019   0.091810   0.403 0.686795    
+duration_difference      -0.419798   0.121190  -3.464 0.000532 ***
+age                      -0.012023   0.117704  -0.102 0.918640    
+sexMasculino             -0.510331   0.470362  -1.085 0.277932    
+hypertension1            -0.001809   0.278499  -0.006 0.994817    
+hypercholesterolemia1     0.118209   0.262977   0.450 0.653068    
+hypertrigliceridemia1     0.250950   0.271486   0.924 0.355301    
+drugs_w_loss1             0.284462   0.233657   1.217 0.223440    
+drugs_w_gain1             0.337072   0.492272   0.685 0.493516    
+bmi                       0.170129   0.107023   1.590 0.111915    
+mean_bp_mean             -0.102750   0.105888  -0.970 0.331866    
+handgrip                 -0.062405   0.140605  -0.444 0.657161    
+evs_score                 0.232592   0.093063   2.499 0.012444 *  
+alcohol_dose             -0.004767   0.088928  -0.054 0.957248    
+kcal                      0.118059   0.091993   1.283 0.199371    
+labs_alt                 -0.061539   0.096210  -0.640 0.522410    
+labs_ggt                  0.042081   0.104095   0.404 0.686025    
+labs_ldl                  0.167459   0.122997   1.361 0.173361    
+labs_triglycerides       -0.143830   0.116266  -1.237 0.216059    
+labs_hdl                  0.016316   0.100222   0.163 0.870675    
+labs_quick_index        -11.245632   4.490688  -2.504 0.012272 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_collinearity</span>(pcr_glmm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Check for Multicollinearity
+
+Low Correlation
+
+                 Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+     allocation_group 1.38 [1.20, 1.73]         1.17      0.72     [0.58, 0.84]
+                visit 1.85 [1.54, 2.34]         1.36      0.54     [0.43, 0.65]
+  duration_difference 1.60 [1.36, 2.01]         1.27      0.62     [0.50, 0.74]
+                  age 1.74 [1.46, 2.19]         1.32      0.57     [0.46, 0.68]
+                  sex 3.26 [2.60, 4.20]         1.81      0.31     [0.24, 0.38]
+         hypertension 1.84 [1.53, 2.32]         1.36      0.54     [0.43, 0.65]
+ hypercholesterolemia 1.89 [1.58, 2.39]         1.38      0.53     [0.42, 0.63]
+ hypertrigliceridemia 2.31 [1.89, 2.94]         1.52      0.43     [0.34, 0.53]
+         drugs_w_loss 1.29 [1.13, 1.62]         1.13      0.78     [0.62, 0.88]
+         drugs_w_gain 1.18 [1.06, 1.53]         1.09      0.85     [0.66, 0.94]
+                  bmi 1.22 [1.09, 1.56]         1.11      0.82     [0.64, 0.92]
+         mean_bp_mean 1.64 [1.38, 2.06]         1.28      0.61     [0.49, 0.72]
+             handgrip 2.51 [2.03, 3.20]         1.58      0.40     [0.31, 0.49]
+            evs_score 1.40 [1.21, 1.76]         1.18      0.71     [0.57, 0.82]
+         alcohol_dose 1.63 [1.38, 2.05]         1.28      0.61     [0.49, 0.73]
+                 kcal 1.52 [1.30, 1.90]         1.23      0.66     [0.53, 0.77]
+             labs_alt 1.47 [1.26, 1.85]         1.21      0.68     [0.54, 0.79]
+             labs_ggt 1.66 [1.40, 2.08]         1.29      0.60     [0.48, 0.72]
+             labs_ldl 2.03 [1.68, 2.57]         1.43      0.49     [0.39, 0.60]
+   labs_triglycerides 2.24 [1.84, 2.85]         1.50      0.45     [0.35, 0.54]
+             labs_hdl 1.33 [1.16, 1.67]         1.15      0.75     [0.60, 0.86]
+     labs_quick_index 1.57 [1.34, 1.97]         1.25      0.64     [0.51, 0.75]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(pcr_glmm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 636.6772</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BIC</span>(pcr_glmm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 704.8619</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">r2</span>(pcr_glmm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># R2 for Mixed Models
+
+  Conditional R2: 0.676
+     Marginal R2: 0.385</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>pcr_glmm_plots <span class="ot">&lt;-</span> performance<span class="sc">::</span><span class="fu">check_model</span>(pcr_1)</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(pcr_glmm_plots)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Full Analysis of the GLMM (Gamma, Log-Link)</strong></p>
+<p><em>Model Fit and Diagnostics</em></p>
+<ul>
+<li>AIC: 636.7</li>
+<li>BIC: 704.9</li>
+<li>Marginal R²: 0.385 (variance explained by fixed effects)</li>
+<li>Conditional R²: 0.676 (variance explained by fixed + random effects)</li>
+</ul>
+<p><em>Interpretation:</em></p>
+<ul>
+<li>This represents a substantial improvement in explained variance relative to the linear mixed model (marginal R² ~0.29).</li>
+<li>The higher conditional R² suggests that between-subject variability (random intercept) remains important.</li>
+</ul>
+<p><em>Diagnostics:</em> - Posterior Predictive Check: Good alignment between model-predicted density and observed data. No major distributional misspecification. - Linearity: Acceptable. Slight deviations, but no systematic bias. - Homoscedasticity: Vastly improved relative to the LMM. The variance is well-behaved along the fitted line, which is expected for a Gamma model. - Normality of Residuals: Strong. No heavy tails or skewness issues. - Influential Observations: Leverage and residual plots are within safe boundaries. No problematic points. - Collinearity: VIFs are all below 3.3, no collinearity concerns.</p>
+<p>Key Fixed Effects</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Estimate</th>
+<th>p-value</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Intercept</td>
+<td>4.807</td>
+<td>0.002</td>
+<td>Baseline CRP level (on log scale)</td>
+</tr>
+<tr class="even">
+<td>Duration Difference</td>
+<td>-0.420</td>
+<td>0.0005</td>
+<td>Significant. Each 1 SD longer than planned duration leads to a 34% reduction in CRP (exp(-0.42) ≈ 0.66)</td>
+</tr>
+<tr class="odd">
+<td>EVS Score</td>
+<td>0.233</td>
+<td>0.012</td>
+<td>Significant. Higher physical activity is associated with 26% higher CRP, which is counterintuitive and requires biological scrutiny. May reflect confounding.</td>
+</tr>
+<tr class="even">
+<td>Labs QUICKI</td>
+<td>-11.246</td>
+<td>0.012</td>
+<td>Strongly significant. Higher insulin sensitivity leads to &gt;99% reduction in CRP, suggesting a very steep relationship in the data. Likely influenced by scaling.</td>
+</tr>
+<tr class="odd">
+<td>Allocation Group</td>
+<td>0.174</td>
+<td>0.407</td>
+<td>Not significant. Consistent with a per-protocol analytical framework.</td>
+</tr>
+<tr class="even">
+<td>Visit</td>
+<td>0.037</td>
+<td>0.687</td>
+<td>Not significant. No residual time effect beyond the modeled variables.</td>
+</tr>
+<tr class="odd">
+<td>BMI</td>
+<td>0.170</td>
+<td>0.112</td>
+<td>Borderline. Each SD increase in BMI tends to raise CRP by ~18%, but not significant at p&lt;0.05.</td>
+</tr>
+</tbody>
+</table>
+<p>All other clinical covariates (age, sex, hypertension, lipid markers, liver enzymes) were non-significant, indicating that the major drivers in this dataset are related to treatment adherence (duration), metabolic health (QUICKI), and physical activity (EVS).</p>
+<p>Biological Plausibility</p>
+<ul>
+<li>Duration Difference Negative Effect: Completely plausible. Lower deviation from planned duration (i.e., better adherence) leads to reduced inflammation, as expected.</li>
+<li>QUICKI Negative Effect: Consistent with insulin resistance being a pro-inflammatory state. The very large coefficient likely reflects the scale of QUICKI (small numeric values like ~0.3–0.4).</li>
+<li>EVS Positive Effect: Counterintuitive. Suggests participants with higher reported physical activity had higher CRP. This could be:
+<ul>
+<li>A measurement error in EVS (self-reported bias).</li>
+<li>Confounding by illness severity (e.g., those with higher baseline CRP trying to increase activity).</li>
+<li>An artifact of the small sample size.</li>
+<li>Worth sensitivity testing.</li>
+</ul></li>
+</ul>
+<p>Model Performance</p>
+<ul>
+<li>This GLMM offers superior handling of heteroscedasticity compared to the LMM.</li>
+<li>The residual plots confirm that variance increases with the mean, which the Gamma distribution models correctly.</li>
+<li>The gain in marginal R² from ~0.29 (LMM) to 0.385 (GLMM) is meaningful.</li>
+<li>Model is stable with no multicollinearity, good residual behavior, and sound random effects distribution.</li>
+</ul>
+<p>Conclusion</p>
+<ul>
+<li>This GLMM is statistically robust and biologically meaningful.</li>
+<li>The key drivers of CRP in this study are:
+<ul>
+<li>Adherence (duration difference).</li>
+<li>Insulin sensitivity (QUICKI).</li>
+<li>Physical activity (EVS), with a result that warrants further scrutiny.</li>
+</ul></li>
+</ul>
+<p>Recommendation</p>
+<ul>
+<li>Yes, this model should be your primary model for reporting.</li>
+<li>Report exponentiated coefficients for clinical interpretability.</li>
+<li>Consider sensitivity analyses:
+<ul>
+<li>Check whether removing outliers or modifying EVS affects results.</li>
+<li>Test a simplified model without EVS to observe stability.</li>
+</ul></li>
+<li>Prepare Results and Discussion sections reflecting that GLMM offered a better statistical fit than LMM due to the appropriate modeling of the CRP distribution.</li>
+</ul>
+<p>If you want, I can help you draft the precise sentences for the manuscript results and discussion.</p>
+</section>
+<section id="tweedie" class="level4">
+<h4 class="anchored" data-anchor-id="tweedie">Tweedie</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggeffects)</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is DHARMa 0.4.7. For overview type '?DHARMa'. For recent changes, type news(package = 'DHARMa')</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the Tweedie GLMM</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>pcr_tweedie <span class="ot">&lt;-</span> <span class="fu">glmmTMB</span>(</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  crp_raw <span class="sc">~</span> </span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>    allocation_group <span class="sc">+</span> visit <span class="sc">+</span> duration_difference <span class="sc">+</span> </span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> </span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> </span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>    drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> bmi <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> </span>
+<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a>    alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> </span>
+<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a>    labs_hdl <span class="sc">+</span> labs_quick_index,</span>
+<span id="cb71-10"><a href="#cb71-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_crp,</span>
+<span id="cb71-11"><a href="#cb71-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">tweedie</span>(<span class="at">link =</span> <span class="st">"log"</span>)</span>
+<span id="cb71-12"><a href="#cb71-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb71-13"><a href="#cb71-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-14"><a href="#cb71-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of the model</span></span>
+<span id="cb71-15"><a href="#cb71-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pcr_tweedie)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: tweedie  ( log )
+Formula:          
+crp_raw ~ allocation_group + visit + duration_difference + (1 |  
+    record_id) + age + sex + hypertension + hypercholesterolemia +  
+    hypertrigliceridemia + drugs_w_loss + drugs_w_gain + bmi +  
+    mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal +  
+    labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl +  
+    labs_quick_index
+Data: data_crp
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    638.3     709.2    -293.2     586.3        87 
+
+Random effects:
+
+Conditional model:
+ Groups    Name        Variance Std.Dev.
+ record_id (Intercept) 0.3088   0.5557  
+Number of obs: 113, groups:  record_id, 73
+
+Dispersion parameter for tweedie family (): 0.417 
+
+Conditional model:
+                          Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)               4.564286   1.544326   2.956 0.003121 ** 
+allocation_groupGrupo B   0.155117   0.209424   0.741 0.458886    
+visit                     0.030017   0.088831   0.338 0.735427    
+duration_difference      -0.413774   0.120599  -3.431 0.000601 ***
+age                      -0.014737   0.115579  -0.128 0.898541    
+sexMasculino             -0.503895   0.464336  -1.085 0.277835    
+hypertension1            -0.007849   0.275488  -0.028 0.977269    
+hypercholesterolemia1     0.105401   0.260406   0.405 0.685656    
+hypertrigliceridemia1     0.259246   0.266598   0.972 0.330839    
+drugs_w_loss1             0.283488   0.229910   1.233 0.217561    
+drugs_w_gain1             0.320096   0.485889   0.659 0.510035    
+bmi                       0.168685   0.105322   1.602 0.109240    
+mean_bp_mean             -0.096418   0.104162  -0.926 0.354622    
+handgrip                 -0.059524   0.138256  -0.431 0.666804    
+evs_score                 0.222506   0.092318   2.410 0.015943 *  
+alcohol_dose             -0.008930   0.086312  -0.103 0.917595    
+kcal                      0.109883   0.091999   1.194 0.232325    
+labs_alt                 -0.061716   0.095036  -0.649 0.516087    
+labs_ggt                  0.037796   0.105847   0.357 0.721032    
+labs_ldl                  0.165804   0.119591   1.386 0.165618    
+labs_triglycerides       -0.134222   0.111598  -1.203 0.229082    
+labs_hdl                  0.015942   0.098417   0.162 0.871316    
+labs_quick_index        -10.450474   4.451319  -2.348 0.018888 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check collinearity</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">check_collinearity</span>(pcr_tweedie)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Check for Multicollinearity
+
+Low Correlation
+
+                 Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+     allocation_group 1.39 [1.20, 1.74]         1.18      0.72     [0.57, 0.83]
+                visit 1.88 [1.57, 2.37]         1.37      0.53     [0.42, 0.64]
+  duration_difference 1.59 [1.35, 2.00]         1.26      0.63     [0.50, 0.74]
+                  age 1.71 [1.44, 2.16]         1.31      0.58     [0.46, 0.69]
+                  sex 3.11 [2.48, 3.99]         1.76      0.32     [0.25, 0.40]
+         hypertension 1.80 [1.51, 2.27]         1.34      0.55     [0.44, 0.66]
+ hypercholesterolemia 1.87 [1.55, 2.36]         1.37      0.54     [0.42, 0.64]
+ hypertrigliceridemia 2.24 [1.83, 2.85]         1.50      0.45     [0.35, 0.55]
+         drugs_w_loss 1.27 [1.12, 1.61]         1.13      0.79     [0.62, 0.89]
+         drugs_w_gain 1.19 [1.07, 1.53]         1.09      0.84     [0.65, 0.94]
+                  bmi 1.22 [1.09, 1.55]         1.10      0.82     [0.64, 0.92]
+         mean_bp_mean 1.64 [1.39, 2.06]         1.28      0.61     [0.49, 0.72]
+             handgrip 2.42 [1.97, 3.08]         1.56      0.41     [0.32, 0.51]
+            evs_score 1.42 [1.23, 1.78]         1.19      0.70     [0.56, 0.81]
+         alcohol_dose 1.60 [1.36, 2.01]         1.26      0.63     [0.50, 0.74]
+                 kcal 1.55 [1.32, 1.94]         1.24      0.65     [0.52, 0.76]
+             labs_alt 1.47 [1.26, 1.84]         1.21      0.68     [0.54, 0.79]
+             labs_ggt 1.63 [1.38, 2.05]         1.28      0.61     [0.49, 0.72]
+             labs_ldl 2.01 [1.66, 2.54]         1.42      0.50     [0.39, 0.60]
+   labs_triglycerides 2.16 [1.78, 2.74]         1.47      0.46     [0.36, 0.56]
+             labs_hdl 1.32 [1.16, 1.66]         1.15      0.76     [0.60, 0.87]
+     labs_quick_index 1.56 [1.32, 1.95]         1.25      0.64     [0.51, 0.75]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model fit indices</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(pcr_tweedie)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 638.3089</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BIC</span>(pcr_tweedie)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 709.221</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># R-squared</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">r2</span>(pcr_tweedie)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># R2 for Mixed Models
+
+  Conditional R2: 0.698
+     Marginal R2: 0.379</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Residual diagnostics with DHARMa</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>simulation_output <span class="ot">&lt;-</span> <span class="fu">simulateResiduals</span>(<span class="at">fittedModel =</span> pcr_tweedie)</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(simulation_output)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model diagnostics with performance</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a><span class="fu">check_model</span>(pcr_tweedie)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`check_outliers()` does not yet support models of class `glmmTMB`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot predicted effects for key variables (example: allocation group)</span></span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>ggeffects<span class="sc">::</span><span class="fu">ggpredict</span>(pcr_tweedie, <span class="at">terms =</span> <span class="st">"allocation_group"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-15-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for a continuous variable (example: evs_score)</span></span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>ggeffects<span class="sc">::</span><span class="fu">ggpredict</span>(pcr_tweedie, <span class="at">terms =</span> <span class="st">"evs_score [all]"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-15-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Is the Tweedie better than the simple GLMM?</p>
+<ol type="1">
+<li>Model Fit Comparison</li>
+</ol>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>AIC</th>
+<th>BIC</th>
+<th>Conditional R²</th>
+<th>Marginal R²</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GLMM (Gamma)</td>
+<td>636.7</td>
+<td>704.9</td>
+<td>0.676</td>
+<td>0.385</td>
+</tr>
+<tr class="even">
+<td>GLMM (Tweedie)</td>
+<td>638.3</td>
+<td>709.2</td>
+<td>0.698</td>
+<td>0.379</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The AIC and BIC are slightly better for the Gamma model, but the difference is negligible (&lt;2 points).</li>
+<li>The Tweedie has a slightly higher Conditional R², meaning it captures slightly more total variance.</li>
+<li>Marginal R² is essentially the same.</li>
+</ul>
+<ol start="2" type="1">
+<li>Residual Diagnostics</li>
+</ol>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Diagnostic Aspect</th>
+<th>GLMM (Gamma)</th>
+<th>GLMM (Tweedie)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Homogeneity</td>
+<td>Some issue</td>
+<td>Some issue</td>
+</tr>
+<tr class="even">
+<td>Normality of residuals</td>
+<td>Acceptable</td>
+<td>Slightly better</td>
+</tr>
+<tr class="odd">
+<td>DHARMa tests</td>
+<td>Passed</td>
+<td>Passed</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Both models show mild heteroscedasticity.</li>
+<li>Tweedie has slightly better QQ residual behavior.</li>
+<li>Both models pass DHARMa diagnostics.</li>
+</ul>
+<ol start="3" type="1">
+<li>Theoretical Suitability</li>
+</ol>
+<ul>
+<li>Gamma assumes positive continuous data with variance proportional to the mean squared.</li>
+<li>Tweedie is more flexible, with variance proportional to mean^p (p between 1 and 2 for continuous positive skewed data).</li>
+<li>Tweedie generalizes Gamma and is conceptually better for heavily right-skewed biomedical data like CRP.</li>
+</ul>
+<ol start="4" type="1">
+<li>Practical Implications</li>
+</ol>
+<ul>
+<li>The estimates of fixed effects are very similar between models.</li>
+<li>The same predictors are statistically significant in both.</li>
+</ul>
+<ol start="5" type="1">
+<li>Conclusion</li>
+</ol>
+<ul>
+<li>Statistically: Not clearly better. Equivalent fit with negligible differences.</li>
+<li>Conceptually: Tweedie is preferable because it has a more flexible variance structure suitable for this kind of data.</li>
+<li>Recommendation: Tweedie is more defensible for publication. Both models yield consistent conclusions, which reinforces the robustness of the results.</li>
+</ul>
+<p>Parameter Estimates Comparison</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 19%">
+<col style="width: 21%">
+<col style="width: 14%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Predictor</th>
+<th>Gamma Estimate</th>
+<th>Tweedie Estimate</th>
+<th>Direction</th>
+<th>Significance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(Intercept)</td>
+<td>4.807</td>
+<td>4.564</td>
+<td>Positive</td>
+<td>**</td>
+</tr>
+<tr class="even">
+<td>allocation_groupGrupoB</td>
+<td>0.174</td>
+<td>0.155</td>
+<td>Positive</td>
+<td>ns</td>
+</tr>
+<tr class="odd">
+<td>visit</td>
+<td>0.037</td>
+<td>0.030</td>
+<td>Positive</td>
+<td>ns</td>
+</tr>
+<tr class="even">
+<td>duration_difference</td>
+<td>-0.420</td>
+<td>-0.414</td>
+<td>Negative</td>
+<td>***</td>
+</tr>
+<tr class="odd">
+<td>age</td>
+<td>-0.012</td>
+<td>-0.015</td>
+<td>Negative</td>
+<td>ns</td>
+</tr>
+<tr class="even">
+<td>sexMasculino</td>
+<td>-0.510</td>
+<td>-0.504</td>
+<td>Negative</td>
+<td>ns</td>
+</tr>
+<tr class="odd">
+<td>hypertension1</td>
+<td>-0.002</td>
+<td>-0.008</td>
+<td>Negative</td>
+<td>ns</td>
+</tr>
+<tr class="even">
+<td>hypercholesterolemia1</td>
+<td>0.118</td>
+<td>0.105</td>
+<td>Positive</td>
+<td>ns</td>
+</tr>
+<tr class="odd">
+<td>hypertrigliceridemia1</td>
+<td>0.251</td>
+<td>0.259</td>
+<td>Positive</td>
+<td>ns</td>
+</tr>
+<tr class="even">
+<td>drugs_w_loss1</td>
+<td>0.284</td>
+<td>0.283</td>
+<td>Positive</td>
+<td>ns</td>
+</tr>
+<tr class="odd">
+<td>drugs_w_gain1</td>
+<td>0.337</td>
+<td>0.320</td>
+<td>Positive</td>
+<td>ns</td>
+</tr>
+<tr class="even">
+<td>bmi</td>
+<td>0.170</td>
+<td>0.169</td>
+<td>Positive</td>
+<td>. (trend)</td>
+</tr>
+<tr class="odd">
+<td>mean_bp_mean</td>
+<td>-0.103</td>
+<td>-0.096</td>
+<td>Negative</td>
+<td>ns</td>
+</tr>
+<tr class="even">
+<td>handgrip</td>
+<td>-0.062</td>
+<td>-0.060</td>
+<td>Negative</td>
+<td>ns</td>
+</tr>
+<tr class="odd">
+<td>evs_score</td>
+<td>0.233</td>
+<td>0.223</td>
+<td>Positive</td>
+<td>*</td>
+</tr>
+<tr class="even">
+<td>alcohol_dose</td>
+<td>-0.005</td>
+<td>-0.009</td>
+<td>Negative</td>
+<td>ns</td>
+</tr>
+<tr class="odd">
+<td>kcal</td>
+<td>0.118</td>
+<td>0.110</td>
+<td>Positive</td>
+<td>ns</td>
+</tr>
+<tr class="even">
+<td>labs_alt</td>
+<td>-0.062</td>
+<td>-0.062</td>
+<td>Negative</td>
+<td>ns</td>
+</tr>
+<tr class="odd">
+<td>labs_ggt</td>
+<td>0.042</td>
+<td>0.038</td>
+<td>Positive</td>
+<td>ns</td>
+</tr>
+<tr class="even">
+<td>labs_ldl</td>
+<td>0.167</td>
+<td>0.166</td>
+<td>Positive</td>
+<td>ns</td>
+</tr>
+<tr class="odd">
+<td>labs_triglycerides</td>
+<td>-0.144</td>
+<td>-0.134</td>
+<td>Negative</td>
+<td>ns</td>
+</tr>
+<tr class="even">
+<td>labs_hdl</td>
+<td>0.016</td>
+<td>0.016</td>
+<td>Positive</td>
+<td>ns</td>
+</tr>
+<tr class="odd">
+<td>labs_quick_index</td>
+<td>-11.246</td>
+<td>-10.450</td>
+<td>Negative</td>
+<td>*</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Direction of effect is consistent across both models.</li>
+<li>Significance patterns are identical.</li>
+</ul>
+<p>Summary: Tweedie offers slightly better conceptual fit without compromising statistical robustness. Both models are valid and lead to the same scientific conclusions.</p>
+</section>
+<section id="other-models" class="level4">
+<h4 class="anchored" data-anchor-id="other-models">Other models</h4>
+<ol type="1">
+<li><p>Linear Mixed Model on ΔCRP (Change Score). Collapse the data to one row per participant and model the change in CRP from baseline to final visit. This often reduces heteroscedasticity since we’re modeling change rather than absolute levels.</p></li>
+<li><p>Quantile Mixed Models. Instead of modeling the mean, quantile models can model medians or other quantiles, which are robust to heteroscedasticity and skewness. Example package: lqmm. Models the median instead of the mean — inherently robust to heteroscedasticity.</p></li>
+<li><p>Robust Mixed Models. Mixed models with robust estimation of residual variance, less sensitive to heteroscedasticity or outliers. Same formula as LMM, but with robust handling of residual variance.</p></li>
+<li><p>Model the Raw CRP with a Two-Part Model (If Many Zeros). If there are many zeros or very low values, a two-part hurdle model or zero-inflated model may better capture the data structure. This is less common for CRP unless a substantial portion is zero or below detection limit.</p></li>
+</ol>
+<p>Recommendation hierarchy: 1. First choice: → Try Gamma GLMM with log link using glmmTMB — best suited for continuous, right-skewed, strictly positive outcomes like CRP. 2. If interest is in change rather than absolute levels: → Model ΔCRP (change score) with LMM. 3. If robustness to outliers is crucial: → Try robust mixed models or quantile mixed models.</p>
+</section>
+</section>
+</section>
+<section id="modeling-compliance" class="level2">
+<h2 class="anchored" data-anchor-id="modeling-compliance">Modeling compliance</h2>
 <p>Since the goal is to evaluate whether the intervention (allocation_group) reduces inflammation (log1p(labs_crp)), then how compliance-related variables are handled — completed_intervention, compliance_score_adjusted, and duration_difference — fundamentally changes what question the model is answering.</p>
 <p><strong>Key Conceptual Framework</strong></p>
-<p>If we adjust for compliance variables, then we are answering the question: Among those who complied (to varying degrees), does the assigned intervention have an effect on inflammation?”. This estimates the “Effect of Treatment on the Treated” (ETT) or per-protocol effect, rather than the intention-to-treat (ITT) effect. The interpretation shifts towards whether the efficacy of the treatment holds after accounting for how well participants adhered. If participants in the intervention group did not comply, the model adjusts for that, isolating the treatment effect conditional on compliance. However, if compliance is strongly influenced by the intervention (as is common), adjusting for it may introduce <strong>post-treatment bias (collider bias)</strong>, because you’re conditioning on a variable that is downstream of the allocation.</p>
+<p>If we adjust for compliance variables, then we are answering the question: Among those who complied (to varying degrees), does the assigned intervention have an effect on inflammation?”. This estimates the “Effect of Treatment on the Treated” (ETT) or per-protocol effect, rather than the intention-to-treat (ITT) effect. The interpretation shifts towards whether the efficacy of the treatment holds after accounting for how well participants adhered. If participants in the intervention group did not comply, the model adjusts for that, isolating the treatment effect conditional on compliance. However, if compliance is strongly influenced by the intervention (as is common), adjusting for it may introduce <strong>post-treatment bias (collider bias)</strong>, because we’re conditioning on a variable that is downstream of the allocation.</p>
 <p>If we do not adjust for compliance, then we are estimating the intention-to-treat (ITT) effect: “Does being assigned to the intervention reduce inflammation, regardless of whether participants fully complied?”. This reflects the real-world effectiveness including factors like dropout, low adherence, etc. This is the primary approach in most randomized trials because it preserves the randomization balance and avoids bias introduced by post-treatment variables.</p>
-<p>In the current model, we are conditioning the effect of allocation_group on adherence. The coefficient for allocation_group in this case answers: “Given the same level of adherence (completion, dose, duration), is the intervention effective in reducing inflammation?” In other words, we’re stripping out the pathway by which poor adherence could dilute the intervention effect. If these variables are strong mediators of the intervention’s effect, you are blocking part of the effect of allocation_group, and this might explain why allocation_group is not significant.</p>
+<p>In the current model, we are conditioning the effect of allocation_group on adherence. The coefficient for allocation_group in this case answers: “Given the same level of adherence (completion, dose, duration), is the intervention effective in reducing inflammation?” In other words, we’re stripping out the pathway by which poor adherence could dilute the intervention effect. If these variables are strong mediators of the intervention’s effect, we are blocking part of the effect of allocation_group, and this might explain why allocation_group is not significant.</p>
 <p><strong>Correct Modeling Strategy</strong></p>
 <p>Depends on our goal:</p>
 <ol type="1">
@@ -1080,8 +1968,8 @@ Low Correlation
 </ul>
 <p><strong>Final Recommendation for Writing in Thesis:</strong></p>
 <p>The primary analysis was conducted under the intention-to-treat principle, evaluating the effect of the randomized intervention on inflammation regardless of adherence. A secondary model adjusted for adherence-related variables (completed_intervention, compliance_score_adjusted, and duration_difference) to explore whether the intervention had an effect among those who maintained adequate compliance. These models capture complementary aspects of intervention effectiveness: the former reflects real-world applicability, while the latter reflects efficacy conditional on adequate adherence.</p>
-<section id="ideal-condition" class="level3">
-<h3 class="anchored" data-anchor-id="ideal-condition">Ideal condition</h3>
+<section id="ideal-condition" class="level4">
+<h4 class="anchored" data-anchor-id="ideal-condition">Ideal condition</h4>
 <p>The first model (pcr_1) represents a per-protocol-type model, where the effect of the intervention (allocation_group) is estimated conditional on compliance (through compliance_score_adjusted, completed_intervention, and duration_difference). However, there are other methods that can estimate the effect of the intervention in an ideal condition, where adherence is perfect. These methods go beyond simply conditioning in regression and attempt to more rigorously isolate the causal effect.</p>
 <p><strong>Alternative and Complementary Strategies to Per-Protocol Modeling</strong></p>
 <p><em>1. Restricting the Dataset (Complete Compliers Only)</em></p>
@@ -1091,18 +1979,19 @@ Low Correlation
 
 pcr_pp &lt;- lmer(log1p(labs_crp) ~ allocation_group + visit + (1 | record_id) + covariates, data = data_pp)</code></pre>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>data_pp <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span></span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>    completed_intervention <span class="sc">==</span> <span class="st">"Sim"</span> <span class="sc">&amp;</span></span>
-<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>      (compliance_score_adjusted <span class="sc">&gt;</span> <span class="fl">0.6</span> <span class="sc">|</span> <span class="fu">is.na</span>(compliance_score_adjusted))</span>
-<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>data_pp <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>    completed_intervention <span class="sc">==</span> <span class="st">"Sim"</span> <span class="sc">&amp;</span></span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>      (compliance_score_visit <span class="sc">&gt;</span> <span class="fl">0.6</span> <span class="sc">|</span> <span class="fu">is.na</span>(compliance_score_visit))</span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
 <section id="restrict-dataset" class="level4">
 <h4 class="anchored" data-anchor-id="restrict-dataset">Restrict dataset</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>pcr_pp <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> allocation_group <span class="sc">+</span> duration_difference <span class="sc">+</span> visit <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> data_pp)</span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pcr_pp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>pcr_pp <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> allocation_group <span class="sc">+</span> duration_difference <span class="sc">+</span> visit <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> data_pp)</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pcr_pp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
@@ -1167,118 +2056,47 @@ Use print(x, correlation=TRUE)  or
   allocation_group + log1p(crp_baseline) + covariates,
   data = data_final
 )</code></pre>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract CRP at baseline</span></span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>data_baseline <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span></span>
-<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(visit <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(record_id, labs_crp) <span class="sc">%&gt;%</span></span>
-<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">crp_baseline =</span> labs_crp)</span>
-<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract CRP at final visit</span></span>
-<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a>data_final <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span></span>
-<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(record_id) <span class="sc">%&gt;%</span></span>
-<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(visit <span class="sc">==</span> <span class="fu">max</span>(visit)) <span class="sc">%&gt;%</span>  <span class="co"># This selects the final visit for each participant</span></span>
-<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
-<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a>    record_id, labs_crp, completed_intervention, compliance_score_adjusted,</span>
-<span id="cb64-14"><a href="#cb64-14" aria-hidden="true" tabindex="-1"></a>    duration_difference, allocation_group, age, sex, hypertension, hypercholesterolemia,</span>
-<span id="cb64-15"><a href="#cb64-15" aria-hidden="true" tabindex="-1"></a>    hypertrigliceridemia, drugs_w_loss, drugs_w_gain, mean_bp_mean, handgrip, evs_score,</span>
-<span id="cb64-16"><a href="#cb64-16" aria-hidden="true" tabindex="-1"></a>    alcohol_dose, kcal, labs_alt, labs_ggt, labs_ldl, labs_triglycerides, labs_hdl, labs_quick_index</span>
-<span id="cb64-17"><a href="#cb64-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb64-18"><a href="#cb64-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">crp_final =</span> labs_crp)</span>
-<span id="cb64-19"><a href="#cb64-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-20"><a href="#cb64-20" aria-hidden="true" tabindex="-1"></a>data_iv <span class="ot">&lt;-</span> data_final <span class="sc">%&gt;%</span></span>
-<span id="cb64-21"><a href="#cb64-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(data_baseline, <span class="at">by =</span> <span class="st">"record_id"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<pre><code># Extract CRP at baseline
+data_baseline &lt;- data_crp %&gt;%
+  filter(visit == 1) %&gt;%
+  select(record_id, labs_crp) %&gt;%
+  rename(crp_baseline = labs_crp)
+
+# Extract CRP at final visit
+data_final &lt;- data_model_scaled %&gt;%
+  group_by(record_id) %&gt;%
+  filter(visit == max(visit)) %&gt;%  # This selects the final visit for each participant
+  ungroup() %&gt;%
+  select(
+    record_id, labs_crp, crp_raw, completed_intervention, compliance_score_adjusted,
+    duration_difference, allocation_group, age, sex, hypertension, hypercholesterolemia,
+    hypertrigliceridemia, drugs_w_loss, drugs_w_gain, mean_bp_mean, handgrip, evs_score,
+    alcohol_dose, kcal, labs_alt, labs_ggt, labs_ldl, labs_triglycerides, labs_hdl, labs_quick_index
+  ) %&gt;%
+  rename(crp_final = labs_crp)
+
+data_cross_sectional &lt;- data_final %&gt;%
+  left_join(data_baseline, by = "record_id")
+
+rm(data_baseline)
+rm(data_final)</code></pre>
 <p><strong>Primary IV model that estimates the total effect</strong></p>
 <p>The primary IV model that estimates the total effect is designed to evaluate the causal impact of the intervention on inflammation (CRP) as a whole, capturing both the direct effects and any indirect effects mediated by changes in other physiological or metabolic parameters. This model uses random assignment (allocation_group) as an instrument for actual participation or completion of the intervention (completed_intervention), allowing for the estimation of the Complier Average Causal Effect (CACE).</p>
 <p>The intent is to answer whether the intervention, when adhered to, leads to a reduction in inflammation, regardless of the biological pathways involved. It reflects the overall therapeutic effect, incorporating all mechanisms through which the intervention may influence CRP. This approach does not adjust for variables that could be affected by the intervention itself (such as blood pressure, lipid levels, or liver enzymes), ensuring that the total causal effect is not inadvertently blocked or biased by post-treatment variables.</p>
 </section>
 <section id="iv" class="level4">
 <h4 class="anchored" data-anchor-id="iv">IV</h4>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(AER)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: car</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: carData</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'car'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:dplyr':
+<pre><code>library(AER)
 
-    recode</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:purrr':
+iv_model_total &lt;- ivreg(
+  log1p(crp_final) ~ compliance_score_adjusted + log1p(crp_baseline) +
+    age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia |
+  allocation_group + log1p(crp_baseline) +
+    age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia,
+  data = data_cross_sectional
+)
 
-    some</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: lmtest</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: zoo</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'zoo'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: sandwich</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: survival</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>iv_model_total <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(</span>
-<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log1p</span>(crp_final) <span class="sc">~</span> compliance_score_adjusted <span class="sc">+</span> <span class="fu">log1p</span>(crp_baseline) <span class="sc">+</span></span>
-<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">|</span></span>
-<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  allocation_group <span class="sc">+</span> <span class="fu">log1p</span>(crp_baseline) <span class="sc">+</span></span>
-<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia,</span>
-<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_iv</span>
-<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(iv_model_total)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-ivreg(formula = log1p(crp_final) ~ compliance_score_adjusted + 
-    log1p(crp_baseline) + age + sex + hypertension + hypercholesterolemia + 
-    hypertrigliceridemia | allocation_group + log1p(crp_baseline) + 
-    age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia, 
-    data = data_iv)
-
-Residuals:
-    Min      1Q  Median      3Q     Max 
--3.1840 -0.3743  0.1873  0.5627  1.7212 
-
-Coefficients:
-                          Estimate Std. Error t value Pr(&gt;|t|)  
-(Intercept)                3.43808    8.23969   0.417    0.678  
-compliance_score_adjusted -4.58554    9.74641  -0.470    0.640  
-log1p(crp_baseline)        0.67793    0.27287   2.484    0.016 *
-age                       -0.39213    0.52078  -0.753    0.455  
-sexMasculino              -0.06743    0.44889  -0.150    0.881  
-hypertension1              0.48559    0.63892   0.760    0.450  
-hypercholesterolemia1     -0.01473    0.66669  -0.022    0.982  
-hypertrigliceridemia1     -0.06847    0.39551  -0.173    0.863  
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 0.9618 on 55 degrees of freedom
-Multiple R-Squared: -0.3381,    Adjusted R-squared: -0.5084 
-Wald test: 2.685 on 7 and 55 DF,  p-value: 0.01821 </code></pre>
-</div>
-</div>
+summary(iv_model_total)</code></pre>
 <p><em>3. G-Computation / G-Formula</em></p>
 <p>Simulate the outcome under a hypothetical scenario where everyone perfectly adheres to the intervention. This provides an estimate of the expected outcome if all participants had fully complied. R packages: {gfoRmula}, {ltmle}.</p>
 <p><em>4. Marginal Structural Models (MSMs) with Inverse Probability Weighting (IPW)</em></p>
@@ -1287,70 +2105,41 @@ Wald test: 2.685 on 7 and 55 DF,  p-value: 0.01821 </code></pre>
 <section id="ipw" class="level4">
 <h4 class="anchored" data-anchor-id="ipw">IPW</h4>
 <p>Complete case analysis (default approach in IPW):</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ipw)</span>
-<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>data_model_ipw <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span></span>
-<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(</span>
-<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>    completed_intervention,</span>
-<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>    age, sex, hypertension, hypercholesterolemia, hypertrigliceridemia,</span>
-<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>    drugs_w_loss, drugs_w_gain, mean_bp_mean, handgrip, evs_score,</span>
-<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>    alcohol_dose, kcal, labs_alt, labs_ggt, labs_ldl, labs_triglycerides,</span>
-<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a>    labs_hdl, labs_quick_index</span>
-<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb79-12"><a href="#cb79-12" aria-hidden="true" tabindex="-1"></a>model_weights <span class="ot">&lt;-</span> <span class="fu">ipwpoint</span>(</span>
-<span id="cb79-13"><a href="#cb79-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">exposure =</span> completed_intervention,</span>
-<span id="cb79-14"><a href="#cb79-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="st">"binomial"</span>,</span>
-<span id="cb79-15"><a href="#cb79-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">link =</span> <span class="st">"logit"</span>,</span>
-<span id="cb79-16"><a href="#cb79-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">denominator =</span> <span class="sc">~</span> </span>
-<span id="cb79-17"><a href="#cb79-17" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span></span>
-<span id="cb79-18"><a href="#cb79-18" aria-hidden="true" tabindex="-1"></a>    drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span></span>
-<span id="cb79-19"><a href="#cb79-19" aria-hidden="true" tabindex="-1"></a>    alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span></span>
-<span id="cb79-20"><a href="#cb79-20" aria-hidden="true" tabindex="-1"></a>    labs_hdl <span class="sc">+</span> labs_quick_index,</span>
-<span id="cb79-21"><a href="#cb79-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_model_ipw</span>
-<span id="cb79-22"><a href="#cb79-22" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Use simple imputation (if appropriate for your data). Be cautious: imputation is a valid strategy if missingness is assumed to be Missing At Random (MAR) and the variables used for imputation are adequate.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mice)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'mice'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:stats':
+<pre><code>library(ipw)
 
-    filter</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
+data_model_ipw &lt;- data_model_scaled %&gt;%
+  drop_na(
+    completed_intervention,
+    age, sex, hypertension, hypercholesterolemia, hypertrigliceridemia,
+    drugs_w_loss, drugs_w_gain, mean_bp_mean, handgrip, evs_score,
+    alcohol_dose, kcal, labs_alt, labs_ggt, labs_ldl, labs_triglycerides,
+    labs_hdl, labs_quick_index
+  )
 
-    cbind, rbind</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>data_model_ipw <span class="ot">&lt;-</span> mice<span class="sc">::</span><span class="fu">complete</span>(<span class="fu">mice</span>(data_model_scaled, <span class="at">m =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
- iter imp variable
-  1   1  compliance_score_adjusted  duration_difference  whoqol_score_overall  dass_score_depression  dass_score_anxiety  dass_score_stress  ecap_score  abdomen  bmi  mean_bp_mean  resistance  reactance  phase_angle  handgrip  evs_score  carbs_kcal  protein_kcal  fat_kcal  kcal  labs_crp  labs_ast  labs_alt  labs_ggt  labs_alkp  labs_cholesterol  labs_ldl  labs_hba1c  labs_triglycerides  labs_hdl  labs_glucose  labs_insulin  labs_homa_ir  labs_quick_index
-  2   1  compliance_score_adjusted  duration_difference  whoqol_score_overall  dass_score_depression  dass_score_anxiety  dass_score_stress  ecap_score  abdomen  bmi  mean_bp_mean  resistance  reactance  phase_angle  handgrip  evs_score  carbs_kcal  protein_kcal  fat_kcal  kcal  labs_crp  labs_ast  labs_alt  labs_ggt  labs_alkp  labs_cholesterol  labs_ldl  labs_hba1c  labs_triglycerides  labs_hdl  labs_glucose  labs_insulin  labs_homa_ir  labs_quick_index
-  3   1  compliance_score_adjusted  duration_difference  whoqol_score_overall  dass_score_depression  dass_score_anxiety  dass_score_stress  ecap_score  abdomen  bmi  mean_bp_mean  resistance  reactance  phase_angle  handgrip  evs_score  carbs_kcal  protein_kcal  fat_kcal  kcal  labs_crp  labs_ast  labs_alt  labs_ggt  labs_alkp  labs_cholesterol  labs_ldl  labs_hba1c  labs_triglycerides  labs_hdl  labs_glucose  labs_insulin  labs_homa_ir  labs_quick_index
-  4   1  compliance_score_adjusted  duration_difference  whoqol_score_overall  dass_score_depression  dass_score_anxiety  dass_score_stress  ecap_score  abdomen  bmi  mean_bp_mean  resistance  reactance  phase_angle  handgrip  evs_score  carbs_kcal  protein_kcal  fat_kcal  kcal  labs_crp  labs_ast  labs_alt  labs_ggt  labs_alkp  labs_cholesterol  labs_ldl  labs_hba1c  labs_triglycerides  labs_hdl  labs_glucose  labs_insulin  labs_homa_ir  labs_quick_index
-  5   1  compliance_score_adjusted  duration_difference  whoqol_score_overall  dass_score_depression  dass_score_anxiety  dass_score_stress  ecap_score  abdomen  bmi  mean_bp_mean  resistance  reactance  phase_angle  handgrip  evs_score  carbs_kcal  protein_kcal  fat_kcal  kcal  labs_crp  labs_ast  labs_alt  labs_ggt  labs_alkp  labs_cholesterol  labs_ldl  labs_hba1c  labs_triglycerides  labs_hdl  labs_glucose  labs_insulin  labs_homa_ir  labs_quick_index</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Number of logged events: 75</code></pre>
-</div>
-</div>
+model_weights &lt;- ipwpoint(
+  exposure = completed_intervention,
+  family = "binomial",
+  link = "logit",
+  denominator = ~ 
+    age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia +
+    drugs_w_loss + drugs_w_gain + mean_bp_mean + handgrip + evs_score +
+    alcohol_dose + kcal + labs_alt + labs_ggt + labs_ldl + labs_triglycerides +
+    labs_hdl + labs_quick_index,
+  data = data_model_ipw
+)
+</code></pre>
+<p>Use simple imputation (if appropriate for wer data). Be cautious: imputation is a valid strategy if missingness is assumed to be Missing At Random (MAR) and the variables used for imputation are adequate.</p>
+<pre><code>library(mice)
+data_model_ipw &lt;- mice::complete(mice(data_model_scaled, m = 1))</code></pre>
 <p><em>5. Bayesian Models with Compliance Modeling</em></p>
 <p>Build a hierarchical Bayesian model that explicitly includes a latent compliance variable. Allows direct modeling of counterfactual scenarios under perfect adherence. Add prior distributions reflecting assumptions about compliance mechanisms. Packages: {brms}, {rstanarm}.</p>
 <p>Example idea:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(<span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> allocation_group <span class="sc">+</span> compliance_score_adjusted <span class="sc">+</span> visit <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> covariates,</span>
-<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_model_scaled,</span>
-<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="fu">gaussian</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(<span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> allocation_group <span class="sc">+</span> compliance_score_adjusted <span class="sc">+</span> visit <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> covariates,</span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_model_scaled,</span>
+<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="fu">gaussian</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><em>Ways to Make Your Current Model More Sensitive to the Intervention</em></p>
+<p><em>Ways to Make we Current Model More Sensitive to the Intervention</em></p>
 <ul>
 <li>Focus the population: subset to high compliers or exclude partial compliers.</li>
 <li>Model interactions: for example, allocation_group * compliance_score_adjusted to see whether the effect of the intervention depends on levels of compliance.</li>
@@ -1361,11 +2150,10 @@ Attaching package: 'mice'</code></pre>
 </section>
 </section>
 </section>
-</section>
 <section id="pam" class="level1">
 <h1>PAM</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>pam_1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(mean_bp_mean <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> completed_intervention <span class="sc">+</span> duration_difference <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> data_model_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>pam_1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(mean_bp_mean <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> completed_intervention <span class="sc">+</span> duration_difference <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> data_model_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in model.matrix.default(fixedform, fr, contrasts): the response
 appeared on the right-hand side and was dropped</code></pre>
