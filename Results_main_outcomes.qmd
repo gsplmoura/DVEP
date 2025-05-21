@@ -37,6 +37,7 @@ library(here)
 library(lme4)
 library(lmerTest)
 library(skimr)
+library(performance)
 
 # Read Files ----
 ## Codebooks
@@ -97,12 +98,11 @@ data_instruments <- readRDS("Data_instruments/data_instruments.rds")
 
 ## Variables of interest
 
-- (1 \| record_id) + visit + allocation_group + age + sex + race + education +
-- Comorbidities: hypertension + hypercholesterolemia + hypertrigliceridemia + insulin + drugs_w_loss + drugs_w_gain
-- Anthro: abdomen + bmi + mean_bp_mean
-- Questionnaires: whoqol_score_overall + ecap_score + evs_score + dass_score_stress + dass_score_anxiety + dass_score_depression + alcohol_significant + smoke_history + carbs_kcal + protein_kcal + fat_kcal + drugs_dose_change_yn +
-- Adesão: completed_intervention, intervention_duration, education_years? cp_taking_as_directed_yn, cp_missed_dose_yn, cp_missed_dose_count, cp_discontinued_yn, cp_discontinued_n_days, cp_ran_out_of_drug_yn, cp_medication_confidence_sca
-
+-   (1 \| record_id) + visit + allocation_group + age + sex + race + education +
+-   Comorbidities: hypertension + hypercholesterolemia + hypertrigliceridemia + insulin + drugs_w_loss + drugs_w_gain
+-   Anthro: abdomen + bmi + mean_bp_mean
+-   Questionnaires: whoqol_score_overall + ecap_score + evs_score + dass_score_stress + dass_score_anxiety + dass_score_depression + alcohol_significant + smoke_history + carbs_kcal + protein_kcal + fat_kcal + drugs_dose_change_yn +
+-   Adesão: completed_intervention, intervention_duration, education_years? cp_taking_as_directed_yn, cp_missed_dose_yn, cp_missed_dose_count, cp_discontinued_yn, cp_discontinued_n_days, cp_ran_out_of_drug_yn, cp_medication_confidence_sca
 
 ## Select variables
 
@@ -203,7 +203,7 @@ new_data_scaled <- scale_with_params(new_data, scaling_params)
 
 # Phase angle
 
-Filtrando D1 and D3
+Filtrando os dados da primeira e terceira visitas.
 
 ```{r}
 pha_redcap <- data_model_scaled %>% 
@@ -218,128 +218,139 @@ pha_redcap <- data_model_scaled %>%
     )
 ```
 
-## All variables
-
-```{r}
-library(lme4)
-library(lmerTest) # Adds p-values to summary()
-```
+## Modelo 1
 
 ```{r}
 pha_1 <- lmer(phase_angle ~ (1 | record_id) + visit + allocation_group + completed_intervention + duration_difference + age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal + labs_crp + labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index, data = pha_redcap)
 
 summary(pha_1)
-
-plot(pha_1)
 ```
 
-A modelagem estatística foi realizada por meio de modelos lineares mistos com intercepto aleatório por participante (record_id). Todas as variáveis contínuas foram previamente padronizadas (média = 0, desvio-padrão = 1), exceto o índice QUICKI, mantido em sua unidade original para fins de interpretabilidade clínica. A variável duration_difference, que representa o desvio absoluto em dias da duração planejada da intervenção (90 dias), foi ajustada para zero na visita basal e posteriormente padronizada. O modelo pha_2 incluiu 24 preditores fixos e foi ajustado utilizando o método de máxima verossimilhança restrita (REML), com inclusão da variância intraindividual no componente aleatório.
+A modelagem estatística foi conduzida por meio de um modelo linear misto, com intercepto aleatório por participante (record_id), ajustado pelo método de máxima verossimilhança restrita (REML). O desfecho avaliado foi o ângulo de fase, e todas as variáveis contínuas foram previamente padronizadas (média = 0; desvio padrão = 1), com exceção do índice QUICKI, mantido em sua unidade original para favorecer a interpretabilidade clínica. A variável duration_difference representa o desvio absoluto (em dias) da duração planejada da intervenção (90 dias), sendo ajustada para zero na linha de base e posteriormente padronizada.
 
-Neste modelo, observou-se que a pressão arterial média (mean_bp_mean) foi positivamente associada ao ângulo de fase (β = 0.19, p = 0.045), sugerindo que níveis mais elevados de pressão podem estar relacionados a um melhor estado funcional da membrana celular. A dose de álcool (alcohol_dose) foi o preditor com maior significância estatística (β = 0.25, p \< 0.001), com associação positiva ao ângulo de fase; esse achado deve ser interpretado com cautela, pois pode refletir fatores comportamentais ou nutricionais não capturados diretamente no modelo. Além disso, a proteína C reativa (labs_crp) apresentou associação positiva marginalmente significativa (β = 0.13, p = 0.031), o que pode indicar uma complexa interação entre inflamação subclínica e integridade da membrana celular.
+O modelo incluiu 24 preditores fixos e apresentou bom ajuste, com critério REML igual a 267,6 \[um valor inferior ao do modelo anterior (REML = 275)\], indicando melhora na parcimônia e qualidade do ajuste após a redução de variáveis.
 
-Outros preditores como visit, allocation_group, completed_intervention, duration_difference e variáveis laboratoriais como labs_ldl, labs_triglycerides e labs_quick_index não apresentaram associações estatisticamente significativas. A variância do intercepto aleatório por record_id permaneceu elevada (0.72), reforçando a relevância da estrutura longitudinal dos dados. O critério de REML obtido foi 267.6, indicando um ajuste superior ao modelo anterior (REML = 275), e sugerindo avanço na parcimônia e na qualidade do modelo após a redução de preditores.
+**Efeitos fixos**
 
-**Próximos passos sugeridos**: - Considerar remoção de variáveis com p \> 0.5 e sem base teórica. - Avaliar o impacto de variáveis correlacionadas (e.g., `bmi`, `abdomen`). - Testar modelos reduzidos orientados por AIC ou p-valor.
+Três variáveis demonstraram associação estatisticamente significativa com o desfecho:
 
-*Interpretation clarity* - With all predictors scaled, effect sizes are in SD units. labs_quick_index still in raw units: its coefficient = change in phase angle per unit change in QUICKI, which is very interpretable (and appropriate).
+-   Pressão arterial média (mean_bp_mean): apresentou associação positiva com o ângulo de fase (β = 0,19; p = 0,045), sugerindo que níveis mais elevados de pressão arterial podem estar relacionados a melhor integridade funcional da membrana celular.
+-   Dose de álcool (alcohol_dose): foi o preditor com maior significância estatística (β = 0,25; p \< 0,001), com associação positiva ao ângulo de fase. Este achado deve ser interpretado com cautela, podendo refletir fatores comportamentais, sociais ou nutricionais não diretamente capturados no modelo.
+-   Proteína C reativa (labs_crp): demonstrou associação positiva marginalmente significativa (β = 0,13; p = 0,032), o que pode sugerir uma relação complexa entre inflamação subclínica e alterações na composição ou integridade celular.
 
-*Random effects* - You can tell that including a random intercept was appropriate by comparing the random effect variance to the residual variance. The random intercept variance for record_id is 0.6846, which represents the variability between participants. The residual variance is 0.1188, which reflects variability within participants (i.e., unexplained by the model and random noise). Now, the random intercept variance is much larger than the residual variance. This indicates that a substantial portion of the total variance in your outcome (phase_angle) is due to differences between individuals, not just random fluctuation within the same person over time. Hence, accounting for individual-level differences via a random intercept helps the model better estimate the effects of your fixed variables by controlling for this inter-individual baseline shift. Summary: Since Var(Intercept for record_id) \> Var(Residual), this suggests strong subject-level variation, meaning including (1 \| record_id) was a statistically sound choice.
+As demais variáveis — incluindo visit, allocation_group, completed_intervention, duration_difference, além de variáveis laboratoriais como labs_ldl, labs_triglycerides e labs_quick_index — não apresentaram associações estatisticamente significativas com o desfecho.
 
-### Refinements
+**Efeitos aleatórios**
 
-1.  Check for multicollinearity
+A variância associada ao intercepto aleatório por participante foi de 0,72, enquanto a variância residual foi de 0,11. Esse achado demonstra que há considerável variabilidade entre os indivíduos, reforçando a pertinência da inclusão do componente aleatório no modelo. Em outras palavras, parte substancial da variabilidade total no ângulo de fase é explicada por diferenças interindividuais, o que justifica o uso de modelos mistos para melhor estimar os efeitos fixos, controlando tais variações basais.
 
-2.  High number of predictors (p = 30+) vs. N = 111 to your sample size. This increases risk of: Overfitting, Inflated standard errors, Instability in estimates. Suggestion: Run a stepwise reduction or penalized regression (e.g., LASSO via glmnet) to select the most stable subset.
+**Considerações metodológicas**
 
-3.  Check model fit and explained variance.
+1.  Multicolinearidade: Dada a inclusão de 24 preditores em um modelo com 111 observações, recomenda-se avaliar a presença de colinearidade, especialmente entre variáveis clínicas e laboratoriais potencialmente redundantes. Sugere-se a aplicação da função performance::check_collinearity() para investigar VIFs elevados, que podem inflar erros padrão e comprometer a interpretação dos coeficientes.
+2.  Redução de preditores: A elevada razão entre o número de preditores e o tamanho da amostra (p \> n/4) pode levar a sobreajuste (overfitting) e instabilidade nos coeficientes. Uma abordagem sugerida é a redução guiada por critérios de informação (AIC) ou penalização via regressão LASSO (glmnet), com o objetivo de selecionar subconjuntos mais estáveis de variáveis.
+3.  Avaliação da qualidade do ajuste: Recomenda-se utilizar a função performance::check_model() para verificar a normalidade dos resíduos, homocedasticidade e presença de observações influentes. Além disso, a obtenção dos valores de R² marginal e condicional pode auxiliar na compreensão da proporção da variância explicada pelo modelo fixo e pelo modelo completo (incluindo os efeitos aleatórios).
+4.  Tratamento da variável visit: Embora visit não tenha apresentado significância estatística no modelo atual, trata-se de uma variável importante, dado o delineamento longitudinal do estudo. Deve-se avaliar se o uso de visit como variável contínua linear é adequado ou se uma estrutura categórica com interação (e.g., visit\*allocation_group) ou a inclusão de um termo de inclinação aleatória por visita ((visit \| record_id)) poderia capturar melhor as trajetórias individuais ao longo do tempo.
 
-    -   Use performance::check_model() to assess residuals, normality, and homoscedasticity.
-    -   Consider using marginal and conditional R² to evaluate model fit.
+**Avaliação da Multicolinearidade**
 
-4.  Plot residuals and check assumptions: Homoscedasticity, Normality of residuals, Influential observations.
-
-5.  Refine the role of visit. Currently, visit is not significant, but the study is longitudinal. So ask: Is visit best treated as a linear trend (numeric)? Would a factor with interaction be more appropriate? Would a random slope for visit help capture subject-specific trajectories?
-
-### 1. Check for multicollinearity
-
-Because you have many predictors (30+), and some may be redundant or highly correlated, collinearity is your first enemy. You’ve handled insulin/glucose/HOMA/QUICKI well. But still check VIFs for collinearity among other variables (like BMI and abdomen, or macronutrients - total energy intake). High collinearity can: (1) Inflate standard errors (making real effects look non-significant), (2) Obscure model interpretation, (3) Affect convergence and coefficient stability. How? Use performance::check_collinearity():
+Dada a inclusão de um número elevado de preditores no modelo (n = 24), avaliou-se a presença de multicolinearidade utilizando o Fator de Inflação da Variância (VIF) por meio da função performance::check_collinearity().
 
 ```{r}
-library(performance)
-check_collinearity(pha_1)
+performance::check_collinearity(pha_1)
 # r2(pha_1)  # Marginal and conditional R²
 ```
 
-**Interpretation of collinearity results:** No concerning multicollinearity (all VIFs \< 3).
+Resultados:
 
-Variance Inflation Factor (VIF) measures how much the variance (i.e., the standard error squared) of a regression coefficient is inflated due to collinearity with other predictors. In other words, it tells you how strongly one predictor is linearly related to the others.
+Todos os preditores apresentaram VIFs inferiores a 3, indicando ausência de multicolinearidade preocupante. Os valores variaram entre 1,13 e 2,64, o que representa correlações lineares fracas a moderadas entre os preditores, sem risco aparente de distorções nas estimativas dos coeficientes.
 
-| **VIF Value** | **Interpretation**                             |
-|---------------|------------------------------------------------|
-| 1             | No correlation with other variables            |
-| 1–2           | Low correlation, no concern                    |
-| 2–5           | Moderate correlation — **keep an eye**         |
-| 5–10          | High correlation — **potential problem**       |
-| \>10          | Severe multicollinearity — **likely an issue** |
+Abaixo, apresenta-se a interpretação convencional dos valores de VIF:
 
-### 2. Reduce the model
+| **Valor de VIF** | **Interpretação**                                  |
+|------------------|----------------------------------------------------|
+| 1                | Ausência de correlação com outras variáveis        |
+| 1–2              | Correlação baixa — sem motivo de preocupação       |
+| 2–5              | Correlação moderada — acompanhar com atenção       |
+| 5–10             | Correlação elevada — risco de instabilidade        |
+| \> 10            | Multicolinearidade severa — intervenção necessária |
 
-Your model currently includes 30 fixed effects, which may limit statistical power and interpretability due to overfitting.
+2.  Redução do Modelo
 
-A abordagem mais sensata para reduzir o modelo depende diretamente do seu objetivo principal.
+O modelo atual inclui 24 preditores fixos, o que, diante de uma amostra com 111 observações, pode comprometer o poder estatístico e a interpretabilidade dos resultados devido ao risco de sobreajuste (overfitting).
 
-Se o seu foco for **predição ou performance do modelo**, então a estratégia **data-driven** é mais apropriada, como:
+A escolha da melhor abordagem para simplificar o modelo depende do objetivo central da análise:
 
--   **(1) Seleção stepwise backward** com base em critérios de informação como AIC ou BIC (AIC favorece modelos com melhor ajuste, BIC penaliza mais a complexidade).
--   **LASSO (via `glmnet`)**, que impõe uma penalização e tende a selecionar um subconjunto estável de variáveis, pode ser especialmente útil quando o número de preditores é alto e há colinearidade moderada.
+a)  Modelos orientados por desempenho (predição)
 
-Entretanto, se o objetivo for **interpretação e inferência causal ou explicativa** (como é comum em ensaios clínicos e estudos de intervenção), a melhor abordagem é:
+Caso o foco seja a performance preditiva, o uso de estratégias orientadas por dados é mais apropriado:
 
--   **(2) Simplificação orientada pela teoria e plausibilidade clínica**, removendo variáveis que claramente não contribuem de forma significativa, que se sobrepõem a outras medidas (ex: manter apenas `quick_index` e excluir glicemia/insulina), ou que apresentem comportamento instável nos modelos (como efeitos colineares ou variações negativas no sinal da estimativa ao longo das versões do modelo).
+-   Seleção stepwise (backward) com base em critérios de informação como AIC ou BIC. O AIC favorece modelos com melhor ajuste (ainda que mais complexos), enquanto o BIC impõe maior penalidade à complexidade, favorecendo modelos mais parcimoniosos.
 
-Quando eu menciono **"variações negativas no sinal da estimativa ao longo das versões do modelo"**, estou me referindo ao comportamento instável dos coeficientes de algumas variáveis à medida que você modifica o modelo — por exemplo, adicionando ou removendo preditores.
+-   Regressão penalizada via LASSO (glmnet), que tende a selecionar subconjuntos estáveis de variáveis ao impor penalizações sobre os coeficientes, sendo especialmente útil em situações com colinearidade moderada e alta dimensionalidade de preditores.
 
-Imagine que, em um modelo mais simples, a variável `bmi` tem um coeficiente **positivo**, sugerindo que quanto maior o IMC, maior o ângulo de fase. Mas ao incluir outras variáveis correlacionadas (como `abdomen` ou `resistance`), o coeficiente de `bmi` se torna **negativo** ou **não significativo**. Essa mudança de sinal pode indicar:
+b)  Modelos orientados por inferência e explicação
 
--   **Colinearidade**: `bmi` e `abdomen`, por exemplo, podem estar explicando o mesmo componente corporal.
--   **Falta de robustez**: a interpretação do efeito da variável muda conforme outras são incluídas, dificultando conclusões consistentes.
--   **Overfitting ou ajuste instável**, especialmente em amostras pequenas.
+Quando o objetivo principal é a interpretação causal ou explicativa, como em estudos clínicos e intervenções, a estratégia mais robusta é a redução teórica guiada por plausibilidade clínica. Essa abordagem inclui:
 
-Detectar esse comportamento é um sinal de que a variável pode estar redundante ou que há necessidade de ajustes — por exemplo, usar apenas uma das variáveis correlacionadas ou aplicar técnicas de regularização.
+-   Remoção de variáveis com baixa significância estatística e sem fundamento teórico forte;
 
-Portanto, **"variação no sinal da estimativa"** não é sobre valor negativo em si, mas sobre **mudança de direção do efeito estimado**, o que enfraquece a confiança na interpretação daquele preditor.
+-   Exclusão de variáveis redundantes ou fortemente correlacionadas (ex.: manter labs_quick_index e excluir glicemia/insulina);
 
-Uma boa estratégia híbrida é:
+-   Atenção a comportamentos instáveis dos coeficientes — por exemplo, quando a direção (sinal) de um coeficiente muda com a inclusão de outras variáveis, indicando colinearidade ou sobreposição de efeitos.
 
-1.  **Fixar um conjunto mínimo de variáveis-chave teóricas** (ex: sexo, idade, grupo, tempo).
-2.  **Aplicar redução stepwise nos demais termos**, guiando-se por BIC (se você deseja maior parcimônia) ou por LASSO.
-3.  **Comparar modelos com ANOVA** e gráficos de resíduos para garantir que a simplificação não deteriora o ajuste.
+c)  Estratégia híbrida recomendada
 
-Essa abordagem permite alcançar um equilíbrio entre interpretabilidade e estabilidade do modelo.
+Uma estratégia combinada, adequada ao contexto de ensaio clínico com múltiplas covariáveis, pode envolver: 1. Fixar um conjunto mínimo de variáveis-chave (ex.: idade, sexo, grupo de intervenção, tempo); 2. Aplicar redução stepwise ou LASSO nas demais covariáveis; 3. Comparar modelos reduzidos com o modelo completo utilizando ANOVA (anova()), gráficos de resíduos e critérios de ajuste (REML, AIC, BIC), assegurando que a simplificação não comprometa o desempenho do modelo.
 
-### 3. Check model fit
+3.  Avaliação do Ajuste do Modelo
 
-A avaliação dos pressupostos do modelo pha_1 foi realizada por meio da função check_model() do pacote performance, a qual indicou que, em linhas gerais, o modelo apresenta adequação estatística razoável. O gráfico de Posterior Predictive Check mostra boa sobreposição entre a densidade dos valores observados e os valores preditos pelo modelo, indicando adequada capacidade preditiva.
+A verificação dos pressupostos estatísticos do modelo pha_1 foi realizada com a função performance::check_model(). Os principais achados foram:
 
-A verificação da linearidade dos resíduos frente aos valores ajustados revelou um desvio leve da horizontalidade na extremidade superior, sugerindo possível não linearidade em valores mais altos do desfecho. A homogeneidade da variância (homoscedasticidade) também apresentou leve violação, com aumento da variância dos resíduos em valores preditos mais altos — característica que pode afetar a precisão das estimativas nessas faixas.
+-   Ajuste geral: Os gráficos de verificação preditiva (posterior predictive checks) mostraram boa sobreposição entre os valores observados e os preditos, indicando adequação geral do modelo.
 
-A análise de observações influentes (gráfico de alavancagem vs. resíduos padronizados) identificou algumas observações com leve influência (por exemplo, IDs 10, 69, 70, 75, 109), mas nenhuma ultrapassando os limiares clássicos de alavancagem ou resíduos padronizados extremos.
+-   Resíduos vs. valores ajustados: Foi observado leve desvio da horizontalidade nas faixas mais altas do desfecho, sugerindo possível violação da linearidade para valores elevados do ângulo de fase.
 
-A colinearidade foi considerada baixa, com todos os fatores de inflação da variância (VIF) abaixo de 5, o que indica ausência de multicolinearidade severa entre os preditores. O gráfico de normalidade dos resíduos mostra aderência razoável à distribuição normal, com pequenas desvios nas caudas, o que é aceitável para modelos mistos com tamanho amostral moderado. Por fim, a distribuição dos efeitos aleatórios (record_id) se aproximou da normalidade, com leve assimetria nas extremidades, reforçando que o intercepto aleatório foi uma escolha apropriada para capturar a variabilidade entre indivíduos.
+-   Homoscedasticidade: Detectou-se aumento da variância dos resíduos com o aumento dos valores preditos, caracterizando uma leve violação da homocedasticidade.
 
-### 5. Refine the role of visit
+-   Normalidade dos resíduos: Os resíduos apresentaram distribuição aproximadamente normal, com pequenas assimetrias nas caudas — aceitáveis em modelos mistos com amostras de tamanho moderado.
 
-lmer(phase_angle \~ visit + (visit \| record_id) + ...
+-   Influência de observações: Algumas observações apresentaram leve influência (IDs 10, 69, 70, 75, 109), mas nenhuma ultrapassou os limiares críticos para alavancagem ou resíduos padronizados extremos.
 
-Error: number of observations (=111) \<= number of random effects (=146) for term (visit \| record_id)
+-   Colinearidade: Todos os VIFs estiveram abaixo de 3, indicando ausência de multicolinearidade significativa.
 
-lmer(phase_angle \~ visit + (1 + visit \|\| record_id) + ...
+-   Efeitos aleatórios: A distribuição dos interceptos aleatórios (por record_id) se aproximou da normalidade, reforçando a adequação da estrutura hierárquica adotada.
 
-boundary (singular) fit: see help('isSingular')
+5.  Refinamento da Variável visit
 
-## Reduce the Model
+Dado o delineamento longitudinal do estudo, a variável visit merece atenção especial. No modelo atual, visit foi incluída como efeito fixo com estrutura linear. No entanto, isso pode ser subótimo caso o efeito do tempo varie entre participantes.
 
-### pha_2
+Tentativas de incorporar uma inclinação aleatória por visit resultaram em:
+
+```         
+lmer(phase_angle ~ visit + (visit | record_id), data = ...)
+# Erro: número de observações (=111) ≤ número de efeitos aleatórios (=146)
+```
+
+Isso indica que há insuficiência de dados para estimar uma estrutura tão complexa. A alternativa:
+
+```         
+lmer(phase_angle ~ visit + (1 + visit || record_id), data = ...)
+# Resultado: ajuste singular (boundary (singular) fit)
+```
+
+Esse ajuste singular significa que o modelo não consegue estimar a variância da inclinação aleatória para visit de forma confiável, sugerindo ausência de variação individual suficiente ou tamanho amostral limitado para suportar tal estrutura.
+
+Conclusão:
+
+No momento, manter visit como efeito fixo linear é estatisticamente mais robusto. Caso haja interesse em investigar mudanças específicas ao longo das visitas, uma abordagem alternativa seria tratar visit como variável categórica e incluir interações com allocation_group, por exemplo:
+
+```         
+phase_angle ~ allocation_group * factor(visit) + ...
+```
+
+Essa estrutura permite verificar se a evolução do ângulo de fase ao longo do tempo difere entre os grupos, sem sobrecarregar o modelo com componentes aleatórios instáveis.
+
+## Modelo 2
 
 ```{r}
 pha_2 <- lmer(phase_angle ~ (1 | record_id) + visit + allocation_group + age + sex + bmi + mean_bp_mean + handgrip + evs_score + kcal + labs_crp + labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index, data = pha_redcap)
@@ -351,9 +362,9 @@ summary(pha_2)
 
 > BIC(pha_1, pha_2) df BIC pha_1 26 390.0032 pha_2 19 365.1094
 
-A comparação entre os modelos pelo critério de informação de Akaike (AIC) e o critério bayesiano de informação (BIC) favoreceu o modelo reduzido (pha_2), que apresentou valores mais baixos de AIC (313,6 vs. 319,6) e BIC (365,1 vs. 390,0) em relação ao modelo completo (pha_1). Isso sugere que a simplificação do modelo resultou em melhor equilíbrio entre ajuste e complexidade, mesmo com a perda de significância estatística de algumas covariáveis previamente relevantes.
+A comparação entre os modelos pelo critério de informação de Akaike (AIC) e o critério bayesiano de informação (BIC) favoreceu o modelo reduzido (pha_2), que apresentou valores mais baixos de AIC (313,6 vs. 319,6) e BIC (365,1 vs. 390,0) em relação ao modelo completo (pha_1). Isso sugere que a simplificação do modelo resultou em melhor equilíbrio entre ajuste e complexidade, mesmo com a perda de significância estatística de algumas covariáveis previamente relevantes. No entanto, várias variáveis de relevância clínica foram eliminadas neste modelo. Por este motivo, um terceiro modelo foi criado, incluindo as variáveis de relevância clínica que não foram incluídas no modelo 2.
 
-### pha_3
+## Modelo 3
 
 ```{r}
 pha_3 <- lmer(phase_angle ~ (1 | record_id) + visit + allocation_group + completed_intervention + duration_difference + age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal + labs_crp + labs_ldl + labs_quick_index, data = pha_redcap)
@@ -368,431 +379,305 @@ BIC(pha_1, pha_2, pha_3)
 r2(pha_3)
 ```
 
-```{r check-model, fig.width=10, fig.height=14}
-plots <- performance::check_model(pha_3)
-print(plots)
+```{r pha_3_check-model, fig.width=10, fig.height=14}
+pha_3_plots <- performance::check_model(pha_3)
+print(pha_3_plots)
 ```
 
-Três modelos hierárquicos foram comparados utilizando os critérios de informação AIC e BIC. O modelo pha_3, contendo 22 preditores fixos, apresentou os menores valores de AIC (300,2) e BIC (359,8), superando tanto o modelo completo pha_1 (AIC = 319,6; BIC = 390,0) quanto o modelo reduzido pha_2 (AIC = 313,6; BIC = 365,1). Esses resultados indicam que pha_3 oferece o melhor equilíbrio entre qualidade de ajuste e complexidade do modelo, sendo, portanto, o modelo preferido para interpretação final dos resultados.
+**Comparação entre Modelos e Avaliação do Ajuste Final**
 
-Uma versão reduzida do modelo foi desenvolvida com o objetivo de aprimorar o equilíbrio entre parcimônia e desempenho preditivo. A seleção das variáveis foi orientada tanto por critérios teóricos quanto estatísticos, priorizando preditores com plausibilidade clínica e contribuições informativas nas versões anteriores. O novo modelo (pha_final) manteve o intercepto aleatório por participante (record_id) e incluiu 20 preditores fixos, resultando em um critério de máxima verossimilhança restrita (REML) inferior ao dos modelos anteriores (REML = 256,2), indicando melhora no ajuste.
+Três modelos hierárquicos foram comparados utilizando os critérios de informação de Akaike (AIC) e Bayesiano (BIC). O modelo pha_3, contendo 22 preditores fixos e intercepto aleatório por participante (record_id), apresentou os menores valores de AIC (300,2) e BIC (359,8), superando o modelo completo pha_1 (AIC = 319,6; BIC = 390,0) e o modelo intermediário pha_2 (AIC = 313,6; BIC = 365,1). Esses resultados indicam que pha_3 representa o melhor equilíbrio entre qualidade de ajuste e parcimônia, sendo selecionado como modelo final para interpretação dos achados.
 
-As variáveis mean_bp_mean (p = 0.040), alcohol_dose (p \< 0.001) e labs_crp (p = 0.035) mantiveram associação estatisticamente significativa com o ângulo de fase, mesmo após o ajuste multivariado, o que reforça a robustez dessas associações. A variável visit foi mantida como efeito fixo para controle do efeito temporal, embora não tenha mostrado significância estatística (p = 0.432). A variância do intercepto aleatório (σ² = 0.68) permaneceu relevante, o que confirma a presença de heterogeneidade entre os participantes e a adequação do uso de um modelo misto.
+A construção do modelo pha_3 foi guiada por critérios estatísticos e clínicos, priorizando variáveis com significância nas versões anteriores, plausibilidade teórica e estabilidade das estimativas. O modelo manteve 22 preditores e apresentou um critério de máxima verossimilhança restrita (REML) igual a 256,2, inferior ao dos modelos anteriores, reforçando a melhoria no ajuste.
 
-A análise multicolinearidade mostrou valores de VIF \< 3 para todos os preditores, descartando problemas relevantes de colinearidade. Os diagnósticos do modelo indicaram distribuição adequada dos resíduos, ausência de observações altamente influentes e normalidade satisfatória dos efeitos aleatórios, corroborando a adequação do modelo ajustado.
+Entre os preditores avaliados, três variáveis mantiveram associação estatisticamente significativa com o desfecho:
 
-A avaliação dos pressupostos do modelo pha_final foi realizada com base em gráficos diagnósticos. O gráfico de densidade (“Posterior Predictive Check”) indicou que os valores preditos se alinharam adequadamente com a distribuição observada do ângulo de fase. Os resíduos padronizados apresentaram distribuição aproximadamente normal, conforme demonstrado no gráfico de quantis teóricos dos efeitos aleatórios e no gráfico de normalidade dos resíduos, reforçando a adequação do modelo misto com intercepto aleatório por participante.
+-   Pressão arterial média (mean_bp_mean): β = 0,18; p = 0,040
 
-A homogeneidade da variância apresentou leve tendência de heterocedasticidade nas extremidades do ajuste, mas sem padrão grave de violação. A linearidade foi, em geral, respeitada, embora a tendência suavizada indique alguma curvatura para valores mais altos do desfecho. O gráfico de observações influentes mostrou que todos os pontos estão dentro dos limites de influência padronizada, indicando ausência de outliers com alavancagem elevada.
+-   Dose de álcool (alcohol_dose): β = 0,25; p \< 0,001
 
-Por fim, a análise de colinearidade mostrou que todos os preditores apresentaram VIF abaixo de 3, descartando preocupações com multicolinearidade. Dessa forma, os pressupostos do modelo foram globalmente atendidos, validando a interpretação dos coeficientes estimados.
+-   Proteína C reativa (labs_crp): β = 0,12; p = 0,035
 
-O modelo apresentou R² marginal de 0,250, indicando que as variáveis fixas explicam 25% da variância do desfecho, e R² condicional de 0,896, refletindo a alta variabilidade explicada quando se considera a estrutura aleatória intra-individual, compatível com o delineamento longitudinal do estudo.
+Essas associações permaneceram robustas mesmo após ajuste multivariado, sugerindo que níveis mais elevados de pressão arterial, maior consumo de álcool e níveis mais altos de inflamação subclínica estão positivamente relacionados ao ângulo de fase. A variável visit foi mantida no modelo como controle temporal, apesar de não apresentar significância estatística (p = 0,432).
+
+A variância do intercepto aleatório por participante permaneceu elevada (σ² = 0,68), corroborando a presença de heterogeneidade individual e justificando a estrutura mista do modelo. O R² marginal foi de 0,250, indicando que 25% da variância total do desfecho é explicada pelas variáveis fixas. Já o R² condicional foi de 0,896, refletindo a alta proporção da variância explicada ao considerar a estrutura de efeitos aleatórios, em consonância com o delineamento longitudinal do estudo.
+
+A análise de multicolinearidade mostrou valores de VIF menor que três para todos os preditores, descartando problemas relevantes de colinearidade. Os diagnósticos do modelo indicaram distribuição adequada dos resíduos, ausência de observações altamente influentes e normalidade satisfatória dos efeitos aleatórios, corroborando a adequação do modelo ajustado.
+
+**Verificação dos Pressupostos do Modelo Final**
+
+A avaliação dos pressupostos do modelo pha_3 foi realizada com auxílio da função performance::check_model(), cujos gráficos diagnósticos estão apresentados na Figura X.
+
+-   Posterior Predictive Check: Houve boa sobreposição entre os dados observados e os valores preditos pelo modelo, sugerindo adequada capacidade preditiva.
+
+-   Linearidade: Os resíduos apresentaram tendência de curvatura em valores mais altos do desfecho, o que pode indicar leve violação do pressuposto de linearidade, mas sem evidências de distorção grave.
+
+-   Homoscedasticidade: Detectou-se discreto aumento da variabilidade dos resíduos em faixas mais altas dos valores ajustados, sugerindo leve heterocedasticidade.
+
+-   Normalidade dos resíduos: A distribuição dos resíduos foi aproximadamente normal, com desvios leves nas caudas, aceitáveis para modelos mistos em amostras moderadas.
+
+-   Observações influentes: Algumas observações foram marcadas com leve alavancagem (IDs 10, 69, 70, 75, 109), mas todas permaneceram dentro dos limites aceitáveis de influência.
+
+-   Multicolinearidade: Todos os preditores apresentaram valores de VIF inferiores a 3, afastando preocupações com colinearidade.
+
+-   Normalidade dos efeitos aleatórios (record_id): A distribuição dos interceptos aleatórios foi próxima da normal, com leve assimetria nas extremidades, validando a escolha do modelo com intercepto aleatório.
 
 # PCR
 
-### 1
-
 ```{r}
-model3 <- lmer(labs_crp ~ visit + allocation_group + (1 | record_id), data = data_filtered)
-
-summary(model3)
-
-plot(model3)  # Residuals vs. fitted
-
-qqnorm(resid(model3)); qqline(resid(model3))  # Normality check
+data_model_scaled <- data_model_scaled %>%
+  dplyr::mutate(
+    compliance_score_adjusted = dplyr::case_when(
+      visit == 1 ~ 1,
+      TRUE ~ compliance_score_visit
+    )
+  ) %>%
+  dplyr::relocate(compliance_score_adjusted, .after = compliance_score_visit)
 ```
 
-.
+## Per protocol
 
-```{r}
-model3_log <- lmer(log1p(labs_crp) ~ visit + allocation_group + (1 | record_id), data = data_filtered)
-summary(model3_log)
+```{r pcr_1_check-model, fig.width=10, fig.height=14}
+pcr_1 <- lmer(log1p(labs_crp) ~ allocation_group + compliance_score_adjusted + duration_difference + completed_intervention + visit + (1 | record_id) + age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal + labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index, data = data_model_scaled)
 
-plot(model3_log)
+summary(pcr_1)
 
-qqnorm(resid(model3_log)); qqline(resid(model3_log))  # Normality check
+check_collinearity(pcr_1)
+
+AIC(pcr_1)
+BIC(pcr_1)
+
+r2(pcr_1)
+
+pcr_1_plots <- performance::check_model(pcr_1)
+print(pcr_1_plots)
+
+
 ```
 
-**log+1 transformation** to the skewed CRP variable, and the results show clear improvement.
+Since the goal is to evaluate whether the intervention (allocation_group) reduces inflammation (log1p(labs_crp)), then how compliance-related variables are handled — completed_intervention, compliance_score_adjusted, and duration_difference — fundamentally changes what question the model is answering.
 
-| **Term** | **Estimate** | **p-value** | **Interpretation** |
-|----------------|----------------|----------------|-------------------------|
-| **Intercept** | 1.82 | \<0.001 | Mean **log(CRP + 1)** at baseline in Grupo A |
-| **Visit** | –0.099 | 0.036 | **CRP decreases significantly over time** |
-| **Grupo B (vs A)** | +0.139 | 0.405 | No significant difference at baseline |
+**Key Conceptual Framework**
 
-The **effect of visit became statistically significant** (p = 0.036), whereas it was borderline before (p = 0.072).
+If we adjust for compliance variables, then we are answering the question: Among those who complied (to varying degrees), does the assigned intervention have an effect on inflammation?”. This estimates the “Effect of Treatment on the Treated” (ETT) or per-protocol effect, rather than the intention-to-treat (ITT) effect. The interpretation shifts towards whether the efficacy of the treatment holds after accounting for how well participants adhered. If participants in the intervention group did not comply, the model adjusts for that, isolating the treatment effect conditional on compliance. However, if compliance is strongly influenced by the intervention (as is common), adjusting for it may introduce **post-treatment bias (collider bias)**, because you’re conditioning on a variable that is downstream of the allocation.
 
-**Diagnostic Plots** **Residuals vs. Fitted**
+If we do not adjust for compliance, then we are estimating the intention-to-treat (ITT) effect: “Does being assigned to the intervention reduce inflammation, regardless of whether participants fully complied?”. This reflects the real-world effectiveness including factors like dropout, low adherence, etc. This is the primary approach in most randomized trials because it preserves the randomization balance and avoids bias introduced by post-treatment variables.
 
--   More **symmetrical and homoscedastic** than before.
+In the current model, we are conditioning the effect of allocation_group on adherence. The coefficient for allocation_group in this case answers: “Given the same level of adherence (completion, dose, duration), is the intervention effective in reducing inflammation?” In other words, we’re stripping out the pathway by which poor adherence could dilute the intervention effect. If these variables are strong mediators of the intervention’s effect, you are blocking part of the effect of allocation_group, and this might explain why allocation_group is not significant.
 
--   No clear fan shape or funnel — much better than untransformed.
+**Correct Modeling Strategy**
 
-**Q-Q Plot**
+Depends on our goal:
 
--   **Much closer to the line**, indicating that residuals are approximately **normally distributed**.
+1.  To estimate the pure biological effect of the intervention (conditional on adherence):
 
--   A few expected mild deviations at the tails, but very acceptable.
+    -   Keep compliance_score_adjusted, completed_intervention, and duration_difference in the model.
+    -   Interpret the effect of allocation_group as the effect assuming equal adherence across groups.
 
-**What does this mean in original CRP scale?**
+2.  To estimate the real-world effectiveness (intention-to-treat):
 
-Let’s back-transform the time effect:
+    -   Remove the compliance-related variables from the model.
+    -   The coefficient for allocation_group will capture the total effect, including any dilution due to poor adherence.
 
--   Estimate for visit = –0.099
+![](images/DAG: Relationship between Intervention, Compliance, and Inflammation.png)
 
--   Since you’re modeling log1p(CRP), to interpret in original scale:
+The DAG (Directed Acyclic Graph) represents the causal relationships between the intervention, adherence, and inflammation. In this structure, Allocation Group has a direct effect on Inflammation (labs_crp) and also influences Compliance, Completed Intervention, and Duration Difference, which are measures of adherence. These adherence-related variables, in turn, affect Inflammation, indicating that part of the intervention’s effect is mediated through adherence. Additionally, a hypothetical Unmeasured Factors node, representing elements such as motivation, health status, or life circumstances, influences both Compliance and Inflammation. This creates a potential collider if the analysis conditions on adherence-related variables.
 
-$$\\text{exp}(-0.099) = 0.9056$$
+The DAG highlights that adjusting for compliance, completion, or duration blocks part of the natural causal pathway through which the intervention affects inflammation. Moreover, conditioning on these variables opens a backdoor path through Unmeasured Factors, introducing potential collider bias.
 
-This means: **each visit is associated with \~9.4% decrease** in CRP over time, **on average**.
+This structure demonstrates that the choice between intention-to-treat (ITT) and per-protocol (PP) analysis changes the research question. In ITT analysis, the effect of the Allocation Group on inflammation is estimated without conditioning on adherence, capturing the total effect, including both direct and adherence-mediated pathways. This approach preserves the benefits of randomization and estimates the real-world effectiveness of the intervention. In contrast, per-protocol analysis includes adherence-related variables in the model. This blocks the indirect pathways through adherence and estimates the effect of the intervention among participants with comparable adherence. While this approach can answer questions about biological efficacy conditional on adherence, it carries a higher risk of bias due to conditioning on post-randomization variables.
 
-**Summary**
+**Suggested Dual Approach (Best Practice in Clinical Research)**
 
-| **Point**          | **Result**                                |
-|--------------------|-------------------------------------------|
-| Residuals          | Look better: less heteroscedasticity      |
-| Q-Q plot           | Much closer to normal                     |
-| Time effect        | Now statistically significant (p = 0.036) |
-| Log transformation | Successfully improved model performance   |
+1.  Primary Model (ITT) without compliance variables. This estimates whether the offer of the intervention reduces inflammation.
 
-The idea is to explore the antiinflamatory effect of the intervention. Currently, the model assumes parallel time trends for both groups, i.e., it estimates:
-
--   A main effect of time (CRP changes over time),
-
--   A main effect of group (baseline difference),
-
--   But no interaction (i.e., it assumes both groups change equally over time).
-
-*Why this is not enough*
-
-If the intervention is effective, we expect:
-
--   CRP to decrease faster in the intervention group (Grupo B),
-
--   Which means there should be a significant interaction between visit and allocation_group.
-
-*Model with interaction:*
-
--   Adds visit:allocation_groupGrupo B as an interaction term,
-
--   Tests whether CRP changes differently over time in Grupo B vs Grupo A.
-
-```{r}
-model3_log_inter <- lmer(log1p(labs_crp) ~ visit * allocation_group + (1 | record_id), data = data_filtered)
-
-summary(model3_log_inter)
-
-plot(model3_log_inter)
-
-qqnorm(resid(model3_log_inter)); qqline(resid(model3_log_inter))  # Normality check
+```
+log1p(labs_crp) \~ allocation_group + visit + (1 \| record_id) + covariates
 ```
 
-Key Result: No Significant Interaction • The term visit:allocation_groupGrupo B has p = 0.620, meaning: There is no statistical evidence that the intervention led to a greater reduction in CRP over time compared to control. • The trend for CRP decrease over time is similar in both groups.
+2.  Secondary Model (Per-Protocol Sensitivity Analysis) with compliance variables. This estimates whether the intervention works among those who actually adhered to it, or to account for variability in exposure.
 
-Interpretation
+```
+log1p(labs_crp) \~ allocation_group + compliance_score_adjusted + duration_difference + completed_intervention + visit + (1 \| record_id) + covariates
+```
 
-Despite applying a more appropriate transformation and including the interaction: • Time still shows a mild (non-significant) decreasing trend in CRP. • No baseline difference between groups. • No enhanced effect in the intervention group.
+**Important Note on Mediation vs. Confounding:**
 
-This means that, based on your data, the intervention did not show a measurable anti-inflammatory effect on CRP.
+-   Compliance is not a confounder — it occurs after randomization.
+-   Conditioning on it changes the causal question.
+-   Including post-randomization variables risks collider bias if those variables are influenced by both the intervention and unmeasured factors affecting inflammation.
 
-*PLOT* plot shows: • Predicted log(CRP + 1) at each visit for each group. • Makes it easy to compare time trends across intervention and control groups on the same scale used in the model. • Useful for statistical interpretation and checking for meaningful differences.
+**Final Recommendation for Writing in Thesis:**
+
+The primary analysis was conducted under the intention-to-treat principle, evaluating the effect of the randomized intervention on inflammation regardless of adherence. A secondary model adjusted for adherence-related variables (completed_intervention, compliance_score_adjusted, and duration_difference) to explore whether the intervention had an effect among those who maintained adequate compliance. These models capture complementary aspects of intervention effectiveness: the former reflects real-world applicability, while the latter reflects efficacy conditional on adequate adherence. 
+
+### Ideal condition
+
+The first model (pcr_1) represents a per-protocol-type model, where the effect of the intervention (allocation_group) is estimated conditional on compliance (through compliance_score_adjusted, completed_intervention, and duration_difference). However, there are other methods that can estimate the effect of the intervention in an ideal condition, where adherence is perfect. These methods go beyond simply conditioning in regression and attempt to more rigorously isolate the causal effect.
+
+**Alternative and Complementary Strategies to Per-Protocol Modeling**
+
+*1. Restricting the Dataset (Complete Compliers Only)*
+
+One simple but crude way to perform a per-protocol analysis is to exclude participants who did not complete the intervention or had poor compliance. This creates a model within a population that fully adhered. The limitations are: reduces sample size and breaks randomization, leading to confounding.
+
+```
+data_pp <- data_model_scaled %>%
+  filter(completed_intervention == "Yes", compliance_score_adjusted >= threshold)
+
+pcr_pp <- lmer(log1p(labs_crp) ~ allocation_group + visit + (1 | record_id) + covariates, data = data_pp)
+```
 
 ```{r}
-# Create a new data frame for prediction: all combinations of visit × group
-new_data <- expand.grid(
-  visit = unique(data_filtered$visit),
-  allocation_group = unique(data_filtered$allocation_group)
+data_pp <- data_model_scaled %>%
+  filter(
+    completed_intervention == "Sim" &
+      (compliance_score_adjusted > 0.6 | is.na(compliance_score_adjusted))
+  )
+```
+
+#### Restrict dataset
+```{r}
+pcr_pp <- lmer(log1p(labs_crp) ~ allocation_group + duration_difference + visit + (1 | record_id) + age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal + labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index, data = data_pp)
+
+summary(pcr_pp)
+```
+
+*2. Instrumental Variable (IV) Approach or Complier Average Causal Effect (CACE)*
+
+Use allocation_group as an instrument for treatment receipt/adherence, under the assumption that randomization affects inflammation only via the intervention. This estimates the effect among compliers, without the collider bias introduced by directly conditioning on post-randomization variables. This estimates the effect of actually completing the intervention, using random allocation as an instrument. In R, this can be implemented using `ivreg()` from the {AER} package or {ivtools}. The syntax is: outcome ~ endogenous + exogenous | instrument + exogenous. However, ivreg does not handle random effects. It assumes independent observations. Since our data has repeated measures (record_id), we should either use only one observation per subject (e.g., endpoint value) or use cluster-robust standard errors to account for within-subject correlation.
+
+Collapsing longitudinal data to one observation per subject for instrumental variable (IV) analysis can be done in multiple ways, each answering a slightly different causal question. The gold standard in biostatistics is the ANCOVA approach, which models the outcome at the final time point while adjusting for the baseline value. This has been shown to be statistically more powerful and less biased than simple change scores when baseline and outcome are correlated. Like in the example:
+
+```
+iv_model <- ivreg(
+  log1p(crp_final) ~ completed_intervention + log1p(crp_baseline) + covariates |
+  allocation_group + log1p(crp_baseline) + covariates,
+  data = data_final
 )
-
-# Predict fixed effects (marginal means, no random effects)
-new_data$pred_log_crp <- predict(model3_log_inter, newdata = new_data, re.form = NA)
-
-# Plot predicted log(CRP + 1)
-ggplot(new_data, aes(x = visit, y = pred_log_crp, color = allocation_group, group = allocation_group)) +
-  geom_line(size = 1.2) +
-  geom_point(size = 2) +
-  labs(
-    title = "Predicted CRP over Time (log scale)",
-    y = "Predicted log(CRP + 1)",
-    x = "Visit",
-    color = "Group"
-  ) +
-  theme_minimal(base_size = 14)
 ```
 
-*Visual Insights*
-
--   Both groups show a downward trend in CRP over time, suggesting a general anti-inflammatory progression.
-
--   Grupo B starts at a higher baseline and appears to have a slightly steeper decline in log(CRP), although the interaction term was not statistically significant (p = 0.620).
-
-This means that although Grupo B appears to improve more, this difference in slopes is not statistically supported.
-
-*Grupo B's Higher Baseline*
-
-Baseline imbalance may be a concern, particularly when:
-
-1.  The groups were supposed to be randomized and equivalent at baseline, and
-
-2.  The outcome variable (CRP, in this case) is already higher in one group before the intervention starts.
-
-If Grupo B starts with higher CRP, then:
-
--   Any greater absolute reduction over time may be due to regression to the mean, not the intervention.
-
--   It violates the assumption that both groups are comparable at baseline, which undermines causal inference.
-
-*Adjust for baseline differences:*
-
-What this model does:
-
--   Adjusts for baseline CRP directly, reducing bias from initial imbalance.
-
--   The coefficient for allocation_groupGrupo B now reflects the difference at follow-up, controlling for baseline.
-
--   The time effect (visit) still captures change over time.
-
--   The model tests whether the intervention group had lower CRP over time than expected based on their higher starting levels.
-
-If log1p_baseline_crp is significant, it means initial inflammation strongly predicts future levels — expected in longitudinal biomarkers.
-
-If allocation_groupGrupo B or the visit:group interaction becomes significant after adjustment, that strengthens the case for a true treatment effect.
-
-Let me know if you’d like to: • Visualize adjusted predictions • Back-transform to original CRP scale • Handle this in a subset of visits (e.g. only V1 and V3)
-
 ```{r}
-# Adjusting for Baseline CRP in the Mixed Model (on log scale)
 
-# Step 1: Create a baseline CRP variable (log-transformed)
-# You should ensure that baseline CRP is correctly identified from your data
-
-# Example: assuming visit 1 is baseline
-data_filtered <- data_filtered %>%
-  group_by(record_id) %>%
-  mutate(log1p_baseline_crp = first(log1p(labs_crp[visit == 1]))) %>%
-  ungroup()
-
-# Step 2: Fit the adjusted model
-model3_log_adj <- lmer(
-  log1p(labs_crp) ~ visit + allocation_group + log1p_baseline_crp + (1 | record_id),
-  data = data_filtered
-)
-
-# Step 3: Summarize the results
-summary(model3_log_adj)
-```
-
-This model directly controls for **baseline differences in CRP**, correcting the bias introduced by the fact that **Grupo B started with higher inflammation**.
-
-**Fixed Effects Summary**
-
-| **Term** | **Estimate** | **p-value** | **Interpretation** |
-|---------------|---------------|---------------|----------------------------|
-| **(Intercept)** | 0.529 | \<0.001 | Estimated log(CRP+1) for Grupo A at baseline when baseline CRP is 0 |
-| **visit** | –0.106 | **0.015** | CRP significantly **decreases over time** |
-| **Grupo B (vs Grupo A)** | –0.008 | 0.919 | No difference between groups **after adjusting for baseline** |
-| **log1p_baseline_crp** | +0.772 | \<0.001 | Strong predictor: higher baseline CRP leads to higher follow-up CRP |
-
-
-**Key Takeaways**
-
--   **Time effect (visit) is now significant (p = 0.015)**:
-
-    > CRP decreases over time **even after accounting for baseline**.
-
--   **Grupo B effect disappears (p = 0.919)**:
-
-    > Once you adjust for baseline CRP, there’s **no evidence the intervention had a distinct effect** on CRP reduction compared to control.
-
--   **Baseline CRP is a major driver** of later CRP (β = 0.77, p \< 0.001).
-
-**Interpretation**
-
-The original difference in CRP trends between groups was likely due to **baseline imbalance**, not the intervention itself.
-
-This adjusted model is **more reliable**, and the results suggest:
-
--   CRP decreases over time for all participants,
-
--   But the intervention **did not produce a differential anti-inflammatory effect**.
-
-**Dropout Influence**
-
-```{r}
-#Step 1: Check the distribution of visits per subject
-# Count number of observations per subject
-dropout_check <- data_filtered %>%
-  group_by(record_id) %>%
-  summarize(n_visits = n_distinct(visit)) %>%
-  count(n_visits)
-
-
-#Step 2: Compare dropout by group
-## Last visit per subject
-last_visit_by_group <- data_filtered %>%
-  group_by(record_id, allocation_group) %>%
-  summarize(last_visit = max(visit)) %>%
-  ungroup()
-
-# Table: proportion reaching visit 3
-table(last_visit_by_group$allocation_group, last_visit_by_group$last_visit)
-# This checks whether Grupo B had more missing data at later visits than Grupo A — which could confound the CRP trajectory comparison.
-
-#Step 3: Is dropout related to baseline CRP?
-# If participants who dropped out had higher baseline CRP, your results may be biased due to non-random missingness (MNAR).
-
-# Use the baseline CRP and check whether it's different in dropouts
-baseline_dropout <- data_filtered %>%
-  group_by(record_id) %>%
-  mutate(last_visit = max(visit)) %>%
+# Extract CRP at baseline
+data_baseline <- data_model_scaled %>%
   filter(visit == 1) %>%
-  mutate(dropped_out = last_visit < 3)
+  select(record_id, labs_crp) %>%
+  rename(crp_baseline = labs_crp)
 
-# Compare baseline CRP by dropout status
-t.test(log1p(labs_crp) ~ dropped_out, data = baseline_dropout)
+# Extract CRP at final visit
+data_final <- data_model_scaled %>%
+  group_by(record_id) %>%
+  filter(visit == max(visit)) %>%  # This selects the final visit for each participant
+  ungroup() %>%
+  select(
+    record_id, labs_crp, completed_intervention, compliance_score_adjusted,
+    duration_difference, allocation_group, age, sex, hypertension, hypercholesterolemia,
+    hypertrigliceridemia, drugs_w_loss, drugs_w_gain, mean_bp_mean, handgrip, evs_score,
+    alcohol_dose, kcal, labs_alt, labs_ggt, labs_ldl, labs_triglycerides, labs_hdl, labs_quick_index
+  ) %>%
+  rename(crp_final = labs_crp)
+
+data_iv <- data_final %>%
+  left_join(data_baseline, by = "record_id")
 ```
 
-```         
-•   Participants who dropped out had slightly lower CRP at baseline, but the difference is not statistically significant.
-•   There’s no evidence that dropout was related to baseline inflammation.
-•   Dropout appears to be random with respect to baseline CRP, which supports the Missing at Random (MAR) assumption.
-```
+**Primary IV model that estimates the total effect**
 
-Because: • The mixed-effects model (LMM) is valid under MAR, • There’s no significant baseline CRP difference between those who stayed and those who dropped out,
+The primary IV model that estimates the total effect is designed to evaluate the causal impact of the intervention on inflammation (CRP) as a whole, capturing both the direct effects and any indirect effects mediated by changes in other physiological or metabolic parameters. This model uses random assignment (allocation_group) as an instrument for actual participation or completion of the intervention (completed_intervention), allowing for the estimation of the Complier Average Causal Effect (CACE).
 
-Your model results are likely unbiased with respect to dropout.
+The intent is to answer whether the intervention, when adhered to, leads to a reduction in inflammation, regardless of the biological pathways involved. It reflects the overall therapeutic effect, incorporating all mechanisms through which the intervention may influence CRP. This approach does not adjust for variables that could be affected by the intervention itself (such as blood pressure, lipid levels, or liver enzymes), ensuring that the total causal effect is not inadvertently blocked or biased by post-treatment variables.
+
+#### IV
 
 ```{r}
-# Back-transforming predicted log(CRP + 1) values to CRP (mg/L)
+library(AER)
 
-# Step 1: Create a prediction grid for all combinations of visit × group
-# Use the median baseline CRP for prediction (in log1p scale)
-baseline_crp_median <- median(log1p(baseline_dropout$labs_crp), na.rm = TRUE)
-
-# Create grid of new data
-new_data <- expand.grid(
-  visit = unique(data_filtered$visit),
-  allocation_group = unique(data_filtered$allocation_group)
-) %>%
-  mutate(log1p_baseline_crp = baseline_crp_median)
-
-# Step 2: Predict from the adjusted model (fixed effects only)
-new_data$pred_log <- predict(model3_log_adj, newdata = new_data, re.form = NA)
-
-# Step 3: Back-transform
-new_data$pred_crp <- exp(new_data$pred_log) - 1
-
-# Step 4: Plot back-transformed predictions
-ggplot(new_data, aes(x = visit, y = pred_crp, color = allocation_group, group = allocation_group)) +
-  geom_line(linewidth = 1.2) +
-  geom_point(size = 2.5) +
-  labs(
-    title = "Predicted CRP Levels Over Time (Back-Transformed)",
-    x = "Visit",
-    y = "Predicted CRP (mg/L)",
-    color = "Group"
-  ) +
-  theme_minimal(base_size = 14)
-```
-
-What this plot shows
-
-```         
-•   Predicted CRP levels in mg/L, adjusted for the median baseline CRP.
-•   Makes the model output clinically interpretable.
-```
-
-You can clearly see: • The overall downward trend in CRP over time. • That Grupo B does not differ from Grupo A in rate of CRP decline after adjusting for baseline.
-
-```{r}
-# add confidence intervals to predicted CRP plot (back-transformed)
-
-# Load required packages
-library(ggplot2)
-library(dplyr)
-library(merTools)  # for predictInterval
-
-# Step 1: Create new data with baseline CRP held at median
-baseline_crp_median <- median(log1p(baseline_dropout$labs_crp), na.rm = TRUE)
-
-new_data <- expand.grid(
-  visit = unique(data_filtered$visit),
-  allocation_group = unique(data_filtered$allocation_group)
-) %>%
-  mutate(
-    log1p_baseline_crp = baseline_crp_median,
-    record_id = "dummy"  # Add a dummy ID to match model's grouping variable
-  )
-
-# Step 2: Get prediction intervals on log scale (includes uncertainty)
-set.seed(123)  # for reproducibility
-pred_int <- predictInterval(
-  model3_log_adj,
-  newdata = new_data,
-  level = 0.95,
-  n.sims = 1000,
-  stat = "mean",
-  type = "linear.prediction",
-  include.resid.var = FALSE
+iv_model_total <- ivreg(
+  log1p(crp_final) ~ compliance_score_adjusted + log1p(crp_baseline) +
+    age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia |
+  allocation_group + log1p(crp_baseline) +
+    age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia,
+  data = data_iv
 )
 
-# Combine with original new_data
-new_data <- bind_cols(new_data, pred_int)
+summary(iv_model_total)
+```
 
-# Step 3: Back-transform
-new_data <- new_data %>%
-  mutate(
-    fit = exp(fit) - 1,
-    lwr = exp(lwr) - 1,
-    upr = exp(upr) - 1
+
+*3. G-Computation / G-Formula*
+
+Simulate the outcome under a hypothetical scenario where everyone perfectly adheres to the intervention. This provides an estimate of the expected outcome if all participants had fully complied. R packages: {gfoRmula}, {ltmle}.
+
+
+*4. Marginal Structural Models (MSMs) with Inverse Probability Weighting (IPW)*
+
+Weight participants based on their probability of adhering, creating a pseudo-population where adherence is independent of confounders. This corrects for time-varying confounding affected by prior treatment. This gives an estimate of the intervention effect had everyone adhered as expected. Basic structure using {ipw}:
+
+#### IPW
+
+Complete case analysis (default approach in IPW):
+
+```{r}
+library(ipw)
+
+data_model_ipw <- data_model_scaled %>%
+  drop_na(
+    completed_intervention,
+    age, sex, hypertension, hypercholesterolemia, hypertrigliceridemia,
+    drugs_w_loss, drugs_w_gain, mean_bp_mean, handgrip, evs_score,
+    alcohol_dose, kcal, labs_alt, labs_ggt, labs_ldl, labs_triglycerides,
+    labs_hdl, labs_quick_index
   )
 
-# Step 4: Plot with ribbons (CI)
-ggplot(new_data, aes(x = visit, y = fit, color = allocation_group, group = allocation_group)) +
-  geom_line(linewidth = 1.2) +
-  geom_point(size = 2.5) +
-  geom_ribbon(aes(ymin = lwr, ymax = upr, fill = allocation_group), alpha = 0.2, color = NA) +
-  labs(
-    title = "Predicted CRP Levels with 95% CI (Back-Transformed)",
-    y = "Predicted CRP (mg/L)",
-    x = "Visit",
-    color = "Group",
-    fill = "Group"
-  ) +
-  theme_minimal(base_size = 14)
+model_weights <- ipwpoint(
+  exposure = completed_intervention,
+  family = "binomial",
+  link = "logit",
+  denominator = ~ 
+    age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia +
+    drugs_w_loss + drugs_w_gain + mean_bp_mean + handgrip + evs_score +
+    alcohol_dose + kcal + labs_alt + labs_ggt + labs_ldl + labs_triglycerides +
+    labs_hdl + labs_quick_index,
+  data = data_model_ipw
+)
+
 ```
+
+Use simple imputation (if appropriate for your data). Be cautious: imputation is a valid strategy if missingness is assumed to be Missing At Random (MAR) and the variables used for imputation are adequate.
 
 ```{r}
-# Optional: Line plot of individual trajectories
-ggplot(data_filtered, aes(x = visit, y = labs_crp, group = record_id, color = allocation_group)) +
-  geom_line(alpha = 0.3) +
-  geom_point(alpha = 0.5) +
-  labs(
-    title = "Individual CRP Trajectories (Raw Data)",
-    y = "Observed CRP (mg/L)",
-    x = "Visit",
-    color = "Group"
-  ) +
-  theme_minimal(base_size = 14)
+library(mice)
+data_model_ipw <- mice::complete(mice(data_model_scaled, m = 1))
 ```
 
-### 2
+
+
+*5. Bayesian Models with Compliance Modeling*
+
+Build a hierarchical Bayesian model that explicitly includes a latent compliance variable. Allows direct modeling of counterfactual scenarios under perfect adherence. Add prior distributions reflecting assumptions about compliance mechanisms. Packages: {brms}, {rstanarm}.
+
+Example idea:
+
+```{r, eval=FALSE}
+brm(log1p(labs_crp) ~ allocation_group + compliance_score_adjusted + visit + (1 | record_id) + covariates,
+    data = data_model_scaled,
+    family = gaussian())
+```
+
+
+*Ways to Make Your Current Model More Sensitive to the Intervention*
+
+- Focus the population: subset to high compliers or exclude partial compliers.
+- Model interactions: for example, allocation_group * compliance_score_adjusted to see whether the effect of the intervention depends on levels of compliance.
+- Use longitudinal modeling more fully: include random slopes for visit to capture differential trajectories over time.
+- Explore dose-response: instead of binary completed_intervention, use a continuous adherence measure (compliance_score_adjusted) to model the dose-response effect of adherence.
+- Consider transforming the outcome if distributional assumptions are strained (though log1p() is already a robust choice for skewed variables like CRP).
+
+
+# PAM
 
 ```{r}
-data_filtered_lmm <- data_filtered %>%
-  group_by(record_id) %>%
-  filter(n() > 1) %>%
-  ungroup()
-
-model4_log <- lmer(log1p(labs_crp) ~ visit + bmi + age + sex + dass_score_stress + 
-     labs_hba1c + labs_ggt + labs_triglycerides + allocation_group + 
-     (1 | record_id), data = data_filtered_lmm)
-
-summary(model4_log)
-
-plot(model3_log)
-
-qqnorm(resid(model3_log)); qqline(resid(model3_log))  # Normality check```
+pam_1 <- lmer(mean_bp_mean ~ (1 | record_id) + visit + allocation_group + completed_intervention + duration_difference + age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal + labs_crp + labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index, data = data_model_scaled)
 ```
+

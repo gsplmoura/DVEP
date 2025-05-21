@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="S.P.L.M., Gustavo">
-<meta name="dcterms.date" content="2025-05-20">
+<meta name="dcterms.date" content="2025-05-21">
 
 <title>Main outcomes</title>
 <style>
@@ -119,10 +119,15 @@ window.Quarto = {
   </ul></li>
   <li><a href="#phase-angle" id="toc-phase-angle" class="nav-link" data-scroll-target="#phase-angle">Phase angle</a>
   <ul class="collapse">
-  <li><a href="#all-variables" id="toc-all-variables" class="nav-link" data-scroll-target="#all-variables">All variables</a></li>
-  <li><a href="#reduce-the-model-1" id="toc-reduce-the-model-1" class="nav-link" data-scroll-target="#reduce-the-model-1">Reduce the Model</a></li>
+  <li><a href="#modelo-1" id="toc-modelo-1" class="nav-link" data-scroll-target="#modelo-1">Modelo 1</a></li>
+  <li><a href="#modelo-2" id="toc-modelo-2" class="nav-link" data-scroll-target="#modelo-2">Modelo 2</a></li>
+  <li><a href="#modelo-3" id="toc-modelo-3" class="nav-link" data-scroll-target="#modelo-3">Modelo 3</a></li>
   </ul></li>
-  <li><a href="#pcr" id="toc-pcr" class="nav-link" data-scroll-target="#pcr">PCR</a></li>
+  <li><a href="#pcr" id="toc-pcr" class="nav-link" data-scroll-target="#pcr">PCR</a>
+  <ul class="collapse">
+  <li><a href="#per-protocol" id="toc-per-protocol" class="nav-link" data-scroll-target="#per-protocol">Per protocol</a></li>
+  </ul></li>
+  <li><a href="#pam" id="toc-pam" class="nav-link" data-scroll-target="#pam">PAM</a></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Results_main_outcomes.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
 </div>
@@ -147,7 +152,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 20, 2025</p>
+      <p class="date">May 21, 2025</p>
     </div>
   </div>
   
@@ -217,24 +222,25 @@ The following object is masked from 'package:stats':
     step</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(skimr)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Read Files ----</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Codebooks</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>codebook_dvep <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Codebooks/codebook_dvep.xlsx"</span>,</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">col_names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">col_types =</span> <span class="cn">NULL</span>,</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">na =</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"NA"</span>, <span class="st">"NI"</span>, <span class="st">"UNK"</span>, <span class="st">"NASK"</span>, <span class="st">"ASKU"</span>, <span class="st">"INV"</span>),</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">trim_ws =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">skip =</span> <span class="dv">0</span>, <span class="co"># Number of lines to skip before reading data</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_max =</span> <span class="cn">Inf</span>, <span class="co"># Maximum number of lines to read.</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">guess_max =</span> <span class="dv">1000</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(index)</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>codebook_structure  <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Codebooks/codebook_structure.csv"</span>,</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">col_names =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Read Files ----</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Codebooks</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>codebook_dvep <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Codebooks/codebook_dvep.xlsx"</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">col_names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">col_types =</span> <span class="cn">NULL</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">na =</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"NA"</span>, <span class="st">"NI"</span>, <span class="st">"UNK"</span>, <span class="st">"NASK"</span>, <span class="st">"ASKU"</span>, <span class="st">"INV"</span>),</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">trim_ws =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">skip =</span> <span class="dv">0</span>, <span class="co"># Number of lines to skip before reading data</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_max =</span> <span class="cn">Inf</span>, <span class="co"># Maximum number of lines to read.</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">guess_max =</span> <span class="dv">1000</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(index)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>codebook_structure  <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Codebooks/codebook_structure.csv"</span>,</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">col_names =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 34 Columns: 9
 ── Column specification ────────────────────────────────────────────────────────
@@ -400,7 +406,7 @@ HOMA-IR = \frac{insulin * glucose}{405}
 </section>
 <section id="phase-angle" class="level1">
 <h1>Phase angle</h1>
-<p>Filtrando D1 and D3</p>
+<p>Filtrando os dados da primeira e terceira visitas.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>pha_redcap <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span> </span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(</span>
@@ -413,16 +419,12 @@ HOMA-IR = \frac{insulin * glucose}{405}
 <span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="all-variables" class="level2">
-<h2 class="anchored" data-anchor-id="all-variables">All variables</h2>
+<section id="modelo-1" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-1">Modelo 1</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmerTest) <span class="co"># Adds p-values to summary()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pha_1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(phase_angle <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> completed_intervention <span class="sc">+</span> duration_difference <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> pha_redcap)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pha_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pha_1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(phase_angle <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> completed_intervention <span class="sc">+</span> duration_difference <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> pha_redcap)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pha_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
@@ -481,41 +483,30 @@ Correlation matrix not shown by default, as p = 24 &gt; 12.
 Use print(x, correlation=TRUE)  or
     vcov(x)        if you need it</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pha_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
 </div>
-</div>
-</div>
-<p>A modelagem estatística foi realizada por meio de modelos lineares mistos com intercepto aleatório por participante (record_id). Todas as variáveis contínuas foram previamente padronizadas (média = 0, desvio-padrão = 1), exceto o índice QUICKI, mantido em sua unidade original para fins de interpretabilidade clínica. A variável duration_difference, que representa o desvio absoluto em dias da duração planejada da intervenção (90 dias), foi ajustada para zero na visita basal e posteriormente padronizada. O modelo pha_2 incluiu 24 preditores fixos e foi ajustado utilizando o método de máxima verossimilhança restrita (REML), com inclusão da variância intraindividual no componente aleatório.</p>
-<p>Neste modelo, observou-se que a pressão arterial média (mean_bp_mean) foi positivamente associada ao ângulo de fase (β = 0.19, p = 0.045), sugerindo que níveis mais elevados de pressão podem estar relacionados a um melhor estado funcional da membrana celular. A dose de álcool (alcohol_dose) foi o preditor com maior significância estatística (β = 0.25, p &lt; 0.001), com associação positiva ao ângulo de fase; esse achado deve ser interpretado com cautela, pois pode refletir fatores comportamentais ou nutricionais não capturados diretamente no modelo. Além disso, a proteína C reativa (labs_crp) apresentou associação positiva marginalmente significativa (β = 0.13, p = 0.031), o que pode indicar uma complexa interação entre inflamação subclínica e integridade da membrana celular.</p>
-<p>Outros preditores como visit, allocation_group, completed_intervention, duration_difference e variáveis laboratoriais como labs_ldl, labs_triglycerides e labs_quick_index não apresentaram associações estatisticamente significativas. A variância do intercepto aleatório por record_id permaneceu elevada (0.72), reforçando a relevância da estrutura longitudinal dos dados. O critério de REML obtido foi 267.6, indicando um ajuste superior ao modelo anterior (REML = 275), e sugerindo avanço na parcimônia e na qualidade do modelo após a redução de preditores.</p>
-<p><strong>Próximos passos sugeridos</strong>: - Considerar remoção de variáveis com p &gt; 0.5 e sem base teórica. - Avaliar o impacto de variáveis correlacionadas (e.g., <code>bmi</code>, <code>abdomen</code>). - Testar modelos reduzidos orientados por AIC ou p-valor.</p>
-<p><em>Interpretation clarity</em> - With all predictors scaled, effect sizes are in SD units. labs_quick_index still in raw units: its coefficient = change in phase angle per unit change in QUICKI, which is very interpretable (and appropriate).</p>
-<p><em>Random effects</em> - You can tell that including a random intercept was appropriate by comparing the random effect variance to the residual variance. The random intercept variance for record_id is 0.6846, which represents the variability between participants. The residual variance is 0.1188, which reflects variability within participants (i.e., unexplained by the model and random noise). Now, the random intercept variance is much larger than the residual variance. This indicates that a substantial portion of the total variance in your outcome (phase_angle) is due to differences between individuals, not just random fluctuation within the same person over time. Hence, accounting for individual-level differences via a random intercept helps the model better estimate the effects of your fixed variables by controlling for this inter-individual baseline shift. Summary: Since Var(Intercept for record_id) &gt; Var(Residual), this suggests strong subject-level variation, meaning including (1 | record_id) was a statistically sound choice.</p>
-<section id="refinements" class="level3">
-<h3 class="anchored" data-anchor-id="refinements">Refinements</h3>
-<ol type="1">
-<li><p>Check for multicollinearity</p></li>
-<li><p>High number of predictors (p = 30+) vs.&nbsp;N = 111 to your sample size. This increases risk of: Overfitting, Inflated standard errors, Instability in estimates. Suggestion: Run a stepwise reduction or penalized regression (e.g., LASSO via glmnet) to select the most stable subset.</p></li>
-<li><p>Check model fit and explained variance.</p>
+<p>A modelagem estatística foi conduzida por meio de um modelo linear misto, com intercepto aleatório por participante (record_id), ajustado pelo método de máxima verossimilhança restrita (REML). O desfecho avaliado foi o ângulo de fase, e todas as variáveis contínuas foram previamente padronizadas (média = 0; desvio padrão = 1), com exceção do índice QUICKI, mantido em sua unidade original para favorecer a interpretabilidade clínica. A variável duration_difference representa o desvio absoluto (em dias) da duração planejada da intervenção (90 dias), sendo ajustada para zero na linha de base e posteriormente padronizada.</p>
+<p>O modelo incluiu 24 preditores fixos e apresentou bom ajuste, com critério REML igual a 267,6 [um valor inferior ao do modelo anterior (REML = 275)], indicando melhora na parcimônia e qualidade do ajuste após a redução de variáveis.</p>
+<p><strong>Efeitos fixos</strong></p>
+<p>Três variáveis demonstraram associação estatisticamente significativa com o desfecho:</p>
 <ul>
-<li>Use performance::check_model() to assess residuals, normality, and homoscedasticity.</li>
-<li>Consider using marginal and conditional R² to evaluate model fit.</li>
-</ul></li>
-<li><p>Plot residuals and check assumptions: Homoscedasticity, Normality of residuals, Influential observations.</p></li>
-<li><p>Refine the role of visit. Currently, visit is not significant, but the study is longitudinal. So ask: Is visit best treated as a linear trend (numeric)? Would a factor with interaction be more appropriate? Would a random slope for visit help capture subject-specific trajectories?</p></li>
+<li>Pressão arterial média (mean_bp_mean): apresentou associação positiva com o ângulo de fase (β = 0,19; p = 0,045), sugerindo que níveis mais elevados de pressão arterial podem estar relacionados a melhor integridade funcional da membrana celular.</li>
+<li>Dose de álcool (alcohol_dose): foi o preditor com maior significância estatística (β = 0,25; p &lt; 0,001), com associação positiva ao ângulo de fase. Este achado deve ser interpretado com cautela, podendo refletir fatores comportamentais, sociais ou nutricionais não diretamente capturados no modelo.</li>
+<li>Proteína C reativa (labs_crp): demonstrou associação positiva marginalmente significativa (β = 0,13; p = 0,032), o que pode sugerir uma relação complexa entre inflamação subclínica e alterações na composição ou integridade celular.</li>
+</ul>
+<p>As demais variáveis — incluindo visit, allocation_group, completed_intervention, duration_difference, além de variáveis laboratoriais como labs_ldl, labs_triglycerides e labs_quick_index — não apresentaram associações estatisticamente significativas com o desfecho.</p>
+<p><strong>Efeitos aleatórios</strong></p>
+<p>A variância associada ao intercepto aleatório por participante foi de 0,72, enquanto a variância residual foi de 0,11. Esse achado demonstra que há considerável variabilidade entre os indivíduos, reforçando a pertinência da inclusão do componente aleatório no modelo. Em outras palavras, parte substancial da variabilidade total no ângulo de fase é explicada por diferenças interindividuais, o que justifica o uso de modelos mistos para melhor estimar os efeitos fixos, controlando tais variações basais.</p>
+<p><strong>Considerações metodológicas</strong></p>
+<ol type="1">
+<li>Multicolinearidade: Dada a inclusão de 24 preditores em um modelo com 111 observações, recomenda-se avaliar a presença de colinearidade, especialmente entre variáveis clínicas e laboratoriais potencialmente redundantes. Sugere-se a aplicação da função performance::check_collinearity() para investigar VIFs elevados, que podem inflar erros padrão e comprometer a interpretação dos coeficientes.</li>
+<li>Redução de preditores: A elevada razão entre o número de preditores e o tamanho da amostra (p &gt; n/4) pode levar a sobreajuste (overfitting) e instabilidade nos coeficientes. Uma abordagem sugerida é a redução guiada por critérios de informação (AIC) ou penalização via regressão LASSO (glmnet), com o objetivo de selecionar subconjuntos mais estáveis de variáveis.</li>
+<li>Avaliação da qualidade do ajuste: Recomenda-se utilizar a função performance::check_model() para verificar a normalidade dos resíduos, homocedasticidade e presença de observações influentes. Além disso, a obtenção dos valores de R² marginal e condicional pode auxiliar na compreensão da proporção da variância explicada pelo modelo fixo e pelo modelo completo (incluindo os efeitos aleatórios).</li>
+<li>Tratamento da variável visit: Embora visit não tenha apresentado significância estatística no modelo atual, trata-se de uma variável importante, dado o delineamento longitudinal do estudo. Deve-se avaliar se o uso de visit como variável contínua linear é adequado ou se uma estrutura categórica com interação (e.g., visit*allocation_group) ou a inclusão de um termo de inclinação aleatória por visita ((visit | record_id)) poderia capturar melhor as trajetórias individuais ao longo do tempo.</li>
 </ol>
-</section>
-<section id="check-for-multicollinearity" class="level3">
-<h3 class="anchored" data-anchor-id="check-for-multicollinearity">1. Check for multicollinearity</h3>
-<p>Because you have many predictors (30+), and some may be redundant or highly correlated, collinearity is your first enemy. You’ve handled insulin/glucose/HOMA/QUICKI well. But still check VIFs for collinearity among other variables (like BMI and abdomen, or macronutrients - total energy intake). High collinearity can: (1) Inflate standard errors (making real effects look non-significant), (2) Obscure model interpretation, (3) Affect convergence and coefficient stability. How? Use performance::check_collinearity():</p>
+<p><strong>Avaliação da Multicolinearidade</strong></p>
+<p>Dada a inclusão de um número elevado de preditores no modelo (n = 24), avaliou-se a presença de multicolinearidade utilizando o Fator de Inflação da Variância (VIF) por meio da função performance::check_collinearity().</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">check_collinearity</span>(pha_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">check_collinearity</span>(pha_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Check for Multicollinearity
 
@@ -570,94 +561,106 @@ Low Correlation
      [0.60, 0.87]
      [0.64, 0.92]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># r2(pha_1)  # Marginal and conditional R²</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># r2(pha_1)  # Marginal and conditional R²</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><strong>Interpretation of collinearity results:</strong> No concerning multicollinearity (all VIFs &lt; 3).</p>
-<p>Variance Inflation Factor (VIF) measures how much the variance (i.e., the standard error squared) of a regression coefficient is inflated due to collinearity with other predictors. In other words, it tells you how strongly one predictor is linearly related to the others.</p>
+<p>Resultados:</p>
+<p>Todos os preditores apresentaram VIFs inferiores a 3, indicando ausência de multicolinearidade preocupante. Os valores variaram entre 1,13 e 2,64, o que representa correlações lineares fracas a moderadas entre os preditores, sem risco aparente de distorções nas estimativas dos coeficientes.</p>
+<p>Abaixo, apresenta-se a interpretação convencional dos valores de VIF:</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 74%">
+</colgroup>
 <thead>
 <tr class="header">
-<th><strong>VIF Value</strong></th>
-<th><strong>Interpretation</strong></th>
+<th><strong>Valor de VIF</strong></th>
+<th><strong>Interpretação</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>1</td>
-<td>No correlation with other variables</td>
+<td>Ausência de correlação com outras variáveis</td>
 </tr>
 <tr class="even">
 <td>1–2</td>
-<td>Low correlation, no concern</td>
+<td>Correlação baixa — sem motivo de preocupação</td>
 </tr>
 <tr class="odd">
 <td>2–5</td>
-<td>Moderate correlation — <strong>keep an eye</strong></td>
+<td>Correlação moderada — acompanhar com atenção</td>
 </tr>
 <tr class="even">
 <td>5–10</td>
-<td>High correlation — <strong>potential problem</strong></td>
+<td>Correlação elevada — risco de instabilidade</td>
 </tr>
 <tr class="odd">
-<td>&gt;10</td>
-<td>Severe multicollinearity — <strong>likely an issue</strong></td>
+<td>&gt; 10</td>
+<td>Multicolinearidade severa — intervenção necessária</td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="reduce-the-model" class="level3">
-<h3 class="anchored" data-anchor-id="reduce-the-model">2. Reduce the model</h3>
-<p>Your model currently includes 30 fixed effects, which may limit statistical power and interpretability due to overfitting.</p>
-<p>A abordagem mais sensata para reduzir o modelo depende diretamente do seu objetivo principal.</p>
-<p>Se o seu foco for <strong>predição ou performance do modelo</strong>, então a estratégia <strong>data-driven</strong> é mais apropriada, como:</p>
-<ul>
-<li><strong>(1) Seleção stepwise backward</strong> com base em critérios de informação como AIC ou BIC (AIC favorece modelos com melhor ajuste, BIC penaliza mais a complexidade).</li>
-<li><strong>LASSO (via <code>glmnet</code>)</strong>, que impõe uma penalização e tende a selecionar um subconjunto estável de variáveis, pode ser especialmente útil quando o número de preditores é alto e há colinearidade moderada.</li>
-</ul>
-<p>Entretanto, se o objetivo for <strong>interpretação e inferência causal ou explicativa</strong> (como é comum em ensaios clínicos e estudos de intervenção), a melhor abordagem é:</p>
-<ul>
-<li><strong>(2) Simplificação orientada pela teoria e plausibilidade clínica</strong>, removendo variáveis que claramente não contribuem de forma significativa, que se sobrepõem a outras medidas (ex: manter apenas <code>quick_index</code> e excluir glicemia/insulina), ou que apresentem comportamento instável nos modelos (como efeitos colineares ou variações negativas no sinal da estimativa ao longo das versões do modelo).</li>
-</ul>
-<p>Quando eu menciono <strong>“variações negativas no sinal da estimativa ao longo das versões do modelo”</strong>, estou me referindo ao comportamento instável dos coeficientes de algumas variáveis à medida que você modifica o modelo — por exemplo, adicionando ou removendo preditores.</p>
-<p>Imagine que, em um modelo mais simples, a variável <code>bmi</code> tem um coeficiente <strong>positivo</strong>, sugerindo que quanto maior o IMC, maior o ângulo de fase. Mas ao incluir outras variáveis correlacionadas (como <code>abdomen</code> ou <code>resistance</code>), o coeficiente de <code>bmi</code> se torna <strong>negativo</strong> ou <strong>não significativo</strong>. Essa mudança de sinal pode indicar:</p>
-<ul>
-<li><strong>Colinearidade</strong>: <code>bmi</code> e <code>abdomen</code>, por exemplo, podem estar explicando o mesmo componente corporal.</li>
-<li><strong>Falta de robustez</strong>: a interpretação do efeito da variável muda conforme outras são incluídas, dificultando conclusões consistentes.</li>
-<li><strong>Overfitting ou ajuste instável</strong>, especialmente em amostras pequenas.</li>
-</ul>
-<p>Detectar esse comportamento é um sinal de que a variável pode estar redundante ou que há necessidade de ajustes — por exemplo, usar apenas uma das variáveis correlacionadas ou aplicar técnicas de regularização.</p>
-<p>Portanto, <strong>“variação no sinal da estimativa”</strong> não é sobre valor negativo em si, mas sobre <strong>mudança de direção do efeito estimado</strong>, o que enfraquece a confiança na interpretação daquele preditor.</p>
-<p>Uma boa estratégia híbrida é:</p>
-<ol type="1">
-<li><strong>Fixar um conjunto mínimo de variáveis-chave teóricas</strong> (ex: sexo, idade, grupo, tempo).</li>
-<li><strong>Aplicar redução stepwise nos demais termos</strong>, guiando-se por BIC (se você deseja maior parcimônia) ou por LASSO.</li>
-<li><strong>Comparar modelos com ANOVA</strong> e gráficos de resíduos para garantir que a simplificação não deteriora o ajuste.</li>
+<ol start="2" type="1">
+<li>Redução do Modelo</li>
 </ol>
-<p>Essa abordagem permite alcançar um equilíbrio entre interpretabilidade e estabilidade do modelo.</p>
+<p>O modelo atual inclui 24 preditores fixos, o que, diante de uma amostra com 111 observações, pode comprometer o poder estatístico e a interpretabilidade dos resultados devido ao risco de sobreajuste (overfitting).</p>
+<p>A escolha da melhor abordagem para simplificar o modelo depende do objetivo central da análise:</p>
+<ol type="a">
+<li>Modelos orientados por desempenho (predição)</li>
+</ol>
+<p>Caso o foco seja a performance preditiva, o uso de estratégias orientadas por dados é mais apropriado:</p>
+<ul>
+<li><p>Seleção stepwise (backward) com base em critérios de informação como AIC ou BIC. O AIC favorece modelos com melhor ajuste (ainda que mais complexos), enquanto o BIC impõe maior penalidade à complexidade, favorecendo modelos mais parcimoniosos.</p></li>
+<li><p>Regressão penalizada via LASSO (glmnet), que tende a selecionar subconjuntos estáveis de variáveis ao impor penalizações sobre os coeficientes, sendo especialmente útil em situações com colinearidade moderada e alta dimensionalidade de preditores.</p></li>
+</ul>
+<ol start="2" type="a">
+<li>Modelos orientados por inferência e explicação</li>
+</ol>
+<p>Quando o objetivo principal é a interpretação causal ou explicativa, como em estudos clínicos e intervenções, a estratégia mais robusta é a redução teórica guiada por plausibilidade clínica. Essa abordagem inclui:</p>
+<ul>
+<li><p>Remoção de variáveis com baixa significância estatística e sem fundamento teórico forte;</p></li>
+<li><p>Exclusão de variáveis redundantes ou fortemente correlacionadas (ex.: manter labs_quick_index e excluir glicemia/insulina);</p></li>
+<li><p>Atenção a comportamentos instáveis dos coeficientes — por exemplo, quando a direção (sinal) de um coeficiente muda com a inclusão de outras variáveis, indicando colinearidade ou sobreposição de efeitos.</p></li>
+</ul>
+<ol start="3" type="a">
+<li>Estratégia híbrida recomendada</li>
+</ol>
+<p>Uma estratégia combinada, adequada ao contexto de ensaio clínico com múltiplas covariáveis, pode envolver: 1. Fixar um conjunto mínimo de variáveis-chave (ex.: idade, sexo, grupo de intervenção, tempo); 2. Aplicar redução stepwise ou LASSO nas demais covariáveis; 3. Comparar modelos reduzidos com o modelo completo utilizando ANOVA (anova()), gráficos de resíduos e critérios de ajuste (REML, AIC, BIC), assegurando que a simplificação não comprometa o desempenho do modelo.</p>
+<ol start="3" type="1">
+<li>Avaliação do Ajuste do Modelo</li>
+</ol>
+<p>A verificação dos pressupostos estatísticos do modelo pha_1 foi realizada com a função performance::check_model(). Os principais achados foram:</p>
+<ul>
+<li><p>Ajuste geral: Os gráficos de verificação preditiva (posterior predictive checks) mostraram boa sobreposição entre os valores observados e os preditos, indicando adequação geral do modelo.</p></li>
+<li><p>Resíduos vs.&nbsp;valores ajustados: Foi observado leve desvio da horizontalidade nas faixas mais altas do desfecho, sugerindo possível violação da linearidade para valores elevados do ângulo de fase.</p></li>
+<li><p>Homoscedasticidade: Detectou-se aumento da variância dos resíduos com o aumento dos valores preditos, caracterizando uma leve violação da homocedasticidade.</p></li>
+<li><p>Normalidade dos resíduos: Os resíduos apresentaram distribuição aproximadamente normal, com pequenas assimetrias nas caudas — aceitáveis em modelos mistos com amostras de tamanho moderado.</p></li>
+<li><p>Influência de observações: Algumas observações apresentaram leve influência (IDs 10, 69, 70, 75, 109), mas nenhuma ultrapassou os limiares críticos para alavancagem ou resíduos padronizados extremos.</p></li>
+<li><p>Colinearidade: Todos os VIFs estiveram abaixo de 3, indicando ausência de multicolinearidade significativa.</p></li>
+<li><p>Efeitos aleatórios: A distribuição dos interceptos aleatórios (por record_id) se aproximou da normalidade, reforçando a adequação da estrutura hierárquica adotada.</p></li>
+</ul>
+<ol start="5" type="1">
+<li>Refinamento da Variável visit</li>
+</ol>
+<p>Dado o delineamento longitudinal do estudo, a variável visit merece atenção especial. No modelo atual, visit foi incluída como efeito fixo com estrutura linear. No entanto, isso pode ser subótimo caso o efeito do tempo varie entre participantes.</p>
+<p>Tentativas de incorporar uma inclinação aleatória por visit resultaram em:</p>
+<pre><code>lmer(phase_angle ~ visit + (visit | record_id), data = ...)
+# Erro: número de observações (=111) ≤ número de efeitos aleatórios (=146)</code></pre>
+<p>Isso indica que há insuficiência de dados para estimar uma estrutura tão complexa. A alternativa:</p>
+<pre><code>lmer(phase_angle ~ visit + (1 + visit || record_id), data = ...)
+# Resultado: ajuste singular (boundary (singular) fit)</code></pre>
+<p>Esse ajuste singular significa que o modelo não consegue estimar a variância da inclinação aleatória para visit de forma confiável, sugerindo ausência de variação individual suficiente ou tamanho amostral limitado para suportar tal estrutura.</p>
+<p>Conclusão:</p>
+<p>No momento, manter visit como efeito fixo linear é estatisticamente mais robusto. Caso haja interesse em investigar mudanças específicas ao longo das visitas, uma abordagem alternativa seria tratar visit como variável categórica e incluir interações com allocation_group, por exemplo:</p>
+<pre><code>phase_angle ~ allocation_group * factor(visit) + ...</code></pre>
+<p>Essa estrutura permite verificar se a evolução do ângulo de fase ao longo do tempo difere entre os grupos, sem sobrecarregar o modelo com componentes aleatórios instáveis.</p>
 </section>
-<section id="check-model-fit" class="level3">
-<h3 class="anchored" data-anchor-id="check-model-fit">3. Check model fit</h3>
-<p>A avaliação dos pressupostos do modelo pha_1 foi realizada por meio da função check_model() do pacote performance, a qual indicou que, em linhas gerais, o modelo apresenta adequação estatística razoável. O gráfico de Posterior Predictive Check mostra boa sobreposição entre a densidade dos valores observados e os valores preditos pelo modelo, indicando adequada capacidade preditiva.</p>
-<p>A verificação da linearidade dos resíduos frente aos valores ajustados revelou um desvio leve da horizontalidade na extremidade superior, sugerindo possível não linearidade em valores mais altos do desfecho. A homogeneidade da variância (homoscedasticidade) também apresentou leve violação, com aumento da variância dos resíduos em valores preditos mais altos — característica que pode afetar a precisão das estimativas nessas faixas.</p>
-<p>A análise de observações influentes (gráfico de alavancagem vs.&nbsp;resíduos padronizados) identificou algumas observações com leve influência (por exemplo, IDs 10, 69, 70, 75, 109), mas nenhuma ultrapassando os limiares clássicos de alavancagem ou resíduos padronizados extremos.</p>
-<p>A colinearidade foi considerada baixa, com todos os fatores de inflação da variância (VIF) abaixo de 5, o que indica ausência de multicolinearidade severa entre os preditores. O gráfico de normalidade dos resíduos mostra aderência razoável à distribuição normal, com pequenas desvios nas caudas, o que é aceitável para modelos mistos com tamanho amostral moderado. Por fim, a distribuição dos efeitos aleatórios (record_id) se aproximou da normalidade, com leve assimetria nas extremidades, reforçando que o intercepto aleatório foi uma escolha apropriada para capturar a variabilidade entre indivíduos.</p>
-</section>
-<section id="refine-the-role-of-visit" class="level3">
-<h3 class="anchored" data-anchor-id="refine-the-role-of-visit">5. Refine the role of visit</h3>
-<p>lmer(phase_angle ~ visit + (visit | record_id) + …</p>
-<p>Error: number of observations (=111) &lt;= number of random effects (=146) for term (visit | record_id)</p>
-<p>lmer(phase_angle ~ visit + (1 + visit || record_id) + …</p>
-<p>boundary (singular) fit: see help(‘isSingular’)</p>
-</section>
-</section>
-<section id="reduce-the-model-1" class="level2">
-<h2 class="anchored" data-anchor-id="reduce-the-model-1">Reduce the Model</h2>
-<section id="pha_2" class="level3">
-<h3 class="anchored" data-anchor-id="pha_2">pha_2</h3>
+<section id="modelo-2" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-2">Modelo 2</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>pha_2 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(phase_angle <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> bmi <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> pha_redcap)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pha_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>pha_2 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(phase_angle <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> bmi <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> pha_redcap)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pha_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
@@ -714,14 +717,14 @@ Use print(x, correlation=TRUE)  or
 <blockquote class="blockquote">
 <p>BIC(pha_1, pha_2) df BIC pha_1 26 390.0032 pha_2 19 365.1094</p>
 </blockquote>
-<p>A comparação entre os modelos pelo critério de informação de Akaike (AIC) e o critério bayesiano de informação (BIC) favoreceu o modelo reduzido (pha_2), que apresentou valores mais baixos de AIC (313,6 vs.&nbsp;319,6) e BIC (365,1 vs.&nbsp;390,0) em relação ao modelo completo (pha_1). Isso sugere que a simplificação do modelo resultou em melhor equilíbrio entre ajuste e complexidade, mesmo com a perda de significância estatística de algumas covariáveis previamente relevantes.</p>
+<p>A comparação entre os modelos pelo critério de informação de Akaike (AIC) e o critério bayesiano de informação (BIC) favoreceu o modelo reduzido (pha_2), que apresentou valores mais baixos de AIC (313,6 vs.&nbsp;319,6) e BIC (365,1 vs.&nbsp;390,0) em relação ao modelo completo (pha_1). Isso sugere que a simplificação do modelo resultou em melhor equilíbrio entre ajuste e complexidade, mesmo com a perda de significância estatística de algumas covariáveis previamente relevantes. No entanto, várias variáveis de relevância clínica foram eliminadas neste modelo. Por este motivo, um terceiro modelo foi criado, incluindo as variáveis de relevância clínica que não foram incluídas no modelo 2.</p>
 </section>
-<section id="pha_3" class="level3">
-<h3 class="anchored" data-anchor-id="pha_3">pha_3</h3>
+<section id="modelo-3" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-3">Modelo 3</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>pha_3 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(phase_angle <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> completed_intervention <span class="sc">+</span> duration_difference <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> pha_redcap)</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>pha_3 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(phase_angle <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> completed_intervention <span class="sc">+</span> duration_difference <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> pha_redcap)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
@@ -776,7 +779,7 @@ Correlation matrix not shown by default, as p = 20 &gt; 12.
 Use print(x, correlation=TRUE)  or
     vcov(x)        if you need it</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_collinearity</span>(pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_collinearity</span>(pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Check for Multicollinearity
 
@@ -823,21 +826,21 @@ Low Correlation
      [0.52, 0.78]
      [0.64, 0.94]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(pha_1, pha_2, pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(pha_1, pha_2, pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      df      AIC
 pha_1 26 319.5554
 pha_2 19 313.6283
 pha_3 22 300.2185</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BIC</span>(pha_1, pha_2, pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BIC</span>(pha_1, pha_2, pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      df      BIC
 pha_1 26 390.0032
 pha_2 19 365.1094
 pha_3 22 359.8281</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">r2</span>(pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">r2</span>(pha_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># R2 for Mixed Models
 
@@ -846,788 +849,540 @@ pha_3 22 359.8281</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> performance<span class="sc">::</span><span class="fu">check_model</span>(pha_3)</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(plots)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>pha_3_plots <span class="ot">&lt;-</span> performance<span class="sc">::</span><span class="fu">check_model</span>(pha_3)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(pha_3_plots)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/check-model-1.png" class="img-fluid figure-img" width="960"></p>
+<p><img src="Results_main_outcomes_files/figure-html/pha_3_check-model-1.png" class="img-fluid figure-img" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Três modelos hierárquicos foram comparados utilizando os critérios de informação AIC e BIC. O modelo pha_3, contendo 22 preditores fixos, apresentou os menores valores de AIC (300,2) e BIC (359,8), superando tanto o modelo completo pha_1 (AIC = 319,6; BIC = 390,0) quanto o modelo reduzido pha_2 (AIC = 313,6; BIC = 365,1). Esses resultados indicam que pha_3 oferece o melhor equilíbrio entre qualidade de ajuste e complexidade do modelo, sendo, portanto, o modelo preferido para interpretação final dos resultados.</p>
-<p>Uma versão reduzida do modelo foi desenvolvida com o objetivo de aprimorar o equilíbrio entre parcimônia e desempenho preditivo. A seleção das variáveis foi orientada tanto por critérios teóricos quanto estatísticos, priorizando preditores com plausibilidade clínica e contribuições informativas nas versões anteriores. O novo modelo (pha_final) manteve o intercepto aleatório por participante (record_id) e incluiu 20 preditores fixos, resultando em um critério de máxima verossimilhança restrita (REML) inferior ao dos modelos anteriores (REML = 256,2), indicando melhora no ajuste.</p>
-<p>As variáveis mean_bp_mean (p = 0.040), alcohol_dose (p &lt; 0.001) e labs_crp (p = 0.035) mantiveram associação estatisticamente significativa com o ângulo de fase, mesmo após o ajuste multivariado, o que reforça a robustez dessas associações. A variável visit foi mantida como efeito fixo para controle do efeito temporal, embora não tenha mostrado significância estatística (p = 0.432). A variância do intercepto aleatório (σ² = 0.68) permaneceu relevante, o que confirma a presença de heterogeneidade entre os participantes e a adequação do uso de um modelo misto.</p>
-<p>A análise multicolinearidade mostrou valores de VIF &lt; 3 para todos os preditores, descartando problemas relevantes de colinearidade. Os diagnósticos do modelo indicaram distribuição adequada dos resíduos, ausência de observações altamente influentes e normalidade satisfatória dos efeitos aleatórios, corroborando a adequação do modelo ajustado.</p>
-<p>A avaliação dos pressupostos do modelo pha_final foi realizada com base em gráficos diagnósticos. O gráfico de densidade (“Posterior Predictive Check”) indicou que os valores preditos se alinharam adequadamente com a distribuição observada do ângulo de fase. Os resíduos padronizados apresentaram distribuição aproximadamente normal, conforme demonstrado no gráfico de quantis teóricos dos efeitos aleatórios e no gráfico de normalidade dos resíduos, reforçando a adequação do modelo misto com intercepto aleatório por participante.</p>
-<p>A homogeneidade da variância apresentou leve tendência de heterocedasticidade nas extremidades do ajuste, mas sem padrão grave de violação. A linearidade foi, em geral, respeitada, embora a tendência suavizada indique alguma curvatura para valores mais altos do desfecho. O gráfico de observações influentes mostrou que todos os pontos estão dentro dos limites de influência padronizada, indicando ausência de outliers com alavancagem elevada.</p>
-<p>Por fim, a análise de colinearidade mostrou que todos os preditores apresentaram VIF abaixo de 3, descartando preocupações com multicolinearidade. Dessa forma, os pressupostos do modelo foram globalmente atendidos, validando a interpretação dos coeficientes estimados.</p>
-<p>O modelo apresentou R² marginal de 0,250, indicando que as variáveis fixas explicam 25% da variância do desfecho, e R² condicional de 0,896, refletindo a alta variabilidade explicada quando se considera a estrutura aleatória intra-individual, compatível com o delineamento longitudinal do estudo.</p>
-</section>
+<p><strong>Comparação entre Modelos e Avaliação do Ajuste Final</strong></p>
+<p>Três modelos hierárquicos foram comparados utilizando os critérios de informação de Akaike (AIC) e Bayesiano (BIC). O modelo pha_3, contendo 22 preditores fixos e intercepto aleatório por participante (record_id), apresentou os menores valores de AIC (300,2) e BIC (359,8), superando o modelo completo pha_1 (AIC = 319,6; BIC = 390,0) e o modelo intermediário pha_2 (AIC = 313,6; BIC = 365,1). Esses resultados indicam que pha_3 representa o melhor equilíbrio entre qualidade de ajuste e parcimônia, sendo selecionado como modelo final para interpretação dos achados.</p>
+<p>A construção do modelo pha_3 foi guiada por critérios estatísticos e clínicos, priorizando variáveis com significância nas versões anteriores, plausibilidade teórica e estabilidade das estimativas. O modelo manteve 22 preditores e apresentou um critério de máxima verossimilhança restrita (REML) igual a 256,2, inferior ao dos modelos anteriores, reforçando a melhoria no ajuste.</p>
+<p>Entre os preditores avaliados, três variáveis mantiveram associação estatisticamente significativa com o desfecho:</p>
+<ul>
+<li><p>Pressão arterial média (mean_bp_mean): β = 0,18; p = 0,040</p></li>
+<li><p>Dose de álcool (alcohol_dose): β = 0,25; p &lt; 0,001</p></li>
+<li><p>Proteína C reativa (labs_crp): β = 0,12; p = 0,035</p></li>
+</ul>
+<p>Essas associações permaneceram robustas mesmo após ajuste multivariado, sugerindo que níveis mais elevados de pressão arterial, maior consumo de álcool e níveis mais altos de inflamação subclínica estão positivamente relacionados ao ângulo de fase. A variável visit foi mantida no modelo como controle temporal, apesar de não apresentar significância estatística (p = 0,432).</p>
+<p>A variância do intercepto aleatório por participante permaneceu elevada (σ² = 0,68), corroborando a presença de heterogeneidade individual e justificando a estrutura mista do modelo. O R² marginal foi de 0,250, indicando que 25% da variância total do desfecho é explicada pelas variáveis fixas. Já o R² condicional foi de 0,896, refletindo a alta proporção da variância explicada ao considerar a estrutura de efeitos aleatórios, em consonância com o delineamento longitudinal do estudo.</p>
+<p>A análise de multicolinearidade mostrou valores de VIF menor que três para todos os preditores, descartando problemas relevantes de colinearidade. Os diagnósticos do modelo indicaram distribuição adequada dos resíduos, ausência de observações altamente influentes e normalidade satisfatória dos efeitos aleatórios, corroborando a adequação do modelo ajustado.</p>
+<p><strong>Verificação dos Pressupostos do Modelo Final</strong></p>
+<p>A avaliação dos pressupostos do modelo pha_3 foi realizada com auxílio da função performance::check_model(), cujos gráficos diagnósticos estão apresentados na Figura X.</p>
+<ul>
+<li><p>Posterior Predictive Check: Houve boa sobreposição entre os dados observados e os valores preditos pelo modelo, sugerindo adequada capacidade preditiva.</p></li>
+<li><p>Linearidade: Os resíduos apresentaram tendência de curvatura em valores mais altos do desfecho, o que pode indicar leve violação do pressuposto de linearidade, mas sem evidências de distorção grave.</p></li>
+<li><p>Homoscedasticidade: Detectou-se discreto aumento da variabilidade dos resíduos em faixas mais altas dos valores ajustados, sugerindo leve heterocedasticidade.</p></li>
+<li><p>Normalidade dos resíduos: A distribuição dos resíduos foi aproximadamente normal, com desvios leves nas caudas, aceitáveis para modelos mistos em amostras moderadas.</p></li>
+<li><p>Observações influentes: Algumas observações foram marcadas com leve alavancagem (IDs 10, 69, 70, 75, 109), mas todas permaneceram dentro dos limites aceitáveis de influência.</p></li>
+<li><p>Multicolinearidade: Todos os preditores apresentaram valores de VIF inferiores a 3, afastando preocupações com colinearidade.</p></li>
+<li><p>Normalidade dos efeitos aleatórios (record_id): A distribuição dos interceptos aleatórios foi próxima da normal, com leve assimetria nas extremidades, validando a escolha do modelo com intercepto aleatório.</p></li>
+</ul>
 </section>
 </section>
 <section id="pcr" class="level1">
 <h1>PCR</h1>
-<section id="section" class="level3">
-<h3 class="anchored" data-anchor-id="section">1</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(labs_crp <span class="sc">~</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id), <span class="at">data =</span> data_filtered)</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>data_model_scaled <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">compliance_score_adjusted =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>      visit <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> compliance_score_visit</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(compliance_score_adjusted, <span class="at">.after =</span> compliance_score_visit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="per-protocol" class="level2">
+<h2 class="anchored" data-anchor-id="per-protocol">Per protocol</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>pcr_1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> allocation_group <span class="sc">+</span> compliance_score_adjusted <span class="sc">+</span> duration_difference <span class="sc">+</span> completed_intervention <span class="sc">+</span> visit <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> data_model_scaled)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
-Formula: labs_crp ~ visit + allocation_group + (1 | record_id)
-   Data: data_filtered
+Formula: log1p(labs_crp) ~ allocation_group + compliance_score_adjusted +  
+    duration_difference + completed_intervention + visit + (1 |  
+    record_id) + age + sex + hypertension + hypercholesterolemia +  
+    hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean +  
+    handgrip + evs_score + alcohol_dose + kcal + labs_alt + labs_ggt +  
+    labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index
+   Data: data_model_scaled
 
-REML criterion at convergence: 1163.3
-
-Scaled residuals: 
-    Min      1Q  Median      3Q     Max 
--2.8000 -0.3580 -0.1254  0.2196  7.5431 
-
-Random effects:
- Groups    Name        Variance Std.Dev.
- record_id (Intercept) 27.00    5.196   
- Residual              30.73    5.544   
-Number of obs: 174, groups:  record_id, 75
-
-Fixed effects:
-                        Estimate Std. Error       df t value Pr(&gt;|t|)    
-(Intercept)               8.2417     1.4442 159.2172   5.707 5.48e-08 ***
-visit                    -1.0011     0.5504 109.9562  -1.819   0.0716 .  
-allocation_groupGrupo B   0.4793     1.4930  68.5534   0.321   0.7492    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Correlation of Fixed Effects:
-            (Intr) visit 
-visit       -0.689       
-allctn_grGB -0.543  0.051</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model3)  <span class="co"># Residuals vs. fitted</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(<span class="fu">resid</span>(model3)); <span class="fu">qqline</span>(<span class="fu">resid</span>(model3))  <span class="co"># Normality check</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>model3_log <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id), <span class="at">data =</span> data_filtered)</span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
-Formula: log1p(labs_crp) ~ visit + allocation_group + (1 | record_id)
-   Data: data_filtered
-
-REML criterion at convergence: 356.4
+REML criterion at convergence: 270.9
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
--3.1250 -0.4690  0.0144  0.4178  4.7068 
+-1.9776 -0.4639  0.0440  0.4031  3.5646 
 
 Random effects:
  Groups    Name        Variance Std.Dev.
- record_id (Intercept) 0.4128   0.6425  
- Residual              0.2156   0.4643  
-Number of obs: 174, groups:  record_id, 75
+ record_id (Intercept) 0.1726   0.4155  
+ Residual              0.3655   0.6045  
+Number of obs: 113, groups:  record_id, 73
 
 Fixed effects:
-                         Estimate Std. Error        df t value Pr(&gt;|t|)    
-(Intercept)               1.82377    0.14420 134.87011  12.647   &lt;2e-16 ***
-visit                    -0.09940    0.04678 106.74492  -2.125   0.0359 *  
-allocation_groupGrupo B   0.13948    0.16652  72.04671   0.838   0.4050    
+                           Estimate Std. Error        df t value Pr(&gt;|t|)  
+(Intercept)                2.051125   1.517983 88.997704   1.351   0.1801  
+allocation_groupGrupo B    0.114669   0.177214 57.177922   0.647   0.5202  
+compliance_score_adjusted -0.070675   0.760803 67.594288  -0.093   0.9263  
+duration_difference       -0.289432   0.109647 70.086341  -2.640   0.0102 *
+completed_interventionSim  0.253108   0.236851 75.248146   1.069   0.2886  
+visit                      0.000996   0.118454 63.311332   0.008   0.9933  
+age                       -0.075131   0.104952 61.040681  -0.716   0.4768  
+sexMasculino              -0.189106   0.422447 71.272412  -0.448   0.6558  
+hypertension1             -0.008656   0.241732 58.135649  -0.036   0.9716  
+hypercholesterolemia1      0.084838   0.225766 59.462524   0.376   0.7084  
+hypertrigliceridemia1      0.070291   0.239187 71.888504   0.294   0.7697  
+drugs_w_loss1              0.236064   0.199825 56.103355   1.181   0.2424  
+drugs_w_gain1              0.342935   0.433023 60.225788   0.792   0.4315  
+mean_bp_mean              -0.045777   0.089134 75.839062  -0.514   0.6090  
+handgrip                  -0.093359   0.120776 69.249473  -0.773   0.4422  
+evs_score                  0.159249   0.079025 87.342114   2.015   0.0470 *
+alcohol_dose              -0.034472   0.076281 78.540726  -0.452   0.6526  
+kcal                       0.086488   0.084040 87.352683   1.029   0.3063  
+labs_alt                  -0.083255   0.086720 78.075422  -0.960   0.3400  
+labs_ggt                   0.065429   0.088333 76.825805   0.741   0.4611  
+labs_ldl                   0.169339   0.105159 80.809313   1.610   0.1112  
+labs_triglycerides        -0.089454   0.100145 83.813542  -0.893   0.3743  
+labs_hdl                   0.037371   0.086516 76.750336   0.432   0.6670  
+labs_quick_index          -8.513751   3.610444 87.156639  -2.358   0.0206 *
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Correlation of Fixed Effects:
-            (Intr) visit 
-visit       -0.580       
-allctn_grGB -0.598  0.040</code></pre>
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model3_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(<span class="fu">resid</span>(model3_log)); <span class="fu">qqline</span>(<span class="fu">resid</span>(model3_log))  <span class="co"># Normality check</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p><strong>log+1 transformation</strong> to the skewed CRP variable, and the results show clear improvement.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 21%">
-<col style="width: 21%">
-<col style="width: 21%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th><strong>Term</strong></th>
-<th><strong>Estimate</strong></th>
-<th><strong>p-value</strong></th>
-<th><strong>Interpretation</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Intercept</strong></td>
-<td>1.82</td>
-<td>&lt;0.001</td>
-<td>Mean <strong>log(CRP + 1)</strong> at baseline in Grupo A</td>
-</tr>
-<tr class="even">
-<td><strong>Visit</strong></td>
-<td>–0.099</td>
-<td>0.036</td>
-<td><strong>CRP decreases significantly over time</strong></td>
-</tr>
-<tr class="odd">
-<td><strong>Grupo B (vs A)</strong></td>
-<td>+0.139</td>
-<td>0.405</td>
-<td>No significant difference at baseline</td>
-</tr>
-</tbody>
-</table>
-<p>The <strong>effect of visit became statistically significant</strong> (p = 0.036), whereas it was borderline before (p = 0.072).</p>
-<p><strong>Diagnostic Plots</strong> <strong>Residuals vs.&nbsp;Fitted</strong></p>
-<ul>
-<li><p>More <strong>symmetrical and homoscedastic</strong> than before.</p></li>
-<li><p>No clear fan shape or funnel — much better than untransformed.</p></li>
-</ul>
-<p><strong>Q-Q Plot</strong></p>
-<ul>
-<li><p><strong>Much closer to the line</strong>, indicating that residuals are approximately <strong>normally distributed</strong>.</p></li>
-<li><p>A few expected mild deviations at the tails, but very acceptable.</p></li>
-</ul>
-<p><strong>What does this mean in original CRP scale?</strong></p>
-<p>Let’s back-transform the time effect:</p>
-<ul>
-<li><p>Estimate for visit = –0.099</p></li>
-<li><p>Since you’re modeling log1p(CRP), to interpret in original scale:</p></li>
-</ul>
-<p><span class="math display">\[\\text{exp}(-0.099) = 0.9056\]</span></p>
-<p>This means: <strong>each visit is associated with ~9.4% decrease</strong> in CRP over time, <strong>on average</strong>.</p>
-<p><strong>Summary</strong></p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th><strong>Point</strong></th>
-<th><strong>Result</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Residuals</td>
-<td>Look better: less heteroscedasticity</td>
-</tr>
-<tr class="even">
-<td>Q-Q plot</td>
-<td>Much closer to normal</td>
-</tr>
-<tr class="odd">
-<td>Time effect</td>
-<td>Now statistically significant (p = 0.036)</td>
-</tr>
-<tr class="even">
-<td>Log transformation</td>
-<td>Successfully improved model performance</td>
-</tr>
-</tbody>
-</table>
-<p>The idea is to explore the antiinflamatory effect of the intervention. Currently, the model assumes parallel time trends for both groups, i.e., it estimates:</p>
-<ul>
-<li><p>A main effect of time (CRP changes over time),</p></li>
-<li><p>A main effect of group (baseline difference),</p></li>
-<li><p>But no interaction (i.e., it assumes both groups change equally over time).</p></li>
-</ul>
-<p><em>Why this is not enough</em></p>
-<p>If the intervention is effective, we expect:</p>
-<ul>
-<li><p>CRP to decrease faster in the intervention group (Grupo B),</p></li>
-<li><p>Which means there should be a significant interaction between visit and allocation_group.</p></li>
-</ul>
-<p><em>Model with interaction:</em></p>
-<ul>
-<li><p>Adds visit:allocation_groupGrupo B as an interaction term,</p></li>
-<li><p>Tests whether CRP changes differently over time in Grupo B vs Grupo A.</p></li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>model3_log_inter <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> visit <span class="sc">*</span> allocation_group <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id), <span class="at">data =</span> data_filtered)</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3_log_inter)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
-Formula: log1p(labs_crp) ~ visit * allocation_group + (1 | record_id)
-   Data: data_filtered
-
-REML criterion at convergence: 359
-
-Scaled residuals: 
-    Min      1Q  Median      3Q     Max 
--3.0555 -0.4762 -0.0015  0.4387  4.6384 
-
-Random effects:
- Groups    Name        Variance Std.Dev.
- record_id (Intercept) 0.413    0.6426  
- Residual              0.217    0.4658  
-Number of obs: 174, groups:  record_id, 75
-
-Fixed effects:
-                               Estimate Std. Error        df t value Pr(&gt;|t|)
-(Intercept)                     1.78653    0.16260 162.42929  10.987   &lt;2e-16
-visit                          -0.07858    0.06281 103.85234  -1.251    0.214
-allocation_groupGrupo B         0.21990    0.23207 164.19818   0.948    0.345
-visit:allocation_groupGrupo B  -0.04706    0.09450 106.26543  -0.498    0.620
-                                 
-(Intercept)                   ***
-visit                            
-allocation_groupGrupo B          
-visit:allocation_groupGrupo B    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Correlation of Fixed Effects:
-            (Intr) visit  all_GB
-visit       -0.691              
-allctn_grGB -0.701  0.484       
-vst:llct_GB  0.459 -0.665 -0.696</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model3_log_inter)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(<span class="fu">resid</span>(model3_log_inter)); <span class="fu">qqline</span>(<span class="fu">resid</span>(model3_log_inter))  <span class="co"># Normality check</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Key Result: No Significant Interaction • The term visit:allocation_groupGrupo B has p = 0.620, meaning: There is no statistical evidence that the intervention led to a greater reduction in CRP over time compared to control. • The trend for CRP decrease over time is similar in both groups.</p>
-<p>Interpretation</p>
-<p>Despite applying a more appropriate transformation and including the interaction: • Time still shows a mild (non-significant) decreasing trend in CRP. • No baseline difference between groups. • No enhanced effect in the intervention group.</p>
-<p>This means that, based on your data, the intervention did not show a measurable anti-inflammatory effect on CRP.</p>
-<p><em>PLOT</em> plot shows: • Predicted log(CRP + 1) at each visit for each group. • Makes it easy to compare time trends across intervention and control groups on the same scale used in the model. • Useful for statistical interpretation and checking for meaningful differences.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new data frame for prediction: all combinations of visit × group</span></span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">visit =</span> <span class="fu">unique</span>(data_filtered<span class="sc">$</span>visit),</span>
-<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">allocation_group =</span> <span class="fu">unique</span>(data_filtered<span class="sc">$</span>allocation_group)</span>
-<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict fixed effects (marginal means, no random effects)</span></span>
-<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>new_data<span class="sc">$</span>pred_log_crp <span class="ot">&lt;-</span> <span class="fu">predict</span>(model3_log_inter, <span class="at">newdata =</span> new_data, <span class="at">re.form =</span> <span class="cn">NA</span>)</span>
-<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot predicted log(CRP + 1)</span></span>
-<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(new_data, <span class="fu">aes</span>(<span class="at">x =</span> visit, <span class="at">y =</span> pred_log_crp, <span class="at">color =</span> allocation_group, <span class="at">group =</span> allocation_group)) <span class="sc">+</span></span>
-<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb54-15"><a href="#cb54-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Predicted CRP over Time (log scale)"</span>,</span>
-<span id="cb54-16"><a href="#cb54-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Predicted log(CRP + 1)"</span>,</span>
-<span id="cb54-17"><a href="#cb54-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Visit"</span>,</span>
-<span id="cb54-18"><a href="#cb54-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Group"</span></span>
-<span id="cb54-19"><a href="#cb54-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb54-20"><a href="#cb54-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-ℹ Please use `linewidth` instead.</code></pre>
+<pre><code>
+Correlation matrix not shown by default, as p = 24 &gt; 12.
+Use print(x, correlation=TRUE)  or
+    vcov(x)        if you need it</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_collinearity</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Check for Multicollinearity
+
+Low Correlation
+
+                      Term  VIF   VIF 95% CI Increased SE Tolerance
+          allocation_group 1.36 [1.18, 1.71]         1.17      0.73
+ compliance_score_adjusted 3.13 [2.50, 4.02]         1.77      0.32
+       duration_difference 1.69 [1.42, 2.13]         1.30      0.59
+    completed_intervention 1.70 [1.43, 2.14]         1.30      0.59
+                     visit 3.66 [2.90, 4.73]         1.91      0.27
+                       age 1.87 [1.56, 2.36]         1.37      0.53
+                       sex 3.61 [2.86, 4.66]         1.90      0.28
+              hypertension 1.92 [1.59, 2.43]         1.39      0.52
+      hypercholesterolemia 2.01 [1.66, 2.55]         1.42      0.50
+      hypertrigliceridemia 2.48 [2.02, 3.17]         1.58      0.40
+              drugs_w_loss 1.29 [1.14, 1.63]         1.14      0.77
+              drugs_w_gain 1.18 [1.06, 1.52]         1.09      0.85
+              mean_bp_mean 1.54 [1.32, 1.94]         1.24      0.65
+                  handgrip 2.64 [2.14, 3.38]         1.63      0.38
+                 evs_score 1.39 [1.20, 1.74]         1.18      0.72
+              alcohol_dose 1.64 [1.39, 2.06]         1.28      0.61
+                      kcal 1.53 [1.30, 1.92]         1.24      0.65
+                  labs_alt 1.64 [1.39, 2.07]         1.28      0.61
+                  labs_ggt 1.67 [1.41, 2.11]         1.29      0.60
+                  labs_ldl 2.11 [1.73, 2.67]         1.45      0.47
+        labs_triglycerides 2.13 [1.75, 2.70]         1.46      0.47
+                  labs_hdl 1.33 [1.16, 1.67]         1.15      0.75
+          labs_quick_index 1.46 [1.26, 1.83]         1.21      0.68
+ Tolerance 95% CI
+     [0.58, 0.84]
+     [0.25, 0.40]
+     [0.47, 0.70]
+     [0.47, 0.70]
+     [0.21, 0.34]
+     [0.42, 0.64]
+     [0.21, 0.35]
+     [0.41, 0.63]
+     [0.39, 0.60]
+     [0.32, 0.50]
+     [0.61, 0.88]
+     [0.66, 0.94]
+     [0.52, 0.76]
+     [0.30, 0.47]
+     [0.57, 0.83]
+     [0.48, 0.72]
+     [0.52, 0.77]
+     [0.48, 0.72]
+     [0.48, 0.71]
+     [0.37, 0.58]
+     [0.37, 0.57]
+     [0.60, 0.86]
+     [0.54, 0.80]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 322.8749</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BIC</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 393.787</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">r2</span>(pcr_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># R2 for Mixed Models
+
+  Conditional R2: 0.513
+     Marginal R2: 0.283</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>pcr_1_plots <span class="ot">&lt;-</span> performance<span class="sc">::</span><span class="fu">check_model</span>(pcr_1)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(pcr_1_plots)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Results_main_outcomes_files/figure-html/pcr_1_check-model-1.png" class="img-fluid figure-img" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
-<p><em>Visual Insights</em></p>
-<ul>
-<li><p>Both groups show a downward trend in CRP over time, suggesting a general anti-inflammatory progression.</p></li>
-<li><p>Grupo B starts at a higher baseline and appears to have a slightly steeper decline in log(CRP), although the interaction term was not statistically significant (p = 0.620).</p></li>
-</ul>
-<p>This means that although Grupo B appears to improve more, this difference in slopes is not statistically supported.</p>
-<p><em>Grupo B’s Higher Baseline</em></p>
-<p>Baseline imbalance may be a concern, particularly when:</p>
+<p>Since the goal is to evaluate whether the intervention (allocation_group) reduces inflammation (log1p(labs_crp)), then how compliance-related variables are handled — completed_intervention, compliance_score_adjusted, and duration_difference — fundamentally changes what question the model is answering.</p>
+<p><strong>Key Conceptual Framework</strong></p>
+<p>If we adjust for compliance variables, then we are answering the question: Among those who complied (to varying degrees), does the assigned intervention have an effect on inflammation?”. This estimates the “Effect of Treatment on the Treated” (ETT) or per-protocol effect, rather than the intention-to-treat (ITT) effect. The interpretation shifts towards whether the efficacy of the treatment holds after accounting for how well participants adhered. If participants in the intervention group did not comply, the model adjusts for that, isolating the treatment effect conditional on compliance. However, if compliance is strongly influenced by the intervention (as is common), adjusting for it may introduce <strong>post-treatment bias (collider bias)</strong>, because you’re conditioning on a variable that is downstream of the allocation.</p>
+<p>If we do not adjust for compliance, then we are estimating the intention-to-treat (ITT) effect: “Does being assigned to the intervention reduce inflammation, regardless of whether participants fully complied?”. This reflects the real-world effectiveness including factors like dropout, low adherence, etc. This is the primary approach in most randomized trials because it preserves the randomization balance and avoids bias introduced by post-treatment variables.</p>
+<p>In the current model, we are conditioning the effect of allocation_group on adherence. The coefficient for allocation_group in this case answers: “Given the same level of adherence (completion, dose, duration), is the intervention effective in reducing inflammation?” In other words, we’re stripping out the pathway by which poor adherence could dilute the intervention effect. If these variables are strong mediators of the intervention’s effect, you are blocking part of the effect of allocation_group, and this might explain why allocation_group is not significant.</p>
+<p><strong>Correct Modeling Strategy</strong></p>
+<p>Depends on our goal:</p>
 <ol type="1">
-<li><p>The groups were supposed to be randomized and equivalent at baseline, and</p></li>
-<li><p>The outcome variable (CRP, in this case) is already higher in one group before the intervention starts.</p></li>
+<li><p>To estimate the pure biological effect of the intervention (conditional on adherence):</p>
+<ul>
+<li>Keep compliance_score_adjusted, completed_intervention, and duration_difference in the model.</li>
+<li>Interpret the effect of allocation_group as the effect assuming equal adherence across groups.</li>
+</ul></li>
+<li><p>To estimate the real-world effectiveness (intention-to-treat):</p>
+<ul>
+<li>Remove the compliance-related variables from the model.</li>
+<li>The coefficient for allocation_group will capture the total effect, including any dilution due to poor adherence.</li>
+</ul></li>
 </ol>
-<p>If Grupo B starts with higher CRP, then:</p>
+<p><img src="images/DAG:%20Relationship%20between%20Intervention,%20Compliance,%20and%20Inflammation.png" class="img-fluid"></p>
+<p>The DAG (Directed Acyclic Graph) represents the causal relationships between the intervention, adherence, and inflammation. In this structure, Allocation Group has a direct effect on Inflammation (labs_crp) and also influences Compliance, Completed Intervention, and Duration Difference, which are measures of adherence. These adherence-related variables, in turn, affect Inflammation, indicating that part of the intervention’s effect is mediated through adherence. Additionally, a hypothetical Unmeasured Factors node, representing elements such as motivation, health status, or life circumstances, influences both Compliance and Inflammation. This creates a potential collider if the analysis conditions on adherence-related variables.</p>
+<p>The DAG highlights that adjusting for compliance, completion, or duration blocks part of the natural causal pathway through which the intervention affects inflammation. Moreover, conditioning on these variables opens a backdoor path through Unmeasured Factors, introducing potential collider bias.</p>
+<p>This structure demonstrates that the choice between intention-to-treat (ITT) and per-protocol (PP) analysis changes the research question. In ITT analysis, the effect of the Allocation Group on inflammation is estimated without conditioning on adherence, capturing the total effect, including both direct and adherence-mediated pathways. This approach preserves the benefits of randomization and estimates the real-world effectiveness of the intervention. In contrast, per-protocol analysis includes adherence-related variables in the model. This blocks the indirect pathways through adherence and estimates the effect of the intervention among participants with comparable adherence. While this approach can answer questions about biological efficacy conditional on adherence, it carries a higher risk of bias due to conditioning on post-randomization variables.</p>
+<p><strong>Suggested Dual Approach (Best Practice in Clinical Research)</strong></p>
+<ol type="1">
+<li>Primary Model (ITT) without compliance variables. This estimates whether the offer of the intervention reduces inflammation.</li>
+</ol>
+<pre><code>log1p(labs_crp) \~ allocation_group + visit + (1 \| record_id) + covariates</code></pre>
+<ol start="2" type="1">
+<li>Secondary Model (Per-Protocol Sensitivity Analysis) with compliance variables. This estimates whether the intervention works among those who actually adhered to it, or to account for variability in exposure.</li>
+</ol>
+<pre><code>log1p(labs_crp) \~ allocation_group + compliance_score_adjusted + duration_difference + completed_intervention + visit + (1 \| record_id) + covariates</code></pre>
+<p><strong>Important Note on Mediation vs.&nbsp;Confounding:</strong></p>
 <ul>
-<li><p>Any greater absolute reduction over time may be due to regression to the mean, not the intervention.</p></li>
-<li><p>It violates the assumption that both groups are comparable at baseline, which undermines causal inference.</p></li>
+<li>Compliance is not a confounder — it occurs after randomization.</li>
+<li>Conditioning on it changes the causal question.</li>
+<li>Including post-randomization variables risks collider bias if those variables are influenced by both the intervention and unmeasured factors affecting inflammation.</li>
 </ul>
-<p><em>Adjust for baseline differences:</em></p>
-<p>What this model does:</p>
-<ul>
-<li><p>Adjusts for baseline CRP directly, reducing bias from initial imbalance.</p></li>
-<li><p>The coefficient for allocation_groupGrupo B now reflects the difference at follow-up, controlling for baseline.</p></li>
-<li><p>The time effect (visit) still captures change over time.</p></li>
-<li><p>The model tests whether the intervention group had lower CRP over time than expected based on their higher starting levels.</p></li>
-</ul>
-<p>If log1p_baseline_crp is significant, it means initial inflammation strongly predicts future levels — expected in longitudinal biomarkers.</p>
-<p>If allocation_groupGrupo B or the visit:group interaction becomes significant after adjustment, that strengthens the case for a true treatment effect.</p>
-<p>Let me know if you’d like to: • Visualize adjusted predictions • Back-transform to original CRP scale • Handle this in a subset of visits (e.g.&nbsp;only V1 and V3)</p>
+<p><strong>Final Recommendation for Writing in Thesis:</strong></p>
+<p>The primary analysis was conducted under the intention-to-treat principle, evaluating the effect of the randomized intervention on inflammation regardless of adherence. A secondary model adjusted for adherence-related variables (completed_intervention, compliance_score_adjusted, and duration_difference) to explore whether the intervention had an effect among those who maintained adequate compliance. These models capture complementary aspects of intervention effectiveness: the former reflects real-world applicability, while the latter reflects efficacy conditional on adequate adherence.</p>
+<section id="ideal-condition" class="level3">
+<h3 class="anchored" data-anchor-id="ideal-condition">Ideal condition</h3>
+<p>The first model (pcr_1) represents a per-protocol-type model, where the effect of the intervention (allocation_group) is estimated conditional on compliance (through compliance_score_adjusted, completed_intervention, and duration_difference). However, there are other methods that can estimate the effect of the intervention in an ideal condition, where adherence is perfect. These methods go beyond simply conditioning in regression and attempt to more rigorously isolate the causal effect.</p>
+<p><strong>Alternative and Complementary Strategies to Per-Protocol Modeling</strong></p>
+<p><em>1. Restricting the Dataset (Complete Compliers Only)</em></p>
+<p>One simple but crude way to perform a per-protocol analysis is to exclude participants who did not complete the intervention or had poor compliance. This creates a model within a population that fully adhered. The limitations are: reduces sample size and breaks randomization, leading to confounding.</p>
+<pre><code>data_pp &lt;- data_model_scaled %&gt;%
+  filter(completed_intervention == "Yes", compliance_score_adjusted &gt;= threshold)
+
+pcr_pp &lt;- lmer(log1p(labs_crp) ~ allocation_group + visit + (1 | record_id) + covariates, data = data_pp)</code></pre>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjusting for Baseline CRP in the Mixed Model (on log scale)</span></span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Create a baseline CRP variable (log-transformed)</span></span>
-<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="co"># You should ensure that baseline CRP is correctly identified from your data</span></span>
-<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: assuming visit 1 is baseline</span></span>
-<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>data_filtered <span class="ot">&lt;-</span> data_filtered <span class="sc">%&gt;%</span></span>
-<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(record_id) <span class="sc">%&gt;%</span></span>
-<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log1p_baseline_crp =</span> <span class="fu">first</span>(<span class="fu">log1p</span>(labs_crp[visit <span class="sc">==</span> <span class="dv">1</span>]))) <span class="sc">%&gt;%</span></span>
-<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
-<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Fit the adjusted model</span></span>
-<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a>model3_log_adj <span class="ot">&lt;-</span> <span class="fu">lmer</span>(</span>
-<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> log1p_baseline_crp <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id),</span>
-<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_filtered</span>
-<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Summarize the results</span></span>
-<span id="cb56-19"><a href="#cb56-19" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3_log_adj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>data_pp <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>    completed_intervention <span class="sc">==</span> <span class="st">"Sim"</span> <span class="sc">&amp;</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>      (compliance_score_adjusted <span class="sc">&gt;</span> <span class="fl">0.6</span> <span class="sc">|</span> <span class="fu">is.na</span>(compliance_score_adjusted))</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="restrict-dataset" class="level4">
+<h4 class="anchored" data-anchor-id="restrict-dataset">Restrict dataset</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>pcr_pp <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> allocation_group <span class="sc">+</span> duration_difference <span class="sc">+</span> visit <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> data_pp)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pcr_pp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
-Formula: log1p(labs_crp) ~ visit + allocation_group + log1p_baseline_crp +  
-    (1 | record_id)
-   Data: data_filtered
+Formula: log1p(labs_crp) ~ allocation_group + duration_difference + visit +  
+    (1 | record_id) + age + sex + hypertension + hypercholesterolemia +  
+    hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean +  
+    handgrip + evs_score + alcohol_dose + kcal + labs_alt + labs_ggt +  
+    labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index
+   Data: data_pp
 
-REML criterion at convergence: 250.9
+REML criterion at convergence: 211.7
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
--5.6658 -0.3818 -0.0163  0.4173  3.2431 
+-1.8596 -0.4588 -0.0302  0.4374  3.4390 
 
 Random effects:
  Groups    Name        Variance Std.Dev.
- record_id (Intercept) 0.03532  0.1879  
- Residual              0.19927  0.4464  
-Number of obs: 174, groups:  record_id, 75
+ record_id (Intercept) 0.1825   0.4272  
+ Residual              0.3910   0.6253  
+Number of obs: 87, groups:  record_id, 52
 
 Fixed effects:
-                          Estimate Std. Error         df t value Pr(&gt;|t|)    
-(Intercept)               0.529463   0.128682 138.565919   4.114 6.62e-05 ***
-visit                    -0.105934   0.043048 129.081368  -2.461   0.0152 *  
-allocation_groupGrupo B  -0.008376   0.082322  75.417846  -0.102   0.9192    
-log1p_baseline_crp        0.771625   0.050795  76.008799  15.191  &lt; 2e-16 ***
+                        Estimate Std. Error       df t value Pr(&gt;|t|)  
+(Intercept)              1.30114    1.51620 59.82978   0.858   0.3942  
+allocation_groupGrupo B -0.14874    0.22985 34.14011  -0.647   0.5219  
+duration_difference     -0.33950    0.12820 55.59097  -2.648   0.0105 *
+visit                    0.03397    0.09415 47.60058   0.361   0.7198  
+age                     -0.09053    0.13425 37.86134  -0.674   0.5042  
+sexMasculino            -0.18518    0.54147 43.04241  -0.342   0.7340  
+hypertension1           -0.01098    0.27901 39.95460  -0.039   0.9688  
+hypercholesterolemia1    0.13700    0.26340 35.97741   0.520   0.6062  
+hypertrigliceridemia1    0.23126    0.29100 48.64692   0.795   0.4306  
+drugs_w_loss1            0.33798    0.23290 35.20711   1.451   0.1556  
+drugs_w_gain1           -0.43200    0.63860 54.38832  -0.676   0.5016  
+mean_bp_mean             0.06963    0.11975 52.39903   0.581   0.5634  
+handgrip                -0.18485    0.15881 46.02477  -1.164   0.2504  
+evs_score                0.07079    0.10204 63.29260   0.694   0.4904  
+alcohol_dose            -0.08050    0.08772 56.88145  -0.918   0.3626  
+kcal                     0.07599    0.09918 60.05920   0.766   0.4466  
+labs_alt                -0.18510    0.11358 59.17774  -1.630   0.1085  
+labs_ggt                 0.25029    0.19634 51.20579   1.275   0.2081  
+labs_ldl                 0.06425    0.12440 56.51527   0.516   0.6075  
+labs_triglycerides      -0.09268    0.11221 63.29037  -0.826   0.4119  
+labs_hdl                 0.09603    0.11454 53.33588   0.838   0.4056  
+labs_quick_index        -5.82536    4.27972 60.08405  -1.361   0.1785  
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Correlation of Fixed Effects:
-            (Intr) visit  all_GB
-visit       -0.595              
-allctn_grGB -0.264  0.069       
-lg1p_bsln_c -0.653 -0.035 -0.118</code></pre>
-</div>
-</div>
-<p>This model directly controls for <strong>baseline differences in CRP</strong>, correcting the bias introduced by the fact that <strong>Grupo B started with higher inflammation</strong>.</p>
-<p><strong>Fixed Effects Summary</strong></p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 38%">
-</colgroup>
-<thead>
-<tr class="header">
-<th><strong>Term</strong></th>
-<th><strong>Estimate</strong></th>
-<th><strong>p-value</strong></th>
-<th><strong>Interpretation</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>(Intercept)</strong></td>
-<td>0.529</td>
-<td>&lt;0.001</td>
-<td>Estimated log(CRP+1) for Grupo A at baseline when baseline CRP is 0</td>
-</tr>
-<tr class="even">
-<td><strong>visit</strong></td>
-<td>–0.106</td>
-<td><strong>0.015</strong></td>
-<td>CRP significantly <strong>decreases over time</strong></td>
-</tr>
-<tr class="odd">
-<td><strong>Grupo B (vs Grupo A)</strong></td>
-<td>–0.008</td>
-<td>0.919</td>
-<td>No difference between groups <strong>after adjusting for baseline</strong></td>
-</tr>
-<tr class="even">
-<td><strong>log1p_baseline_crp</strong></td>
-<td>+0.772</td>
-<td>&lt;0.001</td>
-<td>Strong predictor: higher baseline CRP leads to higher follow-up CRP</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Key Takeaways</strong></p>
-<ul>
-<li><p><strong>Time effect (visit) is now significant (p = 0.015)</strong>:</p>
-<blockquote class="blockquote">
-<p>CRP decreases over time <strong>even after accounting for baseline</strong>.</p>
-</blockquote></li>
-<li><p><strong>Grupo B effect disappears (p = 0.919)</strong>:</p>
-<blockquote class="blockquote">
-<p>Once you adjust for baseline CRP, there’s <strong>no evidence the intervention had a distinct effect</strong> on CRP reduction compared to control.</p>
-</blockquote></li>
-<li><p><strong>Baseline CRP is a major driver</strong> of later CRP (β = 0.77, p &lt; 0.001).</p></li>
-</ul>
-<p><strong>Interpretation</strong></p>
-<p>The original difference in CRP trends between groups was likely due to <strong>baseline imbalance</strong>, not the intervention itself.</p>
-<p>This adjusted model is <strong>more reliable</strong>, and the results suggest:</p>
-<ul>
-<li><p>CRP decreases over time for all participants,</p></li>
-<li><p>But the intervention <strong>did not produce a differential anti-inflammatory effect</strong>.</p></li>
-</ul>
-<p><strong>Dropout Influence</strong></p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Step 1: Check the distribution of visits per subject</span></span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Count number of observations per subject</span></span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>dropout_check <span class="ot">&lt;-</span> data_filtered <span class="sc">%&gt;%</span></span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(record_id) <span class="sc">%&gt;%</span></span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n_visits =</span> <span class="fu">n_distinct</span>(visit)) <span class="sc">%&gt;%</span></span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(n_visits)</span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a><span class="co">#Step 2: Compare dropout by group</span></span>
-<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Last visit per subject</span></span>
-<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>last_visit_by_group <span class="ot">&lt;-</span> data_filtered <span class="sc">%&gt;%</span></span>
-<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(record_id, allocation_group) <span class="sc">%&gt;%</span></span>
-<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">last_visit =</span> <span class="fu">max</span>(visit)) <span class="sc">%&gt;%</span></span>
-<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`summarise()` has grouped output by 'record_id'. You can override using the
-`.groups` argument.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Table: proportion reaching visit 3</span></span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(last_visit_by_group<span class="sc">$</span>allocation_group, last_visit_by_group<span class="sc">$</span>last_visit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>         
-           1  2  3
-  Grupo A  6  4 27
-  Grupo B  8  4 26</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This checks whether Grupo B had more missing data at later visits than Grupo A — which could confound the CRP trajectory comparison.</span></span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Step 3: Is dropout related to baseline CRP?</span></span>
-<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a><span class="co"># If participants who dropped out had higher baseline CRP, your results may be biased due to non-random missingness (MNAR).</span></span>
-<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the baseline CRP and check whether it's different in dropouts</span></span>
-<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>baseline_dropout <span class="ot">&lt;-</span> data_filtered <span class="sc">%&gt;%</span></span>
-<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(record_id) <span class="sc">%&gt;%</span></span>
-<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">last_visit =</span> <span class="fu">max</span>(visit)) <span class="sc">%&gt;%</span></span>
-<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(visit <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dropped_out =</span> last_visit <span class="sc">&lt;</span> <span class="dv">3</span>)</span>
-<span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-13"><a href="#cb62-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare baseline CRP by dropout status</span></span>
-<span id="cb62-14"><a href="#cb62-14" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(<span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> dropped_out, <span class="at">data =</span> baseline_dropout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Welch Two Sample t-test
-
-data:  log1p(labs_crp) by dropped_out
-t = 1.3607, df = 39.345, p-value = 0.1813
-alternative hypothesis: true difference in means between group FALSE and group TRUE is not equal to 0
-95 percent confidence interval:
- -0.1355451  0.6932685
-sample estimates:
-mean in group FALSE  mean in group TRUE 
-           1.867912            1.589051 </code></pre>
-</div>
-</div>
-<pre><code>•   Participants who dropped out had slightly lower CRP at baseline, but the difference is not statistically significant.
-•   There’s no evidence that dropout was related to baseline inflammation.
-•   Dropout appears to be random with respect to baseline CRP, which supports the Missing at Random (MAR) assumption.</code></pre>
-<p>Because: • The mixed-effects model (LMM) is valid under MAR, • There’s no significant baseline CRP difference between those who stayed and those who dropped out,</p>
-<p>Your model results are likely unbiased with respect to dropout.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Back-transforming predicted log(CRP + 1) values to CRP (mg/L)</span></span>
-<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Create a prediction grid for all combinations of visit × group</span></span>
-<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the median baseline CRP for prediction (in log1p scale)</span></span>
-<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>baseline_crp_median <span class="ot">&lt;-</span> <span class="fu">median</span>(<span class="fu">log1p</span>(baseline_dropout<span class="sc">$</span>labs_crp), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create grid of new data</span></span>
-<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
-<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">visit =</span> <span class="fu">unique</span>(data_filtered<span class="sc">$</span>visit),</span>
-<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">allocation_group =</span> <span class="fu">unique</span>(data_filtered<span class="sc">$</span>allocation_group)</span>
-<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log1p_baseline_crp =</span> baseline_crp_median)</span>
-<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Predict from the adjusted model (fixed effects only)</span></span>
-<span id="cb65-15"><a href="#cb65-15" aria-hidden="true" tabindex="-1"></a>new_data<span class="sc">$</span>pred_log <span class="ot">&lt;-</span> <span class="fu">predict</span>(model3_log_adj, <span class="at">newdata =</span> new_data, <span class="at">re.form =</span> <span class="cn">NA</span>)</span>
-<span id="cb65-16"><a href="#cb65-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb65-17"><a href="#cb65-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Back-transform</span></span>
-<span id="cb65-18"><a href="#cb65-18" aria-hidden="true" tabindex="-1"></a>new_data<span class="sc">$</span>pred_crp <span class="ot">&lt;-</span> <span class="fu">exp</span>(new_data<span class="sc">$</span>pred_log) <span class="sc">-</span> <span class="dv">1</span></span>
-<span id="cb65-19"><a href="#cb65-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb65-20"><a href="#cb65-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: Plot back-transformed predictions</span></span>
-<span id="cb65-21"><a href="#cb65-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(new_data, <span class="fu">aes</span>(<span class="at">x =</span> visit, <span class="at">y =</span> pred_crp, <span class="at">color =</span> allocation_group, <span class="at">group =</span> allocation_group)) <span class="sc">+</span></span>
-<span id="cb65-22"><a href="#cb65-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb65-23"><a href="#cb65-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
-<span id="cb65-24"><a href="#cb65-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb65-25"><a href="#cb65-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Predicted CRP Levels Over Time (Back-Transformed)"</span>,</span>
-<span id="cb65-26"><a href="#cb65-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Visit"</span>,</span>
-<span id="cb65-27"><a href="#cb65-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Predicted CRP (mg/L)"</span>,</span>
-<span id="cb65-28"><a href="#cb65-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Group"</span></span>
-<span id="cb65-29"><a href="#cb65-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb65-30"><a href="#cb65-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>What this plot shows</p>
-<pre><code>•   Predicted CRP levels in mg/L, adjusted for the median baseline CRP.
-•   Makes the model output clinically interpretable.</code></pre>
-<p>You can clearly see: • The overall downward trend in CRP over time. • That Grupo B does not differ from Grupo A in rate of CRP decline after adjusting for baseline.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add confidence intervals to predicted CRP plot (back-transformed)</span></span>
-<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required packages</span></span>
-<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(merTools)  <span class="co"># for predictInterval</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: arm</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: MASS</code></pre>
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>
-Attaching package: 'MASS'</code></pre>
+Correlation matrix not shown by default, as p = 22 &gt; 12.
+Use print(x, correlation=TRUE)  or
+    vcov(x)        if you need it</code></pre>
+</div>
+</div>
+<p><em>2. Instrumental Variable (IV) Approach or Complier Average Causal Effect (CACE)</em></p>
+<p>Use allocation_group as an instrument for treatment receipt/adherence, under the assumption that randomization affects inflammation only via the intervention. This estimates the effect among compliers, without the collider bias introduced by directly conditioning on post-randomization variables. This estimates the effect of actually completing the intervention, using random allocation as an instrument. In R, this can be implemented using <code>ivreg()</code> from the {AER} package or {ivtools}. The syntax is: outcome ~ endogenous + exogenous | instrument + exogenous. However, ivreg does not handle random effects. It assumes independent observations. Since our data has repeated measures (record_id), we should either use only one observation per subject (e.g., endpoint value) or use cluster-robust standard errors to account for within-subject correlation.</p>
+<p>Collapsing longitudinal data to one observation per subject for instrumental variable (IV) analysis can be done in multiple ways, each answering a slightly different causal question. The gold standard in biostatistics is the ANCOVA approach, which models the outcome at the final time point while adjusting for the baseline value. This has been shown to be statistically more powerful and less biased than simple change scores when baseline and outcome are correlated. Like in the example:</p>
+<pre><code>iv_model &lt;- ivreg(
+  log1p(crp_final) ~ completed_intervention + log1p(crp_baseline) + covariates |
+  allocation_group + log1p(crp_baseline) + covariates,
+  data = data_final
+)</code></pre>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract CRP at baseline</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>data_baseline <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span></span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(visit <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(record_id, labs_crp) <span class="sc">%&gt;%</span></span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">crp_baseline =</span> labs_crp)</span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract CRP at final visit</span></span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a>data_final <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span></span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(record_id) <span class="sc">%&gt;%</span></span>
+<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(visit <span class="sc">==</span> <span class="fu">max</span>(visit)) <span class="sc">%&gt;%</span>  <span class="co"># This selects the final visit for each participant</span></span>
+<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a>    record_id, labs_crp, completed_intervention, compliance_score_adjusted,</span>
+<span id="cb64-14"><a href="#cb64-14" aria-hidden="true" tabindex="-1"></a>    duration_difference, allocation_group, age, sex, hypertension, hypercholesterolemia,</span>
+<span id="cb64-15"><a href="#cb64-15" aria-hidden="true" tabindex="-1"></a>    hypertrigliceridemia, drugs_w_loss, drugs_w_gain, mean_bp_mean, handgrip, evs_score,</span>
+<span id="cb64-16"><a href="#cb64-16" aria-hidden="true" tabindex="-1"></a>    alcohol_dose, kcal, labs_alt, labs_ggt, labs_ldl, labs_triglycerides, labs_hdl, labs_quick_index</span>
+<span id="cb64-17"><a href="#cb64-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb64-18"><a href="#cb64-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">crp_final =</span> labs_crp)</span>
+<span id="cb64-19"><a href="#cb64-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-20"><a href="#cb64-20" aria-hidden="true" tabindex="-1"></a>data_iv <span class="ot">&lt;-</span> data_final <span class="sc">%&gt;%</span></span>
+<span id="cb64-21"><a href="#cb64-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(data_baseline, <span class="at">by =</span> <span class="st">"record_id"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Primary IV model that estimates the total effect</strong></p>
+<p>The primary IV model that estimates the total effect is designed to evaluate the causal impact of the intervention on inflammation (CRP) as a whole, capturing both the direct effects and any indirect effects mediated by changes in other physiological or metabolic parameters. This model uses random assignment (allocation_group) as an instrument for actual participation or completion of the intervention (completed_intervention), allowing for the estimation of the Complier Average Causal Effect (CACE).</p>
+<p>The intent is to answer whether the intervention, when adhered to, leads to a reduction in inflammation, regardless of the biological pathways involved. It reflects the overall therapeutic effect, incorporating all mechanisms through which the intervention may influence CRP. This approach does not adjust for variables that could be affected by the intervention itself (such as blood pressure, lipid levels, or liver enzymes), ensuring that the total causal effect is not inadvertently blocked or biased by post-treatment variables.</p>
+</section>
+<section id="iv" class="level4">
+<h4 class="anchored" data-anchor-id="iv">IV</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(AER)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: car</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: carData</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'car'</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>The following object is masked from 'package:dplyr':
 
-    select</code></pre>
+    recode</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>
-arm (Version 1.14-4, built: 2024-4-1)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Working directory is /Users/gustavosplmoura/Library/Mobile Documents/com~apple~CloudDocs/Medicina/Biblioteca/Data Science/Data Science/R_Projects_Research/DVEP</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'arm'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:performance':
+<pre><code>The following object is masked from 'package:purrr':
 
-    display</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Create new data with baseline CRP held at median</span></span>
-<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>baseline_crp_median <span class="ot">&lt;-</span> <span class="fu">median</span>(<span class="fu">log1p</span>(baseline_dropout<span class="sc">$</span>labs_crp), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
-<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">visit =</span> <span class="fu">unique</span>(data_filtered<span class="sc">$</span>visit),</span>
-<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">allocation_group =</span> <span class="fu">unique</span>(data_filtered<span class="sc">$</span>allocation_group)</span>
-<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">log1p_baseline_crp =</span> baseline_crp_median,</span>
-<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">record_id =</span> <span class="st">"dummy"</span>  <span class="co"># Add a dummy ID to match model's grouping variable</span></span>
-<span id="cb76-11"><a href="#cb76-11" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb76-12"><a href="#cb76-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-13"><a href="#cb76-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Get prediction intervals on log scale (includes uncertainty)</span></span>
-<span id="cb76-14"><a href="#cb76-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)  <span class="co"># for reproducibility</span></span>
-<span id="cb76-15"><a href="#cb76-15" aria-hidden="true" tabindex="-1"></a>pred_int <span class="ot">&lt;-</span> <span class="fu">predictInterval</span>(</span>
-<span id="cb76-16"><a href="#cb76-16" aria-hidden="true" tabindex="-1"></a>  model3_log_adj,</span>
-<span id="cb76-17"><a href="#cb76-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">newdata =</span> new_data,</span>
-<span id="cb76-18"><a href="#cb76-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">level =</span> <span class="fl">0.95</span>,</span>
-<span id="cb76-19"><a href="#cb76-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">n.sims =</span> <span class="dv">1000</span>,</span>
-<span id="cb76-20"><a href="#cb76-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">stat =</span> <span class="st">"mean"</span>,</span>
-<span id="cb76-21"><a href="#cb76-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"linear.prediction"</span>,</span>
-<span id="cb76-22"><a href="#cb76-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">include.resid.var =</span> <span class="cn">FALSE</span></span>
-<span id="cb76-23"><a href="#cb76-23" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning:      The following levels of record_id from newdata 
- -- dummy -- are not in the model data. 
-     Currently, predictions for these values are based only on the 
- fixed coefficients and the observation-level error.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine with original new_data</span></span>
-<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(new_data, pred_int)</span>
-<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Back-transform</span></span>
-<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> new_data <span class="sc">%&gt;%</span></span>
-<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">fit =</span> <span class="fu">exp</span>(fit) <span class="sc">-</span> <span class="dv">1</span>,</span>
-<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwr =</span> <span class="fu">exp</span>(lwr) <span class="sc">-</span> <span class="dv">1</span>,</span>
-<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">upr =</span> <span class="fu">exp</span>(upr) <span class="sc">-</span> <span class="dv">1</span></span>
-<span id="cb78-10"><a href="#cb78-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb78-11"><a href="#cb78-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-12"><a href="#cb78-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: Plot with ribbons (CI)</span></span>
-<span id="cb78-13"><a href="#cb78-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(new_data, <span class="fu">aes</span>(<span class="at">x =</span> visit, <span class="at">y =</span> fit, <span class="at">color =</span> allocation_group, <span class="at">group =</span> allocation_group)) <span class="sc">+</span></span>
-<span id="cb78-14"><a href="#cb78-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb78-15"><a href="#cb78-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
-<span id="cb78-16"><a href="#cb78-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lwr, <span class="at">ymax =</span> upr, <span class="at">fill =</span> allocation_group), <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb78-17"><a href="#cb78-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb78-18"><a href="#cb78-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Predicted CRP Levels with 95% CI (Back-Transformed)"</span>,</span>
-<span id="cb78-19"><a href="#cb78-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Predicted CRP (mg/L)"</span>,</span>
-<span id="cb78-20"><a href="#cb78-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Visit"</span>,</span>
-<span id="cb78-21"><a href="#cb78-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Group"</span>,</span>
-<span id="cb78-22"><a href="#cb78-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Group"</span></span>
-<span id="cb78-23"><a href="#cb78-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb78-24"><a href="#cb78-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Optional: Line plot of individual trajectories</span></span>
-<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_filtered, <span class="fu">aes</span>(<span class="at">x =</span> visit, <span class="at">y =</span> labs_crp, <span class="at">group =</span> record_id, <span class="at">color =</span> allocation_group)) <span class="sc">+</span></span>
-<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
-<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Individual CRP Trajectories (Raw Data)"</span>,</span>
-<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Observed CRP (mg/L)"</span>,</span>
-<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Visit"</span>,</span>
-<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Group"</span></span>
-<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 12 rows containing missing values or values outside the scale range
-(`geom_line()`).</code></pre>
+    some</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 15 rows containing missing values or values outside the scale range
-(`geom_point()`).</code></pre>
+<pre><code>Loading required package: lmtest</code></pre>
 </div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: zoo</code></pre>
 </div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'zoo'</code></pre>
 </div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric</code></pre>
 </div>
-</section>
-<section id="section-1" class="level3">
-<h3 class="anchored" data-anchor-id="section-1">2</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>data_filtered_lmm <span class="ot">&lt;-</span> data_filtered <span class="sc">%&gt;%</span></span>
-<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(record_id) <span class="sc">%&gt;%</span></span>
-<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">n</span>() <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
-<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>model4_log <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> visit <span class="sc">+</span> bmi <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> dass_score_stress <span class="sc">+</span> </span>
-<span id="cb82-7"><a href="#cb82-7" aria-hidden="true" tabindex="-1"></a>     labs_hba1c <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> allocation_group <span class="sc">+</span> </span>
-<span id="cb82-8"><a href="#cb82-8" aria-hidden="true" tabindex="-1"></a>     (<span class="dv">1</span> <span class="sc">|</span> record_id), <span class="at">data =</span> data_filtered_lmm)</span>
-<span id="cb82-9"><a href="#cb82-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb82-10"><a href="#cb82-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model4_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: sandwich</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: survival</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>iv_model_total <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log1p</span>(crp_final) <span class="sc">~</span> compliance_score_adjusted <span class="sc">+</span> <span class="fu">log1p</span>(crp_baseline) <span class="sc">+</span></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">|</span></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  allocation_group <span class="sc">+</span> <span class="fu">log1p</span>(crp_baseline) <span class="sc">+</span></span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia,</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_iv</span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(iv_model_total)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
-Formula: log1p(labs_crp) ~ visit + bmi + age + sex + dass_score_stress +  
-    labs_hba1c + labs_ggt + labs_triglycerides + allocation_group +  
-    (1 | record_id)
-   Data: data_filtered_lmm
+<pre><code>
+Call:
+ivreg(formula = log1p(crp_final) ~ compliance_score_adjusted + 
+    log1p(crp_baseline) + age + sex + hypertension + hypercholesterolemia + 
+    hypertrigliceridemia | allocation_group + log1p(crp_baseline) + 
+    age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia, 
+    data = data_iv)
 
-REML criterion at convergence: 260.1
-
-Scaled residuals: 
+Residuals:
     Min      1Q  Median      3Q     Max 
--3.0965 -0.4761  0.0079  0.4576  3.9622 
+-3.1840 -0.3743  0.1873  0.5627  1.7212 
 
-Random effects:
- Groups    Name        Variance Std.Dev.
- record_id (Intercept) 0.3083   0.5553  
- Residual              0.2502   0.5002  
-Number of obs: 103, groups:  record_id, 61
-
-Fixed effects:
-                          Estimate Std. Error         df t value Pr(&gt;|t|)   
-(Intercept)             -2.9172883  1.4955248 81.3986059  -1.951  0.05454 . 
-visit                   -0.1034030  0.0550179 41.8942409  -1.879  0.06715 . 
-bmi                      0.1130495  0.0410467 79.3316852   2.754  0.00729 **
-age                     -0.0148058  0.0106836 59.1960337  -1.386  0.17099   
-sexMasculino            -0.5116809  0.2786086 54.6626748  -1.837  0.07172 . 
-dass_score_stress        0.0001941  0.0081992 89.7066088   0.024  0.98117   
-labs_hba1c               0.3224812  0.1110692 68.3963949   2.903  0.00496 **
-labs_ggt                 0.0001671  0.0035339 75.5998101   0.047  0.96241   
-labs_triglycerides      -0.0007923  0.0013128 91.8399906  -0.604  0.54766   
-allocation_groupGrupo B  0.2106135  0.1802660 49.7850831   1.168  0.24823   
+Coefficients:
+                          Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)                3.43808    8.23969   0.417    0.678  
+compliance_score_adjusted -4.58554    9.74641  -0.470    0.640  
+log1p(crp_baseline)        0.67793    0.27287   2.484    0.016 *
+age                       -0.39213    0.52078  -0.753    0.455  
+sexMasculino              -0.06743    0.44889  -0.150    0.881  
+hypertension1              0.48559    0.63892   0.760    0.450  
+hypercholesterolemia1     -0.01473    0.66669  -0.022    0.982  
+hypertrigliceridemia1     -0.06847    0.39551  -0.173    0.863  
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Correlation of Fixed Effects:
-            (Intr) visit  bmi    age    sxMscl dss_s_ lbs_h1 lbs_gg lbs_tr
-visit       -0.150                                                        
-bmi         -0.896  0.111                                                 
-age          0.028 -0.042 -0.227                                          
-sexMasculin -0.080  0.064  0.036 -0.056                                   
-dss_scr_str -0.045  0.212 -0.134  0.287  0.160                            
-labs_hba1c  -0.477 -0.045  0.218 -0.342  0.122 -0.033                     
-labs_ggt     0.056 -0.015 -0.143  0.177 -0.177  0.065 -0.094              
-lbs_trglycr  0.143 -0.003 -0.135 -0.059 -0.166  0.030 -0.252 -0.151       
-allctn_grGB -0.067  0.041 -0.005 -0.139  0.156 -0.021  0.152 -0.095 -0.031</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model3_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+Residual standard error: 0.9618 on 55 degrees of freedom
+Multiple R-Squared: -0.3381,    Adjusted R-squared: -0.5084 
+Wald test: 2.685 on 7 and 55 DF,  p-value: 0.01821 </code></pre>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(<span class="fu">resid</span>(model3_log)); <span class="fu">qqline</span>(<span class="fu">resid</span>(model3_log))  <span class="co"># Normality check```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Results_main_outcomes_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
+<p><em>3. G-Computation / G-Formula</em></p>
+<p>Simulate the outcome under a hypothetical scenario where everyone perfectly adheres to the intervention. This provides an estimate of the expected outcome if all participants had fully complied. R packages: {gfoRmula}, {ltmle}.</p>
+<p><em>4. Marginal Structural Models (MSMs) with Inverse Probability Weighting (IPW)</em></p>
+<p>Weight participants based on their probability of adhering, creating a pseudo-population where adherence is independent of confounders. This corrects for time-varying confounding affected by prior treatment. This gives an estimate of the intervention effect had everyone adhered as expected. Basic structure using {ipw}:</p>
 </section>
+<section id="ipw" class="level4">
+<h4 class="anchored" data-anchor-id="ipw">IPW</h4>
+<p>Complete case analysis (default approach in IPW):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ipw)</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>data_model_ipw <span class="ot">&lt;-</span> data_model_scaled <span class="sc">%&gt;%</span></span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>    completed_intervention,</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>    age, sex, hypertension, hypercholesterolemia, hypertrigliceridemia,</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>    drugs_w_loss, drugs_w_gain, mean_bp_mean, handgrip, evs_score,</span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>    alcohol_dose, kcal, labs_alt, labs_ggt, labs_ldl, labs_triglycerides,</span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a>    labs_hdl, labs_quick_index</span>
+<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-12"><a href="#cb79-12" aria-hidden="true" tabindex="-1"></a>model_weights <span class="ot">&lt;-</span> <span class="fu">ipwpoint</span>(</span>
+<span id="cb79-13"><a href="#cb79-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">exposure =</span> completed_intervention,</span>
+<span id="cb79-14"><a href="#cb79-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="st">"binomial"</span>,</span>
+<span id="cb79-15"><a href="#cb79-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">link =</span> <span class="st">"logit"</span>,</span>
+<span id="cb79-16"><a href="#cb79-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">denominator =</span> <span class="sc">~</span> </span>
+<span id="cb79-17"><a href="#cb79-17" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span></span>
+<span id="cb79-18"><a href="#cb79-18" aria-hidden="true" tabindex="-1"></a>    drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span></span>
+<span id="cb79-19"><a href="#cb79-19" aria-hidden="true" tabindex="-1"></a>    alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span></span>
+<span id="cb79-20"><a href="#cb79-20" aria-hidden="true" tabindex="-1"></a>    labs_hdl <span class="sc">+</span> labs_quick_index,</span>
+<span id="cb79-21"><a href="#cb79-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_model_ipw</span>
+<span id="cb79-22"><a href="#cb79-22" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Use simple imputation (if appropriate for your data). Be cautious: imputation is a valid strategy if missingness is assumed to be Missing At Random (MAR) and the variables used for imputation are adequate.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mice)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'mice'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:stats':
+
+    filter</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    cbind, rbind</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>data_model_ipw <span class="ot">&lt;-</span> mice<span class="sc">::</span><span class="fu">complete</span>(<span class="fu">mice</span>(data_model_scaled, <span class="at">m =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ iter imp variable
+  1   1  compliance_score_adjusted  duration_difference  whoqol_score_overall  dass_score_depression  dass_score_anxiety  dass_score_stress  ecap_score  abdomen  bmi  mean_bp_mean  resistance  reactance  phase_angle  handgrip  evs_score  carbs_kcal  protein_kcal  fat_kcal  kcal  labs_crp  labs_ast  labs_alt  labs_ggt  labs_alkp  labs_cholesterol  labs_ldl  labs_hba1c  labs_triglycerides  labs_hdl  labs_glucose  labs_insulin  labs_homa_ir  labs_quick_index
+  2   1  compliance_score_adjusted  duration_difference  whoqol_score_overall  dass_score_depression  dass_score_anxiety  dass_score_stress  ecap_score  abdomen  bmi  mean_bp_mean  resistance  reactance  phase_angle  handgrip  evs_score  carbs_kcal  protein_kcal  fat_kcal  kcal  labs_crp  labs_ast  labs_alt  labs_ggt  labs_alkp  labs_cholesterol  labs_ldl  labs_hba1c  labs_triglycerides  labs_hdl  labs_glucose  labs_insulin  labs_homa_ir  labs_quick_index
+  3   1  compliance_score_adjusted  duration_difference  whoqol_score_overall  dass_score_depression  dass_score_anxiety  dass_score_stress  ecap_score  abdomen  bmi  mean_bp_mean  resistance  reactance  phase_angle  handgrip  evs_score  carbs_kcal  protein_kcal  fat_kcal  kcal  labs_crp  labs_ast  labs_alt  labs_ggt  labs_alkp  labs_cholesterol  labs_ldl  labs_hba1c  labs_triglycerides  labs_hdl  labs_glucose  labs_insulin  labs_homa_ir  labs_quick_index
+  4   1  compliance_score_adjusted  duration_difference  whoqol_score_overall  dass_score_depression  dass_score_anxiety  dass_score_stress  ecap_score  abdomen  bmi  mean_bp_mean  resistance  reactance  phase_angle  handgrip  evs_score  carbs_kcal  protein_kcal  fat_kcal  kcal  labs_crp  labs_ast  labs_alt  labs_ggt  labs_alkp  labs_cholesterol  labs_ldl  labs_hba1c  labs_triglycerides  labs_hdl  labs_glucose  labs_insulin  labs_homa_ir  labs_quick_index
+  5   1  compliance_score_adjusted  duration_difference  whoqol_score_overall  dass_score_depression  dass_score_anxiety  dass_score_stress  ecap_score  abdomen  bmi  mean_bp_mean  resistance  reactance  phase_angle  handgrip  evs_score  carbs_kcal  protein_kcal  fat_kcal  kcal  labs_crp  labs_ast  labs_alt  labs_ggt  labs_alkp  labs_cholesterol  labs_ldl  labs_hba1c  labs_triglycerides  labs_hdl  labs_glucose  labs_insulin  labs_homa_ir  labs_quick_index</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Number of logged events: 75</code></pre>
+</div>
+</div>
+<p><em>5. Bayesian Models with Compliance Modeling</em></p>
+<p>Build a hierarchical Bayesian model that explicitly includes a latent compliance variable. Allows direct modeling of counterfactual scenarios under perfect adherence. Add prior distributions reflecting assumptions about compliance mechanisms. Packages: {brms}, {rstanarm}.</p>
+<p>Example idea:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(<span class="fu">log1p</span>(labs_crp) <span class="sc">~</span> allocation_group <span class="sc">+</span> compliance_score_adjusted <span class="sc">+</span> visit <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> covariates,</span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_model_scaled,</span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="fu">gaussian</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><em>Ways to Make Your Current Model More Sensitive to the Intervention</em></p>
+<ul>
+<li>Focus the population: subset to high compliers or exclude partial compliers.</li>
+<li>Model interactions: for example, allocation_group * compliance_score_adjusted to see whether the effect of the intervention depends on levels of compliance.</li>
+<li>Use longitudinal modeling more fully: include random slopes for visit to capture differential trajectories over time.</li>
+<li>Explore dose-response: instead of binary completed_intervention, use a continuous adherence measure (compliance_score_adjusted) to model the dose-response effect of adherence.</li>
+<li>Consider transforming the outcome if distributional assumptions are strained (though log1p() is already a robust choice for skewed variables like CRP).</li>
+</ul>
+</section>
+</section>
+</section>
+</section>
+<section id="pam" class="level1">
+<h1>PAM</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>pam_1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(mean_bp_mean <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> record_id) <span class="sc">+</span> visit <span class="sc">+</span> allocation_group <span class="sc">+</span> completed_intervention <span class="sc">+</span> duration_difference <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> hypertension <span class="sc">+</span> hypercholesterolemia <span class="sc">+</span> hypertrigliceridemia <span class="sc">+</span> drugs_w_loss <span class="sc">+</span> drugs_w_gain <span class="sc">+</span> mean_bp_mean <span class="sc">+</span> handgrip <span class="sc">+</span> evs_score <span class="sc">+</span> alcohol_dose <span class="sc">+</span> kcal <span class="sc">+</span> labs_crp <span class="sc">+</span> labs_alt <span class="sc">+</span> labs_ggt <span class="sc">+</span> labs_ldl <span class="sc">+</span> labs_triglycerides <span class="sc">+</span> labs_hdl <span class="sc">+</span> labs_quick_index, <span class="at">data =</span> data_model_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in model.matrix.default(fixedform, fr, contrasts): the response
+appeared on the right-hand side and was dropped</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in model.matrix.default(fixedform, fr, contrasts): problem with term 12
+in model.matrix: no columns are assigned</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in model.matrix.default(fixedform, fr, contrasts): the response
+appeared on the right-hand side and was dropped</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in model.matrix.default(fixedform, fr, contrasts): problem with term 12
+in model.matrix: no columns are assigned</code></pre>
+</div>
+</div>
 </section>
 
 </main>
