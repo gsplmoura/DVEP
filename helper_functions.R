@@ -606,59 +606,58 @@ plot_histograms_by_group <- function(data, group_col = NULL) {
 }
 
 
-## ✅ Complete Function: Sensitivity Analysis for lmer Models
-
-sensitivity_check_lmer <- function(model, data, id_var = "record_id", top_n = 5) {
-    
-    ## Load required packages
+sensitivity_check_lmer <- function(model, id_var = "record_id", top_n = 5) {
     require(influence.ME)
     require(dplyr)
     require(lme4)
     require(broom.mixed)
     
-    ## Extract grouping variable names
-    id_list <- as.character(unique(data[[id_var]]))
-    
-    ## Compute influence measures
+    # Compute influence measures
     infl <- influence(model, group = id_var)
     cooks <- cooks.distance(infl)
     
-    ## Build dataframe with Cook's distance
-    cooks_df <- data.frame(
+    # Extract IDs safely
+    id_list <- rownames(as.data.frame(cooks))
+    
+    if (length(id_list) != length(cooks)) {
+        stop("Mismatch between ID list and Cook's distances. Check grouping variable.")
+    }
+    
+    # Build dataframe
+    cooks_df <- tibble::tibble(
         record_id = id_list,
-        cooks_distance = cooks
+        cooks_distance = as.numeric(cooks)
     )
     
-    ## Identify influential IDs:
-    ## 🔸 Rule-based (4/N)
+    # Rule-based threshold (4/n rule)
     influential_ids_rule <- cooks_df %>%
-        filter(cooks_distance > (4 / length(cooks))) %>%
+        filter(cooks_distance > (4 / nrow(cooks_df))) %>%
         pull(record_id)
     
-    ## 🔸 Top N most influential
+    # Top N most influential
     top_ids <- cooks_df %>%
         arrange(desc(cooks_distance)) %>%
-        slice(1:top_n) %>%
+        slice_head(n = top_n) %>%
         pull(record_id)
     
-    ## ✅ Combine both (no duplicates)
+    # Combine unique IDs
     influential_ids <- unique(c(influential_ids_rule, top_ids))
     
-    ## ✅ Refit model excluding influential IDs
+    # Refit model excluding influential IDs
     model_sens <- update(
         model,
         subset = !(get(id_var) %in% influential_ids)
     )
     
-    ## ✅ Compare fixed effects side by side
+    # Compare fixed effects
     comparison <- bind_rows(
-        tidy(model) %>% mutate(Model = "Original"),
-        tidy(model_sens) %>% mutate(Model = "Sensitivity")
+        broom.mixed::tidy(model) %>% mutate(Model = "Original"),
+        broom.mixed::tidy(model_sens) %>% mutate(Model = "Sensitivity")
     ) %>%
         select(Model, term, estimate, std.error, statistic, p.value) %>%
         arrange(term, Model)
     
-    ## ✅ Output
+    # Output
     list(
         cooks_table = cooks_df,
         influential_ids = influential_ids,

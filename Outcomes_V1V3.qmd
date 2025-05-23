@@ -1,0 +1,958 @@
+---
+title: "All outcomes"
+author: "S.P.L.M., Gustavo"
+date: today
+format:
+  html:
+    page-layout: full
+    toc: true
+    toc-depth: 4
+    toc-float:
+      collapsed: false
+      smooth-scroll: true
+    css: styles.css
+    code-fold: true
+  pdf:
+    toc: true
+    toc-depth: 2
+    pdf-engine: xelatex
+---
+
+# Load
+```{r setup}
+#| include: false
+
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  tibble.print_max = Inf,
+  tibble.width = Inf)
+```
+
+
+```{r, echo=FALSE}
+
+rm(list = ls())
+graphics.off()
+cat("\014")  # Clear any pending RStudio sessions or temporary files
+
+# Load functions from external script
+source("helper_functions.R")
+
+## Load necessary libraries
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(stringr)
+library(purrr)
+library(here)
+library(lme4)
+library(lmerTest)
+library(skimr)
+library(performance)
+library(gt)
+
+# Read Files ----
+## Codebooks
+codebook_dvep <- read_excel(
+    "Codebooks/codebook_dvep.xlsx",
+    col_names = TRUE,
+    col_types = NULL,
+    na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+    trim_ws = TRUE,
+    skip = 0, # Number of lines to skip before reading data
+    n_max = Inf, # Maximum number of lines to read.
+    guess_max = 1000
+) %>%
+    arrange(index)
+
+codebook_structure  <- read_csv(
+    "Codebooks/codebook_structure.csv",
+    col_names = TRUE)
+
+codebook_ncit  <- read_csv(
+    "Codebooks/codebook_ncit.csv",
+    col_names = TRUE)
+
+codebook_bia <- read_excel(
+    "Codebooks/codebook_bia.xlsx",
+    col_names = TRUE,
+    col_types = NULL,
+    na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+    trim_ws = TRUE,
+    skip = 0, # Number of lines to skip before reading data
+    n_max = Inf, # Maximum number of lines to read.
+    guess_max = 1000
+) %>%
+    arrange(index)
+
+## Data
+data <- readRDS("Data_processed/data.rds")
+# data_bia <- readRDS("Data_processed/data_bia.rds")
+# data_bia_D1 <- readRDS("Data_processed/data_bia_D1.rds")
+# data_bia_D1_mean <- readRDS("Data_processed/data_bia_D1_mean.rds")
+# data_bia_D1_raw <- readRDS("Data_processed/data_bia_D1_raw.rds")
+# data_bia_D3 <- readRDS("Data_processed/data_bia_D3.rds")
+# data_bia_D3_mean <- readRDS("Data_processed/data_bia_D3_mean.rds")
+# data_bia_D3_raw <- readRDS("Data_processed/data_bia_D3_raw.rds")
+# data_bia_mean <- readRDS("Data_processed/data_bia_mean.rds")
+data_d1_exclusive <- readRDS("Data_processed/data_d1_exclusive.rds")
+data_filtered <- readRDS("Data_processed/data_filtered.rds")
+# data_filtered_seca <- readRDS("Data_processed/data_filtered_seca.rds")
+I21_conditions_R <- readRDS("Data_processed/I21_conditions_R.rds")
+I22_drugs_R <- readRDS("Data_processed/I22_drugs_R.rds")
+I27_labs_R <- readRDS("Data_processed/I27_labs_R.rds")
+# I29_compliance_new <- readRDS("Data_processed/I29_compliance_new.rds")
+I30_events_R <- readRDS("Data_processed/I30_events_R.rds")
+
+data_model <- readRDS("Data_processed/data_model.rds") %>% 
+    mutate(
+        visit = as.factor(visit),
+        record_id = as.factor(record_id)
+    )
+attributes(data_model$kcal)$label <- "Kcal total"
+attributes(data_model$labs_quick_index)$label <- "Quick Index"
+
+
+
+data_model_V1V3 <- data_model %>% 
+    filter(!visit == "2")
+
+## SUPERTIBBLE
+#data_instruments <- readRDS("Data_instruments/data_instruments.rds")
+```
+
+
+# Data from V1/V3
+```{r}
+data_model_V1V3$allocation_group <- droplevels(data_model_V1V3$allocation_group)
+contrasts(data_model_V1V3$allocation_group) <- contr.treatment(2)
+data_model_V1V3$visit <- droplevels(data_model_V1V3$visit)
+levels(data_model_V1V3$visit)
+#contrasts(data_model_V1V3$visit) <- contr.sum(2)
+contrasts(data_model_V1V3$visit) <- contr.treatment(2)
+data_model_V1V3$visit
+
+```
+
+## BIA
+
+### Phase Angle
+
+#### Plain Model
+```{r phase_angle_model_1, fig.width=10, fig.height=14}
+
+phase_angle_model <- lmer(log1p(phase_angle) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
+
+summary(phase_angle_model)
+
+performance::check_model(phase_angle_model)
+```
+
+#### Sensitivity analysis
+```{r phase_angle_model_2, fig.width=10, fig.height=14}
+phase_angle_model_check <- sensitivity_check_lmer(
+    model = phase_angle_model,
+    id_var = "record_id",
+    top_n = 5
+)
+
+# phase_angle_model_check$cooks_table        #Cook's distance table
+# phase_angle_model_check$influential_ids
+phase_angle_model_check$comparison_table
+
+phase_angle_model_sens <- update(object = phase_angle_model,
+                   subset = !(record_id %in% phase_angle_model_check$influential_ids)
+)
+
+performance::check_model(phase_angle_model_sens)
+
+```
+
+#### Distributions
+
+##### Plain model
+
+```{r phase_angle_distribution_1}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = phase_angle,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+##### Sensitivity model
+
+```{r phase_angle_distribution_2}
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% phase_angle_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = phase_angle,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+### Reactance
+
+#### Plain Model
+```{r reactance_model_1, fig.width=10, fig.height=14}
+
+reactance_model <- lmer(log1p(reactance) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
+
+summary(reactance_model)
+
+performance::check_model(reactance_model)
+```
+
+#### Sensitivity analysis
+```{r reactance_model_2, fig.width=10, fig.height=14}
+reactance_model_check <- sensitivity_check_lmer(
+    model = reactance_model,
+    id_var = "record_id",
+    top_n = 5
+)
+
+# reactance_model_check$cooks_table        #Cook's distance table
+# reactance_model_check$influential_ids
+reactance_model_check$comparison_table
+
+reactance_model_sens <- update(object = reactance_model,
+                   subset = !(record_id %in% reactance_model_check$influential_ids)
+)
+
+performance::check_model(reactance_model_sens)
+
+```
+
+#### Distributions
+
+##### Plain model
+
+```{r reactance_distribution_1}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = reactance,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+##### Sensitivity model
+
+```{r reactance_distribution_2}
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% reactance_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = reactance,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+### Resistance
+
+#### Plain Model
+```{r resistance_model_1, fig.width=10, fig.height=14}
+
+resistance_model <- lmer(log1p(resistance) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
+
+summary(resistance_model)
+
+performance::check_model(resistance_model)
+```
+
+#### Sensitivity analysis
+```{r resistance_model_2, fig.width=10, fig.height=14}
+resistance_model_check <- sensitivity_check_lmer(
+    model = resistance_model,
+    id_var = "record_id",
+    top_n = 5
+)
+
+# resistance_model_check$cooks_table        #Cook's distance table
+# resistance_model_check$influential_ids
+resistance_model_check$comparison_table
+
+resistance_model_sens <- update(object = resistance_model,
+                   subset = !(record_id %in% resistance_model_check$influential_ids)
+)
+
+performance::check_model(resistance_model_sens)
+
+```
+
+#### Distributions
+
+##### Plain model
+
+```{r resistance_distribution_1}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = resistance,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+##### Sensitivity model
+
+```{r resistance_distribution_2}
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% resistance_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = resistance,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+## Handgrip
+
+#### Plain Model
+```{r handgrip_model_1, fig.width=10, fig.height=14}
+
+handgrip_model <- lmer(log1p(handgrip) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
+
+summary(handgrip_model)
+
+performance::check_model(handgrip_model)
+```
+
+#### Sensitivity analysis
+```{r handgrip_model_2, fig.width=10, fig.height=14}
+handgrip_model_check <- sensitivity_check_lmer(
+    model = handgrip_model,
+    id_var = "record_id",
+    top_n = 5
+)
+
+# handgrip_model_check$cooks_table        #Cook's distance table
+# handgrip_model_check$influential_ids
+handgrip_model_check$comparison_table
+
+handgrip_model_sens <- update(object = handgrip_model,
+                   subset = !(record_id %in% handgrip_model_check$influential_ids)
+)
+
+performance::check_model(handgrip_model_sens)
+
+```
+
+#### Distributions
+
+##### Plain model
+
+```{r handgrip_distribution_1}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = handgrip,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+##### Sensitivity model
+
+```{r handgrip_distribution_2}
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% handgrip_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = handgrip,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+
+
+## Questionnaires
+
+### WHOQOL
+
+#### Plain Model
+```{r whoqol_score_overall_model_1, fig.width=10, fig.height=14}
+
+whoqol_score_overall_model <- lmer(log1p(whoqol_score_overall) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
+
+summary(whoqol_score_overall_model)
+
+performance::check_model(whoqol_score_overall_model)
+```
+
+#### Sensitivity analysis
+```{r whoqol_score_overall_model_2, fig.width=10, fig.height=14}
+whoqol_score_overall_model_check <- sensitivity_check_lmer(
+    model = whoqol_score_overall_model,
+    id_var = "record_id",
+    top_n = 5
+)
+
+# whoqol_score_overall_model_check$cooks_table        #Cook's distance table
+# whoqol_score_overall_model_check$influential_ids
+whoqol_score_overall_model_check$comparison_table
+
+whoqol_score_overall_model_sens <- update(object = whoqol_score_overall_model,
+                   subset = !(record_id %in% whoqol_score_overall_model_check$influential_ids)
+)
+
+performance::check_model(whoqol_score_overall_model_sens)
+
+```
+
+#### Distributions
+
+##### Plain model
+
+```{r whoqol_score_overall_distribution_1}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = whoqol_score_overall,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+##### Sensitivity model
+
+```{r whoqol_score_overall_distribution_2}
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% whoqol_score_overall_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = whoqol_score_overall,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+## DASS Depression
+
+#### Plain Model
+```{r dass_score_depression_model_1, fig.width=10, fig.height=14}
+
+dass_score_depression_model <- lmer(log1p(dass_score_depression) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
+
+summary(dass_score_depression_model)
+
+performance::check_model(dass_score_depression_model)
+```
+
+#### Sensitivity analysis
+```{r dass_score_depression_model_2, fig.width=10, fig.height=14}
+dass_score_depression_model_check <- sensitivity_check_lmer(
+    model = dass_score_depression_model,
+    id_var = "record_id",
+    top_n = 5
+)
+
+# dass_score_depression_model_check$cooks_table        #Cook's distance table
+# dass_score_depression_model_check$influential_ids
+dass_score_depression_model_check$comparison_table
+
+dass_score_depression_model_sens <- update(object = dass_score_depression_model,
+                   subset = !(record_id %in% dass_score_depression_model_check$influential_ids)
+)
+
+performance::check_model(dass_score_depression_model_sens)
+
+```
+
+#### Distributions
+
+##### Plain model
+
+```{r dass_score_depression_distribution_1}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = dass_score_depression,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+##### Sensitivity model
+
+```{r dass_score_depression_distribution_2}
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% dass_score_depression_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = dass_score_depression,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+## DASS Anxiety
+
+#### Plain Model
+```{r dass_score_anxiety_model_1, fig.width=10, fig.height=14}
+
+dass_score_anxiety_model <- lmer(log1p(dass_score_anxiety) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
+
+summary(dass_score_anxiety_model)
+
+performance::check_model(dass_score_anxiety_model)
+```
+
+#### Sensitivity analysis
+```{r dass_score_anxiety_model_2, fig.width=10, fig.height=14}
+dass_score_anxiety_model_check <- sensitivity_check_lmer(
+    model = dass_score_anxiety_model,
+    id_var = "record_id",
+    top_n = 5
+)
+
+# dass_score_anxiety_model_check$cooks_table        #Cook's distance table
+# dass_score_anxiety_model_check$influential_ids
+dass_score_anxiety_model_check$comparison_table
+
+dass_score_anxiety_model_sens <- update(object = dass_score_anxiety_model,
+                   subset = !(record_id %in% dass_score_anxiety_model_check$influential_ids)
+)
+
+performance::check_model(dass_score_anxiety_model_sens)
+
+```
+
+#### Distributions
+
+##### Plain model
+
+```{r dass_score_anxiety_distribution_1}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = dass_score_anxiety,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+##### Sensitivity model
+
+```{r dass_score_anxiety_distribution_2}
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% dass_score_anxiety_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = dass_score_anxiety,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+## DASS Stress
+
+#### Plain Model
+```{r dass_score_stress_model_1, fig.width=10, fig.height=14}
+
+dass_score_stress_model <- lmer(log1p(dass_score_stress) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
+
+summary(dass_score_stress_model)
+
+performance::check_model(dass_score_stress_model)
+```
+
+#### Sensitivity analysis
+```{r dass_score_stress_model_2, fig.width=10, fig.height=14}
+dass_score_stress_model_check <- sensitivity_check_lmer(
+    model = dass_score_stress_model,
+    id_var = "record_id",
+    top_n = 5
+)
+
+# dass_score_stress_model_check$cooks_table        #Cook's distance table
+# dass_score_stress_model_check$influential_ids
+dass_score_stress_model_check$comparison_table
+
+dass_score_stress_model_sens <- update(object = dass_score_stress_model,
+                   subset = !(record_id %in% dass_score_stress_model_check$influential_ids)
+)
+
+performance::check_model(dass_score_stress_model_sens)
+
+```
+
+#### Distributions
+
+##### Plain model
+
+```{r dass_score_stress_distribution_1}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = dass_score_stress,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+##### Sensitivity model
+
+```{r dass_score_stress_distribution_2}
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% dass_score_stress_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = dass_score_stress,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+## ECAP
+
+#### Plain Model
+```{r ecap_score_model_1, fig.width=10, fig.height=14}
+
+ecap_score_model <- lmer(log1p(ecap_score) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
+
+summary(ecap_score_model)
+
+performance::check_model(ecap_score_model)
+```
+
+#### Sensitivity analysis
+```{r ecap_score_model_2, fig.width=10, fig.height=14}
+ecap_score_model_check <- sensitivity_check_lmer(
+    model = ecap_score_model,
+    id_var = "record_id",
+    top_n = 5
+)
+
+# ecap_score_model_check$cooks_table        #Cook's distance table
+# ecap_score_model_check$influential_ids
+ecap_score_model_check$comparison_table
+
+ecap_score_model_sens <- update(object = ecap_score_model,
+                   subset = !(record_id %in% ecap_score_model_check$influential_ids)
+)
+
+performance::check_model(ecap_score_model_sens)
+
+```
+
+#### Distributions
+
+##### Plain model
+
+```{r ecap_score_distribution_1}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = ecap_score,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+##### Sensitivity model
+
+```{r ecap_score_distribution_2}
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% ecap_score_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = ecap_score,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+### Alcohol
+
+#### Plain Model
+```{r alcohol_dose_model_1, fig.width=10, fig.height=14}
+
+alcohol_dose_model <- lmer(log1p(alcohol_dose) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
+
+summary(alcohol_dose_model)
+
+performance::check_model(alcohol_dose_model)
+```
+
+#### Sensitivity analysis
+```{r alcohol_dose_model_2, fig.width=10, fig.height=14}
+alcohol_dose_model_check <- sensitivity_check_lmer(
+    model = alcohol_dose_model,
+    id_var = "record_id",
+    top_n = 5
+)
+
+# alcohol_dose_model_check$cooks_table        #Cook's distance table
+# alcohol_dose_model_check$influential_ids
+alcohol_dose_model_check$comparison_table
+
+alcohol_dose_model_sens <- update(object = alcohol_dose_model,
+                   subset = !(record_id %in% alcohol_dose_model_check$influential_ids)
+)
+
+performance::check_model(alcohol_dose_model_sens)
+
+```
+
+#### Distributions
+
+##### Plain model
+
+```{r alcohol_dose_distribution_1}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = alcohol_dose,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+##### Sensitivity model
+
+```{r alcohol_dose_distribution_2}
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% alcohol_dose_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = alcohol_dose,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    facet_wrap(~ allocation_group)
+```
+
+## Diet intake
+
+Adjust for baseline?
+
+    "carbs_kcal"             "protein_kcal"           "fat_kcal"             "kcal"  
