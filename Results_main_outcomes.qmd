@@ -93,6 +93,7 @@ I22_drugs_R <- readRDS("Data_processed/I22_drugs_R.rds")
 I27_labs_R <- readRDS("Data_processed/I27_labs_R.rds")
 I29_compliance_new <- readRDS("Data_processed/I29_compliance_new.rds")
 I30_events_R <- readRDS("Data_processed/I30_events_R.rds")
+data_model <- readRDS("Data_processed/data_model.rds")
 
 ## SUPERTIBBLE
 data_instruments <- readRDS("Data_instruments/data_instruments.rds")
@@ -106,44 +107,6 @@ data_instruments <- readRDS("Data_instruments/data_instruments.rds")
 -   Questionnaires: whoqol_score_overall + ecap_score + evs_score + dass_score_stress + dass_score_anxiety + dass_score_depression + alcohol_significant + smoke_history + carbs_kcal + protein_kcal + fat_kcal + drugs_dose_change_yn +
 -   Adesão: completed_intervention, intervention_duration, education_years? cp_taking_as_directed_yn, cp_missed_dose_yn, cp_missed_dose_count, cp_discontinued_yn, cp_discontinued_n_days, cp_ran_out_of_drug_yn, cp_medication_confidence_sca
 
-## Select variables
-
-```{r}
-data_model <- data_filtered %>% 
-    select(
-        record_id:sex,
-        hypertension:ecap_score,
-        abdomen, bmi, mean_bp_mean,
-        resistance:evs_score,
-        alcohol_dose, 
-        carbs_kcal, protein_kcal, fat_kcal, kcal,
-        labs_crp:labs_alkp,
-        labs_cholesterol:labs_quick_index
-    )
-
-saveRDS(
-    data_model,
-    "Data_processed/data_model.rds")
-
-vars_to_keep <- names(data_model)
-
-# Step 2: filter codebook_dvep
-codebook_data_model <- codebook_dvep %>%
-    filter(variable %in% vars_to_keep) %>% 
-    select(
-        variable, label_pt, field_type, choices)
-
-saveRDS(
-    codebook_data_model,
-    "Data_processed/codebook_data_model.rds")
-```
-
-## Filter codebook
-
-```{r}
-codebook_filtered <- codebook_dvep %>%
-  filter(variable %in% colnames(data_model))
-```
 
 ## Scaling
 
@@ -227,13 +190,54 @@ pha_redcap <- data_model_scaled %>%
     )
 ```
 
+## Data exploration
+
+```{r}
+# longitudinal plot
+
+ggplot(pha_redcap, aes(x = as.factor(visit), y = phase_angle, group = record_id)) +
+  geom_line(alpha = 0.5, color = "blue") +   # Lines for each individual
+  geom_point(alpha = 0.5, color = "blue") +   # Points at each time point
+  labs(
+    x = "Visit",
+    y = "CRP (raw)"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+pha_redcap %>% filter(visit == 1 & phase_angle > 9) %>% select(record_id, visit, allocation_group, phase_angle)
+```
+
+
+```{r}
+ggplot(pha_redcap, aes(x = as.factor(visit), y = phase_angle)) +
+  geom_boxplot(outlier.color = "red", fill = "lightblue", alpha = 0.5) +
+  geom_jitter(width = 0.1, alpha = 0.3, color = "blue") + # Adds individual points
+  labs(
+    title = "Distribution of CRP (raw) Across Visits",
+    x = "Visit",
+    y = "CRP (raw)"
+  ) +
+  theme_minimal()
+```
+
 ## Modelo 1
+
+Estimar contrastes ortogonais para estimar a diferença entre as médias dos grupos
 
 ```{r}
 pha_1 <- lmer(phase_angle ~ (1 | record_id) + visit + allocation_group + completed_intervention + duration_difference + age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + mean_bp_mean + handgrip + evs_score + alcohol_dose + kcal + labs_crp + labs_alt + labs_ggt + labs_ldl + labs_triglycerides + labs_hdl + labs_quick_index, data = pha_redcap)
 
 summary(pha_1)
 ```
+
+```{r}
+pha_1 <- lmer(phase_angle ~ (1 | record_id) + as.factor(visit) + as.factor(allocation_group) + visit * allocation_group, data = pha_redcap)
+
+summary(pha_1)
+```
+
 
 A modelagem estatística foi conduzida por meio de um modelo linear misto, com intercepto aleatório por participante (record_id), ajustado pelo método de máxima verossimilhança restrita (REML). O desfecho avaliado foi o ângulo de fase, e todas as variáveis contínuas foram previamente padronizadas (média = 0; desvio padrão = 1), com exceção do índice QUICKI, mantido em sua unidade original para favorecer a interpretabilidade clínica. A variável duration_difference representa o desvio absoluto (em dias) da duração planejada da intervenção (90 dias), sendo ajustada para zero na linha de base e posteriormente padronizada.
 
@@ -302,9 +306,7 @@ b)  Modelos orientados por inferência e explicação
 Quando o objetivo principal é a interpretação causal ou explicativa, como em estudos clínicos e intervenções, a estratégia mais robusta é a redução teórica guiada por plausibilidade clínica. Essa abordagem inclui:
 
 -   Remoção de variáveis com baixa significância estatística e sem fundamento teórico forte;
-
 -   Exclusão de variáveis redundantes ou fortemente correlacionadas (ex.: manter labs_quick_index e excluir glicemia/insulina);
-
 -   Atenção a comportamentos instáveis dos coeficientes — por exemplo, quando a direção (sinal) de um coeficiente muda com a inclusão de outras variáveis, indicando colinearidade ou sobreposição de efeitos.
 
 c)  Estratégia híbrida recomendada
@@ -474,6 +476,53 @@ data_crp <- data_crp %>%
   dplyr::relocate(compliance_score_adjusted, .after = compliance_score_visit)
 ```
 
+## Data exploration
+
+```{r}
+# longitudinal plot
+
+ggplot(data_crp, aes(x = as.factor(visit), y = crp_log, group = record_id)) +
+  geom_line(alpha = 0.5, color = "blue") +   # Lines for each individual
+  geom_point(alpha = 0.5, color = "blue") +   # Points at each time point
+  labs(
+    title = "Longitudinal Plot of CRP (raw) Over Visits",
+    x = "Visit",
+    y = "CRP (raw)"
+  ) +
+  theme_minimal()
+```
+```{r}
+data_crp %>% filter(visit == 1 & crp_raw > 35) %>%  select(record_id, visit, allocation_group, crp_raw)
+```
+
+--> record_id 71: no biological explanation for elevated crp in visit 1 (59.65 -> 2.05 -> 0.31) | Will be included in per-protocol
+--> record_id 38: no apparent cause for crp levels | Completed intervetion but lacks labs from V3
+
+```{r}
+ggplot(data_crp, aes(x = as.factor(visit), y = crp_raw)) +
+  geom_boxplot(outlier.color = "red", fill = "lightblue", alpha = 0.5) +
+  #geom_jitter(width = 0.1, alpha = 0.3, color = "blue") + # Adds individual points
+  labs(
+    title = "Distribution of CRP (raw) Across Visits",
+    x = "Visit",
+    y = "CRP (raw)"
+  ) +
+  theme_minimal()
+```
+```{r}
+ggplot(data_crp, aes(x = as.factor(visit), y = crp_log)) +
+  geom_boxplot(outlier.color = "red", fill = "lightblue", alpha = 0.5) +
+  #geom_jitter(width = 0.1, alpha = 0.3, color = "blue") + # Adds individual points
+  labs(
+    title = "Distribution of CRP (raw) Across Visits",
+    x = "Visit",
+    y = "CRP (raw)"
+  ) +
+  theme_minimal()
+```
+
+
+
 ## Per protocol
 
 ```{r pcr_1_check-model, fig.width=10, fig.height=14}
@@ -483,7 +532,7 @@ pcr_1 <- lmer(
       allocation_group + visit + 
       duration_difference + # compliance_score_adjusted + completed_intervention 
       (1 | record_id) +
-      age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + 
+      # age + sex + hypertension + hypercholesterolemia + hypertrigliceridemia + drugs_w_loss + drugs_w_gain + 
       bmi + mean_bp_mean + handgrip + evs_score + # phase angle +
       # whoqol_score_overall + dass_score_depression + dass_score_anxiety + dass_score_stress + ecap_score
       alcohol_dose + kcal + 

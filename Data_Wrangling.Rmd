@@ -743,8 +743,7 @@ compliance_V2 <- data %>%
                   filter(event_name == "2visit_arm_1" & !is.na(evaluation_date)) %>% 
                   select(record_id,evaluation_date),
               by = join_by(record_id)
-        ) %>% 
-    rename(evaluation_date_2 = evaluation_date)
+        )
 
 compliance_V3 <- data %>% 
     select(
@@ -758,11 +757,10 @@ compliance_V3 <- data %>%
               by = join_by(record_id)
               ) %>% 
     left_join(data %>%
-                  filter(event_name == "2visit_arm_1" & !is.na(evaluation_date)) %>% 
+                  filter(event_name == "3visit_arm_1" & !is.na(evaluation_date)) %>% 
                   select(record_id,evaluation_date),
               by = join_by(record_id)
-        ) %>% 
-    rename(evaluation_date_2 = evaluation_date)
+        )
 
 I29_compliance <- bind_rows(
     compliance_V2,compliance_V3
@@ -778,7 +776,7 @@ I29_compliance <- bind_rows(
         .after = record_id
     ) %>% 
     arrange(record_id,visit) %>% 
-    select(record_id, visit, intervention_start_date, evaluation_date_2, conclusion_date, cp_taking_as_directed_yn, cp_schedule, cp_schedule_other, cp_missed_dose_yn, cp_missed_dose_count, cp_discontinued_yn, cp_discontinued_n_days, cp_discontinued_reason_other, cp_ran_out_of_drug_yn, cp_ran_out_reason, cp_perceived_improvement_yn, cp_perceived_improvement, cp_medication_confidence_scale, cp_self_reported_compliance_rate)  %>% 
+    select(record_id, visit, intervention_start_date, evaluation_date, conclusion_date, cp_taking_as_directed_yn, cp_schedule, cp_schedule_other, cp_missed_dose_yn, cp_missed_dose_count, cp_discontinued_yn, cp_discontinued_n_days, cp_discontinued_reason_other, cp_ran_out_of_drug_yn, cp_ran_out_reason, cp_perceived_improvement_yn, cp_perceived_improvement, cp_medication_confidence_scale, cp_self_reported_compliance_rate)  %>% 
     convert_col_type()
 
 rm(compliance_V2)
@@ -1408,5 +1406,28 @@ rm(codebook_bia, codebook_dvep, codebook_ncit, codebook_structure)
 # codebooks\$data[["dvep"]]
 # codebooks\$data[["ncit"]]
 # codebooks\$data[["structure"]]
+```
+
+# Data Model
+```{r}
+data_model <- data_filtered %>% 
+    select(
+        record_id:sex,
+        hypertension:ecap_score,
+        abdomen, bmi, mean_bp_mean,
+        resistance:evs_score,
+        alcohol_dose, 
+        carbs_kcal, protein_kcal, fat_kcal, kcal,
+        labs_crp:labs_alkp,
+        labs_cholesterol:labs_quick_index
+    ) %>% 
+    mutate(
+        crp_log = log1p(labs_crp)) %>% 
+    rename(
+        crp_raw = labs_crp
+    )
+
+saveRDS(data_model, file.path("Data_processed/data_model.rds"))
+write_csv(data_model, "Data_processed/data_model.csv", na = "NA")
 ```
 

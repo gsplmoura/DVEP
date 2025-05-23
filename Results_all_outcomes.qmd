@@ -1,0 +1,514 @@
+---
+title: "All outcomes"
+author: "S.P.L.M., Gustavo"
+date: today
+format:
+  html:
+    page-layout: full
+    toc: true
+    toc-depth: 4
+    toc-float:
+      collapsed: false
+      smooth-scroll: true
+    css: styles.css
+  pdf:
+    toc: true
+    toc-depth: 2
+    pdf-engine: xelatex
+---
+
+# Load
+
+```{r, echo=FALSE, message=FALSE}
+
+knitr::opts_chunk$set(
+  tibble.print_max = Inf,
+  tibble.width = Inf
+)
+
+rm(list = ls())
+graphics.off()
+cat("\014")  # Clear any pending RStudio sessions or temporary files
+
+# Load functions from external script
+source("helper_functions.R")
+
+## Load necessary libraries
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(stringr)
+library(purrr)
+library(here)
+library(lme4)
+library(lmerTest)
+library(skimr)
+library(performance)
+
+# Read Files ----
+## Codebooks
+codebook_dvep <- read_excel(
+    "Codebooks/codebook_dvep.xlsx",
+    col_names = TRUE,
+    col_types = NULL,
+    na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+    trim_ws = TRUE,
+    skip = 0, # Number of lines to skip before reading data
+    n_max = Inf, # Maximum number of lines to read.
+    guess_max = 1000
+) %>%
+    arrange(index)
+
+codebook_structure  <- read_csv(
+    "Codebooks/codebook_structure.csv",
+    col_names = TRUE)
+
+codebook_ncit  <- read_csv(
+    "Codebooks/codebook_ncit.csv",
+    col_names = TRUE)
+
+codebook_bia <- read_excel(
+    "Codebooks/codebook_bia.xlsx",
+    col_names = TRUE,
+    col_types = NULL,
+    na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+    trim_ws = TRUE,
+    skip = 0, # Number of lines to skip before reading data
+    n_max = Inf, # Maximum number of lines to read.
+    guess_max = 1000
+) %>%
+    arrange(index)
+
+## Data
+data <- readRDS("Data_processed/data.rds")
+# data_bia <- readRDS("Data_processed/data_bia.rds")
+# data_bia_D1 <- readRDS("Data_processed/data_bia_D1.rds")
+# data_bia_D1_mean <- readRDS("Data_processed/data_bia_D1_mean.rds")
+# data_bia_D1_raw <- readRDS("Data_processed/data_bia_D1_raw.rds")
+# data_bia_D3 <- readRDS("Data_processed/data_bia_D3.rds")
+# data_bia_D3_mean <- readRDS("Data_processed/data_bia_D3_mean.rds")
+# data_bia_D3_raw <- readRDS("Data_processed/data_bia_D3_raw.rds")
+# data_bia_mean <- readRDS("Data_processed/data_bia_mean.rds")
+data_d1_exclusive <- readRDS("Data_processed/data_d1_exclusive.rds")
+data_filtered <- readRDS("Data_processed/data_filtered.rds")
+# data_filtered_seca <- readRDS("Data_processed/data_filtered_seca.rds")
+I21_conditions_R <- readRDS("Data_processed/I21_conditions_R.rds")
+I22_drugs_R <- readRDS("Data_processed/I22_drugs_R.rds")
+I27_labs_R <- readRDS("Data_processed/I27_labs_R.rds")
+# I29_compliance_new <- readRDS("Data_processed/I29_compliance_new.rds")
+I30_events_R <- readRDS("Data_processed/I30_events_R.rds")
+
+data_model <- readRDS("Data_processed/data_model.rds") %>% 
+    mutate(
+        visit = as.factor(visit)
+    )
+attributes(data_model$kcal)$label <- "Kcal total"
+attributes(data_model$labs_quick_index)$label <- "Quick Index"
+
+
+## SUPERTIBBLE
+data_instruments <- readRDS("Data_instruments/data_instruments.rds")
+```
+
+# Explore baseline
+
+## Quantitative
+
+```{r}
+baseline <- data_model %>%
+    filter(visit == 1)
+
+summ_cat <- baseline %>%
+  summarize_categorical(use_labels = TRUE, group_col = "allocation_group") %>%
+  filter(Level == 1) %>%
+  select(Variable, Freq, Percent, allocation_group) %>%
+  pivot_wider(
+    names_from = allocation_group, 
+    values_from = c(Freq, Percent)
+    )
+
+summ_cat <- summ_cat %>% 
+    select(
+        Variable, 
+        `Grupo Placebo (N)` = `Freq_Grupo A`, 
+        `% (A)` = `Percent_Grupo A`, 
+        `Grupo Eclipta (N)` = `Freq_Grupo B`, 
+        `% (B)` = `Percent_Grupo B`)
+
+summ_cat 
+
+summ_num <- baseline %>% 
+    summarize_numerical(use_labels = TRUE, group_col = "allocation_group") %>% 
+    select(-N) %>%
+    pivot_wider(
+        names_from = allocation_group, 
+        values_from = `Mean (95% CI)`)
+
+summ_num %>% print(n = Inf)
+
+compare_groups(data = baseline, group_col = "allocation_group", use_labels = TRUE, return_df = FALSE)
+
+```
+
+## Plots
+
+```{r}
+ggplot(data = baseline, aes(x = allocation_group, y = kcal)) +
+    geom_violin(alpha = 0.5, trim = FALSE) +
+    geom_boxplot(width = 0.5, outlier.colour = "red", alpha = 0.5) +
+    geom_jitter(width = 0.2, alpha = 0.5) +
+    coord_flip() +
+    labs(
+        title = "Distribuição da ingestão energétical total por grupo de alocação",
+        x = "Ingestão total (Kcal)",
+        y = "Grupo de alocação"
+        ) +
+    theme_minimal()
+
+ggplot(data = baseline, aes(x = allocation_group, y = carbs_kcal)) +
+    geom_violin(alpha = 0.5, trim = FALSE) +
+    geom_boxplot(width = 0.5, outlier.colour = "red", alpha = 0.5) +
+    geom_jitter(width = 0.2, alpha = 0.5) +
+    coord_flip() +
+    labs(
+        title = "Distribuição da ingestão de carboidratos em kcal por grupo de alocação",
+        x = "Ingestão total (Kcal)",
+        y = "Grupo de alocação"
+        ) +
+    theme_minimal()
+
+ggplot(data = baseline, aes(x = allocation_group, y = protein_kcal)) +
+    geom_violin(alpha = 0.5, trim = FALSE) +
+    geom_boxplot(width = 0.5, outlier.colour = "red", alpha = 0.5) +
+    geom_jitter(width = 0.2, alpha = 0.5) +
+    coord_flip() +
+    labs(
+        title = "Distribuição da ingestão de proteínas em kcal por grupo de alocação",
+        x = "Ingestão total (Kcal)",
+        y = "Grupo de alocação"
+        ) +
+    theme_minimal()
+
+ggplot(data = baseline, aes(x = allocation_group, y = fat_kcal)) +
+    geom_violin(alpha = 0.5, trim = FALSE) +
+    geom_boxplot(width = 0.5, outlier.colour = "red", alpha = 0.5) +
+    geom_jitter(width = 0.2, alpha = 0.5) +
+    coord_flip() +
+    labs(
+        title = "Distribuição da ingestão de gorduras em kcal por grupo de alocação",
+        x = "Ingestão total (Kcal)",
+        y = "Grupo de alocação"
+        ) +
+    theme_minimal()
+    
+```
+
+# Treatment vs Orthogonal Contrasts
+
+How the Interpretation Changes:
+
+➤ Treatment Contrasts (contr.treatment):
+
+- Intercept: Mean AST for Grupo B at Visit 1 (reference).
+- Main effect of allocation_group: Difference between Grupo A and Grupo B at Visit 1.
+- Main effect of visit2: Change from Visit 1 to Visit 2 for Grupo B.
+- Interaction term: How the visit effect differs between groups.
+
+➤ Orthogonal Contrasts (contr.sum and contr.poly):
+
+- Intercept: Grand mean across groups and visits.
+- Main effect of allocation_group: Deviation of each group from the grand mean (Grupo A = +, Grupo B = −).
+- visit.L: Linear trend across visits, centered.
+- visit.Q: Quadratic trend.
+- Interactions: How the linear and quadratic trends differ between groups.
+
+# Explore outcomes
+
+```{r}
+contrasts(data_model$allocation_group) <- contr.sum(2) # Sum-to-zero for group
+contrasts(data_model$visit) <- contr.poly(3) # Orthogonal polynomial for visit
+```
+
+## AST
+
+```{r}
+data_model %>% select(starts_with("lab")) %>% names()
+```
+
+### Simple
+
+```{r, labs_ast_viz}
+ggplot(data_model, aes(x = as.factor(visit), y = labs_ast)) +
+  geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.5, color = "black") +
+  facet_wrap(~ allocation_group) +
+  theme_minimal() +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+        )
+
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_ast,
+        group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+        ) +
+  facet_wrap(~ allocation_group)
+```
+
+```{r labs_ast_model, fig.width=10, fig.height=14}
+ast <- lmer(log1p(labs_ast) ~ allocation_group + visit + (1 | record_id), data = data_model)
+
+summary(ast)
+
+performance::check_model(ast)
+```
+
+#### Fixed Effects
+
+| Term | Estimate | Interpretation |
+|---------------|---------------|-----------------------------------------|
+| (Intercept) | 24.29 | Mean AST for the grand mean (across groups and visits) |
+| allocation_group1 | +0.50 | Difference of Grupo A from the grand mean. Grupo B is coded as -0.50 (sum-to-zero contrast). Not significant (p = 0.464). |
+| visit.L | +0.14 | Linear trend across visits (1 → 2 → 3). Not significant (p = 0.832). |
+| visit.Q | +0.40 | Quadratic trend (e.g., U-shape or inverted U-shape). Not significant (p = 0.532). |
+
+Key Points for **Orthogonal Contrasts**
+
+1. allocation_group1
+   
+    -   Uses **sum-to-zero coding (`contr.sum`)**
+    -   Estimate represents how much **Grupo A differs from the grand mean**.
+    -   To get **Grupo B**, flip the sign (**−0.50**).
+
+2. visit.L and visit.Q
+
+    -   **`visit.L`** → Linear change across visits (Visit 1 → Visit 3). If positive, indicates AST increases linearly.
+    -   **`visit.Q`** → Quadratic shape. If significant, could mean the variable rises then falls (or vice versa).
+    -   Both are **orthogonal**, meaning each tests a unique part of the variance.
+
+**None of the fixed effects are statistically significant:**
+
+-   Group difference: **p = 0.464**
+-   Visit linear trend: **p = 0.832**
+-   Visit quadratic trend: **p = 0.532**
+
+→ **Conclusion:** No evidence of AST changing significantly across visits or differing between groups.
+
+
+#### Random Effects
+
+| Component   | Std.Dev | Interpretation                                   |
+|-------------|---------|--------------------------------------------------|
+| (Intercept) | 4.836   | Variability in baseline AST across individuals.  |
+| Residual    | 4.743   | Variability within individuals (visit-to-visit). |
+
+→ Substantial variability exists between participants (Intercept SD ≈ 4.8) compared to within-participant variation (Residual SD ≈ 4.7).
+
+
+#### Important Detail for Orthogonal Contrasts:
+
+-   **Intercept:** is the **grand mean** (not the mean of a specific group like in treatment coding).
+-   Group effects are interpreted relative to the grand mean, not a reference level.
+
+→ If you switch back to treatment contrasts (`contr.treatment`), the intercept would represent **Grupo B (if coded as reference)**, and the group coefficient would be **Grupo A minus Grupo B**
+
+### Sensitivity check
+
+Analysis of Influential points
+
+*Manually:*
+
+```{r ast_sens, fig.width=10, fig.height=14}
+library(influence.ME)
+
+# Build influence measures
+infl_ast <- influence.ME::influence(ast, group = "record_id")
+
+# Check Cook's distance
+cooks <- cooks.distance(infl_ast)
+
+record_ids <- as.character(unique(data_model$record_id))
+
+# Visualize Cook's distance
+plot(
+  cooks, 
+  type = "h", 
+  main = "Cook's Distance per record_id", 
+  ylab = "Cook's Distance", 
+  xlab = "record_id", 
+  las = 2
+)
+abline(h = 4 / length(cooks), col = "red", lty = 2)
+
+# List top influential IDs
+
+cooks_df <- data.frame(
+  record_id = record_ids,
+  cooks_distance = cooks
+)
+
+## Identify influential IDs:
+    ## Rule-based (4/N)
+    influential_ids_rule <- cooks_df %>%
+        filter(cooks_distance > (4 / length(cooks))) %>%
+        pull(record_id)
+    
+    ## Top 5 most influential
+    top_ids <- cooks_df %>%
+        arrange(desc(cooks_distance)) %>%
+        slice(1:5) %>%
+        pull(record_id)
+    
+    ## Combine both (no duplicates)
+    influential_ids <- unique(c(influential_ids_rule, top_ids))
+    
+    ## Refit model excluding influential IDs
+    ast_sens <- update(object = ast,
+                       subset = !(record_id %in% influential_ids)
+                       )
+
+    summary(ast_sens)
+
+performance::check_model(ast_sens)
+
+data_model %>% 
+    filter(
+        !(record_id %in% influential_ids)
+    ) %>% 
+ggplot(
+    aes(
+        x = as.factor(visit),
+        y = labs_ast,
+        group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+        ) +
+  facet_wrap(~ allocation_group)
+```
+
+*Function:*
+
+```{r}
+ast_check <- sensitivity_check_lmer(
+    model = ast,
+    data = data_model,
+    id_var = "record_id",
+    top_n = 5
+ )
+
+## ✔️ View Cook's distance table:
+#result$cooks_table
+
+## ✔️ View influential IDs:
+ast_check$influential_ids
+
+## ✔️ View comparison of fixed effects:
+ast_check$comparison_table
+
+```
+
+*Interpretation of the Sensitivity Check*
+
+#### Fixed Effects
+
+None of these changes are large. The magnitude and p-values remain non-significant.
+
+| Term                 | Original | Sensitivity | Δ Change        |
+|----------------------|----------|-------------|-----------------|
+| **(Intercept)**      | 3.20     | 3.18        | Slightly ↓      |
+| **allocation_group1**| 0.0097   | 0.014       | ↑ tiny (still NS)|
+| **visit.L**          | +0.0018  | -0.0102     | Small flip (still NS)|
+| **visit.Q**          | +0.0137  | +0.0171     | Minor ↑         |
+
+
+#### Random Effects (Variance Components)
+
+Residual (within-subject) variance decreased substantially after removing influential IDs. This is a signal that the influential IDs were contributing to heteroskedasticity and residual noise.
+
+| Component            | Original | Sensitivity | Δ Change        |
+|----------------------|----------|-------------|-----------------|
+| **sd__(Intercept)**  | 0.174    | 0.172       | ↓ slightly      |
+| **sd__Observation**  | 0.183    | 0.155       | ↓ noticeably |
+
+
+What This Means:
+
+- Conclusion and direction of effects are stable — results are robust to these influential points.
+- Residual variance reduction suggests improved model fit and less noise.
+- Fixed effects estimates changed minimally — **no major distortions.**
+
+## ALT
+
+```{r}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_alt,
+        group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+        ) +
+  facet_wrap(~ allocation_group)
+```
+
+```{r alt, fig.width=10, fig.height=14}
+
+alt <- lmer(log1p(labs_alt) ~ allocation_group + visit + (1 | record_id), data = data_model)
+
+summary(alt)
+
+performance::check_model(alt)
+
+alt_check <- sensitivity_check_lmer(
+    model = alt,
+    data = data_model,
+    id_var = "record_id",
+    top_n = 5
+ )
+
+## ✔️ View Cook's distance table:
+#result$cooks_table
+
+## ✔️ View influential IDs:
+alt_check$influential_ids
+
+## ✔️ View comparison of fixed effects:
+alt_check$comparison_table
+
+alt_sens <- update(object = alt,
+                       subset = !(record_id %in% influential_ids)
+                       )
+
+performance::check_model(alt_sens)
+
+```
+

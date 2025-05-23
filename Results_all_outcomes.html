@@ -1,0 +1,2167 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.56">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="S.P.L.M., Gustavo">
+<meta name="dcterms.date" content="2025-05-22">
+
+<title>All outcomes</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Results_all_outcomes_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Results_all_outcomes_files/libs/quarto-html/quarto.js"></script>
+<script src="Results_all_outcomes_files/libs/quarto-html/popper.min.js"></script>
+<script src="Results_all_outcomes_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Results_all_outcomes_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Results_all_outcomes_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Results_all_outcomes_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Results_all_outcomes_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Results_all_outcomes_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Results_all_outcomes_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#load" id="toc-load" class="nav-link active" data-scroll-target="#load">Load</a></li>
+  <li><a href="#explore-baseline" id="toc-explore-baseline" class="nav-link" data-scroll-target="#explore-baseline">Explore baseline</a>
+  <ul>
+  <li><a href="#quantitative" id="toc-quantitative" class="nav-link" data-scroll-target="#quantitative">Quantitative</a></li>
+  <li><a href="#plots" id="toc-plots" class="nav-link" data-scroll-target="#plots">Plots</a></li>
+  </ul></li>
+  <li><a href="#treatment-vs-orthogonal-contrasts" id="toc-treatment-vs-orthogonal-contrasts" class="nav-link" data-scroll-target="#treatment-vs-orthogonal-contrasts">Treatment vs Orthogonal Contrasts</a></li>
+  <li><a href="#explore-outcomes" id="toc-explore-outcomes" class="nav-link" data-scroll-target="#explore-outcomes">Explore outcomes</a>
+  <ul>
+  <li><a href="#ast" id="toc-ast" class="nav-link" data-scroll-target="#ast">AST</a>
+  <ul class="collapse">
+  <li><a href="#simple" id="toc-simple" class="nav-link" data-scroll-target="#simple">Simple</a>
+  <ul class="collapse">
+  <li><a href="#fixed-effects" id="toc-fixed-effects" class="nav-link" data-scroll-target="#fixed-effects">Fixed Effects</a></li>
+  <li><a href="#random-effects" id="toc-random-effects" class="nav-link" data-scroll-target="#random-effects">Random Effects</a></li>
+  <li><a href="#important-detail-for-orthogonal-contrasts" id="toc-important-detail-for-orthogonal-contrasts" class="nav-link" data-scroll-target="#important-detail-for-orthogonal-contrasts">Important Detail for Orthogonal Contrasts:</a></li>
+  </ul></li>
+  <li><a href="#sensitivity-check" id="toc-sensitivity-check" class="nav-link" data-scroll-target="#sensitivity-check">Sensitivity check</a>
+  <ul class="collapse">
+  <li><a href="#fixed-effects-1" id="toc-fixed-effects-1" class="nav-link" data-scroll-target="#fixed-effects-1">Fixed Effects</a></li>
+  <li><a href="#random-effects-variance-components" id="toc-random-effects-variance-components" class="nav-link" data-scroll-target="#random-effects-variance-components">Random Effects (Variance Components)</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#alt" id="toc-alt" class="nav-link" data-scroll-target="#alt">ALT</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Results_all_outcomes.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content column-page-left" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">All outcomes</h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-left">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>S.P.L.M., Gustavo </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 22, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="load" class="level1">
+<h1>Load</h1>
+<div class="cell">
+<div style="page-break-after: always;"></div>
+</div>
+</section>
+<section id="explore-baseline" class="level1">
+<h1>Explore baseline</h1>
+<section id="quantitative" class="level2">
+<h2 class="anchored" data-anchor-id="quantitative">Quantitative</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>baseline <span class="ot">&lt;-</span> data_model <span class="sc">%&gt;%</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(visit <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>summ_cat <span class="ot">&lt;-</span> baseline <span class="sc">%&gt;%</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize_categorical</span>(<span class="at">use_labels =</span> <span class="cn">TRUE</span>, <span class="at">group_col =</span> <span class="st">"allocation_group"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Level <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Variable, Freq, Percent, allocation_group) <span class="sc">%&gt;%</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> allocation_group, </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> <span class="fu">c</span>(Freq, Percent)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>summ_cat <span class="ot">&lt;-</span> summ_cat <span class="sc">%&gt;%</span> </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        Variable, </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">`</span><span class="at">Grupo Placebo (N)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Freq_Grupo A</span><span class="st">`</span>, </span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">`</span><span class="at">% (A)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Percent_Grupo A</span><span class="st">`</span>, </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">`</span><span class="at">Grupo Eclipta (N)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Freq_Grupo B</span><span class="st">`</span>, </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">`</span><span class="at">% (B)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Percent_Grupo B</span><span class="st">`</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>summ_cat </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 5
+  Variable             `Grupo Placebo (N)` `% (A)` `Grupo Eclipta (N)` `% (B)`
+  &lt;chr&gt;                              &lt;int&gt;   &lt;dbl&gt;               &lt;int&gt;   &lt;dbl&gt;
+1 visit                                 37   100                    38   100  
+2 hypertension                           6    16.2                  12    31.6
+3 hypercholesterolemia                  25    67.6                  21    55.3
+4 hypertrigliceridemia                  16    43.2                  20    52.6
+5 insulin                                9    24.3                   9    23.7
+6 drugs_w_loss                           8    21.6                  11    28.9
+7 drugs_w_gain                           1     2.7                   3     7.9</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>summ_num <span class="ot">&lt;-</span> baseline <span class="sc">%&gt;%</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize_numerical</span>(<span class="at">use_labels =</span> <span class="cn">TRUE</span>, <span class="at">group_col =</span> <span class="st">"allocation_group"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>N) <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">names_from =</span> allocation_group, </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">values_from =</span> <span class="st">`</span><span class="at">Mean (95% CI)</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Values from `Mean (95% CI)` are not uniquely identified; output will contain
+list-cols.
+• Use `values_fn = list` to suppress this warning.
+• Use `values_fn = {summary_fun}` to summarise duplicates.
+• Use the following dplyr code to identify duplicates.
+  {data} |&gt;
+  dplyr::summarise(n = dplyr::n(), .by = c(Variable, allocation_group)) |&gt;
+  dplyr::filter(n &gt; 1L)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>summ_num <span class="sc">%&gt;%</span> <span class="fu">print</span>(<span class="at">n =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 36 × 3
+   Variable                      `Grupo A` `Grupo B`
+   &lt;chr&gt;                         &lt;list&gt;    &lt;list&gt;   
+ 1 Circunferência abdominal (cm) &lt;chr [1]&gt; &lt;chr [1]&gt;
+ 2 Idade                         &lt;chr [1]&gt; &lt;chr [1]&gt;
+ 3 alcohol_dose                  &lt;chr [1]&gt; &lt;chr [1]&gt;
+ 4 IMC (Kg/m²)                   &lt;chr [1]&gt; &lt;chr [1]&gt;
+ 5 Kcal de carboidratos          &lt;chr [1]&gt; &lt;chr [1]&gt;
+ 6 compliance_score_visit        &lt;chr [1]&gt; &lt;chr [1]&gt;
+ 7 Proteína C Reativa (mg/L)     &lt;chr [2]&gt; &lt;chr [2]&gt;
+ 8 Resultado DASS-21 Ansiedade   &lt;chr [1]&gt; &lt;chr [1]&gt;
+ 9 Resultado DASS-21 Depressão   &lt;chr [1]&gt; &lt;chr [1]&gt;
+10 Resultado DASS-21 Stress      &lt;chr [1]&gt; &lt;chr [1]&gt;
+11 duration_difference           &lt;chr [1]&gt; &lt;chr [1]&gt;
+12 Resultado ECAP                &lt;chr [1]&gt; &lt;chr [1]&gt;
+13 Escore EVS                    &lt;chr [1]&gt; &lt;chr [1]&gt;
+14 Kcal de lipídeo               &lt;chr [1]&gt; &lt;chr [1]&gt;
+15 handgrip                      &lt;chr [1]&gt; &lt;chr [1]&gt;
+16 Kcal total                    &lt;chr [1]&gt; &lt;chr [1]&gt;
+17 Fosfatase alcalina (U/L)      &lt;chr [1]&gt; &lt;chr [1]&gt;
+18 ALT (U/L)                     &lt;chr [1]&gt; &lt;chr [1]&gt;
+19 AST (U/L)                     &lt;chr [1]&gt; &lt;chr [1]&gt;
+20 Colesterol total (mg/dL)      &lt;chr [1]&gt; &lt;chr [1]&gt;
+21 GGT (U/L)                     &lt;chr [1]&gt; &lt;chr [1]&gt;
+22 Glicemia de jejum (mg/dL)     &lt;chr [1]&gt; &lt;chr [1]&gt;
+23 Hemoglobina A1c (%)           &lt;chr [1]&gt; &lt;chr [1]&gt;
+24 HDL (mg/dL)                   &lt;chr [1]&gt; &lt;chr [1]&gt;
+25 HOMA-IR                       &lt;chr [1]&gt; &lt;chr [1]&gt;
+26 Insulina (uIU/mL)             &lt;chr [1]&gt; &lt;chr [1]&gt;
+27 LDL (mg/dL)                   &lt;chr [1]&gt; &lt;chr [1]&gt;
+28 Quick Index                   &lt;chr [1]&gt; &lt;chr [1]&gt;
+29 Triglicerídeos (mg/dL)        &lt;chr [1]&gt; &lt;chr [1]&gt;
+30 Média MAP                     &lt;chr [1]&gt; &lt;chr [1]&gt;
+31 Ângulo de fase (º)            &lt;chr [1]&gt; &lt;chr [1]&gt;
+32 Kcal de proteína              &lt;chr [1]&gt; &lt;chr [1]&gt;
+33 Reatância (Ω)                 &lt;chr [1]&gt; &lt;chr [1]&gt;
+34 Nome completo                 &lt;chr [1]&gt; &lt;chr [1]&gt;
+35 Resistência (Ω)               &lt;chr [1]&gt; &lt;chr [1]&gt;
+36 Qualidade de vida geral       &lt;chr [1]&gt; &lt;chr [1]&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_groups</span>(<span class="at">data =</span> baseline, <span class="at">group_col =</span> <span class="st">"allocation_group"</span>, <span class="at">use_labels =</span> <span class="cn">TRUE</span>, <span class="at">return_df =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: gt</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in compare_groups(data = baseline, group_col = "allocation_group", :
+Skipping visit : only one level present.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in compare_groups(data = baseline, group_col = "allocation_group", :
+Skipping compliance_score_visit : one or both groups are constant or missing.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in compare_groups(data = baseline, group_col = "allocation_group", :
+Skipping duration_difference : one or both groups are constant or missing.</code></pre>
+</div>
+<div class="cell-output-display">
+<div id="kdprpdcmwi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#kdprpdcmwi table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#kdprpdcmwi thead, #kdprpdcmwi tbody, #kdprpdcmwi tfoot, #kdprpdcmwi tr, #kdprpdcmwi td, #kdprpdcmwi th {
+  border-style: none;
+}
+
+#kdprpdcmwi p {
+  margin: 0;
+  padding: 0;
+}
+
+#kdprpdcmwi .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#kdprpdcmwi .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#kdprpdcmwi .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#kdprpdcmwi .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#kdprpdcmwi .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#kdprpdcmwi .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kdprpdcmwi .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#kdprpdcmwi .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#kdprpdcmwi .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#kdprpdcmwi .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#kdprpdcmwi .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#kdprpdcmwi .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#kdprpdcmwi .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#kdprpdcmwi .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#kdprpdcmwi .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#kdprpdcmwi .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#kdprpdcmwi .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#kdprpdcmwi .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#kdprpdcmwi .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kdprpdcmwi .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#kdprpdcmwi .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#kdprpdcmwi .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#kdprpdcmwi .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kdprpdcmwi .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#kdprpdcmwi .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#kdprpdcmwi .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kdprpdcmwi .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kdprpdcmwi .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#kdprpdcmwi .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kdprpdcmwi .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#kdprpdcmwi .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kdprpdcmwi .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#kdprpdcmwi .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kdprpdcmwi .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#kdprpdcmwi .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kdprpdcmwi .gt_left {
+  text-align: left;
+}
+
+#kdprpdcmwi .gt_center {
+  text-align: center;
+}
+
+#kdprpdcmwi .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#kdprpdcmwi .gt_font_normal {
+  font-weight: normal;
+}
+
+#kdprpdcmwi .gt_font_bold {
+  font-weight: bold;
+}
+
+#kdprpdcmwi .gt_font_italic {
+  font-style: italic;
+}
+
+#kdprpdcmwi .gt_super {
+  font-size: 65%;
+}
+
+#kdprpdcmwi .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#kdprpdcmwi .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#kdprpdcmwi .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#kdprpdcmwi .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#kdprpdcmwi .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#kdprpdcmwi .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#kdprpdcmwi .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#kdprpdcmwi .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#kdprpdcmwi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_heading">
+<th colspan="4" class="gt_heading gt_title gt_font_normal">Hypothesis Test Results</th>
+</tr>
+<tr class="odd gt_heading">
+<th colspan="4" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Comparison of allocation_group</th>
+</tr>
+<tr class="header gt_col_headings">
+<th id="Variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Variable</th>
+<th id="Test" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Test Type</th>
+<th id="Statistic" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Test Statistic</th>
+<th id="P_value" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">P-value</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Nome completo</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-0.33</td>
+<td class="gt_row gt_right" headers="P_value">0.7450</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Intervenção completa?</td>
+<td class="gt_row gt_left" headers="Test">Chi-squared test</td>
+<td class="gt_row gt_right" headers="Statistic">0.18</td>
+<td class="gt_row gt_right" headers="P_value">0.6715</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Idade</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-0.58</td>
+<td class="gt_row gt_right" headers="P_value">0.5641</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Sexo</td>
+<td class="gt_row gt_left" headers="Test">Fisher's exact test</td>
+<td class="gt_row gt_right" headers="Statistic">NA</td>
+<td class="gt_row gt_right" headers="P_value">0.1908</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">hypertension</td>
+<td class="gt_row gt_left" headers="Test">Chi-squared test</td>
+<td class="gt_row gt_right" headers="Statistic">1.66</td>
+<td class="gt_row gt_right" headers="P_value">0.1981</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">hypercholesterolemia</td>
+<td class="gt_row gt_left" headers="Test">Chi-squared test</td>
+<td class="gt_row gt_right" headers="Statistic">0.73</td>
+<td class="gt_row gt_right" headers="P_value">0.3915</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">hypertrigliceridemia</td>
+<td class="gt_row gt_left" headers="Test">Chi-squared test</td>
+<td class="gt_row gt_right" headers="Statistic">0.34</td>
+<td class="gt_row gt_right" headers="P_value">0.5602</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">insulin</td>
+<td class="gt_row gt_left" headers="Test">Chi-squared test</td>
+<td class="gt_row gt_right" headers="Statistic">0.00</td>
+<td class="gt_row gt_right" headers="P_value">1.0000</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">drugs_w_loss</td>
+<td class="gt_row gt_left" headers="Test">Chi-squared test</td>
+<td class="gt_row gt_right" headers="Statistic">0.22</td>
+<td class="gt_row gt_right" headers="P_value">0.6428</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">drugs_w_gain</td>
+<td class="gt_row gt_left" headers="Test">Fisher's exact test</td>
+<td class="gt_row gt_right" headers="Statistic">NA</td>
+<td class="gt_row gt_right" headers="P_value">0.6148</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Qualidade de vida geral</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-0.09</td>
+<td class="gt_row gt_right" headers="P_value">0.9295</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Resultado DASS-21 Depressão</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-0.30</td>
+<td class="gt_row gt_right" headers="P_value">0.7617</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Resultado DASS-21 Ansiedade</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">0.92</td>
+<td class="gt_row gt_right" headers="P_value">0.3585</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Resultado DASS-21 Stress</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-0.72</td>
+<td class="gt_row gt_right" headers="P_value">0.4737</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Resultado ECAP</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">1.48</td>
+<td class="gt_row gt_right" headers="P_value">0.1424</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Circunferência abdominal (cm)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">0.89</td>
+<td class="gt_row gt_right" headers="P_value">0.3774</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">IMC (Kg/m²)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-0.75</td>
+<td class="gt_row gt_right" headers="P_value">0.4541</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Média MAP</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-1.15</td>
+<td class="gt_row gt_right" headers="P_value">0.2551</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Resistência (Ω)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-1.37</td>
+<td class="gt_row gt_right" headers="P_value">0.1763</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Reatância (Ω)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">0.24</td>
+<td class="gt_row gt_right" headers="P_value">0.8077</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Ângulo de fase (º)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">1.56</td>
+<td class="gt_row gt_right" headers="P_value">0.1240</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">handgrip</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">1.70</td>
+<td class="gt_row gt_right" headers="P_value">0.0927</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Escore EVS</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-0.37</td>
+<td class="gt_row gt_right" headers="P_value">0.7103</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">alcohol_dose</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">0.75</td>
+<td class="gt_row gt_right" headers="P_value">0.4551</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Kcal de carboidratos</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">3.31</td>
+<td class="gt_row gt_right" headers="P_value">0.0016</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Kcal de proteína</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">2.66</td>
+<td class="gt_row gt_right" headers="P_value">0.0105</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Kcal de lipídeo</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">2.38</td>
+<td class="gt_row gt_right" headers="P_value">0.0210</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Kcal total</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">3.57</td>
+<td class="gt_row gt_right" headers="P_value">0.0008</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Proteína C Reativa (mg/L)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-0.87</td>
+<td class="gt_row gt_right" headers="P_value">0.3852</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">AST (U/L)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">0.60</td>
+<td class="gt_row gt_right" headers="P_value">0.5495</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">ALT (U/L)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">1.43</td>
+<td class="gt_row gt_right" headers="P_value">0.1589</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">GGT (U/L)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">0.37</td>
+<td class="gt_row gt_right" headers="P_value">0.7103</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Fosfatase alcalina (U/L)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-1.03</td>
+<td class="gt_row gt_right" headers="P_value">0.3076</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Colesterol total (mg/dL)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">0.10</td>
+<td class="gt_row gt_right" headers="P_value">0.9241</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">LDL (mg/dL)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">0.53</td>
+<td class="gt_row gt_right" headers="P_value">0.5954</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Hemoglobina A1c (%)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">0.63</td>
+<td class="gt_row gt_right" headers="P_value">0.5296</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Triglicerídeos (mg/dL)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">0.14</td>
+<td class="gt_row gt_right" headers="P_value">0.8858</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">HDL (mg/dL)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-1.15</td>
+<td class="gt_row gt_right" headers="P_value">0.2523</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Glicemia de jejum (mg/dL)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-0.06</td>
+<td class="gt_row gt_right" headers="P_value">0.9512</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Insulina (uIU/mL)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">0.81</td>
+<td class="gt_row gt_right" headers="P_value">0.4209</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">HOMA-IR</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">0.86</td>
+<td class="gt_row gt_right" headers="P_value">0.3963</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Quick Index</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-0.17</td>
+<td class="gt_row gt_right" headers="P_value">0.8650</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Proteína C Reativa (mg/L)</td>
+<td class="gt_row gt_left" headers="Test">t-test</td>
+<td class="gt_row gt_right" headers="Statistic">-0.97</td>
+<td class="gt_row gt_right" headers="P_value">0.3363</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="plots" class="level2">
+<h2 class="anchored" data-anchor-id="plots">Plots</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> baseline, <span class="fu">aes</span>(<span class="at">x =</span> allocation_group, <span class="at">y =</span> kcal)) <span class="sc">+</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_violin</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">trim =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>(<span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">outlier.colour =</span> <span class="st">"red"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Distribuição da ingestão energétical total por grupo de alocação"</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Ingestão total (Kcal)"</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Grupo de alocação"</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> baseline, <span class="fu">aes</span>(<span class="at">x =</span> allocation_group, <span class="at">y =</span> carbs_kcal)) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_violin</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">trim =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>(<span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">outlier.colour =</span> <span class="st">"red"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Distribuição da ingestão de carboidratos em kcal por grupo de alocação"</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Ingestão total (Kcal)"</span>,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Grupo de alocação"</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> baseline, <span class="fu">aes</span>(<span class="at">x =</span> allocation_group, <span class="at">y =</span> protein_kcal)) <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_violin</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">trim =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>(<span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">outlier.colour =</span> <span class="st">"red"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Distribuição da ingestão de proteínas em kcal por grupo de alocação"</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Ingestão total (Kcal)"</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Grupo de alocação"</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/unnamed-chunk-3-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> baseline, <span class="fu">aes</span>(<span class="at">x =</span> allocation_group, <span class="at">y =</span> fat_kcal)) <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_violin</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">trim =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>(<span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">outlier.colour =</span> <span class="st">"red"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Distribuição da ingestão de gorduras em kcal por grupo de alocação"</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Ingestão total (Kcal)"</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Grupo de alocação"</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/unnamed-chunk-3-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="treatment-vs-orthogonal-contrasts" class="level1">
+<h1>Treatment vs Orthogonal Contrasts</h1>
+<p>How the Interpretation Changes:</p>
+<p>➤ Treatment Contrasts (contr.treatment):</p>
+<ul>
+<li>Intercept: Mean AST for Grupo B at Visit 1 (reference).</li>
+<li>Main effect of allocation_group: Difference between Grupo A and Grupo B at Visit 1.</li>
+<li>Main effect of visit2: Change from Visit 1 to Visit 2 for Grupo B.</li>
+<li>Interaction term: How the visit effect differs between groups.</li>
+</ul>
+<p>➤ Orthogonal Contrasts (contr.sum and contr.poly):</p>
+<ul>
+<li>Intercept: Grand mean across groups and visits.</li>
+<li>Main effect of allocation_group: Deviation of each group from the grand mean (Grupo A = +, Grupo B = −).</li>
+<li>visit.L: Linear trend across visits, centered.</li>
+<li>visit.Q: Quadratic trend.</li>
+<li>Interactions: How the linear and quadratic trends differ between groups.</li>
+</ul>
+</section>
+<section id="explore-outcomes" class="level1">
+<h1>Explore outcomes</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(data_model<span class="sc">$</span>allocation_group) <span class="ot">&lt;-</span> <span class="fu">contr.sum</span>(<span class="dv">2</span>) <span class="co"># Sum-to-zero for group</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(data_model<span class="sc">$</span>visit) <span class="ot">&lt;-</span> <span class="fu">contr.poly</span>(<span class="dv">3</span>) <span class="co"># Orthogonal polynomial for visit</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="ast" class="level2">
+<h2 class="anchored" data-anchor-id="ast">AST</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>data_model <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">"lab"</span>)) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "labs_ast"           "labs_alt"           "labs_ggt"          
+ [4] "labs_alkp"          "labs_cholesterol"   "labs_ldl"          
+ [7] "labs_hba1c"         "labs_triglycerides" "labs_hdl"          
+[10] "labs_glucose"       "labs_insulin"       "labs_homa_ir"      
+[13] "labs_quick_index"  </code></pre>
+</div>
+</div>
+<section id="simple" class="level3">
+<h3 class="anchored" data-anchor-id="simple">Simple</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_model, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.factor</span>(visit), <span class="at">y =</span> labs_ast)) <span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">outlier.shape =</span> <span class="cn">NA</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> allocation_group) <span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">group =</span> allocation_group),</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">method =</span> <span class="st">"lm"</span>,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">se =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 10 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 10 rows containing non-finite outside the scale range
+(`stat_smooth()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 10 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/labs_ast_viz-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_model, </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="fu">as.factor</span>(visit),</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> labs_ast,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">group =</span> record_id,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">group =</span> allocation_group),</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">method =</span> <span class="st">"lm"</span>,</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">se =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> allocation_group)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 10 rows containing non-finite outside the scale range
+(`stat_smooth()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 8 rows containing missing values or values outside the scale range
+(`geom_line()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 10 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/labs_ast_viz-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>ast <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log1p</span>(labs_ast) <span class="sc">~</span> allocation_group <span class="sc">+</span> visit <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id), <span class="at">data =</span> data_model)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: log1p(labs_ast) ~ allocation_group + visit + (1 | record_id)
+   Data: data_model
+
+REML criterion at convergence: 1.3
+
+Scaled residuals: 
+     Min       1Q   Median       3Q      Max 
+-2.70166 -0.55039 -0.06509  0.56398  2.75024 
+
+Random effects:
+ Groups    Name        Variance Std.Dev.
+ record_id (Intercept) 0.03018  0.1737  
+ Residual              0.03335  0.1826  
+Number of obs: 179, groups:  record_id, 75
+
+Fixed effects:
+                   Estimate Std. Error        df t value Pr(&gt;|t|)    
+(Intercept)       3.197e+00  2.503e-02 7.098e+01 127.715   &lt;2e-16 ***
+allocation_group1 9.732e-03  2.471e-02 6.912e+01   0.394    0.695    
+visit.L           1.802e-03  2.509e-02 1.135e+02   0.072    0.943    
+visit.Q           1.367e-02  2.462e-02 1.067e+02   0.556    0.580    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) allc_1 vist.L
+allctn_grp1 -0.014              
+visit.L      0.159 -0.026       
+visit.Q     -0.021  0.023  0.120</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">check_model</span>(ast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/labs_ast_model-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="fixed-effects" class="level4">
+<h4 class="anchored" data-anchor-id="fixed-effects">Fixed Effects</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 57%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Term</th>
+<th>Estimate</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(Intercept)</td>
+<td>24.29</td>
+<td>Mean AST for the grand mean (across groups and visits)</td>
+</tr>
+<tr class="even">
+<td>allocation_group1</td>
+<td>+0.50</td>
+<td>Difference of Grupo A from the grand mean. Grupo B is coded as -0.50 (sum-to-zero contrast). Not significant (p = 0.464).</td>
+</tr>
+<tr class="odd">
+<td>visit.L</td>
+<td>+0.14</td>
+<td>Linear trend across visits (1 → 2 → 3). Not significant (p = 0.832).</td>
+</tr>
+<tr class="even">
+<td>visit.Q</td>
+<td>+0.40</td>
+<td>Quadratic trend (e.g., U-shape or inverted U-shape). Not significant (p = 0.532).</td>
+</tr>
+</tbody>
+</table>
+<p>Key Points for <strong>Orthogonal Contrasts</strong></p>
+<ol type="1">
+<li><p>allocation_group1</p>
+<ul>
+<li>Uses <strong>sum-to-zero coding (<code>contr.sum</code>)</strong></li>
+<li>Estimate represents how much <strong>Grupo A differs from the grand mean</strong>.</li>
+<li>To get <strong>Grupo B</strong>, flip the sign (<strong>−0.50</strong>).</li>
+</ul></li>
+<li><p>visit.L and visit.Q</p>
+<ul>
+<li><strong><code>visit.L</code></strong> → Linear change across visits (Visit 1 → Visit 3). If positive, indicates AST increases linearly.</li>
+<li><strong><code>visit.Q</code></strong> → Quadratic shape. If significant, could mean the variable rises then falls (or vice versa).</li>
+<li>Both are <strong>orthogonal</strong>, meaning each tests a unique part of the variance.</li>
+</ul></li>
+</ol>
+<p><strong>None of the fixed effects are statistically significant:</strong></p>
+<ul>
+<li>Group difference: <strong>p = 0.464</strong></li>
+<li>Visit linear trend: <strong>p = 0.832</strong></li>
+<li>Visit quadratic trend: <strong>p = 0.532</strong></li>
+</ul>
+<p>→ <strong>Conclusion:</strong> No evidence of AST changing significantly across visits or differing between groups.</p>
+</section>
+<section id="random-effects" class="level4">
+<h4 class="anchored" data-anchor-id="random-effects">Random Effects</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 12%">
+<col style="width: 69%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Std.Dev</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(Intercept)</td>
+<td>4.836</td>
+<td>Variability in baseline AST across individuals.</td>
+</tr>
+<tr class="even">
+<td>Residual</td>
+<td>4.743</td>
+<td>Variability within individuals (visit-to-visit).</td>
+</tr>
+</tbody>
+</table>
+<p>→ Substantial variability exists between participants (Intercept SD ≈ 4.8) compared to within-participant variation (Residual SD ≈ 4.7).</p>
+</section>
+<section id="important-detail-for-orthogonal-contrasts" class="level4">
+<h4 class="anchored" data-anchor-id="important-detail-for-orthogonal-contrasts">Important Detail for Orthogonal Contrasts:</h4>
+<ul>
+<li><strong>Intercept:</strong> is the <strong>grand mean</strong> (not the mean of a specific group like in treatment coding).</li>
+<li>Group effects are interpreted relative to the grand mean, not a reference level.</li>
+</ul>
+<p>→ If you switch back to treatment contrasts (<code>contr.treatment</code>), the intercept would represent <strong>Grupo B (if coded as reference)</strong>, and the group coefficient would be <strong>Grupo A minus Grupo B</strong></p>
+</section>
+</section>
+<section id="sensitivity-check" class="level3">
+<h3 class="anchored" data-anchor-id="sensitivity-check">Sensitivity check</h3>
+<p>Analysis of Influential points</p>
+<p><em>Manually:</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(influence.ME)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'influence.ME'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:stats':
+
+    influence</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build influence measures</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>infl_ast <span class="ot">&lt;-</span> influence.ME<span class="sc">::</span><span class="fu">influence</span>(ast, <span class="at">group =</span> <span class="st">"record_id"</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check Cook's distance</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>cooks <span class="ot">&lt;-</span> <span class="fu">cooks.distance</span>(infl_ast)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>record_ids <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">unique</span>(data_model<span class="sc">$</span>record_id))</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize Cook's distance</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>  cooks, </span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"h"</span>, </span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Cook's Distance per record_id"</span>, </span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="st">"Cook's Distance"</span>, </span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"record_id"</span>, </span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">las =</span> <span class="dv">2</span></span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">4</span> <span class="sc">/</span> <span class="fu">length</span>(cooks), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/ast_sens-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># List top influential IDs</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>cooks_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">record_id =</span> record_ids,</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cooks_distance =</span> cooks</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Identify influential IDs:</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    <span class="do">## Rule-based (4/N)</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    influential_ids_rule <span class="ot">&lt;-</span> cooks_df <span class="sc">%&gt;%</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(cooks_distance <span class="sc">&gt;</span> (<span class="dv">4</span> <span class="sc">/</span> <span class="fu">length</span>(cooks))) <span class="sc">%&gt;%</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">pull</span>(record_id)</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>    <span class="do">## Top 5 most influential</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    top_ids <span class="ot">&lt;-</span> cooks_df <span class="sc">%&gt;%</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">arrange</span>(<span class="fu">desc</span>(cooks_distance)) <span class="sc">%&gt;%</span></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">pull</span>(record_id)</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>    <span class="do">## Combine both (no duplicates)</span></span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>    influential_ids <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">c</span>(influential_ids_rule, top_ids))</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>    <span class="do">## Refit model excluding influential IDs</span></span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>    ast_sens <span class="ot">&lt;-</span> <span class="fu">update</span>(<span class="at">object =</span> ast,</span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>                       <span class="at">subset =</span> <span class="sc">!</span>(record_id <span class="sc">%in%</span> influential_ids)</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>                       )</span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summary</span>(ast_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: log1p(labs_ast) ~ allocation_group + visit + (1 | record_id)
+   Data: data_model
+ Subset: !(record_id %in% influential_ids)
+
+REML criterion at convergence: -35.7
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.1025 -0.5363 -0.0456  0.5845  1.8900 
+
+Random effects:
+ Groups    Name        Variance Std.Dev.
+ record_id (Intercept) 0.02972  0.1724  
+ Residual              0.02411  0.1553  
+Number of obs: 166, groups:  record_id, 70
+
+Fixed effects:
+                   Estimate Std. Error        df t value Pr(&gt;|t|)    
+(Intercept)         3.17657    0.02460  64.91448 129.105   &lt;2e-16 ***
+allocation_group1   0.01405    0.02429  62.98146   0.578    0.565    
+visit.L            -0.01017    0.02240 101.47596  -0.454    0.651    
+visit.Q             0.01713    0.02175  95.38254   0.788    0.433    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) allc_1 vist.L
+allctn_grp1  0.004              
+visit.L      0.158 -0.029       
+visit.Q     -0.021  0.014  0.120</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">check_model</span>(ast_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/ast_sens-2.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>data_model <span class="sc">%&gt;%</span> </span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>        <span class="sc">!</span>(record_id <span class="sc">%in%</span> influential_ids)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="fu">as.factor</span>(visit),</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> labs_ast,</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">group =</span> record_id,</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(</span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">group =</span> allocation_group),</span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">method =</span> <span class="st">"lm"</span>,</span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">se =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> allocation_group)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 9 rows containing non-finite outside the scale range
+(`stat_smooth()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 8 rows containing missing values or values outside the scale range
+(`geom_line()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 9 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/ast_sens-3.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><em>Function:</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>ast_check <span class="ot">&lt;-</span> <span class="fu">sensitivity_check_lmer</span>(</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">model =</span> ast,</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_model,</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">id_var =</span> <span class="st">"record_id"</span>,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">top_n =</span> <span class="dv">5</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: broom.mixed</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ✔️ View Cook's distance table:</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="co">#result$cooks_table</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="do">## ✔️ View influential IDs:</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>ast_check<span class="sc">$</span>influential_ids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "14" "61" "4"  "33" "54"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ✔️ View comparison of fixed effects:</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>ast_check<span class="sc">$</span>comparison_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 6
+   Model       term              estimate std.error statistic   p.value
+   &lt;chr&gt;       &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Original    (Intercept)        3.20       0.0250  128.      1.27e-85
+ 2 Sensitivity (Intercept)        3.18       0.0246  129.      5.41e-80
+ 3 Original    allocation_group1  0.00973    0.0247    0.394   6.95e- 1
+ 4 Sensitivity allocation_group1  0.0140     0.0243    0.578   5.65e- 1
+ 5 Original    sd__(Intercept)    0.174     NA        NA      NA       
+ 6 Sensitivity sd__(Intercept)    0.172     NA        NA      NA       
+ 7 Original    sd__Observation    0.183     NA        NA      NA       
+ 8 Sensitivity sd__Observation    0.155     NA        NA      NA       
+ 9 Original    visit.L            0.00180    0.0251    0.0718  9.43e- 1
+10 Sensitivity visit.L           -0.0102     0.0224   -0.454   6.51e- 1
+11 Original    visit.Q            0.0137     0.0246    0.556   5.80e- 1
+12 Sensitivity visit.Q            0.0171     0.0218    0.788   4.33e- 1</code></pre>
+</div>
+</div>
+<p><em>Interpretation of the Sensitivity Check</em></p>
+<section id="fixed-effects-1" class="level4">
+<h4 class="anchored" data-anchor-id="fixed-effects-1">Fixed Effects</h4>
+<p>None of these changes are large. The magnitude and p-values remain non-significant.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Term</th>
+<th>Original</th>
+<th>Sensitivity</th>
+<th>Δ Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>(Intercept)</strong></td>
+<td>3.20</td>
+<td>3.18</td>
+<td>Slightly ↓</td>
+</tr>
+<tr class="even">
+<td><strong>allocation_group1</strong></td>
+<td>0.0097</td>
+<td>0.014</td>
+<td>↑ tiny (still NS)</td>
+</tr>
+<tr class="odd">
+<td><strong>visit.L</strong></td>
+<td>+0.0018</td>
+<td>-0.0102</td>
+<td>Small flip (still NS)</td>
+</tr>
+<tr class="even">
+<td><strong>visit.Q</strong></td>
+<td>+0.0137</td>
+<td>+0.0171</td>
+<td>Minor ↑</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="random-effects-variance-components" class="level4">
+<h4 class="anchored" data-anchor-id="random-effects-variance-components">Random Effects (Variance Components)</h4>
+<p>Residual (within-subject) variance decreased substantially after removing influential IDs. This is a signal that the influential IDs were contributing to heteroskedasticity and residual noise.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Original</th>
+<th>Sensitivity</th>
+<th>Δ Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>**sd__(Intercept)**</td>
+<td>0.174</td>
+<td>0.172</td>
+<td>↓ slightly</td>
+</tr>
+<tr class="even">
+<td>**sd__Observation**</td>
+<td>0.183</td>
+<td>0.155</td>
+<td>↓ noticeably</td>
+</tr>
+</tbody>
+</table>
+<p>What This Means:</p>
+<ul>
+<li>Conclusion and direction of effects are stable — results are robust to these influential points.</li>
+<li>Residual variance reduction suggests improved model fit and less noise.</li>
+<li>Fixed effects estimates changed minimally — <strong>no major distortions.</strong></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="alt" class="level2">
+<h2 class="anchored" data-anchor-id="alt">ALT</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_model, </span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="fu">as.factor</span>(visit),</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> labs_alt,</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">group =</span> record_id,</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">group =</span> allocation_group),</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">method =</span> <span class="st">"lm"</span>,</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">se =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> allocation_group)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 10 rows containing non-finite outside the scale range
+(`stat_smooth()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 8 rows containing missing values or values outside the scale range
+(`geom_line()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 10 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>alt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log1p</span>(labs_alt) <span class="sc">~</span> allocation_group <span class="sc">+</span> visit <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> record_id), <span class="at">data =</span> data_model)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(alt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: log1p(labs_alt) ~ allocation_group + visit + (1 | record_id)
+   Data: data_model
+
+REML criterion at convergence: 129.3
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.3264 -0.5369 -0.0828  0.5824  2.2125 
+
+Random effects:
+ Groups    Name        Variance Std.Dev.
+ record_id (Intercept) 0.10851  0.3294  
+ Residual              0.05435  0.2331  
+Number of obs: 179, groups:  record_id, 75
+
+Fixed effects:
+                   Estimate Std. Error        df t value Pr(&gt;|t|)    
+(Intercept)       3.274e+00  4.279e-02 7.255e+01  76.509   &lt;2e-16 ***
+allocation_group1 3.306e-02  4.240e-02 7.072e+01   0.780    0.438    
+visit.L           2.827e-03  3.246e-02 1.088e+02   0.087    0.931    
+visit.Q           4.286e-02  3.161e-02 1.043e+02   1.356    0.178    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) allc_1 vist.L
+allctn_grp1 -0.004              
+visit.L      0.133 -0.021       
+visit.Q     -0.022  0.019  0.113</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">check_model</span>(alt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/alt-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>alt_check <span class="ot">&lt;-</span> <span class="fu">sensitivity_check_lmer</span>(</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">model =</span> alt,</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_model,</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">id_var =</span> <span class="st">"record_id"</span>,</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">top_n =</span> <span class="dv">5</span></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a> )</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a><span class="do">## ✔️ View Cook's distance table:</span></span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a><span class="co">#result$cooks_table</span></span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a><span class="do">## ✔️ View influential IDs:</span></span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>alt_check<span class="sc">$</span>influential_ids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "33" "58" "75" "63" "5" </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ✔️ View comparison of fixed effects:</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>alt_check<span class="sc">$</span>comparison_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 6
+   Model       term              estimate std.error statistic   p.value
+   &lt;chr&gt;       &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Original    (Intercept)        3.27       0.0428   76.5     4.06e-71
+ 2 Sensitivity (Intercept)        3.23       0.0409   79.0     1.73e-67
+ 3 Original    allocation_group1  0.0331     0.0424    0.780   4.38e- 1
+ 4 Sensitivity allocation_group1  0.00322    0.0405    0.0797  9.37e- 1
+ 5 Original    sd__(Intercept)    0.329     NA        NA      NA       
+ 6 Sensitivity sd__(Intercept)    0.306     NA        NA      NA       
+ 7 Original    sd__Observation    0.233     NA        NA      NA       
+ 8 Sensitivity sd__Observation    0.204     NA        NA      NA       
+ 9 Original    visit.L            0.00283    0.0325    0.0871  9.31e- 1
+10 Sensitivity visit.L           -0.00968    0.0300   -0.322   7.48e- 1
+11 Original    visit.Q            0.0429     0.0316    1.36    1.78e- 1
+12 Sensitivity visit.Q            0.0156     0.0288    0.540   5.90e- 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>alt_sens <span class="ot">&lt;-</span> <span class="fu">update</span>(<span class="at">object =</span> alt,</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">subset =</span> <span class="sc">!</span>(record_id <span class="sc">%in%</span> influential_ids)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>                       )</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">check_model</span>(alt_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Results_all_outcomes_files/figure-html/alt-2.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

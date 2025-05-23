@@ -272,13 +272,13 @@ label_choices <- function(data, codebook = codebook_dvep) {
         ) %>%
         deframe()
     
-    # 4. Replace raw values with labels in data, using "Unmatched" for unmatched values
+    # 4. Replace raw values with labels in data, leave unmatched values as is
     for (column_name in names(lookup_tables)) {
-        if (column_name %in% colnames(data)) {  # Ensure column exists in data
-            data[[column_name]] <- recode(        # Apply recode using the lookup table
+        if (column_name %in% colnames(data)) {
+            data[[column_name]] <- recode(
                 data[[column_name]],
-                !!!lookup_tables[[column_name]],
-                .default = "Unmatched"             # Set "Unmatched" as the placeholder for unmatched values
+                !!!lookup_tables[[column_name]]
+                # No .default argument -> leaves unmatched values unchanged
             )
         }
     }
@@ -287,52 +287,58 @@ label_choices <- function(data, codebook = codebook_dvep) {
     return(data)
 }
 
+## ✅ Corrected summarize_numerical() to behave like summarize_categorical()
+
 summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
-    # Extract variable labels, falling back to variable names if labels are missing
+    
+    # Extract variable labels
     variable_labels <- sapply(names(data), function(var) {
         label <- attr(data[[var]], "label")
         if (is.null(label) || !use_labels) var else label
     }, simplify = TRUE)
     
-    # Identify numeric columns
-    numeric_cols <- data %>% select(where(is.numeric)) %>% names()
+    # Select numeric columns
+    numeric_cols <- data %>% 
+        dplyr::select(where(is.numeric)) %>% 
+        names()
     
     if (!is.null(group_col)) {
-        # Grouped summary
+        # Grouped summary (long format, consistent with summarize_categorical)
         summary <- data %>%
-            group_by(across(all_of(group_col))) %>%
-            summarise(across(
-                all_of(numeric_cols),
-                ~ paste0(
-                    round(mean(.x, na.rm = TRUE), 1), 
-                    " (", 
-                    round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-                    "–", 
-                    round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-                    ")"
-                ),
-                .names = "{.col}"
-            )) %>%
-            pivot_longer(-all_of(group_col), names_to = "Variable", values_to = "Value") %>%
-            mutate(Variable = variable_labels[Variable]) %>%
-            pivot_wider(names_from = all_of(group_col), values_from = Value)  # Pivot to wide format
+            tidyr::pivot_longer(cols = all_of(numeric_cols), names_to = "Variable", values_to = "Value") %>%
+            group_by(across(all_of(group_col)), Variable) %>%
+            summarise(
+                Mean = round(mean(Value, na.rm = TRUE), 1),
+                SD = round(sd(Value, na.rm = TRUE), 1),
+                N = sum(!is.na(Value)),
+                CI_lower = round(Mean - 1.96 * SD / sqrt(N), 1),
+                CI_upper = round(Mean + 1.96 * SD / sqrt(N), 1),
+                .groups = "drop"
+            ) %>%
+            mutate(
+                Value = paste0(Mean, " (", CI_lower, "–", CI_upper, ")"),
+                Variable = variable_labels[Variable]
+            ) %>%
+            dplyr::select(Variable, `Mean (95% CI)` = Value, N, all_of(group_col))
+        
     } else {
         # Ungrouped summary
         summary <- data %>%
-            summarise(across(
-                all_of(numeric_cols),
-                ~ paste0(
-                    round(mean(.x, na.rm = TRUE), 1), 
-                    " (", 
-                    round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-                    "–", 
-                    round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-                    ")"
-                ),
-                .names = "{.col}"
-            )) %>%
-            pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
-            mutate(Variable = variable_labels[Variable])
+            tidyr::pivot_longer(cols = all_of(numeric_cols), names_to = "Variable", values_to = "Value") %>%
+            group_by(Variable) %>%
+            summarise(
+                Mean = round(mean(Value, na.rm = TRUE), 1),
+                SD = round(sd(Value, na.rm = TRUE), 1),
+                N = sum(!is.na(Value)),
+                CI_lower = round(Mean - 1.96 * SD / sqrt(N), 1),
+                CI_upper = round(Mean + 1.96 * SD / sqrt(N), 1),
+                .groups = "drop"
+            ) %>%
+            mutate(
+                Value = paste0(Mean, " (", CI_lower, "–", CI_upper, ")"),
+                Variable = variable_labels[Variable]
+            ) %>%
+            dplyr::select(Variable, `Mean (95% CI)` = Value, N)
     }
     
     return(summary)
@@ -387,40 +393,83 @@ summarize_categorical <- function(data, group_col = NULL, use_labels = TRUE) {
 
 compare_groups <- function(data, group_col = "allocation_group", use_labels = TRUE, return_df = FALSE) {
     
-    # Extract variable labels, default to variable names if labels are missing
+    # Load required packages
+    required_packages <- c("dplyr", "gt")
+    not_installed <- required_packages[!required_packages %in% installed.packages()[, "Package"]]
+    if (length(not_installed) > 0) {
+        stop(paste("Missing required packages:", paste(not_installed, collapse = ", ")))
+    }
+    lapply(required_packages, require, character.only = TRUE)
+    
+    # Prepare labels
     variable_labels <- sapply(names(data), function(var) {
-        label <- attr(data[[var]], "label") # Check for the 'label' attribute
-        if (is.null(label) || !use_labels) var else label # Use variable name if label is missing
+        label <- attr(data[[var]], "label")
+        if (is.null(label) || !use_labels) var else label
     }, simplify = TRUE)
     
-    # Prepare results storage
+    # Initialize results dataframe
     results <- data.frame(
-        Variable = character(), # The variable being tested
-        Test = character(),     # The type of test (t-test or chi-squared/Fisher's)
-        Statistic = numeric(),  # The test statistic value
-        P_value = numeric(),    # The p-value from the test
-        stringsAsFactors = FALSE # Ensure strings are not converted to factors
+        Variable = character(),
+        Test = character(),
+        Statistic = numeric(),
+        P_value = numeric(),
+        stringsAsFactors = FALSE
     )
     
-    # Loop through all columns in the data, excluding the grouping column
+    # Loop through variables
     for (var in setdiff(names(data), group_col)) {
-        if (is.numeric(data[[var]])) {
-            # Run t-test for numeric variables
-            test_result <- t.test(data[[var]] ~ data[[group_col]])
+        
+        # Prepare the data with non-missing group and variable
+        group_data <- data %>%
+            dplyr::select(all_of(c(var, group_col))) %>%
+            dplyr::filter(!is.na(.data[[group_col]]))
+        
+        group_levels <- unique(group_data[[group_col]])
+        
+        if (length(group_levels) != 2) {
+            warning(paste("Skipping", var, ": requires exactly 2 groups."))
+            next
+        }
+        
+        # Numeric variables → t-test
+        if (is.numeric(group_data[[var]])) {
             
-            # Append the t-test results to the results data.frame
+            var_data <- group_data %>% dplyr::filter(!is.na(.data[[var]]))
+            
+            var_in_groups <- split(var_data[[var]], var_data[[group_col]])
+            
+            # Check if both groups have variance
+            if (any(sapply(var_in_groups, function(x) length(unique(x))) < 2)) {
+                warning(paste("Skipping", var, ": one or both groups are constant or missing."))
+                next
+            }
+            
+            formula <- reformulate(group_col, response = var)
+            
+            test_result <- t.test(formula, data = var_data)
+            
             results <- rbind(results, data.frame(
-                Variable = variable_labels[var], # Use label or name
-                Test = "t-test",                 
-                Statistic = round(test_result$statistic, 2), 
+                Variable = variable_labels[var],
+                Test = "t-test",
+                Statistic = round(test_result$statistic, 2),
                 P_value = round(test_result$p.value, 4)
             ))
-        } else if (is.factor(data[[var]]) || is.character(data[[var]])) {
-            # Run chi-squared or Fisher's exact test
-            contingency_table <- table(data[[var]], data[[group_col]])
             
-            if (any(chisq.test(contingency_table)$expected < 5)) {
-                # Use Fisher's exact test
+        } 
+        
+        # Categorical variables → chi-squared or Fisher
+        else if (is.factor(group_data[[var]]) || is.character(group_data[[var]])) {
+            
+            var_data <- group_data %>% dplyr::filter(!is.na(.data[[var]]))
+            
+            if (length(unique(var_data[[var]])) < 2) {
+                warning(paste("Skipping", var, ": only one level present."))
+                next
+            }
+            
+            contingency_table <- table(var_data[[var]], var_data[[group_col]])
+            
+            if (any(suppressWarnings(chisq.test(contingency_table)$expected) < 5)) {
                 test_result <- fisher.test(contingency_table)
                 results <- rbind(results, data.frame(
                     Variable = variable_labels[var],
@@ -429,9 +478,8 @@ compare_groups <- function(data, group_col = "allocation_group", use_labels = TR
                     P_value = round(test_result$p.value, 4)
                 ))
             } else {
-                # Use chi-squared test
                 test_result <- tryCatch(
-                    chisq.test(contingency_table), 
+                    chisq.test(contingency_table),
                     error = function(e) list(statistic = NA, p.value = NA)
                 )
                 results <- rbind(results, data.frame(
@@ -444,12 +492,12 @@ compare_groups <- function(data, group_col = "allocation_group", use_labels = TR
         }
     }
     
-    # If return_df = TRUE, return the results as a data frame
+    # Return as dataframe if requested
     if (return_df) {
         return(results)
     }
     
-    # Return results as a gt table
+    # Return as gt table
     gt_table <- results %>%
         gt() %>%
         tab_header(
@@ -463,5 +511,159 @@ compare_groups <- function(data, group_col = "allocation_group", use_labels = TR
             P_value = "P-value"
         )
     
-    return(gt_table) # Return the formatted gt table
+    return(gt_table)
+}
+
+
+
+## ✅ Full Function: plot_histograms_by_group()
+
+plot_histograms_by_group <- function(data, group_col = NULL) {
+    
+    require(ggplot2)
+    require(dplyr)
+    require(tidyr)
+    
+    data_long <- data %>%
+        {
+            if (!is.null(group_col)) {
+                mutate(., all_participants = "Total") %>%
+                    rename(group = !!sym(group_col)) %>%
+                    mutate(group = as.character(group)) %>%
+                    bind_rows(mutate(., group = "Total"))
+            } else {
+                mutate(., group = "Total")
+            }
+        } %>%
+        pivot_longer(
+            cols = where(is.numeric),
+            names_to = "Variable",
+            values_to = "Value"
+        )
+    
+    p <- ggplot(data_long, aes(x = Value)) +
+        geom_histogram(fill = "steelblue", color = "black", bins = 15) +
+        facet_grid(Variable ~ group, scales = "free") +  # <- FIXED HERE
+        labs(
+            title = "Histograms of Numerical Variables by Group",
+            x = "Value",
+            y = "Count"
+        ) +
+        theme_minimal(base_size = 10) +
+        theme(
+            strip.text = element_text(size = 7, face = "bold"),
+            plot.title = element_text(hjust = 0.5, face = "bold")
+        )
+    
+    return(p)
+}
+
+## ✅ Clean, Final Function Using facet_wrap(): 
+
+plot_histograms_by_group <- function(data, group_col = NULL) {
+    
+    ## Load required libraries
+    require(ggplot2)
+    require(dplyr)
+    require(tidyr)
+    
+    ## Prepare data: pivot to long format
+    data_long <- data %>%
+        {
+            if (!is.null(group_col)) {
+                mutate(., group = as.character(!!sym(group_col))) %>%
+                    bind_rows(mutate(., group = "Total"))
+            } else {
+                mutate(., group = "Total")
+            }
+        } %>%
+        pivot_longer(
+            cols = where(is.numeric),
+            names_to = "Variable",
+            values_to = "Value"
+        )
+    
+    ## Build the plot
+    p <- ggplot(data_long, aes(x = Value, fill = group, color = group)) +
+        geom_histogram(alpha = 0.5, position = "identity", bins = 15) +
+        facet_wrap(~ Variable, scales = "free", ncol = 3) +
+        labs(
+            title = "Histograms of Numerical Variables by Group",
+            x = "Value",
+            y = "Count",
+            fill = "Group",
+            color = "Group"
+        ) +
+        theme_minimal(base_size = 11) +
+        theme(
+            strip.text = element_text(size = 9, face = "bold"),
+            plot.title = element_text(hjust = 0.5, face = "bold")
+        ) +
+        scale_fill_brewer(palette = "Set1") +
+        scale_color_brewer(palette = "Set1")
+    
+    return(p)
+}
+
+
+## ✅ Complete Function: Sensitivity Analysis for lmer Models
+
+sensitivity_check_lmer <- function(model, data, id_var = "record_id", top_n = 5) {
+    
+    ## Load required packages
+    require(influence.ME)
+    require(dplyr)
+    require(lme4)
+    require(broom.mixed)
+    
+    ## Extract grouping variable names
+    id_list <- as.character(unique(data[[id_var]]))
+    
+    ## Compute influence measures
+    infl <- influence(model, group = id_var)
+    cooks <- cooks.distance(infl)
+    
+    ## Build dataframe with Cook's distance
+    cooks_df <- data.frame(
+        record_id = id_list,
+        cooks_distance = cooks
+    )
+    
+    ## Identify influential IDs:
+    ## 🔸 Rule-based (4/N)
+    influential_ids_rule <- cooks_df %>%
+        filter(cooks_distance > (4 / length(cooks))) %>%
+        pull(record_id)
+    
+    ## 🔸 Top N most influential
+    top_ids <- cooks_df %>%
+        arrange(desc(cooks_distance)) %>%
+        slice(1:top_n) %>%
+        pull(record_id)
+    
+    ## ✅ Combine both (no duplicates)
+    influential_ids <- unique(c(influential_ids_rule, top_ids))
+    
+    ## ✅ Refit model excluding influential IDs
+    model_sens <- update(
+        model,
+        subset = !(get(id_var) %in% influential_ids)
+    )
+    
+    ## ✅ Compare fixed effects side by side
+    comparison <- bind_rows(
+        tidy(model) %>% mutate(Model = "Original"),
+        tidy(model_sens) %>% mutate(Model = "Sensitivity")
+    ) %>%
+        select(Model, term, estimate, std.error, statistic, p.value) %>%
+        arrange(term, Model)
+    
+    ## ✅ Output
+    list(
+        cooks_table = cooks_df,
+        influential_ids = influential_ids,
+        model_original = model,
+        model_sensitivity = model_sens,
+        comparison_table = comparison
+    )
 }
