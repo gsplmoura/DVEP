@@ -1,11 +1,11 @@
-# Ignore macOS system files
+# macOS system files
 .DS_Store
 
-# Ignore VS Code settings
+# VS Code settings
 .vscode/
 *.code-workspace
 
-# Ignore logs and temp files
+# Logs and temp files
 *.log
 *.out
 *.tmp
@@ -13,31 +13,24 @@
 *.swp
 *.swo
 
-# Ignore R and RStudio files
+# R and RStudio files
 .Rhistory
 .RData
 .Rproj.user/
 
-# Ignore REDCap exports
-*.csv~
-
-# Ignore unnecessary Git files
-.git/
-
-# Ignore sensitive patient data
-Data/
-Data_processed/
-Data_instruments/
-Deprecated/
-Docs/
-Output/
-Thesis.docx
-local_files/.git
-local_files/
-
-# Ignore temporary Office lock files
+# Office temporary lock files
 ~$*
 
-# Ignore Word backup files
+# Local-only folder for sensitive data
+local_files/
+
+# Word and Excel backup files (if any)
 *.tmp
 *.bak
+
+# Optionally ignore Office documents globally (uncomment if needed)
+# *.docx
+# *.xlsx
+# *.csv
+# *.sav
+# *.pdf
