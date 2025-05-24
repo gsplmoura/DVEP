@@ -32,6 +32,8 @@ Deprecated/
 Docs/
 Output/
 Thesis.docx
+local_files/.git
+local_files/
 
 # Ignore temporary Office lock files
 ~$*
