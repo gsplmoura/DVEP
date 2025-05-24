@@ -287,8 +287,6 @@ label_choices <- function(data, codebook = codebook_dvep) {
     return(data)
 }
 
-## ✅ Corrected summarize_numerical() to behave like summarize_categorical()
-
 summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
     
     # Extract variable labels

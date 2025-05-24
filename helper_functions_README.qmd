@@ -1,11 +1,23 @@
 ---
-title: "helper_functions_README"
-output: html_document
+format:
+  html:
+    page-layout: full
+    toc: true
+    toc-depth: 4
+    toc-float:
+      collapsed: false
+      smooth-scroll: true
+    css: styles.css
+    code-fold: true
+  pdf:
+    toc: true
+    toc-depth: 2
+    pdf-engine: xelatex
 ---
 
-## Creating functions for data wrangling
+# Functions for data wrangling
 
-#### filter_variables()
+## filter_variables()
 
 `filter_variables(visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL, filter_included = TRUE)`
 
@@ -76,7 +88,7 @@ filter_variables <- function(
 
 ```
 
-#### filter_data()
+## filter_data()
 
 `filter_data <- function( visit = c("eleg", "V1", "V2", "V3"), include_repeating = NULL, form_name = NULL)`
 
@@ -376,8 +388,7 @@ filter_data <- function(
 }
 ```
 
-
-#### filter_codebook()
+## filter_codebook()
 
 `filter_codebook(form_name = c(...), included = 1)`
 
@@ -421,7 +432,7 @@ filter_codebook <- function(form_name = c(
 }
 ```
 
-#### convert_col_type()
+## convert_col_type()
 
 `convert_col_type(data, codebook = codebook_dvep)`
 
@@ -472,7 +483,7 @@ convert_col_type <- function(data, codebook = codebook_dvep) {
 convert_col_type(data)
 ```
 
-#### label_variables()
+## label_variables()
 
 `label_variables(data, codebook, language = "pt")`
 
@@ -507,7 +518,7 @@ label_variables <- function(data, codebook, language = "pt") {
 }
 ```
 
-#### label_choices()
+## label_choices()
 
 `label_choices(data, codebook = codebook_dvep)`
 
@@ -573,295 +584,152 @@ label_choices <- function(data, codebook = codebook_dvep) {
 }
 ```
 
+# Functions for data analysis
 
-## Functions for data analysis
+## summarize_numerical()
 
-### summarize_numerical()
+**Description**
 
-*Description*
+Summarizes numerical variables by computing the mean, 95% confidence interval, and number of observations (`N`). Supports both grouped and ungrouped summaries and displays labels when available.
 
-Summarize numeric variables with their means and 95% confidence intervals. Optionally groups results by a grouping variable and uses variable labels for readability. Output is returned as a tidy data frame in either long or wide format depending on grouping.
-
-*Usage*
-
-`summarize_numerical(data, group_col = NULL, use_labels = TRUE)`
-
-*Arguments*
-
--   data: a data frame containing the dataset to summarize.
--   group_col: an optional string indicating the name of the grouping variable. If NULL, the summary is ungrouped.
--   use_labels (Logical): If TRUE, uses the variable's label attribute (if available). If FALSE, uses the variable name. Defaults to TRUE.
-
-*Value*
-
-A `data.frame` containing summary statistics for numeric variables. If `group_col` is specified, the output is in wide format with one column per group. Each value is formatted as `"mean (lower–upper)"`, where the interval is a 95% confidence interval.
+**Usage**
 
 ```{r}
-summarize_numerical <- function(data, group_col = NULL, use_labels = TRUE) {
-  # Extract variable labels, falling back to variable names if labels are missing
-  variable_labels <- sapply(names(data), function(var) {
-    label <- attr(data[[var]], "label")
-    if (is.null(label) || !use_labels) var else label
-  }, simplify = TRUE)
-  
-  # Identify numeric columns
-  numeric_cols <- data %>% select(where(is.numeric)) %>% names()
-  
-  if (!is.null(group_col)) {
-    # Grouped summary
-    summary <- data %>%
-      group_by(across(all_of(group_col))) %>%
-      summarise(across(
-        all_of(numeric_cols),
-        ~ paste0(
-          round(mean(.x, na.rm = TRUE), 1), 
-          " (", 
-          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-          "–", 
-          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-          ")"
-        ),
-        .names = "{.col}"
-      )) %>%
-      pivot_longer(-all_of(group_col), names_to = "Variable", values_to = "Value") %>%
-      mutate(Variable = variable_labels[Variable]) %>%
-      pivot_wider(names_from = all_of(group_col), values_from = Value)  # Pivot to wide format
-  } else {
-    # Ungrouped summary
-    summary <- data %>%
-      summarise(across(
-        all_of(numeric_cols),
-        ~ paste0(
-          round(mean(.x, na.rm = TRUE), 1), 
-          " (", 
-          round(mean(.x, na.rm = TRUE) - 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-          "–", 
-          round(mean(.x, na.rm = TRUE) + 1.96 * sd(.x, na.rm = TRUE) / sqrt(sum(!is.na(.x))), 1), 
-          ")"
-        ),
-        .names = "{.col}"
-      )) %>%
-      pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
-      mutate(Variable = variable_labels[Variable])
-  }
-  
-  return(summary)
-}
-
+summarize_numerical(data, group_col = NULL, use_labels = TRUE)
 ```
 
-### summarize_categorical()
+✔️ Arguments • data: Data frame with the variables to summarize. • group_col (optional): String with the name of the grouping variable. If NULL, returns an overall summary. • use_labels (logical): Whether to use variable labels if available (TRUE, default) or variable names (FALSE).
 
-`summarize_categorical(data, group_col = NULL, use_labels = TRUE)`
+✔️ Output
 
-Arguments: - `data`: dataframe - `group_col = NULL`: grouping column; defaults to NULL - `use_labels = TRUE`: If set to true, uses labels instead of variable names
+A tidy data frame with: • Variable: Variable name or label. • Mean (95% CI): Mean with 95% confidence interval (mean (lower–upper)). • N: Count of non-missing observations. • Group columns (if a grouping variable is provided).
+
+✔️ Example
+
+summarize_numerical(data = dataset, group_col = "group")
+
+## summarize_categorical()
+
+✔️ Description
+
+Generates frequency and percentage tables for categorical variables. Can return overall summaries or group-wise summaries.
+
+✔️ Usage
+
+summarize_categorical(data, group_col = NULL, use_labels = TRUE)
+
+✔️ Arguments • data: Data frame with categorical variables. • group_col (optional): Name of the grouping variable. • use_labels (logical): If TRUE (default), applies variable labels.
+
+✔️ Output
+
+A tidy data frame with: • Variable: Variable name or label. • Level: Category level (factor or character). • Freq: Frequency count. • Percent: Percentage. • Group columns (if grouping applied).
+
+✔️ Example
+
+summarize_categorical(data = dataset, group_col = "group")
+
+## compare_groups()
+
+✔️ Description
+
+Performs statistical comparisons between two groups for each variable: • Numeric variables → t-test. • Categorical variables → Chi-squared or Fisher’s exact test (automatically chosen based on expected cell counts).
+
+✔️ Usage
+
+compare_groups(data, group_col = "allocation_group", use_labels = TRUE, return_df = FALSE)
+
+✔️ Arguments • data: Data frame for analysis. • group_col (string): Name of the grouping variable (default = "allocation_group"). • use_labels (logical): Whether to display variable labels (TRUE, default). • return_df (logical): If TRUE, returns a tidy data frame. If FALSE, returns a formatted gt table (default).
+
+✔️ Output • A tidy data frame or a formatted gt table with: • Variable: Variable name or label. • Test: Test type (t-test, Chi-squared, or Fisher's exact test). • Statistic: Test statistic (if applicable). • P_value: P-value from the test.
+
+✔️ Example
+
+compare_groups(data = dataset, group_col = "group")
+
+## sensitivity_check_lmer()
+
+Performs a sensitivity analysis for linear mixed-effects models (lmer) by identifying influential clusters/groups based on Cook’s distance. It evaluates the robustness of the model by:
+
+```         
+1.  Identifying influential groups.
+2.  Refitting the model without those groups.
+3.  Comparing fixed effects between the original and refitted models.
+```
+
++--------------+------------------------------------------------------------------------------+
+| **Argument** | **Description**                                                              |
++==============+==============================================================================+
+| model        | A linear mixed-effects model fitted with lmer() from the lme4 package.       |
++--------------+------------------------------------------------------------------------------+
+| id_var       | Grouping variable used to compute influence measures (default: "record_id"). |
++--------------+------------------------------------------------------------------------------+
+| top_n        | Number of top influential groups to consider (default: 5).                   |
++--------------+------------------------------------------------------------------------------+
+
+**How It Works**
+
+1.  Computes Cook’s Distance
+
+Calculates the influence of each group based on how much the fixed effects would change if that group were removed.
+
+2.  Identifies Influential Groups
+
+A group is considered influential if it meets either of:
+
+-   Rule-based threshold: Cook’s distance \> 4/N (N = number of groups).
+-   Top-N largest Cook’s distances.
+
+3.  Refits the Model
+
+Refits the original model without the identified influential groups.
+
+4.  Generates a Comparison Table
+
+Compares the fixed effects estimates, standard errors, t-statistics, and p-values between the original model and the sensitivity model (without influential groups).
+
+**Output**
+
+The function returns a list with the following components:
+
++-------------------+-------------------------------------------------------------------------------+
+| **Object**        | **Description**                                                               |
++===================+===============================================================================+
+| cooks_table       | Data frame with Cook’s distance for each group.                               |
++-------------------+-------------------------------------------------------------------------------+
+| influential_ids   | Character vector of IDs flagged as influential.                               |
++-------------------+-------------------------------------------------------------------------------+
+| model_original    | The original fitted lmer() model.                                             |
++-------------------+-------------------------------------------------------------------------------+
+| model_sensitivity | The refitted model excluding influential groups.                              |
++-------------------+-------------------------------------------------------------------------------+
+| comparison_table  | A tidy table comparing fixed effects between original and sensitivity models. |
++-------------------+-------------------------------------------------------------------------------+
+
+**Example usage**
 
 ```{r}
-summarize_categorical <- function(data, group_col = NULL, use_labels = TRUE) {
-  # Extract variable labels, falling back to variable names if labels are missing
-  variable_labels <- sapply(names(data), function(var) {
-    label <- attr(data[[var]], "label")
-    if (is.null(label) || !use_labels) var else label
-  }, simplify = TRUE)
-  
-  # Identify categorical columns
-  categorical_cols <- data %>% select(where(~ is.character(.x) || is.factor(.x))) %>% names()
-  
-  if (!is.null(group_col)) {
-    # For grouped data
-    summary <- lapply(categorical_cols, function(col) {
-      data %>%
-        group_by(across(all_of(group_col)), .drop = FALSE) %>%
-        count(!!sym(col), .drop = FALSE, name = "Freq") %>%
-        mutate(
-          Percent = round(100 * Freq / sum(Freq), 1),
-          Variable = variable_labels[col] # Use labels or names
-        ) %>%
-        rename(Level = !!sym(col)) %>%
-        ungroup()
-    }) %>%
-      bind_rows()
-  } else {
-    # For ungrouped data
-    summary <- lapply(categorical_cols, function(col) {
-      data %>%
-        count(!!sym(col), .drop = FALSE, name = "Freq") %>%
-        mutate(
-          Percent = round(100 * Freq / sum(Freq), 1),
-          Variable = variable_labels[col] # Use labels or names
-        ) %>%
-        rename(Level = !!sym(col))
-    }) %>%
-      bind_rows()
-  }
-  
-  # Arrange columns for consistency
-  summary <- summary %>%
-    select(Variable, Level, Freq, Percent, everything())
-  
-  return(summary)
-}
+# Fit an example mixed-effects model
+model <- lmer(
+  outcome ~ predictor + visit + (1 | record_id),
+  data = my_data
+)
 
+# Run sensitivity analysis
+result <- sensitivity_check_lmer(model)
+
+# View Cook's distances
+result$cooks_table
+
+# View influential IDs
+result$influential_ids
+
+# View comparison of fixed effects
+result$comparison_table
+
+# Access the sensitivity model
+summary(result$model_sensitivity)
 ```
 
+**References**
 
-### compare_groups()
-
-*Description*
-
-Compare variables across groups using appropriate statistical tests. Performs t-tests for numeric variables and chi-squared or Fisher's exact tests for categorical variables. Optionally uses variable labels for better readability and outputs results as a nicely formatted `gt` table or raw data frame.
-
-*Usage*
-
-`compare_groups(data, group_col = "allocation_group", use_labels = TRUE, return_df = FALSE)`
-
-*Arguments*
-
--   data: a data frame containing the dataset to analyze.
--   group_col: a string indicating the name of the grouping variable. Defaults to "allocation_group".
--   use_labels (Logical): If TRUE, uses the variable's label attribute (if available). If FALSE, uses the variable name. Defaults to TRUE.
--   return_df (Logical): If TRUE, returns a raw data frame. If FALSE, returns a formatted `gt` table. Defaults to FALSE.
-
-*Value*
-
-A `gt` table or a `data.frame` containing the results of statistical comparisons. Each row includes: - Variable: the name or label of the variable - Test: the type of statistical test used - Statistic: the test statistic (if available) - P_value: the p-value from the test
-
-```{r}
-compare_groups <- function(data, group_col = "allocation_group", use_labels = TRUE, return_df = FALSE) {
-  
-  # Extract variable labels, default to variable names if labels are missing
-  variable_labels <- sapply(names(data), function(var) {
-    label <- attr(data[[var]], "label") # Check for the 'label' attribute
-    if (is.null(label) || !use_labels) var else label # Use variable name if label is missing
-  }, simplify = TRUE)
-  
-  # Prepare results storage
-  results <- data.frame(
-    Variable = character(), # The variable being tested
-    Test = character(),     # The type of test (t-test or chi-squared/Fisher's)
-    Statistic = numeric(),  # The test statistic value
-    P_value = numeric(),    # The p-value from the test
-    stringsAsFactors = FALSE # Ensure strings are not converted to factors
-  )
-  
-  # Loop through all columns in the data, excluding the grouping column
-  for (var in setdiff(names(data), group_col)) {
-    if (is.numeric(data[[var]])) {
-      # Run t-test for numeric variables
-      test_result <- t.test(data[[var]] ~ data[[group_col]])
-      
-      # Append the t-test results to the results data.frame
-      results <- rbind(results, data.frame(
-        Variable = variable_labels[var], # Use label or name
-        Test = "t-test",                 
-        Statistic = round(test_result$statistic, 2), 
-        P_value = round(test_result$p.value, 4)
-      ))
-    } else if (is.factor(data[[var]]) || is.character(data[[var]])) {
-      # Run chi-squared or Fisher's exact test
-      contingency_table <- table(data[[var]], data[[group_col]])
-      
-      if (any(chisq.test(contingency_table)$expected < 5)) {
-        # Use Fisher's exact test
-        test_result <- fisher.test(contingency_table)
-        results <- rbind(results, data.frame(
-          Variable = variable_labels[var],
-          Test = "Fisher's exact test",
-          Statistic = NA,
-          P_value = round(test_result$p.value, 4)
-        ))
-      } else {
-        # Use chi-squared test
-        test_result <- tryCatch(
-          chisq.test(contingency_table), 
-          error = function(e) list(statistic = NA, p.value = NA)
-        )
-        results <- rbind(results, data.frame(
-          Variable = variable_labels[var],
-          Test = "Chi-squared test",
-          Statistic = round(test_result$statistic, 2),
-          P_value = round(test_result$p.value, 4)
-        ))
-      }
-    }
-  }
-  
-  # If return_df = TRUE, return the results as a data frame
-  if (return_df) {
-    return(results)
-  }
-  
-  # Return results as a gt table
-  gt_table <- results %>%
-    gt() %>%
-    tab_header(
-      title = "Hypothesis Test Results",
-      subtitle = paste("Comparison of", group_col)
-    ) %>%
-    cols_label(
-      Variable = "Variable",
-      Test = "Test Type",
-      Statistic = "Test Statistic",
-      P_value = "P-value"
-    )
-  
-  return(gt_table) # Return the formatted gt table
-}
-
-```
-
-*Step-by-step Explanation of the compare_groups() Function*
-
-1.  Extract Variable Labels
-
-    -   The function loops through names(data) and tries to get the "label" attribute of each variable using attr().
-    -   If the label is NULL or if use_labels = FALSE, it uses the variable name instead.
-    -   This ensures the results will display either readable labels (if available) or default names.
-
-2.  Prepare Results Storage
-
-    -   A new, empty data.frame is created with columns:
-        -   Variable – will store the label or name of the tested variable.
-        -   Test – describes the type of test used (t-test, Chi-squared, or Fisher's exact).
-        -   Statistic – the numerical value of the test statistic (e.g., t or χ² value).
-        -   P_value – the resulting p-value.
-    -   stringsAsFactors = FALSE is specified to avoid automatic factor conversion.
-
-3.  Loop Through Variables
-
-    -   The function skips the grouping variable (group_col) and loops over the remaining columns.
-
-    For Numeric Variables:
-
-    -   Performs a two-sample t-test using the formula interface data[[var]] \~ data[[group_col]].
-    -   Appends results with t.test$statistic and t.test$p.value (rounded).
-
-    For Categorical Variables:
-
-    -   Creates a contingency table with table(data[[var]], data[[group_col]]).
-    -   Checks the expected frequencies using chisq.test(contingency_table)\$expected.
-    -   If any expected cell count \< 5, switches to Fisher’s exact test.
-    -   Otherwise, performs a Chi-squared test, with a tryCatch() to prevent errors in edge cases (e.g., sparse data or empty levels).
-
-4.  Error Handling
-
-    -   For the chi-squared test, any errors (e.g., structural issues with the table) are caught using tryCatch().
-    -   If an error occurs, Statistic and P_value are both returned as NA, allowing the function to continue without breaking.
-
-5.  Output as a gt Table
-
-    -   If return_df = TRUE, the raw results dataframe is returned.
-    -   Otherwise, the results are passed to the gt() package to create a styled, publication-ready table with:
-        -   A title: "Hypothesis Test Results"
-        -   A subtitle: "Comparison of {group_col}"
-        -   Custom column labels using cols_label()
-
-Example Usage
-
-```{r, eval=FALSE, echo=FALSE}
-# Run the function and display results
-test_results <- compare_groups(data_d1_exclusive)
-
-# Print the results
-print(test_results)
-```
+- Nieuwenhuis, R., te Grotenhuis, M., & Pelzer, B. (2012). influence.ME: Tools for detecting influential data in mixed effects models. R Journal, 4(2), 38-47.
