@@ -20,7 +20,7 @@ output: html_document
 </style>
 ```
 
-# `r fontawesome::fa("seedling")` Bem-vindo ao Projeto DVEP
+# `r fontawesome::fa("seedling")` Projeto DVEP
 
 **Este repositório contém materiais relacionados ao projeto DVEP, incluindo relatórios de análise, código-fonte, documentos e apresentações.**
 
@@ -34,30 +34,10 @@ output: html_document
 
 ------------------------------------------------------------------------
 
-## `r fontawesome::fa("r-project")` Relatórios de Análise em R
-
--   **Manipulação de Dados**\
-    Relatório com o pré-processamento e limpeza de dados.<br/> [Arquivo em html](1_DVEP.html)<br/> [Código R markdown](1_DVEP.Rmd)
-
--   **Análise Exploratória de Dados**\
-    Análise descritiva e gráficos exploratórios.<br/> [Arquivo em html](2_DVEP_Results.html)<br/> [Código R markdown](2_DVEP_Results.html)
-
-------------------------------------------------------------------------
-
-## `r fontawesome::fa("slideshare")` Slides e Apresentações
+### `r fontawesome::fa("slideshare")` Slides e Apresentações
 
 -   **Slides do Projeto**\
     Os slides foram criados na IDE RStudio utilizando R Markdown. O pacote xaringan foi usado para configurar o remark.js, e o knitr foi responsável para convertê-los em HTML. <br/>[Visualizar Apresentação de Slides](Slides/Slides.html) <br/>[Código R markdown utilizado](Slides/Slides.Rmd)
-
-------------------------------------------------------------------------
-
-## `r fontawesome::fa("folder-open")` Materiais da Tese
-
--   **Tese Completa**\
-    [Arquivo em pdf](Docs/Tese%20Eclipta%20prostrata.pdf)
-
--   **Documento Word da Tese**\
-    [Arquivo em word](Docs/Thesis.docx)
 
 ------------------------------------------------------------------------
 
@@ -93,27 +73,20 @@ Os seguintes arquivos contêm os Codebooks dos projetos do **REDCap**:
 
 ------------------------------------------------------------------------
 
-### `r fontawesome::fa("table")` Tabelas
+## `r fontawesome::fa("r-project")` Relatórios de Análise em R
 
-#### Baseline
+### Data Wrangling
 
--   **Variáveis antropométricas e composição corporal**
-    -   [sexo masculino, estratificados segundo o grupo de alocação](Output/Baseline/Tables/bia_males.html)
-    -   [sexo feminino, estratificados segundo o grupo de alocação](Output/Baseline/Tables/bia_females.html)
+- Relatório com o pré-processamento e limpeza de dados.<br/> [Arquivo em html](Data_Wrangling.html)<br/> [Código R markdown](Data_Wrangling.Rmd)
 
-<br/>
----
+- Compliance: [Rmd](Compliance.Rmd)
 
-# Análise de desfechos
+### Análise exploratória de desfechos
 
-## Análise exploratória
--   [Variáveis coletadas nas três visitas](Outcomes_V1V2V3.html)
--   [Variáveis coletadas na primeira e última visitas](Outcomes_V1V2V3.html)
+-   Variáveis coletadas nas três visitas: [html](Outcomes_V1V2V3.html) | [Rmd](Outcomes_V1V2V3.Rmd)
+-   Variáveis coletadas na primeira e última visitas: [html](Outcomes_V1V2V3.html) | [Rmd](Outcomes_V1V2V3.Rmd)
 
-<br/>
----
-<br/>
----
-<br/>
----
-<br/>
+### Helper functions
+
+-   Funções auxiliares para a análise de dados [helper_functions.R](helper_functions.R)
+- 
