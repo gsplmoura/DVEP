@@ -89,4 +89,3 @@ Os seguintes arquivos contêm os Codebooks dos projetos do **REDCap**:
 ### Helper functions
 
 -   Funções auxiliares para a análise de dados [helper_functions.R](helper_functions.R)
-- 
