@@ -103,6 +103,12 @@ Os seguintes arquivos contêm os Codebooks dos projetos do **REDCap**:
 
 <br/>
 ---
+
+# Análise de desfechos
+
+## Análise exploratória
+-   [Variáveis coletadas nas três visitas](Outcomes_V1V2V3.html)
+
 <br/>
 ---
 <br/>
