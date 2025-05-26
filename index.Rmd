@@ -83,6 +83,7 @@ Os seguintes arquivos contêm os Codebooks dos projetos do **REDCap**:
 
 ### Análise exploratória de desfechos
 
+-   Descritivo e comparação entre grupos: [html](Outcomes_desciptive.html) | [Rmd](Outcomes_desciptive.Rmd)
 -   Variáveis coletadas nas três visitas: [html](Outcomes_V1V2V3.html) | [Rmd](Outcomes_V1V2V3.Rmd)
 -   Variáveis coletadas na primeira e última visitas: [html](Outcomes_V1V2V3.html) | [Rmd](Outcomes_V1V2V3.Rmd)
 

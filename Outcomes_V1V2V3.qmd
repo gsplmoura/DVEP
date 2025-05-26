@@ -130,23 +130,23 @@ data_model_V1V3 <- data_model %>%
 
 Variables:
 
-labs_ast - negative
-labs_alt - negative
-labs_ggt - negative
-labs_alkp
-labs_cholesterol
-labs_ldl
-labs_hdl
-labs_triglycerides
-labs_glucose
-labs_hba1c
-labs_insulin
-labs_homa_ir
-labs_quick_index
-abdomen
-bmi
-mean_bp_mean
-evs_score
+- labs_ast - negative
+- labs_alt - negative
+- labs_ggt - negative
+- labs_alkp
+- labs_cholesterol
+- labs_ldl
+- labs_hdl
+- labs_triglycerides
+- labs_glucose
+- labs_hba1c
+- labs_insulin
+- labs_homa_ir
+- labs_quick_index
+- abdomen
+- bmi
+- mean_bp_mean
+- evs_score
 
 ### labs_ast
 
