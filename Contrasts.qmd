@@ -1,0 +1,147 @@
+---
+title: "Contrasts"
+format: html
+---
+
+# Contrasts — Treatment vs. Orthogonal Coding
+
+How the Interpretation Changes:
+
+## Treatment Contrasts (contr.treatment — Reference Coding)
+
+- Intercept: Represents the mean outcome for the reference group at the reference time point (or reference level of any factor).
+
+- Main effect of a group variable: Represents the difference between the non-reference group and the reference group, specifically at the reference time point (or baseline level of other factors).
+
+- Main effect of a time variable (or any repeated factor): Represents the change from the reference time point to the specified time point, within the reference group.
+
+- Interaction terms: Represent how the effect of one variable (e.g., time) differs across the levels of the other variable (e.g., group).
+
+### Model interpretation
+
+Clarification — What Do Treatment Contrasts Actually Test?
+
+When There Is an Interaction (e.g., Group * Visit). The main effect of group (e.g., allocation_group) refers to the difference between groups at the reference time point (typically baseline). “Is Group B different from Group A at baseline?” This is correct if Visit 1 is the reference level of time. To answer: “Is Group B different from Group A at the last visit?”, the main effect does NOT answer that. You need to look at the group effect + interaction term that corresponds to the last visit.
+
+Example Breakdown. With this model: `lmer(outcome ~ allocation_group * visit + (1 | subject))`
+
+- Intercept: Mean for Group A at Visit 1 (if Visit 1 is reference, and Group A is reference).
+- allocation_groupGroupB: Difference between Group B and Group A at Visit 1 (*baseline*).
+- visit3: Difference between Visit 3 and Visit 1 in Group A.
+*- allocation_groupGroupB:visit3: The additional difference for Group B at Visit 3 relative to Group A.*
+
+This is why treatment contrasts are NOT answering directly: “Are groups different at the last visit?” unless the last visit is set as the reference level. If your clinical question is about the difference at the last visit, there are two valid approaches. You can either relevel the factor, such that the main effect of group represents the difference at Visit 3. However, the safest and clearest approach is to keep the model as-is and use emmeans. This will output the difference between groups at each visit, including the last visit. It directly answers your question without changing reference levels.
+
+```
+library(emmeans)
+
+emm <- emmeans(model, ~ allocation_group | visit)
+contrast(emm, method = "pairwise")
+```
+
+Key Point:
+
+- Main effects in treatment contrasts only represent comparisons when the other interacting factor is at its reference level.
+- Interaction terms modify those comparisons at other levels (e.g., later visits).
+- This is the single most common misunderstanding with interaction models.
+
+
+Your intuition is correct. The main effect of the group does not answer the question “Is Group B different from Group A at the last visit?” unless the last visit is explicitly set as the reference level in the model. In models using treatment contrasts, the main effect of the group represents the difference between groups at the reference time point (typically baseline), not at later visits. To assess whether there is a difference between groups at the last visit, the correct approach is to interpret the combination of the main effect of the group and the interaction term between group and the last visit. This need to combine terms for interpretation is precisely why the use of estimated marginal means (emmeans) is often preferred in clinical trials. It provides direct answers to clinically relevant questions, such as whether the groups differ at the end of the study or at any other specific time point, without requiring reparameterization of the model or manual combination of coefficients.
+
+If you are using emmeans to analyze and interpret your results, the choice of contrast coding—whether treatment (contr.treatment), sum-to-zero (contr.sum), or polynomial (contr.poly)—does not affect the estimated marginal means or the pairwise comparisons derived from them. The contrast coding only influences how the model coefficients are presented in the model output, particularly how the intercept and main effects are defined relative to the reference categories or the overall mean. However, it does not change the underlying model fit, the predicted values, or the marginal means calculated from the model.
+
+This is because emmeans computes the expected values for each combination of factors based on the full model, regardless of how the coefficients are parameterized internally. Therefore, when the primary goal is to interpret differences between groups at specific time points—such as in a randomized clinical trial—the use of emmeans provides results that are consistent and robust regardless of the contrast coding. For this reason, it becomes more relevant to focus on the marginal means and their comparisons rather than the raw model coefficients, making the analysis clearer, more intuitive, and aligned with the clinical questions of interest.
+
+## Orthogonal Contrasts (contr.sum, contr.poly — Sum-to-zero or Polynomial Coding)
+
+- Intercept: Represents the grand mean, averaged across all groups and time points (or levels of all factors).
+
+- Main effect of a group variable: Represents the deviation of each group from the grand mean, with the constraint that deviations sum to zero across groups (e.g., one positive, one negative).
+
+- Main effects of a time variable (if using polynomial contrasts):
+
+- Linear trend (visit.L): Captures the overall linear change across the ordered levels of the time variable.
+
+- Quadratic trend (visit.Q): Captures curvature or non-linear patterns over time.
+
+- Interaction terms: Represent how the linear and quadratic trends differ between groups, or more generally, how the pattern of one factor changes depending on the level of another factor.
+
+
+### Summary:
+
+- Treatment contrasts answer questions like:
+→ “Is Group B different from Group A at baseline?” or “How does Visit 2 compare to Visit 1 within Group A?”
+
+- Orthogonal contrasts answer questions like:
+→ “What is the overall linear trend over time?” or “Does one group deviate from the overall mean in a consistent direction?”
+
+
+This is a choice of framing, not of different models — the underlying model is the same. The contrasts only affect how coefficients are parameterized and interpreted, not the model’s overall fit or predictions.
+
+> contrasts(data_model\$allocation_group)
+>
+> |             | **Grupo B** |
+> |-------------|-------------|
+> | **Grupo A** | 0           |
+> | **Grupo B** | 1           |
+
+→ Reference level: Grupo A
+→ Interpretation:
+
+- The coefficient for allocation_groupGrupoB in the model output is the difference between Grupo B and Grupo A.
+
+> contrasts(data_model\$visit)
+>
+> |       | **2** | **3** |
+> |-------|-------|-------|
+> | **1** | 0     | 0     |
+> | **2** | 1     | 0     |
+> | **3** | 0     | 1     |
+
+→ Reference level: Visit 1
+→ Interpretation:
+
+- The coefficient for visit2 is the difference between Visit 2 and Visit 1.
+
+- The coefficient for visit3 is the difference between Visit 3 and Visit 1.
+
+**Important Note**
+
+This is the standard treatment contrast coding (also called dummy coding) where the first level alphabetically (or the level defined as reference) is used as the baseline.
+
+✔️ This matches the default behavior in SAS (reference coding) and most regression models.
+✔️ It does NOT provide comparisons between Visit 2 vs Visit 3 or between other combinations directly — that’s where emmeans or contrast functions come in.
+
+```
+lmer(outcome ~ allocation_group * visit + (1 | record_id), data = ...)
+```
+
+- The Intercept = mean outcome for Grupo A at Visit 1.
+- The coefficient for allocation_groupGrupoB = difference between Grupo B and Grupo A at Visit 1.
+- The coefficient for visit2 = difference between Visit 2 and Visit 1 in Grupo A.
+- The coefficient for visit3 = difference between Visit 3 and Visit 1 in Grupo A.
+- The interaction terms like allocation_groupGrupoB:visit2 = how the change from Visit 1 to Visit 2 differs between Grupo B and Grupo A.
+
+*If You Wanted Different Contrasts*
+
+For example, sum-to-zero coding or effect coding, you could do:
+
+```
+options(contrasts = c("contr.sum", "contr.poly"))
+```
+
+or for Helmert contrasts:
+
+```
+contrasts(data_model$visit) <- contr.helmert(3)
+```
+
+But for clinical trials, the treatment coding (reference coding) you are using is usually preferred because it aligns directly with questions like:
+
+“Is Grupo B different from Grupo A?”
+“Is Visit 3 different from baseline (Visit 1)?”
+
+✔️ Your contrasts are correct for typical clinical trial analyses.
+✔️ Model coefficients are relative to Grupo A and Visit 1 (the reference levels).
+✔️ Use emmeans() if you want comparisons between any other pairs (e.g., Visit 2 vs Visit 3).
+

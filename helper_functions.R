@@ -664,3 +664,22 @@ sensitivity_check_lmer <- function(model, id_var = "record_id", top_n = 5) {
         comparison_table = comparison
     )
 }
+
+summarize_var <- function(data, var) {
+    
+    var <- rlang::ensym(var)
+    
+    data %>%
+        group_by(allocation_group, visit) %>%
+        summarise(
+            N = sum(!is.na(!!var)),
+            Mean = mean(!!var, na.rm = TRUE),
+            SD = sd(!!var, na.rm = TRUE),
+            Min = min(!!var, na.rm = TRUE),
+            Q1 = quantile(!!var, 0.25, na.rm = TRUE),
+            Median = median(!!var, na.rm = TRUE),
+            Q3 = quantile(!!var, 0.75, na.rm = TRUE),
+            Max = max(!!var, na.rm = TRUE),
+            .groups = "drop"
+        )
+}
