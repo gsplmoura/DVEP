@@ -11,14 +11,12 @@ format:
       collapsed: false
       smooth-scroll: true
     css: styles.css
-    code-fold: true
+    code-fold: false
   pdf:
     toc: true
     toc-depth: 2
     pdf-engine: xelatex
 ---
-
-# Load
 
 ```{r setup}
 #| include: false
@@ -30,7 +28,7 @@ knitr::opts_chunk$set(
   tibble.width = Inf)
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 
 rm(list = ls())
 graphics.off()
@@ -117,130 +115,42 @@ data_model <- readRDS("local_files/Data_processed/data_model.rds") %>%
     )
 attributes(data_model$kcal)$label <- "Kcal total"
 attributes(data_model$labs_quick_index)$label <- "Quick Index"
+attributes(data_model$crp_log)$label <- "Log PCR"
 
 data_model_V1V3 <- data_model %>% 
     filter(!visit == "2")
 
-class(data_model$record_id)
-class(data_model$allocation_group)
-class(data_model$visit)
+#class(data_model$record_id)
+#class(data_model$allocation_group)
+#class(data_model$visit)
 
 ```
 
-# Explore baseline
+# Outcomes
 
-## Quantitative
+Variables:
 
-### Categorical variables
+labs_ast - negative
+labs_alt - negative
+labs_ggt - negative
+labs_alkp
+labs_cholesterol
+labs_ldl
+labs_hdl
+labs_triglycerides
+labs_glucose
+labs_hba1c
+labs_insulin
+labs_homa_ir
+labs_quick_index
+abdomen
+bmi
+mean_bp_mean
+evs_score
 
-```{r}
-baseline <- data_model %>%
-    filter(visit == 1)
+### labs_ast
 
-summ_cat <- baseline %>%
-  summarize_categorical(use_labels = TRUE, group_col = "allocation_group") %>%
-  filter(Level == 1) %>%
-  select(Variable, Freq, Percent, allocation_group) %>%
-  pivot_wider(
-    names_from = allocation_group, 
-    values_from = c(Freq, Percent)
-    )
-
-summ_cat <- summ_cat %>% 
-    select(
-        Variable, 
-        `Grupo Placebo (N)` = `Freq_Grupo A`, 
-        `% (A)` = `Percent_Grupo A`, 
-        `Grupo Eclipta (N)` = `Freq_Grupo B`, 
-        `% (B)` = `Percent_Grupo B`)
-
-summ_cat
-
-baseline %>% select(!where(is.numeric), -record_id, -visit) %>% compare_groups(group_col = "allocation_group")
-```
-
-### Numerical variables
-
-```{r}
-summ_num <- baseline %>% 
-    summarize_numerical(use_labels = TRUE, group_col = "allocation_group") %>% 
-    select(-N) %>%
-    pivot_wider(
-        names_from = allocation_group, 
-        values_from = `Mean (95% CI)`)
-
-summ_num %>% print(n = Inf)
-
-baseline %>% select(allocation_group, where(is.numeric), -compliance_score_visit, -duration_difference) %>%
-    compare_groups(group_col = "allocation_group")
-```
-
-#### Energy intake
-
-```{r}
-ggplot(data = baseline, aes(x = allocation_group, y = kcal)) +
-    geom_violin(alpha = 0.5, trim = FALSE) +
-    geom_boxplot(width = 0.5, outlier.colour = "red", alpha = 0.5) +
-    geom_jitter(width = 0.2, alpha = 0.5) +
-    coord_flip() +
-    labs(
-        title = "Distribuição da ingestão energétical total por grupo de alocação",
-        x = "Ingestão total (Kcal)",
-        y = "Grupo de alocação"
-        ) +
-    theme_minimal()
-
-ggplot(data = baseline, aes(x = allocation_group, y = carbs_kcal)) +
-    geom_violin(alpha = 0.5, trim = FALSE) +
-    geom_boxplot(width = 0.5, outlier.colour = "red", alpha = 0.5) +
-    geom_jitter(width = 0.2, alpha = 0.5) +
-    coord_flip() +
-    labs(
-        title = "Distribuição da ingestão de carboidratos em kcal por grupo de alocação",
-        x = "Ingestão total (Kcal)",
-        y = "Grupo de alocação"
-        ) +
-    theme_minimal()
-
-ggplot(data = baseline, aes(x = allocation_group, y = protein_kcal)) +
-    geom_violin(alpha = 0.5, trim = FALSE) +
-    geom_boxplot(width = 0.5, outlier.colour = "red", alpha = 0.5) +
-    geom_jitter(width = 0.2, alpha = 0.5) +
-    coord_flip() +
-    labs(
-        title = "Distribuição da ingestão de proteínas em kcal por grupo de alocação",
-        x = "Ingestão total (Kcal)",
-        y = "Grupo de alocação"
-        ) +
-    theme_minimal()
-
-ggplot(data = baseline, aes(x = allocation_group, y = fat_kcal)) +
-    geom_violin(alpha = 0.5, trim = FALSE) +
-    geom_boxplot(width = 0.5, outlier.colour = "red", alpha = 0.5) +
-    geom_jitter(width = 0.2, alpha = 0.5) +
-    coord_flip() +
-    labs(
-        title = "Distribuição da ingestão de gorduras em kcal por grupo de alocação",
-        x = "Ingestão total (Kcal)",
-        y = "Grupo de alocação"
-        ) +
-    theme_minimal()
-    
-```
-
-# Labs
-
-```{r}
-#contrasts(data_model$allocation_group) <- contr.treatment(2)
-#contrasts(data_model$allocation_group) <- contr.sum(2) # Sum-to-zero for group
-#contrasts(data_model$visit) <- contr.poly(3) # Orthogonal polynomial for visit
-
-data_model %>% select(starts_with("lab")) %>% names()
-```
-
-### AST
-
-```{r labs_ast_hist}
+```{r labs_ast_1}
 # Plot 1: Raw data
 labs_ast_hist_1 <- data_model %>% 
     filter(
@@ -258,54 +168,62 @@ labs_ast_hist_2 <- data_model %>%
     geom_histogram(bins = 50, fill = "lightgreen", color = "black")
 
 # Combine side by side
-labs_ast_hist_1 + labs_ast_hist_2
-
-# library(patchwork)
-# p1 + p2         # → plots side by side (horizontally)
-# p1 / p2         # → plots stacked (vertically)
-# (p1 | p2) / p3  # → p1 and p2 on top row, p3 below
+labs_ast_hist_1 + labs_ast_hist_2 # library(patchwork)
 ```
 
-#### LMM
-
-```{r labs_ast_model_1, fig.width=10, fig.height=14}
-
+```{r labs_ast_2}
+# LMM
 labs_ast_model <- lmer(log1p(labs_ast) ~ allocation_group + visit + (1 | record_id), data = data_model)
+check_collinearity(labs_ast_model)
 
-summary(labs_ast_model)
-
-performance::check_model(labs_ast_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_ast_model_2, fig.width=10, fig.height=14}
+# Sensitivity analysis
 labs_ast_model_check <- sensitivity_check_lmer(
     model = labs_ast_model,
     id_var = "record_id",
-    top_n = 5
-)
+    top_n = 5)
 
-# labs_ast_model_check$cooks_table        #Cook's distance table
-# labs_ast_model_check$influential_ids
-labs_ast_model_check$comparison_table
-
+# LMM Sensitivity
 labs_ast_model_sens <- update(object = labs_ast_model,
-                   subset = !(record_id %in% labs_ast_model_check$influential_ids)
-)
+                              subset = !(record_id %in% labs_ast_model_check$influential_ids))
+# Influential IDS
+labs_ast_model_check$influential_ids
+```
 
-check_collinearity(labs_ast_model_sens)
-
-performance::check_model(labs_ast_model_sens)
-
+```{r labs_ast_3}
+# Model comparison
+summary(labs_ast_model)
+summary(labs_ast_model_sens)
+labs_ast_model_check$comparison_table
 performance::compare_performance(labs_ast_model, labs_ast_model_sens)
 ```
 
-#### Distributions
+```{r labs_ast_4, fig.width=10, fig.height=10}
+performance::check_model(labs_ast_model)
+performance::check_model(labs_ast_model_sens)
+```
 
-##### Plain model
+```{r labs_ast_5}
+# Get EMMs for each group at each visit
+labs_ast_emm <- emmeans::emmeans(
+    labs_ast_model_sens, 
+    ~ allocation_group * visit
+)
 
-```{r labs_ast_distribution_1}
+# Table of marginal means
+labs_ast_emm
+
+# Pairwise comparisons: Between groups at each visit
+contrast(labs_ast_emm, method = "pairwise", by = "visit", adjust = "bonferroni")
+
+# Pairwise comparisons: Changes over time within each group
+contrast(labs_ast_emm, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
+
+# Plot of marginal means
+plot(labs_ast_emm, comparisons = TRUE)
+```
+
+
+```{r labs_ast_6}
 ggplot(
     data = data_model, 
     aes(
@@ -322,12 +240,9 @@ ggplot(
         se = TRUE,
         linewidth = 1
     ) +
+    labs(title = "All data") +
     facet_wrap(~ allocation_group)
-```
 
-##### Sensitivity model
-
-```{r labs_ast_distribution_2}
 data_model %>% 
     filter(
         !(record_id %in% labs_ast_model_check$influential_ids)
@@ -347,175 +262,90 @@ data_model %>%
         se = TRUE,
         linewidth = 1
     ) +
+    labs(title = "Sensitivity analysis") +
     facet_wrap(~ allocation_group)
 ```
 
-#### Interpretation
+### labs_alt
 
-*Fixed effects*
-
-| Term | Estimate | Interpretation |
-|---------------|---------------|-------------------------------------------|
-| (Intercept) | 24.29 | Mean AST for the grand mean (across groups and visits) |
-| allocation_group1 | +0.50 | Difference of Grupo A from the grand mean. Grupo B is coded as -0.50 (sum-to-zero contrast). Not significant (p = 0.464). |
-| visit.L | +0.14 | Linear trend across visits (1 → 2 → 3). Not significant (p = 0.832). |
-| visit.Q | +0.40 | Quadratic trend (e.g., U-shape or inverted U-shape). Not significant (p = 0.532). |
-
-Key Points for **Orthogonal Contrasts**
-
-1.  allocation_group1
-
-    -   Uses **sum-to-zero coding (`contr.sum`)**
-    -   Estimate represents how much **Grupo A differs from the grand mean**.
-    -   To get **Grupo B**, flip the sign (**−0.50**).
-
-2.  visit.L and visit.Q
-
-    -   **`visit.L`** → Linear change across visits (Visit 1 → Visit 3). If positive, indicates AST increases linearly.
-    -   **`visit.Q`** → Quadratic shape. If significant, could mean the variable rises then falls (or vice versa).
-    -   Both are **orthogonal**, meaning each tests a unique part of the variance.
-
-**None of the fixed effects are statistically significant:**
-
--   Group difference: **p = 0.464**
--   Visit linear trend: **p = 0.832**
--   Visit quadratic trend: **p = 0.532**
-
-→ **Conclusion:** No evidence of AST changing significantly across visits or differing between groups.
-
-*Random Effects*
-
-| Component   | Std.Dev | Interpretation                                   |
-|-------------|---------|--------------------------------------------------|
-| (Intercept) | 4.836   | Variability in baseline AST across individuals.  |
-| Residual    | 4.743   | Variability within individuals (visit-to-visit). |
-
-→ Substantial variability exists between participants (Intercept SD ≈ 4.8) compared to within-participant variation (Residual SD ≈ 4.7).
-
-*Important Detail for Orthogonal Contrasts*
-
--   **Intercept:** is the **grand mean** (not the mean of a specific group like in treatment coding).
--   Group effects are interpreted relative to the grand mean, not a reference level.
-
-→ If you switch back to treatment contrasts (`contr.treatment`), the intercept would represent **Grupo B (if coded as reference)**, and the group coefficient would be **Grupo A minus Grupo B**
-
-##### Interpretation of the Sensitivity Check
-
-*Fixed Effects*
-
-None of these changes are large. The magnitude and p-values remain non-significant.
-
-| Term                  | Original | Sensitivity | Δ Change              |
-|-----------------------|----------|-------------|-----------------------|
-| **(Intercept)**       | 3.20     | 3.18        | Slightly ↓            |
-| **allocation_group1** | 0.0097   | 0.014       | ↑ tiny (still NS)     |
-| **visit.L**           | +0.0018  | -0.0102     | Small flip (still NS) |
-| **visit.Q**           | +0.0137  | +0.0171     | Minor ↑               |
-
-*Random Effects (Variance Components)*
-
-Residual (within-subject) variance decreased substantially after removing influential IDs. This is a signal that the influential IDs were contributing to heteroskedasticity and residual noise.
-
-| Component                 | Original | Sensitivity | Δ Change     |
-|---------------------------|----------|-------------|--------------|
-| \*\*sd\_\_(Intercept)\*\* | 0.174    | 0.172       | ↓ slightly   |
-| \*\*sd\_\_Observation\*\* | 0.183    | 0.155       | ↓ noticeably |
-
-What This Means:
-
--   Conclusion and direction of effects are stable — results are robust to these influential points.
--   Residual variance reduction suggests improved model fit and less noise.
--   Fixed effects estimates changed minimally — **no major distortions.**
-
-#### GLMM (worse fit)
-
-```{r labs_ast_glmm, fig.width=10, fig.height=14, eval=FALSE}
-library(glmmTMB)
-
-labs_ast_glmm <- glmmTMB(
-  labs_ast ~ allocation_group + visit + (1 | record_id),
-  data = data_model,
-  family = Gamma(link = "log")
-)
-
-summary(labs_ast_glmm)
-
-performance::compare_performance(labs_ast_model, labs_ast_model_sens, labs_ast_glmm)
-
-performance::check_model(labs_ast_glmm)
-
-```
-
-### ALT
-
-```{r labs_alt_hist}
+```{r labs_alt_1}
 # Plot 1: Raw data
 labs_alt_hist_1 <- data_model %>% 
-    filter(
-        labs_alt < 300
-    ) %>% 
+    #filter(
+    #    labs_alt < 300
+    #) %>% 
     ggplot(aes(x = labs_alt)) + 
     geom_histogram(bins = 50, fill = "skyblue", color = "black")
 
 # Plot 2: Log-transformed data
 labs_alt_hist_2 <- data_model %>% 
-    filter(
-        labs_alt < 300
-    ) %>%
+    #filter(
+    #    labs_alt < 300
+    #) %>%
     ggplot(aes(x = log1p(labs_alt))) + 
     geom_histogram(bins = 50, fill = "lightgreen", color = "black")
 
 # Combine side by side
-labs_alt_hist_1 + labs_alt_hist_2
-
-# library(patchwork)
-# p1 + p2         # → plots side by side (horizontally)
-# p1 / p2         # → plots stacked (vertically)
-# (p1 | p2) / p3  # → p1 and p2 on top row, p3 below
+labs_alt_hist_1 + labs_alt_hist_2 # library(patchwork)
 ```
 
-#### LMM
-
-```{r labs_alt_model_1, fig.width=10, fig.height=14}
-
+```{r labs_alt_2}
+# LMM
 labs_alt_model <- lmer(log1p(labs_alt) ~ allocation_group + visit + (1 | record_id), data = data_model)
+check_collinearity(labs_alt_model)
 
-summary(labs_alt_model)
-
-performance::check_model(labs_alt_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_alt_model_2, fig.width=10, fig.height=14}
+# Sensitivity analysis
 labs_alt_model_check <- sensitivity_check_lmer(
     model = labs_alt_model,
     id_var = "record_id",
-    top_n = 5
-)
+    top_n = 5)
 
-# labs_alt_model_check$cooks_table        #Cook's distance table
-# labs_alt_model_check$influential_ids
-labs_alt_model_check$comparison_table
-
+# LMM Sensitivity
 labs_alt_model_sens <- update(object = labs_alt_model,
-                   subset = !(record_id %in% labs_alt_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_alt_model, labs_alt_model_sens)
-
-performance::check_model(labs_alt_model_sens)
-
+                              subset = !(record_id %in% labs_alt_model_check$influential_ids))
+# Influential IDS
+labs_alt_model_check$influential_ids
 ```
 
-#### Curve
+```{r labs_alt_3}
+# Model comparison
+summary(labs_alt_model)
+summary(labs_alt_model_sens)
+labs_alt_model_check$comparison_table
+performance::compare_performance(labs_alt_model, labs_alt_model_sens)
+```
 
-```{r labs_alt_curve}
-labs_alt_curve_1 <- ggplot(
-    data = data_model,                    # DATA
+```{r labs_alt_4, fig.width=10, fig.height=10}
+performance::check_model(labs_alt_model)
+performance::check_model(labs_alt_model_sens)
+```
+
+```{r labs_alt_5}
+# Get EMMs for each group at each visit
+labs_alt_emm <- emmeans::emmeans(
+    labs_alt_model_sens, 
+    ~ allocation_group * visit
+)
+
+# Table of marginal means
+labs_alt_emm
+
+# Pairwise comparisons: Between groups at each visit
+contrast(labs_alt_emm, method = "pairwise", by = "visit", adjust = "bonferroni")
+
+# Pairwise comparisons: Changes over time within each group
+contrast(labs_alt_emm, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
+
+# Plot of marginal means
+plot(labs_alt_emm, comparisons = TRUE)
+```
+
+```{r labs_alt_6}
+ggplot(
+    data = data_model, 
     aes(
         x = as.factor(visit),
-        y = labs_alt,                     # VARIABLE
+        y = labs_alt,
         group = record_id,
     )
 ) +
@@ -527,17 +357,18 @@ labs_alt_curve_1 <- ggplot(
         se = TRUE,
         linewidth = 1
     ) +
+    labs(title = "All data") +
     facet_wrap(~ allocation_group) + 
-    coord_cartesian(ylim = c(10, 80))     # LIMIT Y
+    coord_cartesian(ylim = c(10, 80))
 
-labs_alt_curve_2 <- data_model %>%                # DATA 
-    filter(                               # FILTER OUT INFLUENTIAL
+data_model %>% 
+    filter(
         !(record_id %in% labs_alt_model_check$influential_ids)
     ) %>% 
     ggplot(
         aes(
-            x = as.factor(visit),         
-            y = labs_alt,                     # VARIABLE
+            x = as.factor(visit),
+            y = labs_alt,
             group = record_id,
         )
     ) +
@@ -549,17 +380,16 @@ labs_alt_curve_2 <- data_model %>%                # DATA
         se = TRUE,
         linewidth = 1
     ) +
+    labs(title = "Sensitivity analysis") +
     facet_wrap(~ allocation_group) + 
     coord_cartesian(ylim = c(10, 80))
-
-labs_alt_curve_1 + labs_alt_curve_2
 ```
 
-### GGT
+### labs_ggt
 
-```{r labs_ggt_hist}
+```{r labs_ggt_1}
 # Plot 1: Raw data
-p_ggt_d1 <- data_model %>% 
+labs_ggt_hist_1 <- data_model %>% 
     filter(
         labs_ggt < 300
     ) %>% 
@@ -567,7 +397,7 @@ p_ggt_d1 <- data_model %>%
     geom_histogram(bins = 50, fill = "skyblue", color = "black")
 
 # Plot 2: Log-transformed data
-p_ggt_d2 <- data_model %>% 
+labs_ggt_hist_2 <- data_model %>% 
     filter(
         labs_ggt < 300
     ) %>%
@@ -575,57 +405,66 @@ p_ggt_d2 <- data_model %>%
     geom_histogram(bins = 50, fill = "lightgreen", color = "black")
 
 # Combine side by side
-p_ggt_d1 + p_ggt_d2
-
-# library(patchwork)
-# p1 + p2         # → plots side by side (horizontally)
-# p1 / p2         # → plots stacked (vertically)
-# (p1 | p2) / p3  # → p1 and p2 on top row, p3 below
+labs_ggt_hist_1 + labs_ggt_hist_2 # library(patchwork)
 ```
 
-#### Plain Model
+```{r labs_ggt_2}
+# LMM
+labs_ggt_model <- lmer(log1p(labs_ggt) ~ allocation_group + visit + (1 | record_id), data = data_model)
+check_collinearity(labs_ggt_model)
 
-```{r labs_ggt_model_1, fig.width=10, fig.height=14}
-
-labs_ggt_model <- lmer(log1p(labs_ggt) ~ allocation_group + visit + (1 | record_id), 
-                       data = data_model)
-
-summary(labs_ggt_model)
-
-performance::check_model(labs_ggt_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_ggt_model_2, fig.width=10, fig.height=14}
+# Sensitivity analysis
 labs_ggt_model_check <- sensitivity_check_lmer(
     model = labs_ggt_model,
     id_var = "record_id",
-    top_n = 7
-    )
+    top_n = 7)
 
-# labs_ggt_model_check$cooks_table        #Cook's distance table
-# labs_ggt_model_check$influential_ids
-labs_ggt_model_check$comparison_table
-
+# LMM Sensitivity
 labs_ggt_model_sens <- update(object = labs_ggt_model,
-                   subset = !(record_id %in% labs_ggt_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_ggt_model, labs_ggt_model_sens)
-
-performance::check_model(labs_ggt_model_sens)
-
+                              subset = !(record_id %in% labs_ggt_model_check$influential_ids))
+# Influential IDS
+labs_ggt_model_check$influential_ids
 ```
 
-#### Curve
+```{r labs_ggt_3}
+# Model comparison
+summary(labs_ggt_model)
+summary(labs_ggt_model_sens)
+labs_ggt_model_check$comparison_table
+performance::compare_performance(labs_ggt_model, labs_ggt_model_sens)
+```
 
-```{r labs_ggt_curve}
-labs_ggt_curve_1 <- ggplot(
-    data = data_model,                    # DATA
+```{r labs_ggt_4, fig.width=10, fig.height=10}
+performance::check_model(labs_ggt_model)
+performance::check_model(labs_ggt_model_sens)
+```
+
+```{r labs_ggt_5}
+# Get EMMs for each group at each visit
+labs_ggt_emm <- emmeans::emmeans(
+    labs_ggt_model_sens, 
+    ~ allocation_group * visit
+)
+
+# Table of marginal means
+labs_ggt_emm
+
+# Pairwise comparisons: Between groups at each visit
+contrast(labs_ggt_emm, method = "pairwise", by = "visit", adjust = "bonferroni")
+
+# Pairwise comparisons: Changes over time within each group
+contrast(labs_ggt_emm, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
+
+# Plot of marginal means
+plot(labs_ggt_emm)
+```
+
+```{r labs_ggt_6}
+ggplot(
+    data = data_model, 
     aes(
         x = as.factor(visit),
-        y = labs_ggt,                     # VARIABLE
+        y = labs_ggt,
         group = record_id,
     )
 ) +
@@ -636,18 +475,19 @@ labs_ggt_curve_1 <- ggplot(
         method = "lm",
         se = TRUE,
         linewidth = 1
-        ) +
-    facet_wrap(~ allocation_group) + 
-    coord_cartesian(ylim = c(0, 225))     # LIMIT Y
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
 
-labs_ggt_curve_2 <- data_model %>%                # DATA 
-    filter(                               # FILTER OUT INFLUENTIAL
+data_model %>% 
+    filter(
         !(record_id %in% labs_ggt_model_check$influential_ids)
     ) %>% 
     ggplot(
         aes(
-            x = as.factor(visit),         
-            y = labs_ggt,                     # VARIABLE
+            x = as.factor(visit),
+            y = labs_ggt,
             group = record_id,
         )
     ) +
@@ -659,572 +499,126 @@ labs_ggt_curve_2 <- data_model %>%                # DATA
         se = TRUE,
         linewidth = 1
     ) +
-    facet_wrap(~ allocation_group) + 
-    coord_cartesian(ylim = c(0, 250))
-
-labs_ggt_curve_1 + labs_ggt_curve_2
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
 ```
 
-### FALC
+### labs_alkp
 
-ALKP is dominated by between-subject differences, and fixed effects (group, visit) explain almost nothing meaningful.
-
-```{r labs_alkp_hist}
+```{r labs_alkp_1}
 # Plot 1: Raw data
 labs_alkp_hist_1 <- data_model %>% 
-    filter(
-        labs_alkp < 300
-    ) %>% 
+    #filter(
+    #    labs_alkp < 300
+    #) %>% 
     ggplot(aes(x = labs_alkp)) + 
     geom_histogram(bins = 50, fill = "skyblue", color = "black")
 
 # Plot 2: Log-transformed data
 labs_alkp_hist_2 <- data_model %>% 
-    filter(
-        labs_alkp < 300
-    ) %>%
+    #filter(
+    #    labs_alkp < 300
+    #) %>%
     ggplot(aes(x = log1p(labs_alkp))) + 
     geom_histogram(bins = 50, fill = "lightgreen", color = "black")
 
 # Combine side by side
-labs_alkp_hist_1 + labs_alkp_hist_2
-
-# library(patchwork)
-# p1 + p2         # → plots side by side (horizontally)
-# p1 / p2         # → plots stacked (vertically)
-# (p1 | p2) / p3  # → p1 and p2 on top row, p3 below
+labs_alkp_hist_1 + labs_alkp_hist_2 # library(patchwork)
 ```
 
-#### Plain Model
-
-```{r labs_alkp_model_1, fig.width=10, fig.height=14}
-
+```{r labs_alkp_2}
+# LMM
 labs_alkp_model <- lmer(log1p(labs_alkp) ~ allocation_group + visit + (1 | record_id), data = data_model)
+check_collinearity(labs_alkp_model)
 
-summary(labs_alkp_model)
-
-performance::check_model(labs_alkp_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_alkp_model_2, fig.width=10, fig.height=14}
+# Sensitivity analysis
 labs_alkp_model_check <- sensitivity_check_lmer(
     model = labs_alkp_model,
     id_var = "record_id",
-    top_n = 5
-)
+    top_n = 5)
 
-# labs_alkp_model_check$cooks_table        #Cook's distance table
-# labs_alkp_model_check$influential_ids
-labs_alkp_model_check$comparison_table
-
+# LMM Sensitivity
 labs_alkp_model_sens <- update(object = labs_alkp_model,
-                   subset = !(record_id %in% labs_alkp_model_check$influential_ids)
-)
+                              subset = !(record_id %in% labs_alkp_model_check$influential_ids))
+# Influential IDS
+labs_alkp_model_check$influential_ids
+```
+
+```{r labs_alkp_3}
+# Model comparison
+summary(labs_alkp_model)
+summary(labs_alkp_model_sens)
+labs_alkp_model_check$comparison_table
 performance::compare_performance(labs_alkp_model, labs_alkp_model_sens)
+```
 
+```{r labs_alkp_4, fig.width=10, fig.height=10}
+performance::check_model(labs_alkp_model)
 performance::check_model(labs_alkp_model_sens)
-
 ```
 
-### Total Colesterol
-
-#### Plain Model
-
-```{r labs_cholesterol_model_1, fig.width=10, fig.height=14}
-
-labs_cholesterol_model <- lmer(log1p(labs_cholesterol) ~ allocation_group + visit + (1 | record_id), data = data_model)
-
-summary(labs_cholesterol_model)
-
-performance::check_model(labs_cholesterol_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_cholesterol_model_2, fig.width=10, fig.height=14}
-labs_cholesterol_model_check <- sensitivity_check_lmer(
-    model = labs_cholesterol_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# labs_cholesterol_model_check$cooks_table        #Cook's distance table
-# labs_cholesterol_model_check$influential_ids
-labs_cholesterol_model_check$comparison_table
-
-labs_cholesterol_model_sens <- update(object = labs_cholesterol_model,
-                   subset = !(record_id %in% labs_cholesterol_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
-
-performance::check_model(labs_cholesterol_model_sens)
-
-```
-
-### LDL-c
-
-#### Plain Model
-
-```{r labs_ldl_model_1, fig.width=10, fig.height=14}
-
-labs_ldl_model <- lmer(log1p(labs_ldl) ~ allocation_group + visit + (1 | record_id), data = data_model)
-
-summary(labs_ldl_model)
-
-performance::check_model(labs_ldl_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_ldl_model_2, fig.width=10, fig.height=14}
-labs_ldl_model_check <- sensitivity_check_lmer(
-    model = labs_ldl_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# labs_ldl_model_check$cooks_table        #Cook's distance table
-# labs_ldl_model_check$influential_ids
-labs_ldl_model_check$comparison_table
-
-labs_ldl_model_sens <- update(object = labs_ldl_model,
-                   subset = !(record_id %in% labs_ldl_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
-
-performance::check_model(labs_ldl_model_sens)
-
-```
-
-### HDL-c
-
-#### Plain Model
-
-```{r labs_hdl_model_1, fig.width=10, fig.height=14}
-
-labs_hdl_model <- lmer(log1p(labs_hdl) ~ allocation_group + visit + (1 | record_id), data = data_model)
-
-summary(labs_hdl_model)
-
-performance::check_model(labs_hdl_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_hdl_model_2, fig.width=10, fig.height=14}
-labs_hdl_model_check <- sensitivity_check_lmer(
-    model = labs_hdl_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# labs_hdl_model_check$cooks_table        #Cook's distance table
-# labs_hdl_model_check$influential_ids
-labs_hdl_model_check$comparison_table
-
-labs_hdl_model_sens <- update(object = labs_hdl_model,
-                   subset = !(record_id %in% labs_hdl_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
-
-performance::check_model(labs_hdl_model_sens)
-
-```
-
-### TAG
-
-#### Plain Model
-
-```{r labs_triglycerides_model_1, fig.width=10, fig.height=14}
-
-labs_triglycerides_model <- lmer(log1p(labs_triglycerides) ~ allocation_group + visit + (1 | record_id), data = data_model)
-
-summary(labs_triglycerides_model)
-
-performance::check_model(labs_triglycerides_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_triglycerides_model_2, fig.width=10, fig.height=14}
-labs_triglycerides_model_check <- sensitivity_check_lmer(
-    model = labs_triglycerides_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# labs_triglycerides_model_check$cooks_table        #Cook's distance table
-# labs_triglycerides_model_check$influential_ids
-labs_triglycerides_model_check$comparison_table
-
-labs_triglycerides_model_sens <- update(object = labs_triglycerides_model,
-                   subset = !(record_id %in% labs_triglycerides_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
-
-performance::check_model(labs_triglycerides_model_sens)
-
-```
-
-### Glucose
-
-#### Plain Model
-
-```{r labs_glucose_model_1, fig.width=10, fig.height=14}
-
-labs_glucose_model <- lmer(log1p(labs_glucose) ~ allocation_group + visit + (1 | record_id), data = data_model)
-
-summary(labs_glucose_model)
-
-performance::check_model(labs_glucose_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_glucose_model_2, fig.width=10, fig.height=14}
-labs_glucose_model_check <- sensitivity_check_lmer(
-    model = labs_glucose_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# labs_glucose_model_check$cooks_table        #Cook's distance table
-# labs_glucose_model_check$influential_ids
-labs_glucose_model_check$comparison_table
-
-labs_glucose_model_sens <- update(object = labs_glucose_model,
-                   subset = !(record_id %in% labs_glucose_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
-
-performance::check_model(labs_glucose_model_sens)
-
-```
-
-### HbA1c
-
-#### Plain Model
-
-```{r labs_hba1c_model_1, fig.width=10, fig.height=14}
-
-labs_hba1c_model <- lmer(log1p(labs_hba1c) ~ allocation_group + visit + (1 | record_id), data = data_model)
-
-summary(labs_hba1c_model)
-
-performance::check_model(labs_hba1c_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_hba1c_model_2, fig.width=10, fig.height=14}
-labs_hba1c_model_check <- sensitivity_check_lmer(
-    model = labs_hba1c_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# labs_hba1c_model_check$cooks_table        #Cook's distance table
-# labs_hba1c_model_check$influential_ids
-labs_hba1c_model_check$comparison_table
-
-labs_hba1c_model_sens <- update(object = labs_hba1c_model,
-                   subset = !(record_id %in% labs_hba1c_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
-
-performance::check_model(labs_hba1c_model_sens)
-
-```
-
-### Insulin
-
-#### Plain Model
-
-```{r labs_insulin_model_1, fig.width=10, fig.height=14}
-
-labs_insulin_model <- lmer(log1p(labs_insulin) ~ allocation_group + visit + (1 | record_id), data = data_model)
-
-summary(labs_insulin_model)
-
-performance::check_model(labs_insulin_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_insulin_model_2, fig.width=10, fig.height=14}
-labs_insulin_model_check <- sensitivity_check_lmer(
-    model = labs_insulin_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# labs_insulin_model_check$cooks_table        #Cook's distance table
-# labs_insulin_model_check$influential_ids
-labs_insulin_model_check$comparison_table
-
-labs_insulin_model_sens <- update(object = labs_insulin_model,
-                   subset = !(record_id %in% labs_insulin_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
-
-performance::check_model(labs_insulin_model_sens)
-
-```
-
-### Homa-IR
-
-#### Plain Model
-
-```{r labs_homa_ir_model_1, fig.width=10, fig.height=14}
-
-labs_homa_ir_model <- lmer(log1p(labs_homa_ir) ~ allocation_group + visit + (1 | record_id), data = data_model)
-
-summary(labs_homa_ir_model)
-
-performance::check_model(labs_homa_ir_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_homa_ir_model_2, fig.width=10, fig.height=14}
-labs_homa_ir_model_check <- sensitivity_check_lmer(
-    model = labs_homa_ir_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# labs_homa_ir_model_check$cooks_table        #Cook's distance table
-# labs_homa_ir_model_check$influential_ids
-labs_homa_ir_model_check$comparison_table
-
-labs_homa_ir_model_sens <- update(object = labs_homa_ir_model,
-                   subset = !(record_id %in% labs_homa_ir_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
-
-performance::check_model(labs_homa_ir_model_sens)
-
-```
-
-### Quick
-
-#### Plain Model
-
-```{r labs_quick_index_model_1, fig.width=10, fig.height=14}
-
-labs_quick_index_model <- lmer(log1p(labs_quick_index) ~ allocation_group + visit + (1 | record_id), data = data_model)
-
-summary(labs_quick_index_model)
-
-performance::check_model(labs_quick_index_model)
-```
-
-#### Sensitivity analysis
-
-```{r labs_quick_index_model_2, fig.width=10, fig.height=14}
-labs_quick_index_model_check <- sensitivity_check_lmer(
-    model = labs_quick_index_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# labs_quick_index_model_check$cooks_table        #Cook's distance table
-# labs_quick_index_model_check$influential_ids
-labs_quick_index_model_check$comparison_table
-
-labs_quick_index_model_sens <- update(object = labs_quick_index_model,
-                   subset = !(record_id %in% labs_quick_index_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
-
-performance::check_model(labs_quick_index_model_sens)
-
-```
-
-# Clinical variables
-
-### Abdominal circunference
-
-#### Plain Model
-
-```{r abdomen_model_1, fig.width=10, fig.height=14}
-
-abdomen_model <- lmer(log1p(abdomen) ~ allocation_group + visit + (1 | record_id), data = data_model)
-
-summary(abdomen_model)
-
-performance::check_model(abdomen_model)
-```
-
-#### Sensitivity analysis
-
-```{r abdomen_model_2, fig.width=10, fig.height=14}
-abdomen_model_check <- sensitivity_check_lmer(
-    model = abdomen_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# abdomen_model_check$cooks_table        #Cook's distance table
-# abdomen_model_check$influential_ids
-abdomen_model_check$comparison_table
-
-abdomen_model_sens <- update(object = abdomen_model,
-                   subset = !(record_id %in% abdomen_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
-
-performance::check_model(abdomen_model_sens)
-
-```
-
-### BMI
-
-#### Plain Model
-
-```{r bmi_model_1, fig.width=10, fig.height=14}
-
-bmi_model <- lmer(log1p(bmi) ~ allocation_group + visit + (1 | record_id), data = data_model)
-
-summary(bmi_model)
-
-performance::check_model(bmi_model)
-```
-
-#### Sensitivity analysis
-
-```{r bmi_model_2, fig.width=10, fig.height=14}
-bmi_model_check <- sensitivity_check_lmer(
-    model = bmi_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# bmi_model_check$cooks_table        #Cook's distance table
-# bmi_model_check$influential_ids
-bmi_model_check$comparison_table
-
-bmi_model_sens <- update(object = bmi_model,
-                   subset = !(record_id %in% bmi_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
-
-performance::check_model(bmi_model_sens)
-
-```
-
-### Blood pressure
-
-```{r mean_bp_mean_hist}
-# Plot 1: Raw data
-data_model %>% 
-    #filter(
-    #    mean_bp_mean < 300
-    #) %>% 
-    ggplot(aes(x = mean_bp_mean)) + 
-    geom_histogram(bins = 30, fill = "skyblue", color = "black")
-
-summarize_var(data = data_model, mean_bp_mean)
-```
-
-#### Models
-
-```{r mean_bp_mean_model_1, fig.width=10, fig.height=14}
-
-mean_bp_mean_model <- lmer(mean_bp_mean ~ allocation_group * visit + (1 | record_id), data = data_model)
-
-summary(mean_bp_mean_model)
-
-performance::check_model(mean_bp_mean_model)
-
-mean_bp_mean_model_check <- sensitivity_check_lmer(
-    model = mean_bp_mean_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# mean_bp_mean_model_check$cooks_table        #Cook's distance table
-# mean_bp_mean_model_check$influential_ids
-mean_bp_mean_model_check$comparison_table
-
-mean_bp_mean_model_sens <- update(object = mean_bp_mean_model,
-                   subset = !(record_id %in% mean_bp_mean_model_check$influential_ids)
-)
-
-performance::compare_performance(mean_bp_mean_model, mean_bp_mean_model_sens)
-
-performance::check_model(mean_bp_mean_model_sens)
-
-```
-
-#### EMM
-
-```{r}
-
+```{r labs_alkp_5}
 # Get EMMs for each group at each visit
-mean_bp_mean_emm <- emmeans::emmeans(
-  mean_bp_mean_model_sens, 
-  ~ allocation_group * visit
+labs_alkp_emm <- emmeans::emmeans(
+    labs_alkp_model_sens, 
+    ~ allocation_group * visit
 )
 
 # Table of marginal means
-mean_bp_mean_emm
+labs_alkp_emm
 
 # Pairwise comparisons: Between groups at each visit
-contrast(mean_bp_mean_emm, method = "pairwise", by = "visit", adjust = "bonferroni")
+contrast(labs_alkp_emm, method = "pairwise", by = "visit", adjust = "bonferroni")
 
 # Pairwise comparisons: Changes over time within each group
-contrast(mean_bp_mean_emm, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
+contrast(labs_alkp_emm, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
 
 # Plot of marginal means
-plot(mean_bp_mean_emm, comparisons = TRUE)
+plot(labs_alkp_emm, comparisons = TRUE)
 ```
 
-### EVS score
+```{r labs_alkp_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_alkp,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
 
-#### Plain Model
-
-```{r evs_score_model_1, fig.width=10, fig.height=14}
-
-evs_score_model <- lmer(log1p(evs_score) ~ allocation_group + visit + (1 | record_id), data = data_model)
-
-summary(evs_score_model)
-
-performance::check_model(evs_score_model)
-```
-
-#### Sensitivity analysis
-
-```{r evs_score_model_2, fig.width=10, fig.height=14}
-evs_score_model_check <- sensitivity_check_lmer(
-    model = evs_score_model,
-    id_var = "record_id",
-    top_n = 5
-)
-
-# evs_score_model_check$cooks_table        #Cook's distance table
-# evs_score_model_check$influential_ids
-evs_score_model_check$comparison_table
-
-evs_score_model_sens <- update(object = evs_score_model,
-                   subset = !(record_id %in% evs_score_model_check$influential_ids)
-)
-
-performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
-
-performance::check_model(evs_score_model_sens)
-
+data_model %>% 
+    filter(
+        !(record_id %in% labs_alkp_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_alkp,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
 ```

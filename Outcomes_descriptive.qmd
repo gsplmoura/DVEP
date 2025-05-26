@@ -1,0 +1,228 @@
+---
+title: "All outcomes"
+author: "S.P.L.M., Gustavo"
+date: today
+format:
+  html:
+    page-layout: full
+    toc: true
+    toc-depth: 4
+    toc-float:
+      collapsed: false
+      smooth-scroll: true
+    css: styles.css
+    code-fold: true
+  pdf:
+    toc: true
+    toc-depth: 2
+    pdf-engine: xelatex
+---
+
+```{r setup}
+#| include: false
+
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  tibble.print_max = Inf,
+  tibble.width = Inf)
+```
+
+```{r, echo=FALSE, message=FALSE}
+
+rm(list = ls())
+graphics.off()
+cat("\014")  # Clear any pending RStudio sessions or temporary files
+
+# Load functions from external script
+source("helper_functions.R")
+
+## Load necessary libraries
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(stringr)
+library(purrr)
+library(here)
+library(lme4)
+library(lmerTest)
+library(skimr)
+library(performance)
+library(gt)
+library(patchwork)
+library(emmeans)
+
+# Read Files ----
+## Codebooks
+codebook_dvep <- read_excel(
+    "Codebooks/codebook_dvep.xlsx",
+    col_names = TRUE,
+    col_types = NULL,
+    na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+    trim_ws = TRUE,
+    skip = 0, # Number of lines to skip before reading data
+    n_max = Inf, # Maximum number of lines to read.
+    guess_max = 1000
+) %>%
+    arrange(index)
+
+#codebook_structure  <- read_csv(
+#    "Codebooks/codebook_structure.csv",
+#    col_names = TRUE)
+
+#codebook_ncit  <- read_csv(
+#    "Codebooks/codebook_ncit.csv",
+#    col_names = TRUE)
+
+#codebook_bia <- read_excel(
+#    "Codebooks/codebook_bia.xlsx",
+#    col_names = TRUE,
+#    col_types = NULL,
+#    na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+#    trim_ws = TRUE,
+#    skip = 0, # Number of lines to skip before reading data
+#    n_max = Inf, # Maximum number of lines to read.
+#    guess_max = 1000
+#) %>%
+#    arrange(index)
+
+## Data
+data <- readRDS("local_files/Data_processed/data.rds")
+# data_bia <- readRDS("Data_processed/data_bia.rds")
+# data_bia_D1 <- readRDS("Data_processed/data_bia_D1.rds")
+# data_bia_D1_mean <- readRDS("Data_processed/data_bia_D1_mean.rds")
+# data_bia_D1_raw <- readRDS("Data_processed/data_bia_D1_raw.rds")
+# data_bia_D3 <- readRDS("Data_processed/data_bia_D3.rds")
+# data_bia_D3_mean <- readRDS("Data_processed/data_bia_D3_mean.rds")
+# data_bia_D3_raw <- readRDS("Data_processed/data_bia_D3_raw.rds")
+# data_bia_mean <- readRDS("Data_processed/data_bia_mean.rds")
+# data_d1_exclusive <- readRDS("Data_processed/data_d1_exclusive.rds")
+# data_filtered <- readRDS("Data_processed/data_filtered.rds")
+# data_filtered_seca <- readRDS("Data_processed/data_filtered_seca.rds")
+#I21_conditions_R <- readRDS("Data_processed/I21_conditions_R.rds")
+#I22_drugs_R <- readRDS("Data_processed/I22_drugs_R.rds")
+#I27_labs_R <- readRDS("Data_processed/I27_labs_R.rds")
+# I29_compliance_new <- readRDS("Data_processed/I29_compliance_new.rds")
+#I30_events_R <- readRDS("Data_processed/I30_events_R.rds")
+
+## SUPERTIBBLE
+# data_instruments <- readRDS("Data_instruments/data_instruments.rds")
+
+data_model <- readRDS("local_files/Data_processed/data_model.rds") %>% 
+    mutate(
+        visit = as.factor(visit),
+        record_id = as.factor(record_id)
+    )
+attributes(data_model$kcal)$label <- "Kcal total"
+attributes(data_model$labs_quick_index)$label <- "Quick Index"
+attributes(data_model$crp_log)$label <- "Log PCR"
+
+data_model_V1V3 <- data_model %>% 
+    filter(!visit == "2")
+
+#class(data_model$record_id)
+#class(data_model$allocation_group)
+#class(data_model$visit)
+
+```
+
+# Baseline characteristics
+
+## Categorical variables
+
+```{r}
+baseline <- data_model %>%
+    filter(visit == 1)
+
+summ_cat <- baseline %>%
+  summarize_categorical(use_labels = TRUE, group_col = "allocation_group") %>%
+  filter(Level == 1) %>%
+  select(Variable, Freq, Percent, allocation_group) %>%
+  pivot_wider(
+    names_from = allocation_group, 
+    values_from = c(Freq, Percent)
+    )
+
+summ_cat <- summ_cat %>% 
+    select(
+        Variable, 
+        `Grupo Placebo (N)` = `Freq_Grupo A`, 
+        `% (A)` = `Percent_Grupo A`, 
+        `Grupo Eclipta (N)` = `Freq_Grupo B`, 
+        `% (B)` = `Percent_Grupo B`)
+
+summ_cat
+
+baseline %>% select(!where(is.numeric), -record_id, -visit) %>% compare_groups(group_col = "allocation_group")
+```
+
+## Numerical variables
+
+```{r}
+summ_num <- baseline %>% 
+    summarize_numerical(use_labels = FALSE, group_col = "allocation_group") %>% 
+    select(-N) %>%
+    pivot_wider(
+        names_from = allocation_group, 
+        values_from = `Mean (95% CI)`
+  )
+
+summ_num %>% print(n = Inf)
+
+baseline %>% select(allocation_group, where(is.numeric), -compliance_score_visit, -duration_difference) %>%
+    compare_groups(group_col = "allocation_group")
+```
+
+## Group differences
+### Energy intake
+
+```{r}
+ggplot(data = baseline, aes(x = allocation_group, y = kcal)) +
+    geom_violin(alpha = 0.5, trim = FALSE) +
+    geom_boxplot(width = 0.5, outlier.colour = "red", alpha = 0.5) +
+    geom_jitter(width = 0.2, alpha = 0.5) +
+    coord_flip() +
+    labs(
+        title = "Distribuição da ingestão energétical total por grupo de alocação",
+        x = "Ingestão total (Kcal)",
+        y = "Grupo de alocação"
+        ) +
+    theme_minimal()
+
+ggplot(data = baseline, aes(x = allocation_group, y = carbs_kcal)) +
+    geom_violin(alpha = 0.5, trim = FALSE) +
+    geom_boxplot(width = 0.5, outlier.colour = "red", alpha = 0.5) +
+    geom_jitter(width = 0.2, alpha = 0.5) +
+    coord_flip() +
+    labs(
+        title = "Distribuição da ingestão de carboidratos em kcal por grupo de alocação",
+        x = "Ingestão total (Kcal)",
+        y = "Grupo de alocação"
+        ) +
+    theme_minimal()
+
+ggplot(data = baseline, aes(x = allocation_group, y = protein_kcal)) +
+    geom_violin(alpha = 0.5, trim = FALSE) +
+    geom_boxplot(width = 0.5, outlier.colour = "red", alpha = 0.5) +
+    geom_jitter(width = 0.2, alpha = 0.5) +
+    coord_flip() +
+    labs(
+        title = "Distribuição da ingestão de proteínas em kcal por grupo de alocação",
+        x = "Ingestão total (Kcal)",
+        y = "Grupo de alocação"
+        ) +
+    theme_minimal()
+
+ggplot(data = baseline, aes(x = allocation_group, y = fat_kcal)) +
+    geom_violin(alpha = 0.5, trim = FALSE) +
+    geom_boxplot(width = 0.5, outlier.colour = "red", alpha = 0.5) +
+    geom_jitter(width = 0.2, alpha = 0.5) +
+    coord_flip() +
+    labs(
+        title = "Distribuição da ingestão de gorduras em kcal por grupo de alocação",
+        x = "Ingestão total (Kcal)",
+        y = "Grupo de alocação"
+        ) +
+    theme_minimal()
+    
+```
