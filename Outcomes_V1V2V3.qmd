@@ -133,10 +133,10 @@ Variables:
 - labs_ast - negative
 - labs_alt - negative
 - labs_ggt - negative
-- labs_alkp
-- labs_cholesterol
-- labs_ldl
-- labs_hdl
+- labs_alkp - negative
+- labs_cholesterol - negative
+- labs_ldl - negative
+- labs_hdl - negative
 - labs_triglycerides
 - labs_glucose
 - labs_hba1c
@@ -173,7 +173,7 @@ labs_ast_hist_1 + labs_ast_hist_2 # library(patchwork)
 
 ```{r labs_ast_2}
 # LMM
-labs_ast_model <- lmer(log1p(labs_ast) ~ allocation_group + visit + (1 | record_id), data = data_model)
+labs_ast_model <- lmer(log1p(labs_ast) ~ allocation_group * visit + (1 | record_id), data = data_model)
 check_collinearity(labs_ast_model)
 
 # Sensitivity analysis
@@ -291,7 +291,7 @@ labs_alt_hist_1 + labs_alt_hist_2 # library(patchwork)
 
 ```{r labs_alt_2}
 # LMM
-labs_alt_model <- lmer(log1p(labs_alt) ~ allocation_group + visit + (1 | record_id), data = data_model)
+labs_alt_model <- lmer(log1p(labs_alt) ~ allocation_group * visit + (1 | record_id), data = data_model)
 check_collinearity(labs_alt_model)
 
 # Sensitivity analysis
@@ -410,7 +410,7 @@ labs_ggt_hist_1 + labs_ggt_hist_2 # library(patchwork)
 
 ```{r labs_ggt_2}
 # LMM
-labs_ggt_model <- lmer(log1p(labs_ggt) ~ allocation_group + visit + (1 | record_id), data = data_model)
+labs_ggt_model <- lmer(log1p(labs_ggt) ~ allocation_group * visit + (1 | record_id), data = data_model)
 check_collinearity(labs_ggt_model)
 
 # Sensitivity analysis
@@ -529,14 +529,14 @@ labs_alkp_hist_1 + labs_alkp_hist_2 # library(patchwork)
 
 ```{r labs_alkp_2}
 # LMM
-labs_alkp_model <- lmer(log1p(labs_alkp) ~ allocation_group + visit + (1 | record_id), data = data_model)
+labs_alkp_model <- lmer(log1p(labs_alkp) ~ allocation_group * visit + (1 | record_id), data = data_model)
 check_collinearity(labs_alkp_model)
 
 # Sensitivity analysis
 labs_alkp_model_check <- sensitivity_check_lmer(
     model = labs_alkp_model,
     id_var = "record_id",
-    top_n = 5)
+    top_n = 4)
 
 # LMM Sensitivity
 labs_alkp_model_sens <- update(object = labs_alkp_model,
@@ -575,7 +575,7 @@ contrast(labs_alkp_emm, method = "pairwise", by = "visit", adjust = "bonferroni"
 contrast(labs_alkp_emm, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
 
 # Plot of marginal means
-plot(labs_alkp_emm, comparisons = TRUE)
+plot(labs_alkp_emm)
 ```
 
 ```{r labs_alkp_6}
@@ -607,6 +607,482 @@ data_model %>%
         aes(
             x = as.factor(visit),
             y = labs_alkp,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+### labs_cholesterol
+
+```{r labs_cholesterol_1}
+# Plot 1: Raw data
+labs_cholesterol_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_cholesterol < 300
+    #) %>% 
+    ggplot(aes(x = labs_cholesterol)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_cholesterol_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_cholesterol < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_cholesterol))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_cholesterol_hist_1 + labs_cholesterol_hist_2 # library(patchwork)
+```
+
+```{r labs_cholesterol_2}
+# LMM
+labs_cholesterol_model <- lmer(labs_cholesterol ~ allocation_group * visit + (1 | record_id), data = data_model)
+check_collinearity(labs_cholesterol_model)
+
+# Sensitivity analysis
+labs_cholesterol_model_check <- sensitivity_check_lmer(
+    model = labs_cholesterol_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_cholesterol_model_sens <- update(object = labs_cholesterol_model,
+                              subset = !(record_id %in% labs_cholesterol_model_check$influential_ids))
+# Influential IDS
+labs_cholesterol_model_check$influential_ids
+```
+
+```{r labs_cholesterol_3}
+# Model comparison
+summary(labs_cholesterol_model)
+summary(labs_cholesterol_model_sens)
+labs_cholesterol_model_check$comparison_table
+performance::compare_performance(labs_cholesterol_model, labs_cholesterol_model_sens)
+```
+
+```{r labs_cholesterol_4, fig.width=10, fig.height=10}
+performance::check_model(labs_cholesterol_model)
+performance::check_model(labs_cholesterol_model_sens)
+```
+
+```{r labs_cholesterol_5}
+# Get EMMs for each group at each visit
+labs_cholesterol_emm <- emmeans::emmeans(
+    labs_cholesterol_model_sens, 
+    ~ allocation_group * visit
+)
+
+# Table of marginal means
+labs_cholesterol_emm
+
+# Pairwise comparisons: Between groups at each visit
+contrast(labs_cholesterol_emm, method = "pairwise", by = "visit", adjust = "bonferroni")
+
+# Pairwise comparisons: Changes over time within each group
+contrast(labs_cholesterol_emm, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
+
+# Plot of marginal means
+plot(labs_cholesterol_emm)
+```
+
+```{r labs_cholesterol_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_cholesterol,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% labs_cholesterol_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_cholesterol,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+### labs_ldl
+
+```{r labs_ldl_1}
+# Plot 1: Raw data
+labs_ldl_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_ldl < 300
+    #) %>% 
+    ggplot(aes(x = labs_ldl)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_ldl_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_ldl < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_ldl))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_ldl_hist_1 + labs_ldl_hist_2 # library(patchwork)
+```
+
+```{r labs_ldl_2}
+# LMM
+labs_ldl_model <- lmer(labs_ldl ~ allocation_group * visit + (1 | record_id), data = data_model)
+check_collinearity(labs_ldl_model)
+
+# Sensitivity analysis
+labs_ldl_model_check <- sensitivity_check_lmer(
+    model = labs_ldl_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_ldl_model_sens <- update(object = labs_ldl_model,
+                              subset = !(record_id %in% labs_ldl_model_check$influential_ids))
+# Influential IDS
+labs_ldl_model_check$influential_ids
+```
+
+```{r labs_ldl_3}
+# Model comparison
+summary(labs_ldl_model)
+summary(labs_ldl_model_sens)
+labs_ldl_model_check$comparison_table
+performance::compare_performance(labs_ldl_model, labs_ldl_model_sens)
+```
+
+```{r labs_ldl_4, fig.width=10, fig.height=10}
+performance::check_model(labs_ldl_model)
+performance::check_model(labs_ldl_model_sens)
+```
+
+```{r labs_ldl_5}
+# Get EMMs for each group at each visit
+labs_ldl_emm <- emmeans::emmeans(
+    labs_ldl_model_sens, 
+    ~ allocation_group * visit
+)
+
+# Table of marginal means
+labs_ldl_emm
+
+# Pairwise comparisons: Between groups at each visit
+contrast(labs_ldl_emm, method = "pairwise", by = "visit", adjust = "bonferroni")
+
+# Pairwise comparisons: Changes over time within each group
+contrast(labs_ldl_emm, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
+
+# Plot of marginal means
+plot(labs_ldl_emm)
+```
+
+```{r labs_ldl_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_ldl,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% labs_ldl_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_ldl,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+### labs_hdl
+
+```{r labs_hdl_1}
+# Plot 1: Raw data
+labs_hdl_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_hdl < 300
+    #) %>% 
+    ggplot(aes(x = labs_hdl)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_hdl_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_hdl < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_hdl))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_hdl_hist_1 + labs_hdl_hist_2 # library(patchwork)
+```
+
+```{r labs_hdl_2}
+# LMM
+labs_hdl_model <- lmer(log1p(labs_hdl) ~ allocation_group * visit + (1 | record_id), data = data_model)
+check_collinearity(labs_hdl_model)
+
+# Sensitivity analysis
+labs_hdl_model_check <- sensitivity_check_lmer(
+    model = labs_hdl_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_hdl_model_sens <- update(object = labs_hdl_model,
+                              subset = !(record_id %in% labs_hdl_model_check$influential_ids))
+# Influential IDS
+labs_hdl_model_check$influential_ids
+```
+
+```{r labs_hdl_3}
+# Model comparison
+summary(labs_hdl_model)
+summary(labs_hdl_model_sens)
+labs_hdl_model_check$comparison_table
+performance::compare_performance(labs_hdl_model, labs_hdl_model_sens)
+```
+
+```{r labs_hdl_4, fig.width=10, fig.height=10}
+performance::check_model(labs_hdl_model)
+performance::check_model(labs_hdl_model_sens)
+```
+
+```{r labs_hdl_5}
+# Get EMMs for each group at each visit
+labs_hdl_emm <- emmeans::emmeans(
+    labs_hdl_model_sens, 
+    ~ allocation_group * visit
+)
+
+# Table of marginal means
+labs_hdl_emm
+
+# Pairwise comparisons: Between groups at each visit
+contrast(labs_hdl_emm, method = "pairwise", by = "visit", adjust = "bonferroni")
+
+# Pairwise comparisons: Changes over time within each group
+contrast(labs_hdl_emm, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
+
+# Plot of marginal means
+plot(labs_hdl_emm)
+```
+
+```{r labs_hdl_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_hdl,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% labs_hdl_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_hdl,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+### labs_triglycerides
+
+```{r labs_triglycerides_1}
+# Plot 1: Raw data
+labs_triglycerides_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_triglycerides < 300
+    #) %>% 
+    ggplot(aes(x = labs_triglycerides)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_triglycerides_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_triglycerides < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_triglycerides))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_triglycerides_hist_1 + labs_triglycerides_hist_2 # library(patchwork)
+```
+
+```{r labs_triglycerides_2}
+# LMM
+labs_triglycerides_model <- lmer(log1p(labs_triglycerides) ~ allocation_group * visit + (1 | record_id), data = data_model)
+check_collinearity(labs_triglycerides_model)
+
+# Sensitivity analysis
+labs_triglycerides_model_check <- sensitivity_check_lmer(
+    model = labs_triglycerides_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_triglycerides_model_sens <- update(object = labs_triglycerides_model,
+                              subset = !(record_id %in% labs_triglycerides_model_check$influential_ids))
+# Influential IDS
+labs_triglycerides_model_check$influential_ids
+```
+
+```{r labs_triglycerides_3}
+# Model comparison
+summary(labs_triglycerides_model)
+summary(labs_triglycerides_model_sens)
+labs_triglycerides_model_check$comparison_table
+performance::compare_performance(labs_triglycerides_model, labs_triglycerides_model_sens)
+```
+
+```{r labs_triglycerides_4, fig.width=10, fig.height=10}
+performance::check_model(labs_triglycerides_model)
+performance::check_model(labs_triglycerides_model_sens)
+```
+
+```{r labs_triglycerides_5}
+# Get EMMs for each group at each visit
+labs_triglycerides_emm <- emmeans::emmeans(
+    labs_triglycerides_model_sens, 
+    ~ allocation_group * visit
+)
+
+# Table of marginal means
+labs_triglycerides_emm
+
+# Pairwise comparisons: Between groups at each visit
+contrast(labs_triglycerides_emm, method = "pairwise", by = "visit", adjust = "bonferroni")
+
+# Pairwise comparisons: Changes over time within each group
+contrast(labs_triglycerides_emm, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
+
+# Plot of marginal means
+plot(labs_triglycerides_emm, comparisons = TRUE)
+```
+
+```{r labs_triglycerides_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_triglycerides,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% labs_triglycerides_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_triglycerides,
             group = record_id,
         )
     ) +
