@@ -1,83 +1,83 @@
-### labs_triglycerides
+### evs_score
 
-```{r labs_triglycerides_1}
+```{r evs_score_1}
 # Plot 1: Raw data
-labs_triglycerides_hist_1 <- data_model %>% 
+evs_score_hist_1 <- data_model %>% 
     #filter(
-    #    labs_triglycerides < 300
+    #    evs_score < 300
     #) %>% 
-    ggplot(aes(x = labs_triglycerides)) + 
+    ggplot(aes(x = evs_score)) + 
     geom_histogram(bins = 50, fill = "skyblue", color = "black")
 
 # Plot 2: Log-transformed data
-labs_triglycerides_hist_2 <- data_model %>% 
+evs_score_hist_2 <- data_model %>% 
     #filter(
-    #    labs_triglycerides < 300
+    #    evs_score < 300
     #) %>%
-    ggplot(aes(x = log1p(labs_triglycerides))) + 
+    ggplot(aes(x = log1p(evs_score))) + 
     geom_histogram(bins = 50, fill = "lightgreen", color = "black")
 
 # Combine side by side
-labs_triglycerides_hist_1 + labs_triglycerides_hist_2 # library(patchwork)
+evs_score_hist_1 + evs_score_hist_2 # library(patchwork)
 ```
 
-```{r labs_triglycerides_2}
+```{r evs_score_2}
 # LMM
-labs_triglycerides_model <- lmer(log1p(labs_triglycerides) ~ allocation_group * visit + (1 | record_id), data = data_model)
-check_collinearity(labs_triglycerides_model)
+evs_score_model <- lmer(log1p(evs_score) ~ allocation_group * visit + (1 | record_id), data = data_model)
+check_collinearity(evs_score_model)
 
 # Sensitivity analysis
-labs_triglycerides_model_check <- sensitivity_check_lmer(
-    model = labs_triglycerides_model,
+evs_score_model_check <- sensitivity_check_lmer(
+    model = evs_score_model,
     id_var = "record_id",
     top_n = 5)
 
 # LMM Sensitivity
-labs_triglycerides_model_sens <- update(object = labs_triglycerides_model,
-                              subset = !(record_id %in% labs_triglycerides_model_check$influential_ids))
+evs_score_model_sens <- update(object = evs_score_model,
+                              subset = !(record_id %in% evs_score_model_check$influential_ids))
 # Influential IDS
-labs_triglycerides_model_check$influential_ids
+evs_score_model_check$influential_ids
 ```
 
-```{r labs_triglycerides_3}
+```{r evs_score_3}
 # Model comparison
-summary(labs_triglycerides_model)
-summary(labs_triglycerides_model_sens)
-labs_triglycerides_model_check$comparison_table
-performance::compare_performance(labs_triglycerides_model, labs_triglycerides_model_sens)
+summary(evs_score_model)
+summary(evs_score_model_sens)
+evs_score_model_check$comparison_table
+performance::compare_performance(evs_score_model, evs_score_model_sens)
 ```
 
-```{r labs_triglycerides_4, fig.width=10, fig.height=10}
-performance::check_model(labs_triglycerides_model)
-performance::check_model(labs_triglycerides_model_sens)
+```{r evs_score_4, fig.width=10, fig.height=10}
+performance::check_model(evs_score_model)
+performance::check_model(evs_score_model_sens)
 ```
 
-```{r labs_triglycerides_5}
+```{r evs_score_5}
 # Get EMMs for each group at each visit
-labs_triglycerides_emm <- emmeans::emmeans(
-    labs_triglycerides_model_sens, 
+evs_score_emm <- emmeans::emmeans(
+    evs_score_model_sens, 
     ~ allocation_group * visit
 )
 
 # Table of marginal means
-labs_triglycerides_emm
+evs_score_emm
 
 # Pairwise comparisons: Between groups at each visit
-contrast(labs_triglycerides_emm, method = "pairwise", by = "visit", adjust = "bonferroni")
+contrast(evs_score_emm, method = "pairwise", by = "visit", adjust = "bonferroni")
 
 # Pairwise comparisons: Changes over time within each group
-contrast(labs_triglycerides_emm, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
+contrast(evs_score_emm, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
 
 # Plot of marginal means
-plot(labs_triglycerides_emm, comparisons = TRUE)
+plot(evs_score_emm, comparisons = TRUE)
 ```
 
-```{r labs_triglycerides_6}
+```{r evs_score_6}
 ggplot(
     data = data_model, 
     aes(
         x = as.factor(visit),
-        y = labs_triglycerides,
+        y = evs_score,
         group = record_id,
     )
 ) +
@@ -95,12 +95,12 @@ ggplot(
 
 data_model %>% 
     filter(
-        !(record_id %in% labs_triglycerides_model_check$influential_ids)
+        !(record_id %in% evs_score_model_check$influential_ids)
     ) %>% 
     ggplot(
         aes(
             x = as.factor(visit),
-            y = labs_triglycerides,
+            y = evs_score,
             group = record_id,
         )
     ) +
