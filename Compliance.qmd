@@ -45,7 +45,8 @@ codebook_structure  <- read_csv(
 
 
 ## Data
-data <- readRDS("Data_processed/data.rds")
+data <- readRDS("local_files/Data_processed/data.rds")
+#compliance <- readRDS("local_files/Data_processed/I29_compliance.rds")
 ```
 
 # Wrangle data
@@ -211,7 +212,7 @@ compliance_corrected <- compliance_short %>%
 ```{r}
 compliance_simple <- compliance_corrected %>%
     select(
-        record_id, visit, completed_intervention, intervention_duration, 
+        record_id, visit, completed_intervention, 
         cp_schedule, cp_missed_dose_count, cp_discontinued_n_days,
         cp_ran_out_of_drug_yn,
         cp_medication_confidence_scale, cp_self_reported_compliance_rate)
@@ -360,3 +361,68 @@ data_filtered <- data_filtered %>%
         duration_difference = if_else(visit == 1, 0, duration_difference)
     )
 ```
+
+
+
+```{r}
+
+compliance <- compliance %>% 
+    group_by(allocation)
+table(compliance$cp_self_reported_compliance_rate)
+```
+
+```{r}
+compliance_short %>% group_by(allocation_group) %>% 
+    count(cp_self_reported_compliance_rate)
+        
+```
+
+```{r}
+
+```{r}
+compliance_corrected_V2 <- compliance_corrected %>% 
+    filter(
+        visit == 2
+    )
+
+compliance_corrected_V3 <- compliance_corrected %>% 
+    filter(
+        visit == 3
+    )
+
+table_cp_self_reported_compliance_rate_V2 <- table(
+    compliance_corrected_V2$allocation_group, 
+    compliance_corrected_V2$cp_self_reported_compliance_rate)
+table_cp_self_reported_compliance_rate_V2
+chisq.test(table_cp_self_reported_compliance_rate_V2)
+
+table_cp_self_reported_compliance_rate_V3 <- table(
+    compliance_corrected_V3$allocation_group, 
+    compliance_corrected_V3$cp_self_reported_compliance_rate)
+table_cp_self_reported_compliance_rate_V3
+chisq.test(table_cp_self_reported_compliance_rate_V3)
+
+
+table_compliance1 <- table(
+    compliance_corrected$allocation_group, 
+    compliance_corrected$cp_missed_dose_count
+)
+table_compliance1
+chisq.test(table_compliance1)
+
+
+table_compliance3 <- table(
+    compliance_corrected$allocation_group, 
+    compliance_corrected$cp_discontinued_n_days
+)
+table_compliance3
+chisq.test(table_compliance3)
+
+```
+
+
+```{r}
+
+```
+
+

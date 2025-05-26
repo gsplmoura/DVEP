@@ -210,6 +210,8 @@ labs_ast_emm <- emmeans::emmeans(
     ~ allocation_group * visit
 )
 
+labs_ast_emm <- regrid(labs_ast_emm)
+
 # Table of marginal means
 labs_ast_emm
 
@@ -327,6 +329,8 @@ labs_alt_emm <- emmeans::emmeans(
     labs_alt_model_sens, 
     ~ allocation_group * visit
 )
+
+labs_alt_emm <- regrid(labs_alt_emm)
 
 # Table of marginal means
 labs_alt_emm
@@ -447,6 +451,8 @@ labs_ggt_emm <- emmeans::emmeans(
     ~ allocation_group * visit
 )
 
+labs_ggt_emm <- regrid(labs_ggt_emm)
+
 # Table of marginal means
 labs_ggt_emm
 
@@ -559,7 +565,28 @@ performance::check_model(labs_alkp_model)
 performance::check_model(labs_alkp_model_sens)
 ```
 
-```{r labs_alkp_5}
+```{r labs_alkp_5_all}
+# Get EMMs for each group at each visit
+labs_alkp_emm_all <- emmeans::emmeans(
+    labs_alkp_model, 
+    ~ allocation_group * visit
+)
+
+labs_alkp_emm_all <- regrid(labs_alkp_emm_all)
+
+# Table of marginal means
+labs_alkp_emm_all
+
+# Pairwise comparisons: Between groups at each visit
+contrast(labs_alkp_emm_all, method = "pairwise", by = "visit", adjust = "bonferroni")
+
+# Pairwise comparisons: Changes over time within each group
+contrast(labs_alkp_emm_all, method = "pairwise", by = "allocation_group", adjust = "bonferroni")
+
+# Plot of marginal means
+plot(labs_alkp_emm_all)
+```
+```{r labs_alkp_5_sens}
 # Get EMMs for each group at each visit
 labs_alkp_emm <- emmeans::emmeans(
     labs_alkp_model_sens, 
@@ -685,6 +712,8 @@ labs_cholesterol_emm <- emmeans::emmeans(
     ~ allocation_group * visit
 )
 
+labs_cholesterol_emm <- regrid(labs_cholesterol_emm)
+
 # Table of marginal means
 labs_cholesterol_emm
 
@@ -803,6 +832,8 @@ labs_ldl_emm <- emmeans::emmeans(
     labs_ldl_model_sens, 
     ~ allocation_group * visit
 )
+
+labs_ldl_emm <- regrid(labs_ldl_emm)
 
 # Table of marginal means
 labs_ldl_emm
@@ -923,6 +954,8 @@ labs_hdl_emm <- emmeans::emmeans(
     ~ allocation_group * visit
 )
 
+labs_hdl_emm <- regrid(labs_hdl_emm)
+
 # Table of marginal means
 labs_hdl_emm
 
@@ -1042,6 +1075,8 @@ labs_triglycerides_emm <- emmeans::emmeans(
     ~ allocation_group * visit
 )
 
+labs_triglycerides_emm <- regrid(labs_triglycerides_emm)
+
 # Table of marginal means
 labs_triglycerides_emm
 
@@ -1160,6 +1195,8 @@ labs_glucose_emm <- emmeans::emmeans(
     labs_glucose_model_sens, 
     ~ allocation_group * visit
 )
+
+labs_glucose_emm <- regrid(labs_glucose_emm)
 
 # Table of marginal means
 labs_glucose_emm
@@ -1399,6 +1436,8 @@ labs_insulin_emm <- emmeans::emmeans(
     ~ allocation_group * visit
 )
 
+labs_insulin_emm <- regrid(labs_insulin_emm)
+
 # Table of marginal means
 labs_insulin_emm
 
@@ -1517,6 +1556,8 @@ labs_homa_ir_emm <- emmeans::emmeans(
     ~ allocation_group * visit
 )
 
+labs_homa_ir_emm <- regrid(labs_homa_ir_emm)
+
 # Table of marginal means
 labs_homa_ir_emm
 
@@ -1634,6 +1675,8 @@ labs_quick_index_emm <- emmeans::emmeans(
     labs_quick_index_model_sens, 
     ~ allocation_group * visit
 )
+
+labs_quick_index_emm <- regrid(labs_quick_index_emm)
 
 # Table of marginal means
 labs_quick_index_emm
@@ -1754,6 +1797,8 @@ abdomen_emm <- emmeans::emmeans(
     ~ allocation_group * visit
 )
 
+abdomen_emm <- regrid(abdomen_emm)
+
 # Table of marginal means
 abdomen_emm
 
@@ -1873,6 +1918,8 @@ bmi_emm <- emmeans::emmeans(
     ~ allocation_group * visit
 )
 
+bmi_emm <- regrid(bmi_emm)
+
 # Table of marginal means
 bmi_emm
 
@@ -1991,6 +2038,8 @@ mean_bp_mean_emm <- emmeans::emmeans(
     mean_bp_mean_model_sens, 
     ~ allocation_group * visit
 )
+
+mean_bp_mean_emm <- regrid(mean_bp_mean_emm)
 
 # Table of marginal means
 mean_bp_mean_emm
@@ -2114,6 +2163,8 @@ evs_score_emm <- emmeans::emmeans(
     evs_score_model_sens, 
     ~ allocation_group * visit
 )
+
+evs_score_emm <- regrid(evs_score_emm)
 
 # Table of marginal means
 evs_score_emm
