@@ -20,6 +20,7 @@ format:
 
 ```{r setup}
 #| include: false
+options(width = 180)
 
 knitr::opts_chunk$set(
   warning = FALSE,
@@ -130,13 +131,13 @@ data_model_V1V3 <- data_model %>%
 
 Variables:
 
-- labs_ast - negative
-- labs_alt - negative
-- labs_ggt - negative
-- labs_alkp - negative
-- labs_cholesterol - negative
-- labs_ldl - negative
-- labs_hdl - negative
+- labs_ast
+- labs_alt
+- labs_ggt
+- labs_alkp
+- labs_cholesterol
+- labs_ldl 
+- labs_hdl 
 - labs_triglycerides
 - labs_glucose
 - labs_hba1c

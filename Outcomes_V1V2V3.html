@@ -192,14 +192,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 Low Correlation
 
-                   Term  VIF   VIF 95% CI Increased SE Tolerance
-       allocation_group 1.39 [1.21, 1.74]         1.18      0.72
-                  visit 3.53 [2.81, 4.54]         1.88      0.28
- allocation_group:visit 4.18 [3.30, 5.39]         2.04      0.24
- Tolerance 95% CI
-     [0.57, 0.83]
-     [0.22, 0.36]
-     [0.19, 0.30]</code></pre>
+                   Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+       allocation_group 1.39 [1.21, 1.74]         1.18      0.72     [0.57, 0.83]
+                  visit 3.53 [2.81, 4.54]         1.88      0.28     [0.22, 0.36]
+ allocation_group:visit 4.18 [3.30, 5.39]         2.04      0.24     [0.19, 0.30]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sensitivity analysis</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>labs_ast_model_check <span class="ot">&lt;-</span> <span class="fu">sensitivity_check_lmer</span>(</span>
@@ -220,8 +216,7 @@ Low Correlation
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model comparison</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_ast_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: log1p(labs_ast) ~ allocation_group * visit + (1 | record_id)
    Data: data_model
 
@@ -238,20 +233,13 @@ Random effects:
 Number of obs: 179, groups:  record_id, 75
 
 Fixed effects:
-                                 Estimate Std. Error         df t value
-(Intercept)                      3.211717   0.041563 126.794430  77.273
-allocation_groupGrupo B         -0.020671   0.058392 126.794430  -0.354
-visit2                          -0.008428   0.045718 106.361849  -0.184
-visit3                          -0.009289   0.049356 109.412475  -0.188
-allocation_groupGrupo B:visit2  -0.015833   0.066802 109.278386  -0.237
-allocation_groupGrupo B:visit3   0.025422   0.071565 111.735957   0.355
-                               Pr(&gt;|t|)    
-(Intercept)                      &lt;2e-16 ***
-allocation_groupGrupo B           0.724    
-visit2                            0.854    
-visit3                            0.851    
-allocation_groupGrupo B:visit2    0.813    
-allocation_groupGrupo B:visit3    0.723    
+                                 Estimate Std. Error         df t value Pr(&gt;|t|)    
+(Intercept)                      3.211717   0.041563 126.794430  77.273   &lt;2e-16 ***
+allocation_groupGrupo B         -0.020671   0.058392 126.794430  -0.354    0.724    
+visit2                          -0.008428   0.045718 106.361849  -0.184    0.854    
+visit3                          -0.009289   0.049356 109.412475  -0.188    0.851    
+allocation_groupGrupo B:visit2  -0.015833   0.066802 109.278386  -0.237    0.813    
+allocation_groupGrupo B:visit3   0.025422   0.071565 111.735957   0.355    0.723    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -265,8 +253,7 @@ allctn_GB:3  0.308 -0.432 -0.305 -0.690  0.424</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_ast_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: log1p(labs_ast) ~ allocation_group * visit + (1 | record_id)
    Data: data_model
  Subset: !(record_id %in% labs_ast_model_check$influential_ids)
@@ -284,20 +271,13 @@ Random effects:
 Number of obs: 166, groups:  record_id, 70
 
 Fixed effects:
-                                Estimate Std. Error        df t value Pr(&gt;|t|)
-(Intercept)                      3.22105    0.04015 100.92953  80.229   &lt;2e-16
-allocation_groupGrupo B         -0.04417    0.05678 100.92953  -0.778    0.438
-visit2                          -0.01756    0.03879  95.56884  -0.453    0.652
-visit3                          -0.03571    0.04157  97.13735  -0.859    0.392
-allocation_groupGrupo B:visit2  -0.02157    0.05710  97.80899  -0.378    0.706
-allocation_groupGrupo B:visit3   0.06882    0.06184  99.31712   1.113    0.268
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                                Estimate Std. Error        df t value Pr(&gt;|t|)    
+(Intercept)                      3.22105    0.04015 100.92953  80.229   &lt;2e-16 ***
+allocation_groupGrupo B         -0.04417    0.05678 100.92953  -0.778    0.438    
+visit2                          -0.01756    0.03879  95.56884  -0.453    0.652    
+visit3                          -0.03571    0.04157  97.13735  -0.859    0.392    
+allocation_groupGrupo B:visit2  -0.02157    0.05710  97.80899  -0.378    0.706    
+allocation_groupGrupo B:visit3   0.06882    0.06184  99.31712   1.113    0.268    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -312,38 +292,33 @@ allctn_GB:3  0.260 -0.368 -0.302 -0.672  0.430</code></pre>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>labs_ast_model_check<span class="sc">$</span>comparison_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 16 × 6
-   Model       term                      estimate std.error statistic    p.value
-   &lt;chr&gt;       &lt;chr&gt;                        &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
- 1 Original    (Intercept)                3.21       0.0416    77.3    1.64e-108
- 2 Sensitivity (Intercept)                3.22       0.0401    80.2    3.09e- 93
- 3 Original    allocation_groupGrupo B   -0.0207     0.0584    -0.354  7.24e-  1
- 4 Sensitivity allocation_groupGrupo B   -0.0442     0.0568    -0.778  4.38e-  1
- 5 Original    allocation_groupGrupo B:… -0.0158     0.0668    -0.237  8.13e-  1
- 6 Sensitivity allocation_groupGrupo B:… -0.0216     0.0571    -0.378  7.06e-  1
- 7 Original    allocation_groupGrupo B:…  0.0254     0.0716     0.355  7.23e-  1
- 8 Sensitivity allocation_groupGrupo B:…  0.0688     0.0618     1.11   2.68e-  1
- 9 Original    sd__(Intercept)            0.173     NA         NA     NA        
-10 Sensitivity sd__(Intercept)            0.184     NA         NA     NA        
-11 Original    sd__Observation            0.184     NA         NA     NA        
-12 Sensitivity sd__Observation            0.150     NA         NA     NA        
-13 Original    visit2                    -0.00843    0.0457    -0.184  8.54e-  1
-14 Sensitivity visit2                    -0.0176     0.0388    -0.453  6.52e-  1
-15 Original    visit3                    -0.00929    0.0494    -0.188  8.51e-  1
-16 Sensitivity visit3                    -0.0357     0.0416    -0.859  3.92e-  1</code></pre>
+   Model       term                           estimate std.error statistic    p.value
+   &lt;chr&gt;       &lt;chr&gt;                             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+ 1 Original    (Intercept)                     3.21       0.0416    77.3    1.64e-108
+ 2 Sensitivity (Intercept)                     3.22       0.0401    80.2    3.09e- 93
+ 3 Original    allocation_groupGrupo B        -0.0207     0.0584    -0.354  7.24e-  1
+ 4 Sensitivity allocation_groupGrupo B        -0.0442     0.0568    -0.778  4.38e-  1
+ 5 Original    allocation_groupGrupo B:visit2 -0.0158     0.0668    -0.237  8.13e-  1
+ 6 Sensitivity allocation_groupGrupo B:visit2 -0.0216     0.0571    -0.378  7.06e-  1
+ 7 Original    allocation_groupGrupo B:visit3  0.0254     0.0716     0.355  7.23e-  1
+ 8 Sensitivity allocation_groupGrupo B:visit3  0.0688     0.0618     1.11   2.68e-  1
+ 9 Original    sd__(Intercept)                 0.173     NA         NA     NA        
+10 Sensitivity sd__(Intercept)                 0.184     NA         NA     NA        
+11 Original    sd__Observation                 0.184     NA         NA     NA        
+12 Sensitivity sd__Observation                 0.150     NA         NA     NA        
+13 Original    visit2                         -0.00843    0.0457    -0.184  8.54e-  1
+14 Sensitivity visit2                         -0.0176     0.0388    -0.453  6.52e-  1
+15 Original    visit3                         -0.00929    0.0494    -0.188  8.51e-  1
+16 Sensitivity visit3                         -0.0357     0.0416    -0.859  3.92e-  1</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">compare_performance</span>(labs_ast_model, labs_ast_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Comparison of Model Performance Indices
 
-Name                |           Model |  AIC (weights) | AICc (weights)
------------------------------------------------------------------------
-labs_ast_model      | lmerModLmerTest | 1139.5 (&lt;.001) | 1140.3 (&lt;.001)
-labs_ast_model_sens | lmerModLmerTest | 1014.1 (&gt;.999) | 1015.0 (&gt;.999)
-
-Name                |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |  RMSE | Sigma
---------------------------------------------------------------------------------------
-labs_ast_model      | 1165.0 (&lt;.001) |      0.472 |      0.003 | 0.470 | 0.154 | 0.184
-labs_ast_model_sens | 1039.0 (&gt;.999) |      0.605 |      0.013 | 0.600 | 0.122 | 0.150</code></pre>
+Name                |           Model |  AIC (weights) | AICc (weights) |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |  RMSE | Sigma
+------------------------------------------------------------------------------------------------------------------------------------------
+labs_ast_model      | lmerModLmerTest | 1139.5 (&lt;.001) | 1140.3 (&lt;.001) | 1165.0 (&lt;.001) |      0.472 |      0.003 | 0.470 | 0.154 | 0.184
+labs_ast_model_sens | lmerModLmerTest | 1014.1 (&gt;.999) | 1015.0 (&gt;.999) | 1039.0 (&gt;.999) |      0.605 |      0.013 | 0.600 | 0.122 | 0.150</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -529,14 +504,10 @@ P value adjustment: bonferroni method for 3 tests </code></pre>
 
 Low Correlation
 
-                   Term  VIF   VIF 95% CI Increased SE Tolerance
-       allocation_group 1.21 [1.08, 1.54]         1.10      0.83
-                  visit 3.50 [2.79, 4.49]         1.87      0.29
- allocation_group:visit 3.84 [3.04, 4.94]         1.96      0.26
- Tolerance 95% CI
-     [0.65, 0.92]
-     [0.22, 0.36]
-     [0.20, 0.33]</code></pre>
+                   Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+       allocation_group 1.21 [1.08, 1.54]         1.10      0.83     [0.65, 0.92]
+                  visit 3.50 [2.79, 4.49]         1.87      0.29     [0.22, 0.36]
+ allocation_group:visit 3.84 [3.04, 4.94]         1.96      0.26     [0.20, 0.33]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sensitivity analysis</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>labs_alt_model_check <span class="ot">&lt;-</span> <span class="fu">sensitivity_check_lmer</span>(</span>
@@ -557,8 +528,7 @@ Low Correlation
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model comparison</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_alt_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: log1p(labs_alt) ~ allocation_group * visit + (1 | record_id)
    Data: data_model
 
@@ -575,20 +545,13 @@ Random effects:
 Number of obs: 179, groups:  record_id, 75
 
 Fixed effects:
-                                Estimate Std. Error        df t value Pr(&gt;|t|)
-(Intercept)                      3.34045    0.06647 102.44387  50.254   &lt;2e-16
-allocation_groupGrupo B         -0.10187    0.09338 102.44387  -1.091    0.278
-visit2                          -0.07956    0.05867 103.85033  -1.356    0.178
-visit3                          -0.03364    0.06353 105.34376  -0.529    0.598
-allocation_groupGrupo B:visit2   0.06143    0.08602 105.75034   0.714    0.477
-allocation_groupGrupo B:visit3   0.07920    0.09237 106.88087   0.857    0.393
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                                Estimate Std. Error        df t value Pr(&gt;|t|)    
+(Intercept)                      3.34045    0.06647 102.44387  50.254   &lt;2e-16 ***
+allocation_groupGrupo B         -0.10187    0.09338 102.44387  -1.091    0.278    
+visit2                          -0.07956    0.05867 103.85033  -1.356    0.178    
+visit3                          -0.03364    0.06353 105.34376  -0.529    0.598    
+allocation_groupGrupo B:visit2   0.06143    0.08602 105.75034   0.714    0.477    
+allocation_groupGrupo B:visit3   0.07920    0.09237 106.88087   0.857    0.393    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -602,8 +565,7 @@ allctn_GB:3  0.241 -0.339 -0.309 -0.688  0.432</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_alt_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: log1p(labs_alt) ~ allocation_group * visit + (1 | record_id)
    Data: data_model
  Subset: !(record_id %in% labs_alt_model_check$influential_ids)
@@ -621,20 +583,13 @@ Random effects:
 Number of obs: 165, groups:  record_id, 70
 
 Fixed effects:
-                                Estimate Std. Error        df t value Pr(&gt;|t|)
-(Intercept)                     3.249918   0.064250 90.966334  50.582   &lt;2e-16
-allocation_groupGrupo B        -0.013075   0.088373 90.966334  -0.148    0.883
-visit2                         -0.021536   0.055231 93.405160  -0.390    0.697
-visit3                         -0.035422   0.060679 94.750397  -0.584    0.561
-allocation_groupGrupo B:visit2 -0.009275   0.078377 94.689442  -0.118    0.906
-allocation_groupGrupo B:visit3  0.043535   0.085567 95.767451   0.509    0.612
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                                Estimate Std. Error        df t value Pr(&gt;|t|)    
+(Intercept)                     3.249918   0.064250 90.966334  50.582   &lt;2e-16 ***
+allocation_groupGrupo B        -0.013075   0.088373 90.966334  -0.148    0.883    
+visit2                         -0.021536   0.055231 93.405160  -0.390    0.697    
+visit3                         -0.035422   0.060679 94.750397  -0.584    0.561    
+allocation_groupGrupo B:visit2 -0.009275   0.078377 94.689442  -0.118    0.906    
+allocation_groupGrupo B:visit3  0.043535   0.085567 95.767451   0.509    0.612    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -649,38 +604,33 @@ allctn_GB:3  0.234 -0.321 -0.313 -0.709  0.434</code></pre>
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>labs_alt_model_check<span class="sc">$</span>comparison_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 16 × 6
-   Model       term                       estimate std.error statistic   p.value
-   &lt;chr&gt;       &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
- 1 Original    (Intercept)                 3.34       0.0665    50.3    5.32e-74
- 2 Sensitivity (Intercept)                 3.25       0.0642    50.6    2.13e-68
- 3 Original    allocation_groupGrupo B    -0.102      0.0934    -1.09   2.78e- 1
- 4 Sensitivity allocation_groupGrupo B    -0.0131     0.0884    -0.148  8.83e- 1
- 5 Original    allocation_groupGrupo B:v…  0.0614     0.0860     0.714  4.77e- 1
- 6 Sensitivity allocation_groupGrupo B:v… -0.00928    0.0784    -0.118  9.06e- 1
- 7 Original    allocation_groupGrupo B:v…  0.0792     0.0924     0.857  3.93e- 1
- 8 Sensitivity allocation_groupGrupo B:v…  0.0435     0.0856     0.509  6.12e- 1
- 9 Original    sd__(Intercept)             0.330     NA         NA     NA       
-10 Sensitivity sd__(Intercept)             0.306     NA         NA     NA       
-11 Original    sd__Observation             0.234     NA         NA     NA       
-12 Sensitivity sd__Observation             0.206     NA         NA     NA       
-13 Original    visit2                     -0.0796     0.0587    -1.36   1.78e- 1
-14 Sensitivity visit2                     -0.0215     0.0552    -0.390  6.97e- 1
-15 Original    visit3                     -0.0336     0.0635    -0.529  5.98e- 1
-16 Sensitivity visit3                     -0.0354     0.0607    -0.584  5.61e- 1</code></pre>
+   Model       term                           estimate std.error statistic   p.value
+   &lt;chr&gt;       &lt;chr&gt;                             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Original    (Intercept)                     3.34       0.0665    50.3    5.32e-74
+ 2 Sensitivity (Intercept)                     3.25       0.0642    50.6    2.13e-68
+ 3 Original    allocation_groupGrupo B        -0.102      0.0934    -1.09   2.78e- 1
+ 4 Sensitivity allocation_groupGrupo B        -0.0131     0.0884    -0.148  8.83e- 1
+ 5 Original    allocation_groupGrupo B:visit2  0.0614     0.0860     0.714  4.77e- 1
+ 6 Sensitivity allocation_groupGrupo B:visit2 -0.00928    0.0784    -0.118  9.06e- 1
+ 7 Original    allocation_groupGrupo B:visit3  0.0792     0.0924     0.857  3.93e- 1
+ 8 Sensitivity allocation_groupGrupo B:visit3  0.0435     0.0856     0.509  6.12e- 1
+ 9 Original    sd__(Intercept)                 0.330     NA         NA     NA       
+10 Sensitivity sd__(Intercept)                 0.306     NA         NA     NA       
+11 Original    sd__Observation                 0.234     NA         NA     NA       
+12 Sensitivity sd__Observation                 0.206     NA         NA     NA       
+13 Original    visit2                         -0.0796     0.0587    -1.36   1.78e- 1
+14 Sensitivity visit2                         -0.0215     0.0552    -0.390  6.97e- 1
+15 Original    visit3                         -0.0336     0.0635    -0.529  5.98e- 1
+16 Sensitivity visit3                         -0.0354     0.0607    -0.584  5.61e- 1</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">compare_performance</span>(labs_alt_model, labs_alt_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Comparison of Model Performance Indices
 
-Name                |           Model |  AIC (weights) | AICc (weights)
------------------------------------------------------------------------
-labs_alt_model      | lmerModLmerTest | 1302.9 (&lt;.001) | 1303.8 (&lt;.001)
-labs_alt_model_sens | lmerModLmerTest | 1150.5 (&gt;.999) | 1151.4 (&gt;.999)
-
-Name                |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |  RMSE | Sigma
---------------------------------------------------------------------------------------
-labs_alt_model      | 1328.4 (&lt;.001) |      0.668 |      0.011 | 0.664 | 0.187 | 0.234
-labs_alt_model_sens | 1175.3 (&gt;.999) |      0.689 |      0.002 | 0.689 | 0.163 | 0.206</code></pre>
+Name                |           Model |  AIC (weights) | AICc (weights) |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |  RMSE | Sigma
+------------------------------------------------------------------------------------------------------------------------------------------
+labs_alt_model      | lmerModLmerTest | 1302.9 (&lt;.001) | 1303.8 (&lt;.001) | 1328.4 (&lt;.001) |      0.668 |      0.011 | 0.664 | 0.187 | 0.234
+labs_alt_model_sens | lmerModLmerTest | 1150.5 (&gt;.999) | 1151.4 (&gt;.999) | 1175.3 (&gt;.999) |      0.689 |      0.002 | 0.689 | 0.163 | 0.206</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -868,14 +818,10 @@ P value adjustment: bonferroni method for 3 tests </code></pre>
 
 Low Correlation
 
-                   Term  VIF   VIF 95% CI Increased SE Tolerance
-       allocation_group 1.08 [1.01, 1.64]         1.04      0.93
-                  visit 3.40 [2.71, 4.36]         1.84      0.29
- allocation_group:visit 3.51 [2.79, 4.51]         1.87      0.28
- Tolerance 95% CI
-     [0.61, 0.99]
-     [0.23, 0.37]
-     [0.22, 0.36]</code></pre>
+                   Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+       allocation_group 1.08 [1.01, 1.64]         1.04      0.93     [0.61, 0.99]
+                  visit 3.40 [2.71, 4.36]         1.84      0.29     [0.23, 0.37]
+ allocation_group:visit 3.51 [2.79, 4.51]         1.87      0.28     [0.22, 0.36]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sensitivity analysis</span></span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>labs_ggt_model_check <span class="ot">&lt;-</span> <span class="fu">sensitivity_check_lmer</span>(</span>
@@ -896,8 +842,7 @@ Low Correlation
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model comparison</span></span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_ggt_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: log1p(labs_ggt) ~ allocation_group * visit + (1 | record_id)
    Data: data_model
 
@@ -914,20 +859,13 @@ Random effects:
 Number of obs: 178, groups:  record_id, 75
 
 Fixed effects:
-                               Estimate Std. Error       df t value Pr(&gt;|t|)
-(Intercept)                     3.36365    0.10612 81.55575  31.697   &lt;2e-16
-allocation_groupGrupo B         0.05279    0.14908 81.55575   0.354    0.724
-visit2                         -0.02673    0.06095 98.79849  -0.439    0.662
-visit3                          0.01219    0.06614 99.26017   0.184    0.854
-allocation_groupGrupo B:visit2  0.04689    0.08964 99.59537   0.523    0.602
-allocation_groupGrupo B:visit3  0.02698    0.09736 99.95801   0.277    0.782
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                               Estimate Std. Error       df t value Pr(&gt;|t|)    
+(Intercept)                     3.36365    0.10612 81.55575  31.697   &lt;2e-16 ***
+allocation_groupGrupo B         0.05279    0.14908 81.55575   0.354    0.724    
+visit2                         -0.02673    0.06095 98.79849  -0.439    0.662    
+visit3                          0.01219    0.06614 99.26017   0.184    0.854    
+allocation_groupGrupo B:visit2  0.04689    0.08964 99.59537   0.523    0.602    
+allocation_groupGrupo B:visit3  0.02698    0.09736 99.95801   0.277    0.782    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -941,8 +879,7 @@ allctn_GB:3  0.152 -0.214 -0.309 -0.679  0.436</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_ggt_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: log1p(labs_ggt) ~ allocation_group * visit + (1 | record_id)
    Data: data_model
  Subset: !(record_id %in% labs_ggt_model_check$influential_ids)
@@ -960,20 +897,13 @@ Random effects:
 Number of obs: 160, groups:  record_id, 68
 
 Fixed effects:
-                               Estimate Std. Error       df t value Pr(&gt;|t|)
-(Intercept)                     3.21202    0.09349 74.25204  34.357   &lt;2e-16
-allocation_groupGrupo B         0.14499    0.13031 74.25204   1.113    0.269
-visit2                         -0.01105    0.05075 89.14440  -0.218    0.828
-visit3                          0.03893    0.05564 89.56439   0.700    0.486
-allocation_groupGrupo B:visit2  0.06129    0.07498 89.97944   0.817    0.416
-allocation_groupGrupo B:visit3  0.01693    0.08145 90.24696   0.208    0.836
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                               Estimate Std. Error       df t value Pr(&gt;|t|)    
+(Intercept)                     3.21202    0.09349 74.25204  34.357   &lt;2e-16 ***
+allocation_groupGrupo B         0.14499    0.13031 74.25204   1.113    0.269    
+visit2                         -0.01105    0.05075 89.14440  -0.218    0.828    
+visit3                          0.03893    0.05564 89.56439   0.700    0.486    
+allocation_groupGrupo B:visit2  0.06129    0.07498 89.97944   0.817    0.416    
+allocation_groupGrupo B:visit3  0.01693    0.08145 90.24696   0.208    0.836    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -988,38 +918,33 @@ allctn_GB:3  0.145 -0.202 -0.309 -0.683  0.434</code></pre>
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>labs_ggt_model_check<span class="sc">$</span>comparison_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 16 × 6
-   Model       term                       estimate std.error statistic   p.value
-   &lt;chr&gt;       &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
- 1 Original    (Intercept)                  3.36      0.106     31.7    1.28e-47
- 2 Sensitivity (Intercept)                  3.21      0.0935    34.4    2.48e-47
- 3 Original    allocation_groupGrupo B      0.0528    0.149      0.354  7.24e- 1
- 4 Sensitivity allocation_groupGrupo B      0.145     0.130      1.11   2.69e- 1
- 5 Original    allocation_groupGrupo B:v…   0.0469    0.0896     0.523  6.02e- 1
- 6 Sensitivity allocation_groupGrupo B:v…   0.0613    0.0750     0.817  4.16e- 1
- 7 Original    allocation_groupGrupo B:v…   0.0270    0.0974     0.277  7.82e- 1
- 8 Sensitivity allocation_groupGrupo B:v…   0.0169    0.0814     0.208  8.36e- 1
- 9 Original    sd__(Intercept)              0.599    NA         NA     NA       
-10 Sensitivity sd__(Intercept)              0.502    NA         NA     NA       
-11 Original    sd__Observation              0.241    NA         NA     NA       
-12 Sensitivity sd__Observation              0.191    NA         NA     NA       
-13 Original    visit2                      -0.0267    0.0610    -0.439  6.62e- 1
-14 Sensitivity visit2                      -0.0110    0.0507    -0.218  8.28e- 1
-15 Original    visit3                       0.0122    0.0661     0.184  8.54e- 1
-16 Sensitivity visit3                       0.0389    0.0556     0.700  4.86e- 1</code></pre>
+   Model       term                           estimate std.error statistic   p.value
+   &lt;chr&gt;       &lt;chr&gt;                             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Original    (Intercept)                      3.36      0.106     31.7    1.28e-47
+ 2 Sensitivity (Intercept)                      3.21      0.0935    34.4    2.48e-47
+ 3 Original    allocation_groupGrupo B          0.0528    0.149      0.354  7.24e- 1
+ 4 Sensitivity allocation_groupGrupo B          0.145     0.130      1.11   2.69e- 1
+ 5 Original    allocation_groupGrupo B:visit2   0.0469    0.0896     0.523  6.02e- 1
+ 6 Sensitivity allocation_groupGrupo B:visit2   0.0613    0.0750     0.817  4.16e- 1
+ 7 Original    allocation_groupGrupo B:visit3   0.0270    0.0974     0.277  7.82e- 1
+ 8 Sensitivity allocation_groupGrupo B:visit3   0.0169    0.0814     0.208  8.36e- 1
+ 9 Original    sd__(Intercept)                  0.599    NA         NA     NA       
+10 Sensitivity sd__(Intercept)                  0.502    NA         NA     NA       
+11 Original    sd__Observation                  0.241    NA         NA     NA       
+12 Sensitivity sd__Observation                  0.191    NA         NA     NA       
+13 Original    visit2                          -0.0267    0.0610    -0.439  6.62e- 1
+14 Sensitivity visit2                          -0.0110    0.0507    -0.218  8.28e- 1
+15 Original    visit3                           0.0122    0.0661     0.184  8.54e- 1
+16 Sensitivity visit3                           0.0389    0.0556     0.700  4.86e- 1</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">compare_performance</span>(labs_ggt_model, labs_ggt_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Comparison of Model Performance Indices
 
-Name                |           Model |  AIC (weights) | AICc (weights)
------------------------------------------------------------------------
-labs_ggt_model      | lmerModLmerTest | 1425.1 (&lt;.001) | 1426.0 (&lt;.001)
-labs_ggt_model_sens | lmerModLmerTest | 1189.5 (&gt;.999) | 1190.4 (&gt;.999)
-
-Name                |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |  RMSE | Sigma
---------------------------------------------------------------------------------------
-labs_ggt_model      | 1450.6 (&lt;.001) |      0.861 |      0.004 | 0.860 | 0.185 | 0.241
-labs_ggt_model_sens | 1214.1 (&gt;.999) |      0.877 |      0.026 | 0.874 | 0.145 | 0.191</code></pre>
+Name                |           Model |  AIC (weights) | AICc (weights) |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |  RMSE | Sigma
+------------------------------------------------------------------------------------------------------------------------------------------
+labs_ggt_model      | lmerModLmerTest | 1425.1 (&lt;.001) | 1426.0 (&lt;.001) | 1450.6 (&lt;.001) |      0.861 |      0.004 | 0.860 | 0.185 | 0.241
+labs_ggt_model_sens | lmerModLmerTest | 1189.5 (&gt;.999) | 1190.4 (&gt;.999) | 1214.1 (&gt;.999) |      0.877 |      0.026 | 0.874 | 0.145 | 0.191</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -1208,14 +1133,10 @@ P value adjustment: bonferroni method for 3 tests </code></pre>
 
 Low Correlation
 
-                   Term  VIF   VIF 95% CI Increased SE Tolerance
-       allocation_group 1.08 [1.01, 1.62]         1.04      0.93
-                  visit 3.40 [2.71, 4.36]         1.84      0.29
- allocation_group:visit 3.52 [2.80, 4.52]         1.88      0.28
- Tolerance 95% CI
-     [0.62, 0.99]
-     [0.23, 0.37]
-     [0.22, 0.36]</code></pre>
+                   Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+       allocation_group 1.08 [1.01, 1.62]         1.04      0.93     [0.62, 0.99]
+                  visit 3.40 [2.71, 4.36]         1.84      0.29     [0.23, 0.37]
+ allocation_group:visit 3.52 [2.80, 4.52]         1.88      0.28     [0.22, 0.36]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sensitivity analysis</span></span>
 <span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>labs_alkp_model_check <span class="ot">&lt;-</span> <span class="fu">sensitivity_check_lmer</span>(</span>
@@ -1236,8 +1157,7 @@ Low Correlation
 <div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model comparison</span></span>
 <span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_alkp_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: log1p(labs_alkp) ~ allocation_group * visit + (1 | record_id)
    Data: data_model
 
@@ -1254,20 +1174,13 @@ Random effects:
 Number of obs: 178, groups:  record_id, 75
 
 Fixed effects:
-                                 Estimate Std. Error         df t value
-(Intercept)                      4.210088   0.043688  84.150015  96.367
-allocation_groupGrupo B          0.033160   0.061377  84.150015   0.540
-visit2                          -0.046856   0.025510 100.999520  -1.837
-visit3                          -0.030253   0.027680 101.476417  -1.093
-allocation_groupGrupo B:visit2   0.018421   0.037511 101.816342   0.491
-allocation_groupGrupo B:visit3   0.004182   0.040741 102.191761   0.103
-                               Pr(&gt;|t|)    
-(Intercept)                      &lt;2e-16 ***
-allocation_groupGrupo B          0.5904    
-visit2                           0.0692 .  
-visit3                           0.2770    
-allocation_groupGrupo B:visit2   0.6244    
-allocation_groupGrupo B:visit3   0.9184    
+                                 Estimate Std. Error         df t value Pr(&gt;|t|)    
+(Intercept)                      4.210088   0.043688  84.150015  96.367   &lt;2e-16 ***
+allocation_groupGrupo B          0.033160   0.061377  84.150015   0.540   0.5904    
+visit2                          -0.046856   0.025510 100.999520  -1.837   0.0692 .  
+visit3                          -0.030253   0.027680 101.476417  -1.093   0.2770    
+allocation_groupGrupo B:visit2   0.018421   0.037511 101.816342   0.491   0.6244    
+allocation_groupGrupo B:visit3   0.004182   0.040741 102.191761   0.103   0.9184    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -1281,8 +1194,7 @@ allctn_GB:3  0.155 -0.218 -0.309 -0.679  0.436</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_alkp_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: log1p(labs_alkp) ~ allocation_group * visit + (1 | record_id)
    Data: data_model
  Subset: !(record_id %in% labs_alkp_model_check$influential_ids)
@@ -1300,20 +1212,13 @@ Random effects:
 Number of obs: 167, groups:  record_id, 71
 
 Fixed effects:
-                                Estimate Std. Error        df t value Pr(&gt;|t|)
-(Intercept)                     4.198426   0.044579 75.550975  94.179   &lt;2e-16
-allocation_groupGrupo B         0.071738   0.062605 75.550975   1.146    0.255
-visit2                         -0.021391   0.021391 93.237481  -1.000    0.320
-visit3                         -0.002867   0.023373 93.517548  -0.123    0.903
-allocation_groupGrupo B:visit2 -0.020052   0.031577 93.770609  -0.635    0.527
-allocation_groupGrupo B:visit3 -0.052680   0.034183 93.954152  -1.541    0.127
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                                Estimate Std. Error        df t value Pr(&gt;|t|)    
+(Intercept)                     4.198426   0.044579 75.550975  94.179   &lt;2e-16 ***
+allocation_groupGrupo B         0.071738   0.062605 75.550975   1.146    0.255    
+visit2                         -0.021391   0.021391 93.237481  -1.000    0.320    
+visit3                         -0.002867   0.023373 93.517548  -0.123    0.903    
+allocation_groupGrupo B:visit2 -0.020052   0.031577 93.770609  -0.635    0.527    
+allocation_groupGrupo B:visit3 -0.052680   0.034183 93.954152  -1.541    0.127    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -1328,38 +1233,33 @@ allctn_GB:3  0.125 -0.176 -0.310 -0.684  0.438</code></pre>
 <div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>labs_alkp_model_check<span class="sc">$</span>comparison_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 16 × 6
-   Model       term                       estimate std.error statistic   p.value
-   &lt;chr&gt;       &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
- 1 Original    (Intercept)                 4.21       0.0437    96.4    6.67e-88
- 2 Sensitivity (Intercept)                 4.20       0.0446    94.2    4.38e-80
- 3 Original    allocation_groupGrupo B     0.0332     0.0614     0.540  5.90e- 1
- 4 Sensitivity allocation_groupGrupo B     0.0717     0.0626     1.15   2.55e- 1
- 5 Original    allocation_groupGrupo B:v…  0.0184     0.0375     0.491  6.24e- 1
- 6 Sensitivity allocation_groupGrupo B:v… -0.0201     0.0316    -0.635  5.27e- 1
- 7 Original    allocation_groupGrupo B:v…  0.00418    0.0407     0.103  9.18e- 1
- 8 Sensitivity allocation_groupGrupo B:v… -0.0527     0.0342    -1.54   1.27e- 1
- 9 Original    sd__(Intercept)             0.246     NA         NA     NA       
-10 Sensitivity sd__(Intercept)             0.251     NA         NA     NA       
-11 Original    sd__Observation             0.101     NA         NA     NA       
-12 Sensitivity sd__Observation             0.0818    NA         NA     NA       
-13 Original    visit2                     -0.0469     0.0255    -1.84   6.92e- 2
-14 Sensitivity visit2                     -0.0214     0.0214    -1.00   3.20e- 1
-15 Original    visit3                     -0.0303     0.0277    -1.09   2.77e- 1
-16 Sensitivity visit3                     -0.00287    0.0234    -0.123  9.03e- 1</code></pre>
+   Model       term                           estimate std.error statistic   p.value
+   &lt;chr&gt;       &lt;chr&gt;                             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Original    (Intercept)                     4.21       0.0437    96.4    6.67e-88
+ 2 Sensitivity (Intercept)                     4.20       0.0446    94.2    4.38e-80
+ 3 Original    allocation_groupGrupo B         0.0332     0.0614     0.540  5.90e- 1
+ 4 Sensitivity allocation_groupGrupo B         0.0717     0.0626     1.15   2.55e- 1
+ 5 Original    allocation_groupGrupo B:visit2  0.0184     0.0375     0.491  6.24e- 1
+ 6 Sensitivity allocation_groupGrupo B:visit2 -0.0201     0.0316    -0.635  5.27e- 1
+ 7 Original    allocation_groupGrupo B:visit3  0.00418    0.0407     0.103  9.18e- 1
+ 8 Sensitivity allocation_groupGrupo B:visit3 -0.0527     0.0342    -1.54   1.27e- 1
+ 9 Original    sd__(Intercept)                 0.246     NA         NA     NA       
+10 Sensitivity sd__(Intercept)                 0.251     NA         NA     NA       
+11 Original    sd__Observation                 0.101     NA         NA     NA       
+12 Sensitivity sd__Observation                 0.0818    NA         NA     NA       
+13 Original    visit2                         -0.0469     0.0255    -1.84   6.92e- 2
+14 Sensitivity visit2                         -0.0214     0.0214    -1.00   3.20e- 1
+15 Original    visit3                         -0.0303     0.0277    -1.09   2.77e- 1
+16 Sensitivity visit3                         -0.00287    0.0234    -0.123  9.03e- 1</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">compare_performance</span>(labs_alkp_model, labs_alkp_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Comparison of Model Performance Indices
 
-Name                 |           Model |  AIC (weights) | AICc (weights)
-------------------------------------------------------------------------
-labs_alkp_model      | lmerModLmerTest | 1394.9 (&lt;.001) | 1395.7 (&lt;.001)
-labs_alkp_model_sens | lmerModLmerTest | 1274.2 (&gt;.999) | 1275.1 (&gt;.999)
-
-Name                 |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |  RMSE | Sigma
----------------------------------------------------------------------------------------
-labs_alkp_model      | 1420.3 (&lt;.001) |      0.857 |      0.010 | 0.855 | 0.077 | 0.101
-labs_alkp_model_sens | 1299.1 (&gt;.999) |      0.905 |      0.015 | 0.904 | 0.062 | 0.082</code></pre>
+Name                 |           Model |  AIC (weights) | AICc (weights) |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |  RMSE | Sigma
+-------------------------------------------------------------------------------------------------------------------------------------------
+labs_alkp_model      | lmerModLmerTest | 1394.9 (&lt;.001) | 1395.7 (&lt;.001) | 1420.3 (&lt;.001) |      0.857 |      0.010 | 0.855 | 0.077 | 0.101
+labs_alkp_model_sens | lmerModLmerTest | 1274.2 (&gt;.999) | 1275.1 (&gt;.999) | 1299.1 (&gt;.999) |      0.905 |      0.015 | 0.904 | 0.062 | 0.082</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -1548,14 +1448,10 @@ P value adjustment: bonferroni method for 3 tests </code></pre>
 
 Low Correlation
 
-                   Term  VIF   VIF 95% CI Increased SE Tolerance
-       allocation_group 1.15 [1.05, 1.50]         1.07      0.87
-                  visit 3.49 [2.78, 4.48]         1.87      0.29
- allocation_group:visit 3.73 [2.96, 4.80]         1.93      0.27
- Tolerance 95% CI
-     [0.67, 0.96]
-     [0.22, 0.36]
-     [0.21, 0.34]</code></pre>
+                   Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+       allocation_group 1.15 [1.05, 1.50]         1.07      0.87     [0.67, 0.96]
+                  visit 3.49 [2.78, 4.48]         1.87      0.29     [0.22, 0.36]
+ allocation_group:visit 3.73 [2.96, 4.80]         1.93      0.27     [0.21, 0.34]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sensitivity analysis</span></span>
 <span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>labs_cholesterol_model_check <span class="ot">&lt;-</span> <span class="fu">sensitivity_check_lmer</span>(</span>
@@ -1576,8 +1472,7 @@ Low Correlation
 <div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model comparison</span></span>
 <span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_cholesterol_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: labs_cholesterol ~ allocation_group * visit + (1 | record_id)
    Data: data_model
 
@@ -1594,20 +1489,13 @@ Random effects:
 Number of obs: 179, groups:  record_id, 75
 
 Fixed effects:
-                               Estimate Std. Error       df t value Pr(&gt;|t|)
-(Intercept)                    191.2270     5.1990  96.6933  36.782   &lt;2e-16
-allocation_groupGrupo B         -0.7165     7.3039  96.6933  -0.098    0.922
-visit2                          -5.9068     4.0291 105.4088  -1.466    0.146
-visit3                          -0.3796     4.3671 106.4164  -0.087    0.931
-allocation_groupGrupo B:visit2  -0.1153     5.9143 106.8530  -0.019    0.984
-allocation_groupGrupo B:visit3  -7.7590     6.3553 107.5905  -1.221    0.225
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                               Estimate Std. Error       df t value Pr(&gt;|t|)    
+(Intercept)                    191.2270     5.1990  96.6933  36.782   &lt;2e-16 ***
+allocation_groupGrupo B         -0.7165     7.3039  96.6933  -0.098    0.922    
+visit2                          -5.9068     4.0291 105.4088  -1.466    0.146    
+visit3                          -0.3796     4.3671 106.4164  -0.087    0.931    
+allocation_groupGrupo B:visit2  -0.1153     5.9143 106.8530  -0.019    0.984    
+allocation_groupGrupo B:visit3  -7.7590     6.3553 107.5905  -1.221    0.225    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -1621,8 +1509,7 @@ allctn_GB:3  0.210 -0.295 -0.310 -0.687  0.436</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_cholesterol_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: labs_cholesterol ~ allocation_group * visit + (1 | record_id)
    Data: data_model
  Subset: !(record_id %in% labs_cholesterol_model_check$influential_ids)
@@ -1640,20 +1527,13 @@ Random effects:
 Number of obs: 164, groups:  record_id, 70
 
 Fixed effects:
-                               Estimate Std. Error       df t value Pr(&gt;|t|)
-(Intercept)                    191.1697     5.1285  80.3020  37.276   &lt;2e-16
-allocation_groupGrupo B         -0.6778     7.0540  80.3020  -0.096   0.9237
-visit2                          -5.9843     3.1939  93.1276  -1.874   0.0641
-visit3                          -3.9379     3.5150  93.6547  -1.120   0.2654
-allocation_groupGrupo B:visit2  -1.5573     4.5754  93.8263  -0.340   0.7343
-allocation_groupGrupo B:visit3  -2.1290     4.9645  94.1891  -0.429   0.6690
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                         .  
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                               Estimate Std. Error       df t value Pr(&gt;|t|)    
+(Intercept)                    191.1697     5.1285  80.3020  37.276   &lt;2e-16 ***
+allocation_groupGrupo B         -0.6778     7.0540  80.3020  -0.096   0.9237    
+visit2                          -5.9843     3.1939  93.1276  -1.874   0.0641 .  
+visit3                          -3.9379     3.5150  93.6547  -1.120   0.2654    
+allocation_groupGrupo B:visit2  -1.5573     4.5754  93.8263  -0.340   0.7343    
+allocation_groupGrupo B:visit3  -2.1290     4.9645  94.1891  -0.429   0.6690    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -1668,43 +1548,33 @@ allctn_GB:3  0.166 -0.229 -0.317 -0.708  0.436</code></pre>
 <div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>labs_cholesterol_model_check<span class="sc">$</span>comparison_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 16 × 6
-   Model       term                       estimate std.error statistic   p.value
-   &lt;chr&gt;       &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
- 1 Original    (Intercept)                 191.         5.20   36.8     1.19e-58
- 2 Sensitivity (Intercept)                 191.         5.13   37.3     1.85e-52
- 3 Original    allocation_groupGrupo B      -0.717      7.30   -0.0981  9.22e- 1
- 4 Sensitivity allocation_groupGrupo B      -0.678      7.05   -0.0961  9.24e- 1
- 5 Original    allocation_groupGrupo B:v…   -0.115      5.91   -0.0195  9.84e- 1
- 6 Sensitivity allocation_groupGrupo B:v…   -1.56       4.58   -0.340   7.34e- 1
- 7 Original    allocation_groupGrupo B:v…   -7.76       6.36   -1.22    2.25e- 1
- 8 Sensitivity allocation_groupGrupo B:v…   -2.13       4.96   -0.429   6.69e- 1
- 9 Original    sd__(Intercept)              27.3       NA      NA      NA       
-10 Sensitivity sd__(Intercept)              27.0       NA      NA      NA       
-11 Original    sd__Observation              16.0       NA      NA      NA       
-12 Sensitivity sd__Observation              11.8       NA      NA      NA       
-13 Original    visit2                       -5.91       4.03   -1.47    1.46e- 1
-14 Sensitivity visit2                       -5.98       3.19   -1.87    6.41e- 2
-15 Original    visit3                       -0.380      4.37   -0.0869  9.31e- 1
-16 Sensitivity visit3                       -3.94       3.51   -1.12    2.65e- 1</code></pre>
+   Model       term                           estimate std.error statistic   p.value
+   &lt;chr&gt;       &lt;chr&gt;                             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Original    (Intercept)                     191.         5.20   36.8     1.19e-58
+ 2 Sensitivity (Intercept)                     191.         5.13   37.3     1.85e-52
+ 3 Original    allocation_groupGrupo B          -0.717      7.30   -0.0981  9.22e- 1
+ 4 Sensitivity allocation_groupGrupo B          -0.678      7.05   -0.0961  9.24e- 1
+ 5 Original    allocation_groupGrupo B:visit2   -0.115      5.91   -0.0195  9.84e- 1
+ 6 Sensitivity allocation_groupGrupo B:visit2   -1.56       4.58   -0.340   7.34e- 1
+ 7 Original    allocation_groupGrupo B:visit3   -7.76       6.36   -1.22    2.25e- 1
+ 8 Sensitivity allocation_groupGrupo B:visit3   -2.13       4.96   -0.429   6.69e- 1
+ 9 Original    sd__(Intercept)                  27.3       NA      NA      NA       
+10 Sensitivity sd__(Intercept)                  27.0       NA      NA      NA       
+11 Original    sd__Observation                  16.0       NA      NA      NA       
+12 Sensitivity sd__Observation                  11.8       NA      NA      NA       
+13 Original    visit2                           -5.91       4.03   -1.47    1.46e- 1
+14 Sensitivity visit2                           -5.98       3.19   -1.87    6.41e- 2
+15 Original    visit3                           -0.380      4.37   -0.0869  9.31e- 1
+16 Sensitivity visit3                           -3.94       3.51   -1.12    2.65e- 1</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">compare_performance</span>(labs_cholesterol_model, labs_cholesterol_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Comparison of Model Performance Indices
 
-Name                        |           Model |  AIC (weights) | AICc (weights)
--------------------------------------------------------------------------------
-labs_cholesterol_model      | lmerModLmerTest | 1661.8 (&lt;.001) | 1662.7 (&lt;.001)
-labs_cholesterol_model_sens | lmerModLmerTest | 1461.2 (&gt;.999) | 1462.1 (&gt;.999)
-
-Name                        |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC
-------------------------------------------------------------------------------
-labs_cholesterol_model      | 1687.3 (&lt;.001) |      0.746 |      0.011 | 0.743
-labs_cholesterol_model_sens | 1486.0 (&gt;.999) |      0.841 |      0.011 | 0.839
-
-Name                        |   RMSE |  Sigma
----------------------------------------------
-labs_cholesterol_model      | 12.602 | 16.030
-labs_cholesterol_model_sens |  9.049 | 11.822</code></pre>
+Name                        |           Model |  AIC (weights) | AICc (weights) |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |   RMSE |  Sigma
+----------------------------------------------------------------------------------------------------------------------------------------------------
+labs_cholesterol_model      | lmerModLmerTest | 1661.8 (&lt;.001) | 1662.7 (&lt;.001) | 1687.3 (&lt;.001) |      0.746 |      0.011 | 0.743 | 12.602 | 16.030
+labs_cholesterol_model_sens | lmerModLmerTest | 1461.2 (&gt;.999) | 1462.1 (&gt;.999) | 1486.0 (&gt;.999) |      0.841 |      0.011 | 0.839 |  9.049 | 11.822</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -1888,14 +1758,10 @@ P value adjustment: bonferroni method for 3 tests </code></pre>
 
 Low Correlation
 
-                   Term  VIF   VIF 95% CI Increased SE Tolerance
-       allocation_group 1.18 [1.06, 1.52]         1.08      0.85
-                  visit 3.49 [2.78, 4.49]         1.87      0.29
- allocation_group:visit 3.77 [3.00, 4.86]         1.94      0.26
- Tolerance 95% CI
-     [0.66, 0.94]
-     [0.22, 0.36]
-     [0.21, 0.33]</code></pre>
+                   Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+       allocation_group 1.18 [1.06, 1.52]         1.08      0.85     [0.66, 0.94]
+                  visit 3.49 [2.78, 4.49]         1.87      0.29     [0.22, 0.36]
+ allocation_group:visit 3.77 [3.00, 4.86]         1.94      0.26     [0.21, 0.33]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb127"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb127-1"><a href="#cb127-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sensitivity analysis</span></span>
 <span id="cb127-2"><a href="#cb127-2" aria-hidden="true" tabindex="-1"></a>labs_ldl_model_check <span class="ot">&lt;-</span> <span class="fu">sensitivity_check_lmer</span>(</span>
@@ -1916,8 +1782,7 @@ Low Correlation
 <div class="sourceCode cell-code" id="cb129"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model comparison</span></span>
 <span id="cb129-2"><a href="#cb129-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_ldl_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: labs_ldl ~ allocation_group * visit + (1 | record_id)
    Data: data_model
 
@@ -1934,20 +1799,13 @@ Random effects:
 Number of obs: 179, groups:  record_id, 75
 
 Fixed effects:
-                               Estimate Std. Error       df t value Pr(&gt;|t|)
-(Intercept)                    115.4919     4.8081  98.3445  24.020   &lt;2e-16
-allocation_groupGrupo B         -3.7735     6.7548  98.3445  -0.559    0.578
-visit2                          -5.5925     3.9659 103.9503  -1.410    0.161
-visit3                          -0.0205     4.2968 105.1671  -0.005    0.996
-allocation_groupGrupo B:visit2   1.9191     5.8182 105.6037   0.330    0.742
-allocation_groupGrupo B:visit3  -5.9060     6.2502 106.5086  -0.945    0.347
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                               Estimate Std. Error       df t value Pr(&gt;|t|)    
+(Intercept)                    115.4919     4.8081  98.3445  24.020   &lt;2e-16 ***
+allocation_groupGrupo B         -3.7735     6.7548  98.3445  -0.559    0.578    
+visit2                          -5.5925     3.9659 103.9503  -1.410    0.161    
+visit3                          -0.0205     4.2968 105.1671  -0.005    0.996    
+allocation_groupGrupo B:visit2   1.9191     5.8182 105.6037   0.330    0.742    
+allocation_groupGrupo B:visit3  -5.9060     6.2502 106.5086  -0.945    0.347    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -1961,8 +1819,7 @@ allctn_GB:3  0.225 -0.315 -0.310 -0.687  0.434</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb131"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb131-1"><a href="#cb131-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_ldl_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: labs_ldl ~ allocation_group * visit + (1 | record_id)
    Data: data_model
  Subset: !(record_id %in% labs_ldl_model_check$influential_ids)
@@ -1980,20 +1837,13 @@ Random effects:
 Number of obs: 164, groups:  record_id, 70
 
 Fixed effects:
-                               Estimate Std. Error       df t value Pr(&gt;|t|)
-(Intercept)                    113.7000     4.8448  79.8422  23.469   &lt;2e-16
-allocation_groupGrupo B         -1.6611     6.7557  79.8422  -0.246    0.806
-visit2                          -4.7013     3.0810  92.0892  -1.526    0.130
-visit3                          -0.1022     3.3768  92.6447  -0.030    0.976
-allocation_groupGrupo B:visit2   1.4048     4.5009  92.9553   0.312    0.756
-allocation_groupGrupo B:visit3  -4.6904     4.8797  93.3370  -0.961    0.339
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                               Estimate Std. Error       df t value Pr(&gt;|t|)    
+(Intercept)                    113.7000     4.8448  79.8422  23.469   &lt;2e-16 ***
+allocation_groupGrupo B         -1.6611     6.7557  79.8422  -0.246    0.806    
+visit2                          -4.7013     3.0810  92.0892  -1.526    0.130    
+visit3                          -0.1022     3.3768  92.6447  -0.030    0.976    
+allocation_groupGrupo B:visit2   1.4048     4.5009  92.9553   0.312    0.756    
+allocation_groupGrupo B:visit3  -4.6904     4.8797  93.3370  -0.961    0.339    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -2008,38 +1858,33 @@ allctn_GB:3  0.168 -0.234 -0.311 -0.692  0.434</code></pre>
 <div class="sourceCode cell-code" id="cb133"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb133-1"><a href="#cb133-1" aria-hidden="true" tabindex="-1"></a>labs_ldl_model_check<span class="sc">$</span>comparison_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 16 × 6
-   Model       term                       estimate std.error statistic   p.value
-   &lt;chr&gt;       &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
- 1 Original    (Intercept)                115.          4.81  24.0      6.20e-43
- 2 Sensitivity (Intercept)                114.          4.84  23.5      1.40e-37
- 3 Original    allocation_groupGrupo B     -3.77        6.75  -0.559    5.78e- 1
- 4 Sensitivity allocation_groupGrupo B     -1.66        6.76  -0.246    8.06e- 1
- 5 Original    allocation_groupGrupo B:v…   1.92        5.82   0.330    7.42e- 1
- 6 Sensitivity allocation_groupGrupo B:v…   1.40        4.50   0.312    7.56e- 1
- 7 Original    allocation_groupGrupo B:v…  -5.91        6.25  -0.945    3.47e- 1
- 8 Sensitivity allocation_groupGrupo B:v…  -4.69        4.88  -0.961    3.39e- 1
- 9 Original    sd__(Intercept)             24.6        NA     NA       NA       
-10 Sensitivity sd__(Intercept)             25.8        NA     NA       NA       
-11 Original    sd__Observation             15.8        NA     NA       NA       
-12 Sensitivity sd__Observation             11.6        NA     NA       NA       
-13 Original    visit2                      -5.59        3.97  -1.41     1.61e- 1
-14 Sensitivity visit2                      -4.70        3.08  -1.53     1.30e- 1
-15 Original    visit3                      -0.0205      4.30  -0.00477  9.96e- 1
-16 Sensitivity visit3                      -0.102       3.38  -0.0303   9.76e- 1</code></pre>
+   Model       term                           estimate std.error statistic   p.value
+   &lt;chr&gt;       &lt;chr&gt;                             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Original    (Intercept)                    115.          4.81  24.0      6.20e-43
+ 2 Sensitivity (Intercept)                    114.          4.84  23.5      1.40e-37
+ 3 Original    allocation_groupGrupo B         -3.77        6.75  -0.559    5.78e- 1
+ 4 Sensitivity allocation_groupGrupo B         -1.66        6.76  -0.246    8.06e- 1
+ 5 Original    allocation_groupGrupo B:visit2   1.92        5.82   0.330    7.42e- 1
+ 6 Sensitivity allocation_groupGrupo B:visit2   1.40        4.50   0.312    7.56e- 1
+ 7 Original    allocation_groupGrupo B:visit3  -5.91        6.25  -0.945    3.47e- 1
+ 8 Sensitivity allocation_groupGrupo B:visit3  -4.69        4.88  -0.961    3.39e- 1
+ 9 Original    sd__(Intercept)                 24.6        NA     NA       NA       
+10 Sensitivity sd__(Intercept)                 25.8        NA     NA       NA       
+11 Original    sd__Observation                 15.8        NA     NA       NA       
+12 Sensitivity sd__Observation                 11.6        NA     NA       NA       
+13 Original    visit2                          -5.59        3.97  -1.41     1.61e- 1
+14 Sensitivity visit2                          -4.70        3.08  -1.53     1.30e- 1
+15 Original    visit3                          -0.0205      4.30  -0.00477  9.96e- 1
+16 Sensitivity visit3                          -0.102       3.38  -0.0303   9.76e- 1</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb135"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb135-1"><a href="#cb135-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">compare_performance</span>(labs_ldl_model, labs_ldl_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Comparison of Model Performance Indices
 
-Name                |           Model |  AIC (weights) | AICc (weights)
------------------------------------------------------------------------
-labs_ldl_model      | lmerModLmerTest | 1645.5 (&lt;.001) | 1646.4 (&lt;.001)
-labs_ldl_model_sens | lmerModLmerTest | 1451.7 (&gt;.999) | 1452.6 (&gt;.999)
-
-Name                |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |   RMSE |  Sigma
-----------------------------------------------------------------------------------------
-labs_ldl_model      | 1671.0 (&lt;.001) |      0.712 |      0.014 | 0.708 | 12.514 | 15.802
-labs_ldl_model_sens | 1476.5 (&gt;.999) |      0.832 |      0.007 | 0.831 |  8.905 | 11.615</code></pre>
+Name                |           Model |  AIC (weights) | AICc (weights) |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |   RMSE |  Sigma
+--------------------------------------------------------------------------------------------------------------------------------------------
+labs_ldl_model      | lmerModLmerTest | 1645.5 (&lt;.001) | 1646.4 (&lt;.001) | 1671.0 (&lt;.001) |      0.712 |      0.014 | 0.708 | 12.514 | 15.802
+labs_ldl_model_sens | lmerModLmerTest | 1451.7 (&gt;.999) | 1452.6 (&gt;.999) | 1476.5 (&gt;.999) |      0.832 |      0.007 | 0.831 |  8.905 | 11.615</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2223,14 +2068,10 @@ P value adjustment: bonferroni method for 3 tests </code></pre>
 
 Low Correlation
 
-                   Term  VIF   VIF 95% CI Increased SE Tolerance
-       allocation_group 1.16 [1.05, 1.51]         1.08      0.86
-                  visit 3.49 [2.78, 4.48]         1.87      0.29
- allocation_group:visit 3.74 [2.97, 4.81]         1.93      0.27
- Tolerance 95% CI
-     [0.66, 0.95]
-     [0.22, 0.36]
-     [0.21, 0.34]</code></pre>
+                   Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+       allocation_group 1.16 [1.05, 1.51]         1.08      0.86     [0.66, 0.95]
+                  visit 3.49 [2.78, 4.48]         1.87      0.29     [0.22, 0.36]
+ allocation_group:visit 3.74 [2.97, 4.81]         1.93      0.27     [0.21, 0.34]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb152"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb152-1"><a href="#cb152-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sensitivity analysis</span></span>
 <span id="cb152-2"><a href="#cb152-2" aria-hidden="true" tabindex="-1"></a>labs_hdl_model_check <span class="ot">&lt;-</span> <span class="fu">sensitivity_check_lmer</span>(</span>
@@ -2251,8 +2092,7 @@ Low Correlation
 <div class="sourceCode cell-code" id="cb154"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb154-1"><a href="#cb154-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model comparison</span></span>
 <span id="cb154-2"><a href="#cb154-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_hdl_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: log1p(labs_hdl) ~ allocation_group * visit + (1 | record_id)
    Data: data_model
 
@@ -2269,20 +2109,13 @@ Random effects:
 Number of obs: 179, groups:  record_id, 75
 
 Fixed effects:
-                                Estimate Std. Error        df t value Pr(&gt;|t|)
-(Intercept)                      3.94481    0.03815  94.81644 103.399   &lt;2e-16
-allocation_groupGrupo B          0.06500    0.05360  94.81644   1.213    0.228
-visit2                          -0.01725    0.03011 102.74671  -0.573    0.568
-visit3                          -0.01928    0.03264 103.82312  -0.591    0.556
-allocation_groupGrupo B:visit2  -0.02214    0.04420 104.26672  -0.501    0.618
-allocation_groupGrupo B:visit3  -0.03185    0.04749 105.05887  -0.671    0.504
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                                Estimate Std. Error        df t value Pr(&gt;|t|)    
+(Intercept)                      3.94481    0.03815  94.81644 103.399   &lt;2e-16 ***
+allocation_groupGrupo B          0.06500    0.05360  94.81644   1.213    0.228    
+visit2                          -0.01725    0.03011 102.74671  -0.573    0.568    
+visit3                          -0.01928    0.03264 103.82312  -0.591    0.556    
+allocation_groupGrupo B:visit2  -0.02214    0.04420 104.26672  -0.501    0.618    
+allocation_groupGrupo B:visit3  -0.03185    0.04749 105.05887  -0.671    0.504    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -2296,8 +2129,7 @@ allctn_GB:3  0.214 -0.301 -0.310 -0.687  0.435</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb156"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb156-1"><a href="#cb156-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_hdl_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: log1p(labs_hdl) ~ allocation_group * visit + (1 | record_id)
    Data: data_model
  Subset: !(record_id %in% labs_hdl_model_check$influential_ids)
@@ -2315,20 +2147,13 @@ Random effects:
 Number of obs: 166, groups:  record_id, 70
 
 Fixed effects:
-                               Estimate Std. Error       df t value Pr(&gt;|t|)
-(Intercept)                     3.92823    0.03733 82.44138 105.230   &lt;2e-16
-allocation_groupGrupo B         0.06708    0.05279 82.44138   1.271    0.207
-visit2                         -0.01029    0.02612 93.87428  -0.394    0.695
-visit3                         -0.01338    0.02805 94.47459  -0.477    0.635
-allocation_groupGrupo B:visit2 -0.02943    0.03859 95.06373  -0.763    0.448
-allocation_groupGrupo B:visit3 -0.03861    0.04187 95.58326  -0.922    0.359
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                               Estimate Std. Error       df t value Pr(&gt;|t|)    
+(Intercept)                     3.92823    0.03733 82.44138 105.230   &lt;2e-16 ***
+allocation_groupGrupo B         0.06708    0.05279 82.44138   1.271    0.207    
+visit2                         -0.01029    0.02612 93.87428  -0.394    0.695    
+visit3                         -0.01338    0.02805 94.47459  -0.477    0.635    
+allocation_groupGrupo B:visit2 -0.02943    0.03859 95.06373  -0.763    0.448    
+allocation_groupGrupo B:visit3 -0.03861    0.04187 95.58326  -0.922    0.359    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -2343,38 +2168,33 @@ allctn_GB:3  0.184 -0.260 -0.306 -0.670  0.440</code></pre>
 <div class="sourceCode cell-code" id="cb158"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb158-1"><a href="#cb158-1" aria-hidden="true" tabindex="-1"></a>labs_hdl_model_check<span class="sc">$</span>comparison_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 16 × 6
-   Model       term                       estimate std.error statistic   p.value
-   &lt;chr&gt;       &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
- 1 Original    (Intercept)                  3.94      0.0382   103.     2.78e-99
- 2 Sensitivity (Intercept)                  3.93      0.0373   105.     1.23e-89
- 3 Original    allocation_groupGrupo B      0.0650    0.0536     1.21   2.28e- 1
- 4 Sensitivity allocation_groupGrupo B      0.0671    0.0528     1.27   2.07e- 1
- 5 Original    allocation_groupGrupo B:v…  -0.0221    0.0442    -0.501  6.18e- 1
- 6 Sensitivity allocation_groupGrupo B:v…  -0.0294    0.0386    -0.763  4.48e- 1
- 7 Original    allocation_groupGrupo B:v…  -0.0318    0.0475    -0.671  5.04e- 1
- 8 Sensitivity allocation_groupGrupo B:v…  -0.0386    0.0419    -0.922  3.59e- 1
- 9 Original    sd__(Intercept)              0.199    NA         NA     NA       
-10 Sensitivity sd__(Intercept)              0.197    NA         NA     NA       
-11 Original    sd__Observation              0.120    NA         NA     NA       
-12 Sensitivity sd__Observation              0.100    NA         NA     NA       
-13 Original    visit2                      -0.0172    0.0301    -0.573  5.68e- 1
-14 Sensitivity visit2                      -0.0103    0.0261    -0.394  6.95e- 1
-15 Original    visit3                      -0.0193    0.0326    -0.591  5.56e- 1
-16 Sensitivity visit3                      -0.0134    0.0281    -0.477  6.35e- 1</code></pre>
+   Model       term                           estimate std.error statistic   p.value
+   &lt;chr&gt;       &lt;chr&gt;                             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Original    (Intercept)                      3.94      0.0382   103.     2.78e-99
+ 2 Sensitivity (Intercept)                      3.93      0.0373   105.     1.23e-89
+ 3 Original    allocation_groupGrupo B          0.0650    0.0536     1.21   2.28e- 1
+ 4 Sensitivity allocation_groupGrupo B          0.0671    0.0528     1.27   2.07e- 1
+ 5 Original    allocation_groupGrupo B:visit2  -0.0221    0.0442    -0.501  6.18e- 1
+ 6 Sensitivity allocation_groupGrupo B:visit2  -0.0294    0.0386    -0.763  4.48e- 1
+ 7 Original    allocation_groupGrupo B:visit3  -0.0318    0.0475    -0.671  5.04e- 1
+ 8 Sensitivity allocation_groupGrupo B:visit3  -0.0386    0.0419    -0.922  3.59e- 1
+ 9 Original    sd__(Intercept)                  0.199    NA         NA     NA       
+10 Sensitivity sd__(Intercept)                  0.197    NA         NA     NA       
+11 Original    sd__Observation                  0.120    NA         NA     NA       
+12 Sensitivity sd__Observation                  0.100    NA         NA     NA       
+13 Original    visit2                          -0.0172    0.0301    -0.573  5.68e- 1
+14 Sensitivity visit2                          -0.0103    0.0261    -0.394  6.95e- 1
+15 Original    visit3                          -0.0193    0.0326    -0.591  5.56e- 1
+16 Sensitivity visit3                          -0.0134    0.0281    -0.477  6.35e- 1</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb160"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb160-1"><a href="#cb160-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">compare_performance</span>(labs_hdl_model, labs_hdl_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Comparison of Model Performance Indices
 
-Name                |           Model |  AIC (weights) | AICc (weights)
------------------------------------------------------------------------
-labs_hdl_model      | lmerModLmerTest | 1319.8 (&lt;.001) | 1320.7 (&lt;.001)
-labs_hdl_model_sens | lmerModLmerTest | 1181.6 (&gt;.999) | 1182.5 (&gt;.999)
-
-Name                |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |  RMSE | Sigma
---------------------------------------------------------------------------------------
-labs_hdl_model      | 1345.3 (&lt;.001) |      0.738 |      0.017 | 0.733 | 0.094 | 0.120
-labs_hdl_model_sens | 1206.5 (&gt;.999) |      0.797 |      0.018 | 0.793 | 0.078 | 0.100</code></pre>
+Name                |           Model |  AIC (weights) | AICc (weights) |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |  RMSE | Sigma
+------------------------------------------------------------------------------------------------------------------------------------------
+labs_hdl_model      | lmerModLmerTest | 1319.8 (&lt;.001) | 1320.7 (&lt;.001) | 1345.3 (&lt;.001) |      0.738 |      0.017 | 0.733 | 0.094 | 0.120
+labs_hdl_model_sens | lmerModLmerTest | 1181.6 (&gt;.999) | 1182.5 (&gt;.999) | 1206.5 (&gt;.999) |      0.797 |      0.018 | 0.793 | 0.078 | 0.100</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2563,14 +2383,10 @@ P value adjustment: bonferroni method for 3 tests </code></pre>
 
 Low Correlation
 
-                   Term  VIF   VIF 95% CI Increased SE Tolerance
-       allocation_group 1.20 [1.08, 1.53]         1.10      0.83
-                  visit 3.50 [2.79, 4.49]         1.87      0.29
- allocation_group:visit 3.82 [3.03, 4.92]         1.95      0.26
- Tolerance 95% CI
-     [0.65, 0.93]
-     [0.22, 0.36]
-     [0.20, 0.33]</code></pre>
+                   Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+       allocation_group 1.20 [1.08, 1.53]         1.10      0.83     [0.65, 0.93]
+                  visit 3.50 [2.79, 4.49]         1.87      0.29     [0.22, 0.36]
+ allocation_group:visit 3.82 [3.03, 4.92]         1.95      0.26     [0.20, 0.33]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb177"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb177-1"><a href="#cb177-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sensitivity analysis</span></span>
 <span id="cb177-2"><a href="#cb177-2" aria-hidden="true" tabindex="-1"></a>labs_triglycerides_model_check <span class="ot">&lt;-</span> <span class="fu">sensitivity_check_lmer</span>(</span>
@@ -2591,8 +2407,7 @@ Low Correlation
 <div class="sourceCode cell-code" id="cb179"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb179-1"><a href="#cb179-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model comparison</span></span>
 <span id="cb179-2"><a href="#cb179-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_triglycerides_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: log1p(labs_triglycerides) ~ allocation_group * visit + (1 | record_id)
    Data: data_model
 
@@ -2609,20 +2424,13 @@ Random effects:
 Number of obs: 179, groups:  record_id, 75
 
 Fixed effects:
-                                Estimate Std. Error        df t value Pr(&gt;|t|)
-(Intercept)                      4.76585    0.07186 100.80805  66.322   &lt;2e-16
-allocation_groupGrupo B         -0.02118    0.10095 100.80805  -0.210    0.834
-visit2                           0.05652    0.06246 103.24903   0.905    0.368
-visit3                           0.00822    0.06765 104.67836   0.122    0.904
-allocation_groupGrupo B:visit2  -0.05643    0.09159 105.09618  -0.616    0.539
-allocation_groupGrupo B:visit3   0.04983    0.09836 106.17407   0.507    0.614
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3    
+                                Estimate Std. Error        df t value Pr(&gt;|t|)    
+(Intercept)                      4.76585    0.07186 100.80805  66.322   &lt;2e-16 ***
+allocation_groupGrupo B         -0.02118    0.10095 100.80805  -0.210    0.834    
+visit2                           0.05652    0.06246 103.24903   0.905    0.368    
+visit3                           0.00822    0.06765 104.67836   0.122    0.904    
+allocation_groupGrupo B:visit2  -0.05643    0.09159 105.09618  -0.616    0.539    
+allocation_groupGrupo B:visit3   0.04983    0.09836 106.17407   0.507    0.614    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -2636,8 +2444,7 @@ allctn_GB:3  0.238 -0.334 -0.309 -0.688  0.433</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb181"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb181-1"><a href="#cb181-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(labs_triglycerides_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
-lmerModLmerTest]
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
 Formula: log1p(labs_triglycerides) ~ allocation_group * visit + (1 | record_id)
    Data: data_model
  Subset: !(record_id %in% labs_triglycerides_model_check$influential_ids)
@@ -2655,20 +2462,13 @@ Random effects:
 Number of obs: 164, groups:  record_id, 70
 
 Fixed effects:
-                               Estimate Std. Error       df t value Pr(&gt;|t|)
-(Intercept)                     4.74183    0.07187 86.86729  65.980   &lt;2e-16
-allocation_groupGrupo B        -0.02502    0.09885 86.86729  -0.253   0.8008
-visit2                          0.04807    0.05702 92.31050   0.843   0.4014
-visit3                         -0.09539    0.06269 93.35327  -1.522   0.1314
-allocation_groupGrupo B:visit2 -0.01744    0.08158 93.47289  -0.214   0.8312
-allocation_groupGrupo B:visit3  0.17857    0.08845 94.22579   2.019   0.0463
-                                  
-(Intercept)                    ***
-allocation_groupGrupo B           
-visit2                            
-visit3                            
-allocation_groupGrupo B:visit2    
-allocation_groupGrupo B:visit3 *  
+                               Estimate Std. Error       df t value Pr(&gt;|t|)    
+(Intercept)                     4.74183    0.07187 86.86729  65.980   &lt;2e-16 ***
+allocation_groupGrupo B        -0.02502    0.09885 86.86729  -0.253   0.8008    
+visit2                          0.04807    0.05702 92.31050   0.843   0.4014    
+visit3                         -0.09539    0.06269 93.35327  -1.522   0.1314    
+allocation_groupGrupo B:visit2 -0.01744    0.08158 93.47289  -0.214   0.8312    
+allocation_groupGrupo B:visit3  0.17857    0.08845 94.22579   2.019   0.0463 *  
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -2683,43 +2483,33 @@ allctn_GB:3  0.214 -0.295 -0.314 -0.709  0.431</code></pre>
 <div class="sourceCode cell-code" id="cb183"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb183-1"><a href="#cb183-1" aria-hidden="true" tabindex="-1"></a>labs_triglycerides_model_check<span class="sc">$</span>comparison_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 16 × 6
-   Model       term                       estimate std.error statistic   p.value
-   &lt;chr&gt;       &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
- 1 Original    (Intercept)                 4.77       0.0719    66.3    5.68e-85
- 2 Sensitivity (Intercept)                 4.74       0.0719    66.0    5.34e-76
- 3 Original    allocation_groupGrupo B    -0.0212     0.101     -0.210  8.34e- 1
- 4 Sensitivity allocation_groupGrupo B    -0.0250     0.0989    -0.253  8.01e- 1
- 5 Original    allocation_groupGrupo B:v… -0.0564     0.0916    -0.616  5.39e- 1
- 6 Sensitivity allocation_groupGrupo B:v… -0.0174     0.0816    -0.214  8.31e- 1
- 7 Original    allocation_groupGrupo B:v…  0.0498     0.0984     0.507  6.14e- 1
- 8 Sensitivity allocation_groupGrupo B:v…  0.179      0.0884     2.02   4.63e- 2
- 9 Original    sd__(Intercept)             0.359     NA         NA     NA       
-10 Sensitivity sd__(Intercept)             0.354     NA         NA     NA       
-11 Original    sd__Observation             0.249     NA         NA     NA       
-12 Sensitivity sd__Observation             0.212     NA         NA     NA       
-13 Original    visit2                      0.0565     0.0625     0.905  3.68e- 1
-14 Sensitivity visit2                      0.0481     0.0570     0.843  4.01e- 1
-15 Original    visit3                      0.00822    0.0677     0.122  9.04e- 1
-16 Sensitivity visit3                     -0.0954     0.0627    -1.52   1.31e- 1</code></pre>
+   Model       term                           estimate std.error statistic   p.value
+   &lt;chr&gt;       &lt;chr&gt;                             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Original    (Intercept)                     4.77       0.0719    66.3    5.68e-85
+ 2 Sensitivity (Intercept)                     4.74       0.0719    66.0    5.34e-76
+ 3 Original    allocation_groupGrupo B        -0.0212     0.101     -0.210  8.34e- 1
+ 4 Sensitivity allocation_groupGrupo B        -0.0250     0.0989    -0.253  8.01e- 1
+ 5 Original    allocation_groupGrupo B:visit2 -0.0564     0.0916    -0.616  5.39e- 1
+ 6 Sensitivity allocation_groupGrupo B:visit2 -0.0174     0.0816    -0.214  8.31e- 1
+ 7 Original    allocation_groupGrupo B:visit3  0.0498     0.0984     0.507  6.14e- 1
+ 8 Sensitivity allocation_groupGrupo B:visit3  0.179      0.0884     2.02   4.63e- 2
+ 9 Original    sd__(Intercept)                 0.359     NA         NA     NA       
+10 Sensitivity sd__(Intercept)                 0.354     NA         NA     NA       
+11 Original    sd__Observation                 0.249     NA         NA     NA       
+12 Sensitivity sd__Observation                 0.212     NA         NA     NA       
+13 Original    visit2                          0.0565     0.0625     0.905  3.68e- 1
+14 Sensitivity visit2                          0.0481     0.0570     0.843  4.01e- 1
+15 Original    visit3                          0.00822    0.0677     0.122  9.04e- 1
+16 Sensitivity visit3                         -0.0954     0.0627    -1.52   1.31e- 1</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb185"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb185-1"><a href="#cb185-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">compare_performance</span>(labs_triglycerides_model, labs_triglycerides_model_sens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Comparison of Model Performance Indices
 
-Name                          |           Model |  AIC (weights)
-----------------------------------------------------------------
-labs_triglycerides_model      | lmerModLmerTest | 1873.1 (&lt;.001)
-labs_triglycerides_model_sens | lmerModLmerTest | 1671.7 (&gt;.999)
-
-Name                          | AICc (weights) |  BIC (weights) | R2 (cond.)
-----------------------------------------------------------------------------
-labs_triglycerides_model      | 1873.9 (&lt;.001) | 1898.6 (&lt;.001) |      0.676
-labs_triglycerides_model_sens | 1672.6 (&gt;.999) | 1696.5 (&gt;.999) |      0.739
-
-Name                          | R2 (marg.) |   ICC |  RMSE | Sigma
-------------------------------------------------------------------
-labs_triglycerides_model      |      0.004 | 0.675 | 0.199 | 0.249
-labs_triglycerides_model_sens |      0.012 | 0.736 | 0.166 | 0.212</code></pre>
+Name                          |           Model |  AIC (weights) | AICc (weights) |  BIC (weights) | R2 (cond.) | R2 (marg.) |   ICC |  RMSE | Sigma
+----------------------------------------------------------------------------------------------------------------------------------------------------
+labs_triglycerides_model      | lmerModLmerTest | 1873.1 (&lt;.001) | 1873.9 (&lt;.001) | 1898.6 (&lt;.001) |      0.676 |      0.004 | 0.675 | 0.199 | 0.249
+labs_triglycerides_model_sens | lmerModLmerTest | 1671.7 (&gt;.999) | 1672.6 (&gt;.999) | 1696.5 (&gt;.999) |      0.739 |      0.012 | 0.736 | 0.166 | 0.212</code></pre>
 </div>
 </div>
 <div class="cell">
