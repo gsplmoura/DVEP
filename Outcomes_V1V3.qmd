@@ -42,15 +42,15 @@ source("helper_functions.R")
 ## Load necessary libraries
 library(tidyverse)
 library(readxl)
-library(lubridate)
-library(stringr)
-library(purrr)
+#library(lubridate)
+#library(stringr)
+#library(purrr)
 library(here)
 library(lme4)
 library(lmerTest)
-library(skimr)
+#library(skimr)
 library(performance)
-library(gt)
+#library(gt)
 
 # Read Files ----
 ## Codebooks
@@ -144,7 +144,7 @@ data_model_V1V3$visit
 
 phase_angle_model <- lmer(log1p(phase_angle) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
 
-summary(phase_angle_model)
+# summary(phase_angle_model)
 
 performance::check_model(phase_angle_model)
 ```
@@ -225,7 +225,7 @@ data_model_V1V3 %>%
 
 reactance_model <- lmer(log1p(reactance) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
 
-summary(reactance_model)
+# summary(reactance_model)
 
 performance::check_model(reactance_model)
 ```
@@ -306,7 +306,7 @@ data_model_V1V3 %>%
 
 resistance_model <- lmer(log1p(resistance) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
 
-summary(resistance_model)
+# summary(resistance_model)
 
 performance::check_model(resistance_model)
 ```
@@ -387,7 +387,7 @@ data_model_V1V3 %>%
 
 handgrip_model <- lmer(log1p(handgrip) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
 
-summary(handgrip_model)
+# summary(handgrip_model)
 
 performance::check_model(handgrip_model)
 ```
@@ -472,7 +472,7 @@ data_model_V1V3 %>%
 
 whoqol_score_overall_model <- lmer(log1p(whoqol_score_overall) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
 
-summary(whoqol_score_overall_model)
+# summary(whoqol_score_overall_model)
 
 performance::check_model(whoqol_score_overall_model)
 ```
@@ -553,7 +553,7 @@ data_model_V1V3 %>%
 
 dass_score_depression_model <- lmer(log1p(dass_score_depression) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
 
-summary(dass_score_depression_model)
+# summary(dass_score_depression_model)
 
 performance::check_model(dass_score_depression_model)
 ```
@@ -634,7 +634,7 @@ data_model_V1V3 %>%
 
 dass_score_anxiety_model <- lmer(log1p(dass_score_anxiety) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
 
-summary(dass_score_anxiety_model)
+# summary(dass_score_anxiety_model)
 
 performance::check_model(dass_score_anxiety_model)
 ```
@@ -715,7 +715,7 @@ data_model_V1V3 %>%
 
 dass_score_stress_model <- lmer(log1p(dass_score_stress) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
 
-summary(dass_score_stress_model)
+# summary(dass_score_stress_model)
 
 performance::check_model(dass_score_stress_model)
 ```
@@ -796,7 +796,7 @@ data_model_V1V3 %>%
 
 ecap_score_model <- lmer(log1p(ecap_score) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
 
-summary(ecap_score_model)
+# summary(ecap_score_model)
 
 performance::check_model(ecap_score_model)
 ```
@@ -877,7 +877,7 @@ data_model_V1V3 %>%
 
 alcohol_dose_model <- lmer(log1p(alcohol_dose) ~ allocation_group + visit + (1 | record_id), data = data_model_V1V3)
 
-summary(alcohol_dose_model)
+# summary(alcohol_dose_model)
 
 performance::check_model(alcohol_dose_model)
 ```

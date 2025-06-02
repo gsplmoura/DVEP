@@ -1,0 +1,86 @@
+\babel@toc {portuguese}{}\relax 
+\contentsline {section}{\nonumberline Bibliotecas e Dados}{1}{section*.3}%
+\contentsline {section}{\nonumberline Estratégia Analítica Geral}{2}{section*.5}%
+\contentsline {section}{\nonumberline Variáveis coletadas nas três visitas clínicas}{2}{section*.7}%
+\contentsline {subsubsection}{\nonumberline Aspartato Aminotransferase}{3}{subsubsection*.9}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{5}{paragraph*.11}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{10}{paragraph*.13}%
+\contentsline {paragraph}{\nonumberline Resultado}{17}{paragraph*.15}%
+\contentsline {subsubsection}{\nonumberline Alanina Aminotransferase}{18}{subsubsection*.17}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{20}{paragraph*.19}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{25}{paragraph*.21}%
+\contentsline {subsubsection}{\nonumberline Gama Glutamil-transferase}{32}{subsubsection*.23}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{34}{paragraph*.25}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{39}{paragraph*.27}%
+\contentsline {subsubsection}{\nonumberline Fosfatase Alcalina}{46}{subsubsection*.29}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{48}{paragraph*.31}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{53}{paragraph*.33}%
+\contentsline {subsubsection}{\nonumberline Colesterol Total}{61}{subsubsection*.35}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{63}{paragraph*.37}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{68}{paragraph*.39}%
+\contentsline {subsubsection}{\nonumberline LDL Colesterol}{75}{subsubsection*.41}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{77}{paragraph*.43}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{82}{paragraph*.45}%
+\contentsline {subsubsection}{\nonumberline HDL Colesterol}{89}{subsubsection*.47}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{91}{paragraph*.49}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{96}{paragraph*.51}%
+\contentsline {subsubsection}{\nonumberline Triglicerídeos}{103}{subsubsection*.53}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{105}{paragraph*.55}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{110}{paragraph*.57}%
+\contentsline {subsubsection}{\nonumberline Glicemia de jejum}{117}{subsubsection*.59}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{119}{paragraph*.61}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{124}{paragraph*.63}%
+\contentsline {subsubsection}{\nonumberline Hemoglobina Glicosilada}{131}{subsubsection*.65}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{133}{paragraph*.67}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{138}{paragraph*.69}%
+\contentsline {subsubsection}{\nonumberline Insulina}{146}{subsubsection*.71}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{148}{paragraph*.73}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{153}{paragraph*.75}%
+\contentsline {subsubsection}{\nonumberline HOMA-IR}{160}{subsubsection*.77}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{162}{paragraph*.79}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{167}{paragraph*.81}%
+\contentsline {subsubsection}{\nonumberline Índice QUICK}{174}{subsubsection*.83}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{176}{paragraph*.85}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{181}{paragraph*.87}%
+\contentsline {subsubsection}{\nonumberline Circunferência abdominal}{188}{subsubsection*.89}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{190}{paragraph*.91}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{195}{paragraph*.93}%
+\contentsline {subsubsection}{\nonumberline Índice de Massa Corporal}{202}{subsubsection*.95}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{204}{paragraph*.97}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{209}{paragraph*.99}%
+\contentsline {subsubsection}{\nonumberline Pressão Arterial Média}{216}{subsubsection*.101}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{218}{paragraph*.103}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{223}{paragraph*.105}%
+\contentsline {subsubsection}{\nonumberline Escore EVS}{230}{subsubsection*.107}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{232}{paragraph*.109}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{237}{paragraph*.111}%
+\contentsline {section}{\nonumberline Variáveis coletadas na primeira e terceira visitas}{244}{section*.113}%
+\contentsline {subsubsection}{\nonumberline Ângulo de Fase}{244}{subsubsection*.115}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{246}{paragraph*.117}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{251}{paragraph*.119}%
+\contentsline {subsubsection}{\nonumberline Reatância}{258}{subsubsection*.121}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{260}{paragraph*.123}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{264}{paragraph*.125}%
+\contentsline {subsubsection}{\nonumberline Resistência}{271}{subsubsection*.127}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{273}{paragraph*.129}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{277}{paragraph*.131}%
+\contentsline {subsubsection}{\nonumberline Força de Preensão Palmar}{284}{subsubsection*.133}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{286}{paragraph*.135}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{290}{paragraph*.137}%
+\contentsline {subsubsection}{\nonumberline WHOQOL-Bref}{297}{subsubsection*.139}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{299}{paragraph*.141}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{303}{paragraph*.143}%
+\contentsline {subsubsection}{\nonumberline Escore DASS Depressão}{310}{subsubsection*.145}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{312}{paragraph*.147}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{316}{paragraph*.149}%
+\contentsline {subsubsection}{\nonumberline Escore DASS Ansiedade}{323}{subsubsection*.151}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{325}{paragraph*.153}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{329}{paragraph*.155}%
+\contentsline {subsubsection}{\nonumberline Escore DASS Estresse}{336}{subsubsection*.157}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{338}{paragraph*.159}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{342}{paragraph*.161}%
+\contentsline {subsubsection}{\nonumberline ECAP}{349}{subsubsection*.163}%
+\contentsline {paragraph}{\nonumberline Resumo dos modelos}{351}{paragraph*.165}%
+\contentsline {paragraph}{\nonumberline Médias Marginais Estimadas}{355}{paragraph*.167}%
+\contentsline {section}{\nonumberline Informações da Sessão}{361}{section*.169}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
