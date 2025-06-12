@@ -3,71 +3,71 @@ title: "template"
 format: html
 ---
 
-Variável: `bp_mean`
+Variável: `diastolic`
 
 ```{r}
-#| label: bp_mean-histogram
+#| label: diastolic-histogram
 
 # Plot 1: Raw data
-bp_mean_hist_1 <- data_bp_long %>% 
+diastolic_hist_1 <- data_bp_long %>% 
     #filter(
-    #    bp_mean < 300
+    #    diastolic < 300
     #) %>% 
-    ggplot(aes(x = bp_mean)) + 
+    ggplot(aes(x = diastolic)) + 
     geom_histogram(bins = 30, fill = "skyblue", color = "black")
 
 # Plot 2: Log-transformed data
-bp_mean_hist_2 <- data_bp_long %>% 
+diastolic_hist_2 <- data_bp_long %>% 
     #filter(
-    #    bp_mean < 300
+    #    diastolic < 300
     #) %>%
-    ggplot(aes(x = log1p(bp_mean))) + 
+    ggplot(aes(x = log1p(diastolic))) + 
     geom_histogram(bins = 50, fill = "lightgreen", color = "black")
 
 # Combine side by side
-bp_mean_hist_1 + bp_mean_hist_2 # library(patchwork)
+diastolic_hist_1 + diastolic_hist_2 # library(patchwork)
 ```
 
 ```{r}
-#| label: bp_mean-models
+#| label: diastolic-models
  
 # LMM
-bp_mean_model <- lmer(bp_mean ~ allocation_group * visit + 
+diastolic_model <- lmer(diastolic ~ allocation_group * visit + 
 (1 | record_id), data = data_bp_long)
-check_collinearity(bp_mean_model)
+check_collinearity(diastolic_model)
 
 # Sensitivity analysis
-bp_mean_model_check <- sensitivity_check_lmer(
-    model = bp_mean_model,
+diastolic_model_check <- sensitivity_check_lmer(
+    model = diastolic_model,
     id_var = "record_id",
     top_n = 5)
 
 # LMM Sensitivity
-bp_mean_model_sens <- update(object = bp_mean_model,
+diastolic_model_sens <- update(object = diastolic_model,
                               subset = !(record_id %in% 
-		bp_mean_model_check$influential_ids))
+		diastolic_model_check$influential_ids))
 # Influential IDS
-bp_mean_model_check$influential_ids
+diastolic_model_check$influential_ids
 ```
 
 #### Resumo dos modelos
 
 ```{r}
-#| label: bp_mean-models-summary
+#| label: diastolic-models-summary
 
-summary(bp_mean_model)
-summary(bp_mean_model_sens)
-bp_mean_model_check$comparison_table
+summary(diastolic_model)
+summary(diastolic_model_sens)
+
 performance::compare_performance(
-    bp_mean_model, 
-    bp_mean_model_sens) 
+    diastolic_model, 
+    diastolic_model_sens) 
 ```
 
 ```{r, fig.width=10, fig.height=10}
-#| label: bp_mean-performance
+#| label: diastolic-performance
 
-performance::check_model(bp_mean_model)
-performance::check_model(bp_mean_model_sens)
+performance::check_model(diastolic_model)
+performance::check_model(diastolic_model_sens)
 ```
 
 #### Médias Marginais Estimadas
@@ -75,71 +75,71 @@ performance::check_model(bp_mean_model_sens)
 ##### Todos os dados
 
 ```{r}
-#| label: bp_mean-EMM-raw
+#| label: diastolic-EMM-raw
 
 # Get EMMs for each group at each visit
-bp_mean_raw_emm <- emmeans::emmeans(
-    bp_mean_model, 
+diastolic_raw_emm <- emmeans::emmeans(
+    diastolic_model, 
     ~ allocation_group * visit
 )
 
-bp_mean_raw_emm <- regrid(bp_mean_raw_emm)
+diastolic_raw_emm <- regrid(diastolic_raw_emm)
 
 # Table of marginal means
-# bp_mean_raw_emm
+# diastolic_raw_emm
 
 # Pairwise comparisons: Between groups at each visit
-emmeans::contrast(bp_mean_raw_emm,
+emmeans::contrast(diastolic_raw_emm,
 method = "pairwise", by = "visit",
 adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 
 # Pairwise comparisons: Changes over time within each group
-emmeans::contrast(bp_mean_raw_emm,
+emmeans::contrast(diastolic_raw_emm,
 method = "pairwise", by = "allocation_group",
 adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 
 # Plot of marginal means
-plot(bp_mean_raw_emm, comparisons = TRUE)
+plot(diastolic_raw_emm)
 ```
 
 ##### Análise de sensibilidade
 
 ```{r}
-#| label: bp_mean-EMM-sens
+#| label: diastolic-EMM-sens
 
 # Get EMMs for each group at each visit (Sensitivity Analysis)
-bp_mean_emm <- emmeans::emmeans(
-    bp_mean_model_sens, 
+diastolic_emm <- emmeans::emmeans(
+    diastolic_model_sens, 
     ~ allocation_group * visit
 )
 
-bp_mean_emm <- regrid(bp_mean_emm)
+diastolic_emm <- regrid(diastolic_emm)
 
 # Table of marginal means
-# bp_mean_emm
+# diastolic_emm
 
 # Pairwise comparisons: Between groups at each visit
-emmeans::contrast(bp_mean_emm,
+emmeans::contrast(diastolic_emm,
 method = "pairwise", by = "visit",
 adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 
 # Pairwise comparisons: Changes over time within each group
-emmeans::contrast(bp_mean_emm,
+emmeans::contrast(diastolic_emm,
 method = "pairwise", by = "allocation_group",
 adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 
 # Plot of marginal means
-plot(bp_mean_emm, comparisons = TRUE)
+plot(diastolic_emm)
 ```
 
 ```{r}
-#| label: bp_mean-plot-curve
+#| label: diastolic-plot-curve
 
 ggplot(
     data = data_bp_long, 
     aes(
         x = as.factor(visit),
-        y = bp_mean,
+        y = diastolic,
         group = record_id,
     )
 ) +
@@ -157,12 +157,12 @@ ggplot(
 data_bp_long %>% 
     filter(
         !(record_id %in% 
-		bp_mean_model_check$influential_ids)
+		diastolic_model_check$influential_ids)
     ) %>% 
     ggplot(
         aes(
             x = as.factor(visit),
-            y = bp_mean,
+            y = diastolic,
             group = record_id,
         )
     ) +

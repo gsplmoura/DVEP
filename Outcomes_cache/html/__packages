@@ -18,7 +18,7 @@ performance
 gt
 patchwork
 emmeans
-influence.ME
-broom.mixed
 knitr
 kableExtra
+influence.ME
+broom.mixed
