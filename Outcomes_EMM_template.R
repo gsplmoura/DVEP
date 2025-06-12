@@ -55,7 +55,7 @@ performance::check_model(ecap_score_model_sens)
 #### Raw EMM
 
 ```{r ecap_score_raw_emm}
-# Get EMMs for each group at each visit
+# Get EMMs for each group at each visit (Raw)
 ecap_score_raw_emm <- emmeans::emmeans(
     ecap_score_model, 
     ~ allocation_group * visit

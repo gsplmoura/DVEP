@@ -20,3 +20,5 @@ patchwork
 emmeans
 influence.ME
 broom.mixed
+knitr
+kableExtra
