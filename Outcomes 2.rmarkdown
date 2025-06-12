@@ -1,0 +1,4783 @@
+---
+title: "Ensaio clínico randomizado: efeito da droga vegetal de *Eclipta prostrata* (L.) L. (Asteraceae) no ângulo de fase em adultos com obesidade grau I"
+subtitle: "Análise de dados"
+author: "Gustavo Santos Paiva Laender Moura"
+institute: "Departamento de Clínica Médica, Faculdade de Medicina de Ribeirão Preto da Universidade de São Paulo"
+date: today
+lang: pt
+cache: true
+freeze: true
+crossref:
+  fig-title: "Figura"
+  tbl-title: "Tabela"
+  title-delim: ":"
+  ref-hyperlink: true
+
+language:
+  title-block-author: "Autor"
+  title-block-institute: "Instituição"
+  title-block-date: "Data"
+  toc-title: "Sumário"
+  ref-title: "Referências"
+  appendix-title: "Apêndice"
+
+format:
+  html:
+    page-layout: full
+    toc: true
+    toc-depth: 5
+    toc-float:
+      collapsed: false
+      smooth-scroll: true
+    #css: styles.css
+    code-fold: false
+  pdf:
+    toc: true
+    toc-depth: 4
+    pdf-engine: xelatex
+    documentclass: article
+    mainfont: "Times New Roman"
+    fontsize: 12pt
+    linestretch: 1.5
+    geometry: top=3cm, bottom=2cm, left=3cm, right=2cm
+    colorlinks: true
+    code-overflow: wrap
+    code-block-font-size: 60%
+    number-sections: true
+    fig-align: center
+    fig-pos: 'H'
+    include-in-header: abnt-header.tex
+---
+
+```{r}
+#| label: setup
+#| include: false
+options(width = 180)
+
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  tibble.print_max = Inf,
+  tibble.width = Inf)
+```
+
+
+
+
+# Bibliotecas e Dados
+
+
+
+
+```{r, echo=FALSE, message=FALSE}
+
+rm(list = ls())
+graphics.off()
+cat("\014")  # Clear any pending RStudio sessions or temporary files
+
+# Load functions from external script
+source("helper_functions.R")
+
+## Load necessary libraries
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(stringr)
+library(purrr)
+library(here)
+library(lme4)
+library(lmerTest)
+library(skimr)
+library(performance)
+library(gt)
+library(patchwork)
+library(emmeans)
+library(knitr)
+library(kableExtra)
+
+# Read Files ----
+## Codebooks
+codebook_dvep <- read_excel(
+    "Codebooks/codebook_dvep.xlsx",
+    col_names = TRUE,
+    col_types = NULL,
+    na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+    trim_ws = TRUE,
+    skip = 0, # Number of lines to skip before reading data
+    n_max = Inf, # Maximum number of lines to read.
+    guess_max = 1000
+) %>%
+    arrange(index)
+
+#codebook_structure  <- read_csv(
+#    "Codebooks/codebook_structure.csv",
+#    col_names = TRUE)
+
+#codebook_ncit  <- read_csv(
+#    "Codebooks/codebook_ncit.csv",
+#    col_names = TRUE)
+
+#codebook_bia <- read_excel(
+#    "Codebooks/codebook_bia.xlsx",
+#    col_names = TRUE,
+#    col_types = NULL,
+#    na = c("", "NA", "NI", "UNK", "NASK", "ASKU", "INV"),
+#    trim_ws = TRUE,
+#    skip = 0, # Number of lines to skip before reading data
+#    n_max = Inf, # Maximum number of lines to read.
+#    guess_max = 1000
+#) %>%
+#    arrange(index)
+
+## Data
+data <- readRDS("local_files/Data_processed/data.rds")
+# data_bia <- readRDS("Data_processed/data_bia.rds")
+# data_bia_D1 <- readRDS("Data_processed/data_bia_D1.rds")
+# data_bia_D1_mean <- readRDS("Data_processed/data_bia_D1_mean.rds")
+# data_bia_D1_raw <- readRDS("Data_processed/data_bia_D1_raw.rds")
+# data_bia_D3 <- readRDS("Data_processed/data_bia_D3.rds")
+# data_bia_D3_mean <- readRDS("Data_processed/data_bia_D3_mean.rds")
+# data_bia_D3_raw <- readRDS("Data_processed/data_bia_D3_raw.rds")
+# data_bia_mean <- readRDS("Data_processed/data_bia_mean.rds")
+# data_d1_exclusive <- readRDS("Data_processed/data_d1_exclusive.rds")
+# data_filtered <- readRDS("Data_processed/data_filtered.rds")
+# data_filtered_seca <- readRDS("Data_processed/data_filtered_seca.rds")
+#I21_conditions_R <- readRDS("Data_processed/I21_conditions_R.rds")
+#I22_drugs_R <- readRDS("Data_processed/I22_drugs_R.rds")
+#I27_labs_R <- readRDS("Data_processed/I27_labs_R.rds")
+# I29_compliance_new <- readRDS("Data_processed/I29_compliance_new.rds")
+#I30_events_R <- readRDS("Data_processed/I30_events_R.rds")
+
+## SUPERTIBBLE
+# data_instruments <- readRDS("Data_instruments/data_instruments.rds")
+
+data_model <- readRDS("local_files/Data_processed/data_model.rds") %>% 
+    mutate(
+        visit = as.factor(visit),
+        record_id = as.factor(record_id)
+    )
+attributes(data_model$kcal)$label <- "Kcal total"
+attributes(data_model$labs_quick_index)$label <- "Quick Index"
+attributes(data_model$crp_log)$label <- "Log PCR"
+
+data_model_V1V3 <- data_model %>% 
+    filter(!visit == "2")
+
+#class(data_model$record_id)
+#class(data_model$allocation_group)
+#class(data_model$visit)
+
+```
+
+
+
+
+# Estratégia Analítica Geral
+
+Todas as análises foram conduzidas utilizando modelos lineares mistos (LMM), com intercepto aleatório por participante para considerar a estrutura longitudinal dos dados. A variável dependente em cada modelo foi analisada de forma individual, tendo como variáveis explicativas fixas o grupo de alocação, o tempo (visita) e a interação entre ambos. As covariáveis incluídas foram as mesmas em todos os modelos.
+
+Variáveis com distribuição assimétrica à direita foram transformadas por logaritmo natural com deslocamento (+1), conforme apropriado, a fim de aproximar a normalidade dos resíduos. As demais variáveis foram mantidas em sua forma original. Para cada desfecho, os modelos foram ajustados aos dados completos e, adicionalmente, foi realizada uma análise de sensibilidade com exclusão de observações influentes, identificadas com base em medidas diagnósticas específicas.
+
+As médias marginais estimadas (Estimated Marginal Means – EMMs) foram calculadas a partir dos modelos ajustados, com o objetivo de estimar os valores médios ajustados para cada grupo em cada ponto temporal. As comparações pareadas entre grupos em cada visita e entre visitas dentro de cada grupo foram realizadas com correção para múltiplas comparações pelo método de Bonferroni.
+
+Esse procedimento foi replicado de forma consistente para todas as variáveis contínuas incluídas na análise.
+
+# Variáveis coletadas nas três visitas clínicas
+
+Variáveis:
+
+-   labs_ast
+-   labs_alt
+-   labs_ggt
+-   labs_alkp
+-   labs_cholesterol
+-   labs_ldl
+-   labs_hdl
+-   labs_triglycerides
+-   labs_glucose
+-   labs_hba1c
+-   labs_insulin
+-   labs_homa_ir
+-   labs_quick_index
+-   abdomen
+-   bmi
+-   mean_bp_mean
+-   evs_score
+
+### Aspartato Aminotransferase
+
+Variável: `labs_ast`
+
+
+
+
+```{r labs_ast_1}
+# Plot 1: Raw data
+labs_ast_hist_1 <- data_model %>% 
+    filter(
+        labs_ast < 300
+    ) %>% 
+    ggplot(aes(x = labs_ast)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_ast_hist_2 <- data_model %>% 
+    filter(
+        labs_ast < 300
+    ) %>%
+    ggplot(aes(x = log1p(labs_ast))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_ast_hist_1 + labs_ast_hist_2 # library(patchwork)
+```
+
+```{r labs_ast_2}
+# LMM
+labs_ast_model <- lmer(log1p(labs_ast) ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_ast_model)
+
+# Sensitivity analysis
+labs_ast_model_check <- sensitivity_check_lmer(
+    model = labs_ast_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_ast_model_sens <- update(object = labs_ast_model,
+                              subset = !(record_id %in% 
+		labs_ast_model_check$influential_ids))
+# Influential IDS
+labs_ast_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_ast_3}
+# Model comparison
+summary(labs_ast_model)
+summary(labs_ast_model_sens)
+labs_ast_model_check$comparison_table
+labs_ast_3performance <- performance::compare_performance(
+    labs_ast_model, 
+    labs_ast_model_sens)
+labs_ast_3performance
+```
+
+```{r labs_ast_4, fig.width=10, fig.height=10}
+performance::check_model(labs_ast_model) 
+performance::check_model(labs_ast_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_ast_raw_emm}
+# Get EMMs for each group at each visit (All data)
+labs_ast_raw_emm <- emmeans::emmeans(
+    labs_ast_model, 
+    ~ allocation_group * visit
+)
+
+labs_ast_raw_emm <- regrid(labs_ast_raw_emm)
+
+# Table of marginal means
+# labs_ast_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_ast_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_ast_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_ast_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_ast_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_ast_emm <- emmeans::emmeans(
+    labs_ast_model_sens, 
+    ~ allocation_group * visit
+)
+
+labs_ast_emm <- regrid(labs_ast_emm)
+
+# Table of marginal means
+# labs_ast_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_ast_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_ast_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_ast_emm, comparisons = TRUE)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os níveis de AST, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade não alterou substancialmente os resultados. As estimativas permaneceram estáveis e as diferenças entre os grupos e ao longo do tempo continuaram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-ast.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,51       | \[-2,33 ; 3,35\] | 0,724   |
+| Entre grupos        | Visita 2            | 0,88       | \[-2,24 ; 4,00\] | 0,577   |
+| Entre grupos        | Visita 3            | -0,12      | \[-3,54 ; 3,31\] | 0,946   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,21       | \[-2,53 ; 2,95\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,23       | \[-2,73 ; 3,19\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 0,02       | \[-2,98 ; 3,02\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,58       | \[-2,25 ; 3,42\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -0,40      | \[-3,49 ; 2,70\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -0,98      | \[-4,20 ; 2,24\] | 1,000   |
+
+: Diferenças estimadas dos níveis de Aspartato Aminotransferase (AST) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-ast}
+
+
+
+
+```{r labs_ast_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_ast,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_ast_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_ast,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+
+
+
+### Alanina Aminotransferase
+
+
+
+
+```{r labs_alt_1}
+# Plot 1: Raw data
+labs_alt_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_alt < 300
+    #) %>% 
+    ggplot(aes(x = labs_alt)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_alt_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_alt < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_alt))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_alt_hist_1 + labs_alt_hist_2 # library(patchwork)
+```
+
+```{r labs_alt_2}
+# LMM
+labs_alt_model <- lmer(log1p(labs_alt) ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_alt_model)
+
+# Sensitivity analysis
+labs_alt_model_check <- sensitivity_check_lmer(
+    model = labs_alt_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_alt_model_sens <- update(object = labs_alt_model,
+                              subset = !(record_id %in% 
+		labs_alt_model_check$influential_ids))
+# Influential IDS
+labs_alt_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_alt_3}
+# Model comparison
+summary(labs_alt_model)
+summary(labs_alt_model_sens)
+labs_alt_model_check$comparison_table
+performance::compare_performance(
+    labs_alt_model, 
+    labs_alt_model_sens)
+```
+
+```{r labs_alt_4, fig.width=10, fig.height=10}
+performance::check_model(labs_alt_model)
+performance::check_model(labs_alt_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_alt_raw_emm}
+# Get EMMs for each group at each visit
+labs_alt_raw_emm <- emmeans::emmeans(
+    labs_alt_model, 
+    ~ allocation_group * visit
+)
+
+labs_alt_raw_emm <- regrid(labs_alt_raw_emm)
+
+# Table of marginal means
+# labs_alt_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_alt_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_alt_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_alt_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_alt_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_alt_emm <- emmeans::emmeans(
+    labs_alt_model_sens, 
+    ~ allocation_group * visit
+)
+
+labs_alt_emm <- regrid(labs_alt_emm)
+
+# Table of marginal means
+# labs_alt_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_alt_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_alt_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_alt_emm, comparisons = TRUE)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os níveis de ALT, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, realizada com a exclusão das observações influentes, confirmou esses achados. As estimativas permaneceram estáveis e todas as comparações entre os grupos e ao longo do tempo mantiveram-se não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-alt.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 2,73       | \[-2,25 ; 7,72\] | 0,279   |
+| Entre grupos        | Visita 2            | 1,03       | \[-4,10 ; 6,16\] | 0,691   |
+| Entre grupos        | Visita 3            | 0,61       | \[-5,09 ; 6,32\] | 0,832   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 2,16       | \[-1,71 ; 6,03\] | 0,533   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,93       | \[-3,35 ; 5,21\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -1,23      | \[-5,41 ; 2,96\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,46       | \[-3,41 ; 4,32\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -1,19      | \[-5,49 ; 3,11\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -1,65      | \[-6,07 ; 2,78\] | 1,000   |
+
+: Diferenças estimadas dos níveis de Alanina Aminotransferase (ALT) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-alt}
+
+
+
+
+```{r labs_alt_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_alt,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) + 
+    coord_cartesian(ylim = c(10, 80))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_alt_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_alt,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) + 
+    coord_cartesian(ylim = c(10, 80))
+```
+
+
+
+
+### Gama Glutamil-transferase
+
+Variável: `labs_ggt`
+
+
+
+
+```{r labs_ggt_1}
+# Plot 1: Raw data
+labs_ggt_hist_1 <- data_model %>% 
+    filter(
+        labs_ggt < 300
+    ) %>% 
+    ggplot(aes(x = labs_ggt)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_ggt_hist_2 <- data_model %>% 
+    filter(
+        labs_ggt < 300
+    ) %>%
+    ggplot(aes(x = log1p(labs_ggt))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_ggt_hist_1 + labs_ggt_hist_2 # library(patchwork)
+```
+
+```{r labs_ggt_2}
+# LMM
+labs_ggt_model <- lmer(log1p(labs_ggt) ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_ggt_model)
+
+# Sensitivity analysis
+labs_ggt_model_check <- sensitivity_check_lmer(
+    model = labs_ggt_model,
+    id_var = "record_id",
+    top_n = 7)
+
+# LMM Sensitivity
+labs_ggt_model_sens <- update(object = labs_ggt_model,
+                              subset = !(record_id %in% 
+		labs_ggt_model_check$influential_ids))
+# Influential IDS
+labs_ggt_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_ggt_3}
+# Model comparison
+summary(labs_ggt_model)
+summary(labs_ggt_model_sens)
+labs_ggt_model_check$comparison_table
+performance::compare_performance(
+    labs_ggt_model, 
+    labs_ggt_model_sens)
+```
+
+```{r labs_ggt_4, fig.width=10, fig.height=10}
+performance::check_model(labs_ggt_model)
+performance::check_model(labs_ggt_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_ggt_raw_emm}
+# Get EMMs for each group at each visit
+labs_ggt_raw_emm <- emmeans::emmeans(
+    labs_ggt_model, 
+    ~ allocation_group * visit
+)
+
+labs_ggt_raw_emm <- regrid(labs_ggt_raw_emm)
+
+# Table of marginal means
+# labs_ggt_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_ggt_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_ggt_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_ggt_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_ggt_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_ggt_emm <- emmeans::emmeans(
+    labs_ggt_model_sens, 
+    ~ allocation_group * visit
+)
+
+labs_ggt_emm <- regrid(labs_ggt_emm)
+
+# Table of marginal means
+# labs_ggt_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_ggt_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_ggt_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_ggt_emm)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os níveis de Gama Glutamiltransferase (GGT), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Também não foram identificadas mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, com exclusão das observações influentes, não alterou substancialmente os resultados. As estimativas permaneceram similares, reforçando a ausência de diferenças significativas entre os grupos ou de variações temporais relevantes. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-ggt.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -1,57      | \[-10,4 ; 7,23\] | 0,724   |
+| Entre grupos        | Visita 2            | -2,95      | \[-12,1 ; 6,19\] | 0,523   |
+| Entre grupos        | Visita 3            | -2,43      | \[-12,1 ; 7,24\] | 0,619   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,76       | \[-3,48 ; 5,01\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | -0,35      | \[-5,06 ; 4,35\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -1,12      | \[-5,79 ; 3,56\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | -0,62      | \[-5,58 ; 4,34\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -1,22      | \[-6,69 ; 4,26\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -0,60      | \[-6,27 ; 5,08\] | 1,000   |
+
+: Diferenças estimadas dos níveis de Gama Glutamiltransferase (GGT) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-ggt}
+
+
+
+
+```{r labs_ggt_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_ggt,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_ggt_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_ggt,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### Fosfatase Alcalina
+
+Variável: `labs_alkp`
+
+
+
+
+```{r labs_alkp_1}
+# Plot 1: Raw data
+labs_alkp_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_alkp < 300
+    #) %>% 
+    ggplot(aes(x = labs_alkp)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_alkp_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_alkp < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_alkp))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_alkp_hist_1 + labs_alkp_hist_2 # library(patchwork)
+```
+
+```{r labs_alkp_2}
+# LMM
+labs_alkp_model <- lmer(log1p(labs_alkp) ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_alkp_model)
+
+# Sensitivity analysis
+labs_alkp_model_check <- sensitivity_check_lmer(
+    model = labs_alkp_model,
+    id_var = "record_id",
+    top_n = 4)
+
+# LMM Sensitivity
+labs_alkp_model_sens <- update(object = labs_alkp_model,
+                              subset = !(record_id %in% 
+		labs_alkp_model_check$influential_ids))
+# Influential IDS
+labs_alkp_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_alkp_3}
+# Model comparison
+summary(labs_alkp_model)
+summary(labs_alkp_model_sens)
+labs_alkp_model_check$comparison_table
+performance::compare_performance(
+    labs_alkp_model, 
+    labs_alkp_model_sens) 
+```
+
+```{r labs_alkp_4, fig.width=10, fig.height=10}
+performance::check_model(labs_alkp_model)
+performance::check_model(labs_alkp_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_alkp_raw_emm}
+# Get EMMs for each group at each visit 
+labs_alkp_raw_emm <- emmeans::emmeans(
+    labs_alkp_model, 
+    ~ allocation_group * visit
+)
+
+labs_alkp_raw_emm <- regrid(labs_alkp_raw_emm)
+
+# Table of marginal means
+# labs_alkp_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_alkp_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_alkp_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_alkp_raw_emm)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_alkp_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_alkp_emm <- emmeans::emmeans(
+    labs_alkp_model_sens, 
+    ~ allocation_group * visit
+)
+
+# Table of marginal means
+# labs_alkp_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_alkp_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_alkp_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_alkp_emm)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os níveis de Fosfatase Alcalina (ALP), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, as comparações intragrupo ao longo do tempo não indicaram variações significativas. A análise de sensibilidade, realizada com exclusão das observações influentes, manteve os resultados essencialmente inalterados, com estimativas semelhantes e ausência de significância estatística nas comparações entre grupos e entre visitas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-alkp.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -2,27      | \[-10,6 ; 6,09\] | 0,590   |
+| Entre grupos        | Visita 2            | -3,40      | \[-11,8 ; 4,98\] | 0,422   |
+| Entre grupos        | Visita 3            | -2,49      | \[-11,2 ; 6,22\] | 0,572   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 3,08       | \[-1,02 ; 7,18\] | 0,209   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 2,01       | \[-2,47 ; 6,48\] | 0,829   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -1,08      | \[-5,48 ; 3,33\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 1,95       | \[-2,65 ; 6,55\] | 0,909   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 1,79       | \[-3,21 ; 6,79\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -0,16      | \[-5,28 ; 4,96\] | 1,000   |
+
+: Diferenças estimadas dos níveis de Fosfatase Alcalina (ALP) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-alkp}
+
+
+
+
+```{r labs_alkp_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_alkp,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_alkp_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_alkp,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### Colesterol Total
+
+Variável: `labs_cholesterol`
+
+
+
+
+```{r labs_cholesterol_1}
+# Plot 1: Raw data
+labs_cholesterol_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_cholesterol < 300
+    #) %>% 
+    ggplot(aes(x = labs_cholesterol)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_cholesterol_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_cholesterol < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_cholesterol))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_cholesterol_hist_1 + labs_cholesterol_hist_2 # library(patchwork)
+```
+
+```{r labs_cholesterol_2}
+# LMM
+labs_cholesterol_model <- lmer(labs_cholesterol ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_cholesterol_model)
+
+# Sensitivity analysis
+labs_cholesterol_model_check <- sensitivity_check_lmer(
+    model = labs_cholesterol_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_cholesterol_model_sens <- update(object = labs_cholesterol_model,
+                              subset = !(record_id %in% 
+		labs_cholesterol_model_check$influential_ids))
+# Influential IDS
+labs_cholesterol_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_cholesterol_3}
+# Model comparison
+summary(labs_cholesterol_model)
+summary(labs_cholesterol_model_sens)
+labs_cholesterol_model_check$comparison_table
+performance::compare_performance(
+    labs_cholesterol_model, 
+    labs_cholesterol_model_sens) 
+```
+
+```{r labs_cholesterol_4, fig.width=10, fig.height=10}
+performance::check_model(labs_cholesterol_model)
+performance::check_model(labs_cholesterol_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_cholesterol_raw_emm}
+# Get EMMs for each group at each visit
+labs_cholesterol_raw_emm <- emmeans::emmeans(
+    labs_cholesterol_model, 
+    ~ allocation_group * visit
+)
+
+labs_cholesterol_raw_emm <- regrid(labs_cholesterol_raw_emm)
+
+# Table of marginal means
+# labs_cholesterol_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_cholesterol_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_cholesterol_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_cholesterol_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_cholesterol_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_cholesterol_emm <- emmeans::emmeans(
+    labs_cholesterol_model_sens, 
+    ~ allocation_group * visit
+)
+
+labs_cholesterol_emm <- regrid(labs_cholesterol_emm)
+
+# Table of marginal means
+# labs_cholesterol_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_cholesterol_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_cholesterol_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_cholesterol_emm, comparisons = TRUE)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os níveis de colesterol total, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. As comparações intragrupo ao longo do tempo também não indicaram alterações significativas em nenhum dos grupos. A análise de sensibilidade, realizada com a exclusão de observações influentes, confirmou esses achados. As estimativas se mantiveram estáveis e as diferenças permaneceram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-cholesterol.
+
+| Grupo de comparação | Comparação | Estimativa | IC 95% | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos | Visita 1 | 0,72 | \[-13,78 ; 15,21\] | 0,922 |
+| Entre grupos | Visita 2 | 0,83 | \[-14,65 ; 16,30\] | 0,915 |
+| Entre grupos | Visita 3 | 8,48 | \[-7,66 ; 24,61\] | 0,300 |
+| Grupo Placebo | Visita 1 - Visita 2 | 5,91 | \[-3,92 ; 15,73\] | 0,439 |
+| Grupo Placebo | Visita 1 - Visita 3 | 0,38 | \[-10,27 ; 11,03\] | 1,000 |
+| Grupo Placebo | Visita 2 - Visita 3 | -5,53 | \[-16,25 ; 5,19\] | 0,638 |
+| Grupo Eclipta | Visita 1 - Visita 2 | 6,02 | \[-4,54 ; 16,59\] | 0,504 |
+| Grupo Eclipta | Visita 1 - Visita 3 | 8,14 | \[-3,13 ; 19,41\] | 0,245 |
+| Grupo Eclipta | Visita 2 - Visita 3 | 2,12 | \[-9,58 ; 13,81\] | 1,000 |
+
+: Diferenças estimadas dos níveis de Colesterol Total entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-cholesterol}
+
+
+
+
+```{r labs_cholesterol_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_cholesterol,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_cholesterol_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_cholesterol,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### LDL Colesterol
+
+Variável: `labs_ldl`
+
+
+
+
+```{r labs_ldl_1}
+# Plot 1: Raw data
+labs_ldl_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_ldl < 300
+    #) %>% 
+    ggplot(aes(x = labs_ldl)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_ldl_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_ldl < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_ldl))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_ldl_hist_1 + labs_ldl_hist_2 # library(patchwork)
+```
+
+```{r labs_ldl_2}
+# LMM
+labs_ldl_model <- lmer(labs_ldl ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_ldl_model)
+
+# Sensitivity analysis
+labs_ldl_model_check <- sensitivity_check_lmer(
+    model = labs_ldl_model,
+    id_var = "record_id",
+    top_n = 7)
+
+# LMM Sensitivity
+labs_ldl_model_sens <- update(object = labs_ldl_model,
+                              subset = !(record_id %in% 
+		labs_ldl_model_check$influential_ids))
+# Influential IDS
+labs_ldl_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_ldl_3}
+# Model comparison
+summary(labs_ldl_model)
+summary(labs_ldl_model_sens)
+labs_ldl_model_check$comparison_table
+performance::compare_performance(
+    labs_ldl_model, 
+    labs_ldl_model_sens) 
+```
+
+```{r labs_ldl_4, fig.width=10, fig.height=10}
+performance::check_model(labs_ldl_model)
+performance::check_model(labs_ldl_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_ldl_raw_emm}
+# Get EMMs for each group at each visit
+labs_ldl_raw_emm <- emmeans::emmeans(
+    labs_ldl_model, 
+    ~ allocation_group * visit
+)
+
+labs_ldl_raw_emm <- regrid(labs_ldl_raw_emm)
+
+# Table of marginal means
+# labs_ldl_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_ldl_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_ldl_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_ldl_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_ldl_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_ldl_emm <- emmeans::emmeans(
+    labs_ldl_model_sens, 
+    ~ allocation_group * visit
+)
+
+labs_ldl_emm <- regrid(labs_ldl_emm)
+
+# Table of marginal means
+# labs_ldl_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_ldl_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_ldl_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_ldl_emm)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os níveis de LDL-colesterol, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, as comparações dentro de cada grupo ao longo do tempo não indicaram alterações significativas. A análise de sensibilidade, com exclusão das observações influentes, não modificou substancialmente os achados: as estimativas permaneceram estáveis e todas as comparações continuaram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-ldl.
+
+| Grupo de comparação | Comparação | Estimativa | IC 95% | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos | Visita 1 | 3,77 | \[-9,63 ; 17,17\] | 0,578 |
+| Entre grupos | Visita 2 | 1,85 | \[-12,56 ; 16,26\] | 0,799 |
+| Entre grupos | Visita 3 | 9,68 | \[-5,41 ; 24,78\] | 0,207 |
+| Grupo Placebo | Visita 1 - Visita 2 | 5,59 | \[-4,07 ; 15,26\] | 0,486 |
+| Grupo Placebo | Visita 1 - Visita 3 | 0,02 | \[-10,46 ; 10,50\] | 1,000 |
+| Grupo Placebo | Visita 2 - Visita 3 | -5,57 | \[-16,13 ; 4,98\] | 0,606 |
+| Grupo Eclipta | Visita 1 - Visita 2 | 3,67 | \[-6,71 ; 14,06\] | 1,000 |
+| Grupo Eclipta | Visita 1 - Visita 3 | 5,93 | \[-5,15 ; 17,00\] | 0,586 |
+| Grupo Eclipta | Visita 2 - Visita 3 | 2,25 | \[-9,26 ; 13,76\] | 1,000 |
+
+: Diferenças estimadas dos níveis de LDL-colesterol entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-ldl}
+
+
+
+
+```{r labs_ldl_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_ldl,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_ldl_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_ldl,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### HDL Colesterol
+
+Variável: `labs_hdl`
+
+
+
+
+```{r labs_hdl_1}
+# Plot 1: Raw data
+labs_hdl_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_hdl < 300
+    #) %>% 
+    ggplot(aes(x = labs_hdl)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_hdl_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_hdl < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_hdl))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_hdl_hist_1 + labs_hdl_hist_2 # library(patchwork)
+```
+
+```{r labs_hdl_2}
+# LMM
+labs_hdl_model <- lmer(log1p(labs_hdl) ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_hdl_model)
+
+# Sensitivity analysis
+labs_hdl_model_check <- sensitivity_check_lmer(
+    model = labs_hdl_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_hdl_model_sens <- update(object = labs_hdl_model,
+                              subset = !(record_id %in% 
+		labs_hdl_model_check$influential_ids))
+# Influential IDS
+labs_hdl_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_hdl_3}
+# Model comparison
+summary(labs_hdl_model)
+summary(labs_hdl_model_sens)
+labs_hdl_model_check$comparison_table
+performance::compare_performance(
+    labs_hdl_model, 
+    labs_hdl_model_sens) 
+```
+
+```{r labs_hdl_4, fig.width=10, fig.height=10}
+performance::check_model(labs_hdl_model)
+performance::check_model(labs_hdl_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_hdl_raw_emm}
+# Get EMMs for each group at each visit
+labs_hdl_raw_emm <- emmeans::emmeans(
+    labs_hdl_model, 
+    ~ allocation_group * visit
+)
+
+labs_hdl_raw_emm <- regrid(labs_hdl_raw_emm)
+
+# Table of marginal means
+# labs_hdl_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_hdl_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_hdl_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_hdl_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_hdl_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_hdl_emm <- emmeans::emmeans(
+    labs_hdl_model_sens, 
+    ~ allocation_group * visit
+)
+
+labs_hdl_emm <- regrid(labs_hdl_emm)
+
+# Table of marginal means
+# labs_hdl_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_hdl_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_hdl_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_hdl_emm, comparisons = TRUE)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os níveis de HDL-colesterol, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Também não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, conduzida com a exclusão das observações influentes, não alterou substancialmente os resultados. As estimativas permaneceram consistentes e as comparações entre grupos e ao longo do tempo continuaram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-hdl.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -3,47      | \[-9,15 ; 2,21\] | 0,228   |
+| Entre grupos        | Visita 2            | -2,22      | \[-8,14 ; 3,69\] | 0,458   |
+| Entre grupos        | Visita 3            | -1,71      | \[-7,83 ; 4,42\] | 0,582   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,88       | \[-2,87 ; 4,64\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,99       | \[-3,08 ; 5,05\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 0,10       | \[-3,96 ; 4,17\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 2,13       | \[-2,12 ; 6,38\] | 0,675   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 2,75       | \[-1,74 ; 7,24\] | 0,418   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | 0,62       | \[-3,99 ; 5,22\] | 1,000   |
+
+: Diferenças estimadas dos níveis de HDL-colesterol entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-hdl}
+
+
+
+
+```{r labs_hdl_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_hdl,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_hdl_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_hdl,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### Triglicerídeos
+
+Variável: `labs_triglycerides`
+
+
+
+
+```{r labs_triglycerides_1}
+# Plot 1: Raw data
+labs_triglycerides_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_triglycerides < 300
+    #) %>% 
+    ggplot(aes(x = labs_triglycerides)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_triglycerides_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_triglycerides < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_triglycerides))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_triglycerides_hist_1 + labs_triglycerides_hist_2 # library(patchwork)
+```
+
+```{r labs_triglycerides_2}
+# LMM
+labs_triglycerides_model <- lmer(log1p(labs_triglycerides) ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_triglycerides_model)
+
+# Sensitivity analysis
+labs_triglycerides_model_check <- sensitivity_check_lmer(
+    model = labs_triglycerides_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_triglycerides_model_sens <- update(object = labs_triglycerides_model,
+                              subset = !(record_id %in% 
+		labs_triglycerides_model_check$influential_ids))
+# Influential IDS
+labs_triglycerides_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_triglycerides_3}
+# Model comparison
+summary(labs_triglycerides_model)
+summary(labs_triglycerides_model_sens)
+labs_triglycerides_model_check$comparison_table
+performance::compare_performance(
+    labs_triglycerides_model, 
+    labs_triglycerides_model_sens) 
+```
+
+```{r labs_triglycerides_4, fig.width=10, fig.height=10}
+performance::check_model(labs_triglycerides_model)
+performance::check_model(labs_triglycerides_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_triglycerides_raw_emm}
+# Get EMMs for each group at each visit
+labs_triglycerides_raw_emm <- emmeans::emmeans(
+    labs_triglycerides_model, 
+    ~ allocation_group * visit
+)
+
+labs_triglycerides_raw_emm <- regrid(labs_triglycerides_raw_emm)
+
+# Table of marginal means
+# labs_triglycerides_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_triglycerides_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_triglycerides_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_triglycerides_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_triglycerides_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_triglycerides_emm <- emmeans::emmeans(
+    labs_triglycerides_model_sens, 
+    ~ allocation_group * visit
+)
+
+labs_triglycerides_emm <- regrid(labs_triglycerides_emm)
+
+# Table of marginal means
+# labs_triglycerides_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_triglycerides_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_triglycerides_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_triglycerides_emm, comparisons = TRUE)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os níveis de triglicerídeos, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. As estimativas entre grupos foram próximas de zero e os intervalos de confiança incluíram o valor nulo, com valores de p superiores a 0,47 em todas as comparações. Da mesma forma, as comparações intragrupo ao longo do tempo não revelaram mudanças significativas em nenhum dos grupos, embora tenha havido uma tendência não significativa de aumento entre a visita 2 e a visita 3 no grupo A (p = 0,078).
+
+A análise de sensibilidade, realizada após a exclusão de observações influentes, manteve os resultados essencialmente inalterados. As estimativas permaneceram próximas das observadas no modelo completo e não houve modificações relevantes nas interpretações. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-triglycerides.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 2,46       | \[-20,8 ; 25,7\] | 0,834   |
+| Entre grupos        | Visita 2            | 9,28       | \[-16,6 ; 35,2\] | 0,479   |
+| Entre grupos        | Visita 3            | -3,44      | \[-30,8 ; 23,9\] | 0,804   |
+| Grupo Placebo       | Visita 1 - Visita 2 | -6,83      | \[-25,3 ; 11,7\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | -0,97      | \[-20,4 ; 18,5\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 5,86       | \[-14,3 ; 26,0\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | -0,01      | \[-18,8 ; 18,8\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -6,87      | \[-27,7 ; 14,0\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -6,86      | \[-28,4 ; 14,7\] | 1,000   |
+
+: Diferenças estimadas dos níveis de triglicerídeos entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-triglycerides}
+
+
+
+
+```{r labs_triglycerides_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_triglycerides,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_triglycerides_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_triglycerides,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### Glicemia de jejum
+
+Variável: `labs_glucose`
+
+
+
+
+```{r labs_glucose_1}
+# Plot 1: Raw data
+labs_glucose_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_glucose < 140
+    #) %>% 
+    ggplot(aes(x = labs_glucose)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_glucose_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_glucose < 140
+    #) %>%
+    ggplot(aes(x = log1p(labs_glucose))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_glucose_hist_1 + labs_glucose_hist_2 # library(patchwork)
+```
+
+```{r labs_glucose_2}
+# LMM
+labs_glucose_model <- lmer(log1p(labs_glucose) ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_glucose_model)
+
+# Sensitivity analysis
+labs_glucose_model_check <- sensitivity_check_lmer(
+    model = labs_glucose_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_glucose_model_sens <- update(object = labs_glucose_model,
+                              subset = !(record_id %in% 
+		labs_glucose_model_check$influential_ids))
+# Influential IDS
+labs_glucose_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_glucose_3}
+# Model comparison
+summary(labs_glucose_model)
+summary(labs_glucose_model_sens)
+labs_glucose_model_check$comparison_table
+performance::compare_performance(
+    labs_glucose_model, 
+    labs_glucose_model_sens) 
+```
+
+```{r labs_glucose_4, fig.width=10, fig.height=10}
+performance::check_model(labs_glucose_model)
+performance::check_model(labs_glucose_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_glucose_raw_emm}
+# Get EMMs for each group at each visit
+labs_glucose_raw_emm <- emmeans::emmeans(
+    labs_glucose_model, 
+    ~ allocation_group * visit
+)
+
+labs_glucose_raw_emm <- regrid(labs_glucose_raw_emm)
+
+# Table of marginal means
+# labs_glucose_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_glucose_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_glucose_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_glucose_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_glucose_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_glucose_emm <- emmeans::emmeans(
+    labs_glucose_model_sens, 
+    ~ allocation_group * visit
+)
+
+labs_glucose_emm <- regrid(labs_glucose_emm)
+
+# Table of marginal means
+# labs_glucose_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_glucose_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_glucose_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_glucose_emm, comparisons = TRUE)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os níveis de glicose, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, conduzida após a exclusão de observações influentes, não alterou substancialmente os resultados. As estimativas permaneceram estáveis e as diferenças entre os grupos e ao longo do tempo continuaram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-glucose.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -0,25      | \[-8,04 ; 7,54\] | 0,949   |
+| Entre grupos        | Visita 2            | 1,38       | \[-6,83 ; 9,59\] | 0,740   |
+| Entre grupos        | Visita 3            | 0,40       | \[-8,36 ; 9,17\] | 0,928   |
+| Grupo Placebo       | Visita 1 - Visita 2 | -0,78      | \[-5,65 ; 4,08\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | -3,11      | \[-8,42 ; 2,20\] | 0,471   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -2,32      | \[-7,73 ; 3,08\] | 0,894   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,85       | \[-4,31 ; 6,00\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -2,45      | \[-8,17 ; 3,26\] | 0,894   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -3,30      | \[-9,10 ; 2,51\] | 0,510   |
+
+: Diferenças estimadas dos níveis de glicose entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-glucose}
+
+
+
+
+```{r labs_glucose_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_glucose,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_glucose_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_glucose,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### Hemoglobina Glicosilada
+
+Variável: `labs_hba1c`
+
+
+
+
+```{r labs_hba1c_1}
+# Plot 1: Raw data
+labs_hba1c_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_hba1c < 300
+    #) %>% 
+    ggplot(aes(x = labs_hba1c)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_hba1c_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_hba1c < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_hba1c))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_hba1c_hist_1 + labs_hba1c_hist_2 # library(patchwork)
+```
+
+```{r labs_hba1c_2}
+# LMM
+labs_hba1c_model <- lmer(log1p(labs_hba1c) ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_hba1c_model)
+
+# Sensitivity analysis
+labs_hba1c_model_check <- sensitivity_check_lmer(
+    model = labs_hba1c_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_hba1c_model_sens <- update(object = labs_hba1c_model,
+                              subset = !(record_id %in% 
+		labs_hba1c_model_check$influential_ids))
+# Influential IDS
+labs_hba1c_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_hba1c_3}
+# Model comparison
+summary(labs_hba1c_model)
+summary(labs_hba1c_model_sens)
+labs_hba1c_model_check$comparison_table
+performance::compare_performance(
+    labs_hba1c_model, 
+    labs_hba1c_model_sens) 
+```
+
+```{r labs_hba1c_4, fig.width=10, fig.height=10}
+performance::check_model(labs_hba1c_model)
+performance::check_model(labs_hba1c_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_hba1c_raw_emm}
+# Get EMMs for each group at each visit
+labs_hba1c_raw_emm <- emmeans::emmeans(
+    labs_hba1c_model, 
+    ~ allocation_group * visit
+)
+
+labs_hba1c_raw_emm <- regrid(labs_hba1c_raw_emm)
+
+# Table of marginal means
+# labs_hba1c_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_hba1c_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_hba1c_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_hba1c_raw_emm)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_hba1c_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_hba1c_emm <- emmeans::emmeans(
+    labs_hba1c_model_sens, 
+    ~ allocation_group * visit
+)
+
+# Table of marginal means
+# labs_hba1c_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_hba1c_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_hba1c_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_hba1c_emm)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os níveis de hemoglobina glicada (HbA1c), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, realizada após a exclusão de observações influentes, confirmou a estabilidade das estimativas. As diferenças entre os grupos e entre as visitas permaneceram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-hba1c.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,13       | \[-0,20 ; 0,45\] | 0,449   |
+| Entre grupos        | Visita 2            | 0,16       | \[-0,18 ; 0,49\] | 0,361   |
+| Entre grupos        | Visita 3            | 0,15       | \[-0,20 ; 0,49\] | 0,408   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,00       | \[-0,15 ; 0,15\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | -0,09      | \[-0,25 ; 0,07\] | 0,517   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -0,09      | \[-0,25 ; 0,08\] | 0,597   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,03       | \[-0,13 ; 0,18\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -0,07      | \[-0,24 ; 0,09\] | 0,904   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -0,10      | \[-0,27 ; 0,07\] | 0,489   |
+
+: Diferenças estimadas dos níveis de hemoglobina glicada (HbA1c) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-hba1c}
+
+
+
+
+```{r labs_hba1c_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_hba1c,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_hba1c_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_hba1c,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### Insulina
+
+Variável: `labs_insulin`
+
+
+
+
+```{r labs_insulin_1}
+# Plot 1: Raw data
+labs_insulin_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_insulin < 300
+    #) %>% 
+    ggplot(aes(x = labs_insulin)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_insulin_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_insulin < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_insulin))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_insulin_hist_1 + labs_insulin_hist_2 # library(patchwork)
+```
+
+```{r labs_insulin_2}
+# LMM
+labs_insulin_model <- lmer(log1p(labs_insulin) ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_insulin_model)
+
+# Sensitivity analysis
+labs_insulin_model_check <- sensitivity_check_lmer(
+    model = labs_insulin_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_insulin_model_sens <- update(object = labs_insulin_model,
+                              subset = !(record_id %in% 
+		labs_insulin_model_check$influential_ids))
+# Influential IDS
+labs_insulin_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_insulin_3}
+# Model comparison
+summary(labs_insulin_model)
+summary(labs_insulin_model_sens)
+labs_insulin_model_check$comparison_table
+performance::compare_performance(
+    labs_insulin_model, 
+    labs_insulin_model_sens) 
+```
+
+```{r labs_insulin_4, fig.width=10, fig.height=10}
+performance::check_model(labs_insulin_model)
+performance::check_model(labs_insulin_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_insulin_raw_emm}
+# Get EMMs for each group at each visit
+labs_insulin_raw_emm <- emmeans::emmeans(
+    labs_insulin_model, 
+    ~ allocation_group * visit
+)
+
+labs_insulin_raw_emm <- regrid(labs_insulin_raw_emm)
+
+# Table of marginal means
+# labs_insulin_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_insulin_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_insulin_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_insulin_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_insulin_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_insulin_emm <- emmeans::emmeans(
+    labs_insulin_model_sens, 
+    ~ allocation_group * visit
+)
+
+labs_insulin_emm <- regrid(labs_insulin_emm)
+
+# Table of marginal means
+# labs_insulin_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_insulin_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_insulin_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_insulin_emm, comparisons = TRUE)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os níveis de insulina, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Também não foram encontradas mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, realizada com a exclusão das observações influentes, confirmou a ausência de diferenças significativas entre os grupos e ao longo das visitas, com estimativas semelhantes às observadas na análise principal. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-insulin.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,44       | \[-2,62 ; 3,50\] | 0,776   |
+| Entre grupos        | Visita 2            | -0,65      | \[-3,63 ; 2,33\] | 0,667   |
+| Entre grupos        | Visita 3            | -0,53      | \[-4,19 ; 3,14\] | 0,777   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 2,13       | \[-0,21 ; 4,48\] | 0,087   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,50       | \[-2,19 ; 3,18\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -1,64      | \[-4,28 ; 1,01\] | 0,407   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 1,05       | \[-1,39 ; 3,48\] | 0,898   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -0,47      | \[-3,49 ; 2,55\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -1,51      | \[-4,57 ; 1,54\] | 0,695   |
+
+: Diferenças estimadas dos níveis de insulina entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-insulin}
+
+
+
+
+```{r labs_insulin_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_insulin,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_insulin_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_insulin,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### HOMA-IR
+
+Variável: `labs_homa_ir`
+
+
+
+
+```{r labs_homa_ir_1}
+# Plot 1: Raw data
+labs_homa_ir_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_homa_ir < 300
+    #) %>% 
+    ggplot(aes(x = labs_homa_ir)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_homa_ir_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_homa_ir < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_homa_ir))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_homa_ir_hist_1 + labs_homa_ir_hist_2 # library(patchwork)
+```
+
+```{r labs_homa_ir_2}
+# LMM
+labs_homa_ir_model <- lmer(log1p(labs_homa_ir) ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_homa_ir_model)
+
+# Sensitivity analysis
+labs_homa_ir_model_check <- sensitivity_check_lmer(
+    model = labs_homa_ir_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_homa_ir_model_sens <- update(object = labs_homa_ir_model,
+                              subset = !(record_id %in% 
+		labs_homa_ir_model_check$influential_ids))
+# Influential IDS
+labs_homa_ir_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_homa_ir_3}
+# Model comparison
+summary(labs_homa_ir_model)
+summary(labs_homa_ir_model_sens)
+labs_homa_ir_model_check$comparison_table
+performance::compare_performance(
+    labs_homa_ir_model, 
+    labs_homa_ir_model_sens) 
+```
+
+```{r labs_homa_ir_4, fig.width=10, fig.height=10}
+performance::check_model(labs_homa_ir_model)
+performance::check_model(labs_homa_ir_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_homa_ir_raw_emm}
+# Get EMMs for each group at each visit
+labs_homa_ir_raw_emm <- emmeans::emmeans(
+    labs_homa_ir_model, 
+    ~ allocation_group * visit
+)
+
+labs_homa_ir_raw_emm <- regrid(labs_homa_ir_raw_emm)
+
+# Table of marginal means
+# labs_homa_ir_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_homa_ir_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_homa_ir_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_homa_ir_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_homa_ir_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_homa_ir_emm <- emmeans::emmeans(
+    labs_homa_ir_model_sens, 
+    ~ allocation_group * visit
+)
+
+labs_homa_ir_emm <- regrid(labs_homa_ir_emm)
+
+# Table of marginal means
+# labs_homa_ir_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_homa_ir_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_homa_ir_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_homa_ir_emm, comparisons = TRUE)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os níveis de HOMA-IR, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Além disso, as comparações dentro de cada grupo ao longo do tempo não revelaram mudanças significativas. A análise de sensibilidade, realizada com a exclusão de observações influentes, confirmou a robustez dos achados, com estimativas semelhantes e ausência de diferenças significativas entre os grupos ou ao longo das visitas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-homa-ir.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,15       | \[-0,57 ; 0,88\] | 0,675   |
+| Entre grupos        | Visita 2            | -0,07      | \[-0,80 ; 0,66\] | 0,844   |
+| Entre grupos        | Visita 3            | -0,06      | \[-0,96 ; 0,84\] | 0,896   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,41       | \[-0,16 ; 0,99\] | 0,252   |
+| Grupo Placebo       | Visita 1 - Visita 3 | -0,04      | \[-0,70 ; 0,63\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -0,45      | \[-1,12 ; 0,22\] | 0,309   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,19       | \[-0,41 ; 0,78\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -0,25      | \[-1,00 ; 0,50\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -0,44      | \[-1,19 ; 0,32\] | 0,485   |
+
+: Diferenças estimadas dos níveis de HOMA-IR entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-homa-ir}
+
+
+
+
+```{r labs_homa_ir_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_homa_ir,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_homa_ir_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_homa_ir,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### Índice QUICK
+
+Variável: `labs_quick_index`
+
+
+
+
+```{r labs_quick_index_1}
+# Plot 1: Raw data
+labs_quick_index_hist_1 <- data_model %>% 
+    #filter(
+    #    labs_quick_index < 300
+    #) %>% 
+    ggplot(aes(x = labs_quick_index)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+labs_quick_index_hist_2 <- data_model %>% 
+    #filter(
+    #    labs_quick_index < 300
+    #) %>%
+    ggplot(aes(x = log1p(labs_quick_index))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+labs_quick_index_hist_1 + labs_quick_index_hist_2 # library(patchwork)
+```
+
+```{r labs_quick_index_2}
+# LMM
+labs_quick_index_model <- lmer(labs_quick_index ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(labs_quick_index_model)
+
+# Sensitivity analysis
+labs_quick_index_model_check <- sensitivity_check_lmer(
+    model = labs_quick_index_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+labs_quick_index_model_sens <- update(object = labs_quick_index_model,
+                              subset = !(record_id %in% 
+		labs_quick_index_model_check$influential_ids))
+# Influential IDS
+labs_quick_index_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r labs_quick_index_3}
+# Model comparison
+summary(labs_quick_index_model)
+summary(labs_quick_index_model_sens)
+labs_quick_index_model_check$comparison_table
+performance::compare_performance(
+    labs_quick_index_model, 
+    labs_quick_index_model_sens) 
+```
+
+```{r labs_quick_index_4, fig.width=10, fig.height=10}
+performance::check_model(labs_quick_index_model)
+performance::check_model(labs_quick_index_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_quick_index_raw_emm}
+# Get EMMs for each group at each visit
+labs_quick_index_raw_emm <- emmeans::emmeans(
+    labs_quick_index_model, 
+    ~ allocation_group * visit
+)
+
+labs_quick_index_raw_emm <- regrid(labs_quick_index_raw_emm)
+
+# Table of marginal means
+# labs_quick_index_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_quick_index_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_quick_index_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_quick_index_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r labs_quick_index_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+labs_quick_index_emm <- emmeans::emmeans(
+    labs_quick_index_model_sens, 
+    ~ allocation_group * visit
+)
+
+labs_quick_index_emm <- regrid(labs_quick_index_emm)
+
+# Table of marginal means
+# labs_quick_index_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(labs_quick_index_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(labs_quick_index_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(labs_quick_index_emm, comparisons = TRUE)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para o índice de sensibilidade à insulina (Quick Index), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, as comparações ao longo do tempo dentro de cada grupo também não mostraram variações significativas. A análise de sensibilidade, realizada com a exclusão das observações influentes, confirmou os achados da análise principal. As estimativas permaneceram consistentes, sem diferenças estatisticamente significativas entre os grupos ou ao longo do tempo. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-quick-index.
+
+| Grupo de comparação | Comparação | Estimativa | IC 95% | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos | Visita 1 | -0,001 | \[-0,013 ; 0,011\] | 0,833 |
+| Entre grupos | Visita 2 | 0,002 | \[-0,011 ; 0,015\] | 0,711 |
+| Entre grupos | Visita 3 | 0,004 | \[-0,010 ; 0,018\] | 0,565 |
+| Grupo Placebo | Visita 1 - Visita 2 | -0,008 | \[-0,018 ; 0,002\] | 0,131 |
+| Grupo Placebo | Visita 1 - Visita 3 | -0,002 | \[-0,013 ; 0,008\] | 1,000 |
+| Grupo Placebo | Visita 2 - Visita 3 | 0,006 | \[-0,005 ; 0,017\] | 0,585 |
+| Grupo Eclipta | Visita 1 - Visita 2 | -0,005 | \[-0,015 ; 0,006\] | 0,826 |
+| Grupo Eclipta | Visita 1 - Visita 3 | 0,003 | \[-0,009 ; 0,015\] | 1,000 |
+| Grupo Eclipta | Visita 2 - Visita 3 | 0,008 | \[-0,005 ; 0,020\] | 0,399 |
+
+: Diferenças estimadas do índice Quick entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-quick-index}
+
+
+
+
+```{r labs_quick_index_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = labs_quick_index,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		labs_quick_index_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = labs_quick_index,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### Circunferência abdominal
+
+Variável: `abdomen`
+
+
+
+
+```{r abdomen_1}
+# Plot 1: Raw data
+abdomen_hist_1 <- data_model %>% 
+    #filter(
+    #    abdomen < 300
+    #) %>% 
+    ggplot(aes(x = abdomen)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+abdomen_hist_2 <- data_model %>% 
+    #filter(
+    #    abdomen < 300
+    #) %>%
+    ggplot(aes(x = log1p(abdomen))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+abdomen_hist_1 + abdomen_hist_2 # library(patchwork)
+```
+
+```{r abdomen_2}
+# LMM
+abdomen_model <- lmer(log1p(abdomen) ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(abdomen_model)
+
+# Sensitivity analysis
+abdomen_model_check <- sensitivity_check_lmer(
+    model = abdomen_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+abdomen_model_sens <- update(object = abdomen_model,
+                              subset = !(record_id %in% 
+		abdomen_model_check$influential_ids))
+# Influential IDS
+abdomen_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r abdomen_3}
+# Model comparison
+summary(abdomen_model)
+summary(abdomen_model_sens)
+abdomen_model_check$comparison_table
+performance::compare_performance(
+    abdomen_model, 
+    abdomen_model_sens) 
+```
+
+```{r abdomen_4, fig.width=10, fig.height=10}
+performance::check_model(abdomen_model)
+performance::check_model(abdomen_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r labs_abdomen_raw_emm}
+# Get EMMs for each group at each visit
+abdomen_raw_emm <- emmeans::emmeans(
+    abdomen_model, 
+    ~ allocation_group * visit
+)
+
+abdomen_raw_emm <- regrid(abdomen_raw_emm)
+
+# Table of marginal means
+# abdomen_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(abdomen_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(abdomen_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(abdomen_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r abdomen_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+abdomen_emm <- emmeans::emmeans(
+    abdomen_model_sens, 
+    ~ allocation_group * visit
+)
+
+abdomen_emm <- regrid(abdomen_emm)
+
+# Table of marginal means
+# abdomen_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(abdomen_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(abdomen_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(abdomen_emm)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para a circunferência abdominal, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. As comparações dentro dos grupos ao longo do tempo também não revelaram mudanças significativas. Embora a diferença entre as visitas 1 e 3 no grupo placebo tenha se aproximado da significância (p = 0,089), essa tendência não foi confirmada na análise de sensibilidade. Após a exclusão das observações influentes, os resultados permaneceram estáveis, sem diferenças estatisticamente significativas entre os grupos ou ao longo do tempo. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-abdomen.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 1,56       | \[-1,96 ; 5,08\] | 0,381   |
+| Entre grupos        | Visita 2            | 0,87       | \[-2,74 ; 4,47\] | 0,634   |
+| Entre grupos        | Visita 3            | -0,81      | \[-4,49 ; 2,86\] | 0,661   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,91       | \[-0,84 ; 2,65\] | 0,623   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 1,66       | \[-0,17 ; 3,48\] | 0,089   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 0,75       | \[-1,08 ; 2,58\] | 0,962   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,22       | \[-1,56 ; 2,00\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -0,72      | \[-2,61 ; 1,18\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -0,93      | \[-2,83 ; 0,96\] | 0,700   |
+
+: Diferenças estimadas da circunferência abdominal entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-abdomen}
+
+
+
+
+```{r abdomen_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = abdomen,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		abdomen_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = abdomen,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### Índice de Massa Corporal
+
+Variável: `bmi`
+
+
+
+
+```{r bmi_1}
+# Plot 1: Raw data
+bmi_hist_1 <- data_model %>% 
+    #filter(
+    #    bmi < 300
+    #) %>% 
+    ggplot(aes(x = bmi)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+bmi_hist_2 <- data_model %>% 
+    #filter(
+    #    bmi < 300
+    #) %>%
+    ggplot(aes(x = log1p(bmi))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+bmi_hist_1 + bmi_hist_2 # library(patchwork)
+```
+
+```{r bmi_2}
+# LMM
+bmi_model <- lmer(bmi ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(bmi_model)
+
+# Sensitivity analysis
+bmi_model_check <- sensitivity_check_lmer(
+    model = bmi_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+bmi_model_sens <- update(object = bmi_model,
+                              subset = !(record_id %in% 
+		bmi_model_check$influential_ids))
+# Influential IDS
+bmi_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r bmi_3}
+# Model comparison
+summary(bmi_model)
+summary(bmi_model_sens)
+bmi_model_check$comparison_table
+performance::compare_performance(
+    bmi_model, 
+    bmi_model_sens) 
+```
+
+```{r bmi_4, fig.width=10, fig.height=10}
+performance::check_model(bmi_model)
+performance::check_model(bmi_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r bmi_raw_emm}
+# Get EMMs for each group at each visit
+bmi_raw_emm <- emmeans::emmeans(
+    bmi_model, 
+    ~ allocation_group * visit
+)
+
+bmi_raw_emm <- regrid(bmi_raw_emm)
+
+# Table of marginal means
+# bmi_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(bmi_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(bmi_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(bmi_raw_emm)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r bmi_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+bmi_emm <- emmeans::emmeans(
+    bmi_model_sens, 
+    ~ allocation_group * visit
+)
+
+bmi_emm <- regrid(bmi_emm)
+
+# Table of marginal means
+# bmi_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(bmi_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(bmi_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(bmi_emm)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para o índice de massa corporal (IMC), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. No entanto, dentro do grupo placebo, observou-se uma redução estatisticamente significativa entre as visitas 1 e 3 (p = 0,0059). Para investigar a robustez desse achado, foi realizada uma análise de sensibilidade com exclusão das cinco observações mais influentes (IDs: 8, 50, 53, 74 e 32). Após a exclusão, a diferença intra grupo placebo deixou de ser significativa (p = 0,222), sugerindo que o resultado original foi influenciado por outliers.
+
+As figuras de diagnóstico do modelo indicaram leve heterocedasticidade e presença de observações influentes, justificando a realização da análise de sensibilidade. A comparação entre os modelos mostrou melhora nos índices de ajuste após a exclusão dos dados influentes (AIC e BIC consideravelmente menores e RMSE reduzido), além de maior normalidade dos resíduos e aleatoriedade nos efeitos aleatórios.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-bmi. As estimativas, intervalos de confiança de 95% e valores de p da análise de sensibilidade estão apresentadas na @tbl-bmi-sens.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -0,36      | \[-1,34 ; 0,62\] | 0,468   |
+| Entre grupos        | Visita 2            | -0,70      | \[-1,70 ; 0,31\] | 0,171   |
+| Entre grupos        | Visita 3            | -0,93      | \[-1,95 ; 0,09\] | 0,072   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,33       | \[-0,09 ; 0,74\] | 0,177   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,57       | \[0,14 ; 1,01\]  | 0,006   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 0,25       | \[-0,19 ; 0,69\] | 0,517   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | -0,01      | \[-0,44 ; 0,42\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 0,00       | \[-0,45 ; 0,46\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | 0,01       | \[-0,44 ; 0,47\] | 1,000   |
+
+: Diferenças estimadas do índice de massa corporal (IMC) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-bmi}
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -0,55      | \[-1,49 ; 0,39\] | 0,251   |
+| Entre grupos        | Visita 2            | -0,67      | \[-1,63 ; 0,29\] | 0,168   |
+| Entre grupos        | Visita 3            | -0,75      | \[-1,72 ; 0,22\] | 0,127   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,17       | \[-0,17 ; 0,52\] | 0,670   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,27       | \[-0,10 ; 0,64\] | 0,222   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 0,10       | \[-0,27 ; 0,47\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,05       | \[-0,29 ; 0,39\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 0,07       | \[-0,29 ; 0,43\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | 0,02       | \[-0,34 ; 0,38\] | 1,000   |
+
+: Diferenças estimadas do índice de massa corporal (IMC) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo – Análise de sensibilidade {#tbl-bmi-sens}
+
+
+
+
+```{r bmi_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = bmi,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		bmi_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = bmi,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### Pressão Arterial Média
+
+Variável: `mean_bp_mean`
+
+
+
+
+```{r mean_bp_mean_1}
+# Plot 1: Raw data
+mean_bp_mean_hist_1 <- data_model %>% 
+    #filter(
+    #    mean_bp_mean < 300
+    #) %>% 
+    ggplot(aes(x = mean_bp_mean)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+mean_bp_mean_hist_2 <- data_model %>% 
+    #filter(
+    #    mean_bp_mean < 300
+    #) %>%
+    ggplot(aes(x = log1p(mean_bp_mean))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+mean_bp_mean_hist_1 + mean_bp_mean_hist_2 # library(patchwork)
+```
+
+```{r mean_bp_mean_2}
+# LMM
+mean_bp_mean_model <- lmer(mean_bp_mean ~ allocation_group * visit + 
+(1 | record_id), data = data_model)
+check_collinearity(mean_bp_mean_model)
+
+# Sensitivity analysis
+mean_bp_mean_model_check <- sensitivity_check_lmer(
+    model = mean_bp_mean_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+mean_bp_mean_model_sens <- update(object = mean_bp_mean_model,
+                              subset = !(record_id %in% 
+		mean_bp_mean_model_check$influential_ids))
+# Influential IDS
+mean_bp_mean_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r mean_bp_mean_3}
+# Model comparison
+summary(mean_bp_mean_model)
+summary(mean_bp_mean_model_sens)
+mean_bp_mean_model_check$comparison_table
+performance::compare_performance(
+    mean_bp_mean_model, 
+    mean_bp_mean_model_sens) 
+```
+
+```{r mean_bp_mean_4, fig.width=10, fig.height=10}
+performance::check_model(mean_bp_mean_model)
+performance::check_model(mean_bp_mean_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r mean_bp_mean_raw_emm}
+# Get EMMs for each group at each visit
+mean_bp_mean_raw_emm <- emmeans::emmeans(
+    mean_bp_mean_model, 
+    ~ allocation_group * visit
+)
+
+mean_bp_mean_raw_emm <- regrid(mean_bp_mean_raw_emm)
+
+# Table of marginal means
+# mean_bp_mean_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(mean_bp_mean_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(mean_bp_mean_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(mean_bp_mean_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r mean_bp_mean_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+mean_bp_mean_emm <- emmeans::emmeans(
+    mean_bp_mean_model_sens, 
+    ~ allocation_group * visit
+)
+
+mean_bp_mean_emm <- regrid(mean_bp_mean_emm)
+
+# Table of marginal means
+# mean_bp_mean_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(mean_bp_mean_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(mean_bp_mean_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(mean_bp_mean_emm, comparisons = TRUE)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para a média da pressão arterial, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. No entanto, observou-se uma redução da pressão arterial entre as visitas 1 e 2 no grupo Eclipta (diferença média de 4,02 mmHg; IC 95%: 0,35 a 7,70), e uma tendência à redução entre as visitas 1 e 3 no grupo placebo (diferença média de 3,71 mmHg; IC 95%: -0,05 a 7,48).
+
+Na análise de sensibilidade, realizada com exclusão das observações mais influentes, foi identificada uma diferença significativa entre os grupos na visita 3, com o grupo Eclipta apresentando pressão arterial média 5,56 mmHg inferior ao grupo placebo (IC 95%: -10,57 a -0,55). A redução entre as visitas 1 e 3 no grupo placebo tornou-se significativa e mais pronunciada, com diferença de 4,53 mmHg (IC 95%: 1,01 a 8,04), e a diferença entre as visitas 1 e 2 no grupo Eclipta foi mantida (diferença de 4,80 mmHg; IC 95%: 1,57 a 8,04). Essas mudanças foram acompanhadas por melhora nos indicadores de ajuste do modelo. As melhorias nos indicadores de ajuste (AIC, BIC, RMSE e R²) reforçam a adequação do modelo sensível.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas nas Tabelas @tbl-bp e @tbl-bp-sens.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -2,78      | \[-7,41 ; 1,86\] | 0,238   |
+| Entre grupos        | Visita 2            | 0,04       | \[-4,95 ; 5,02\] | 0,988   |
+| Entre grupos        | Visita 3            | -4,21      | \[-9,34 ; 0,92\] | 0,107   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 1,21       | \[-2,46 ; 4,87\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 3,71       | \[-0,05 ; 7,48\] | 0,054   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 2,51       | \[-1,38 ; 6,39\] | 0,362   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 4,02       | \[0,35 ; 7,70\]  | 0,027   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 2,28       | \[-1,61 ; 6,16\] | 0,470   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -1,74      | \[-5,68 ; 2,20\] | 0,855   |
+
+: Diferenças estimadas da pressão arterial média entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo – Todos os dados {#tbl-bp}
+
+| Grupo de comparação | Comparação | Estimativa | IC 95% | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos | Visita 1 | -3,76 | \[-8,32 ; 0,79\] | 0,104 |
+| Entre grupos | Visita 2 | -1,10 | \[-5,96 ; 3,76\] | 0,655 |
+| Entre grupos | Visita 3 | -5,56 | \[-10,57 ; -0,55\] | 0,030 |
+| Grupo Placebo | Visita 1 - Visita 2 | 2,14 | \[-1,22 ; 5,49\] | 0,372 |
+| Grupo Placebo | Visita 1 - Visita 3 | 4,53 | \[1,01 ; 8,04\] | 0,007 |
+| Grupo Placebo | Visita 2 - Visita 3 | 2,39 | \[-1,20 ; 5,98\] | 0,325 |
+| Grupo Eclipta | Visita 1 - Visita 2 | 4,80 | \[1,57 ; 8,04\] | 0,002 |
+| Grupo Eclipta | Visita 1 - Visita 3 | 2,73 | \[-0,70 ; 6,17\] | 0,165 |
+| Grupo Eclipta | Visita 2 - Visita 3 | -2,07 | \[-5,54 ; 1,40\] | 0,450 |
+
+: Diferenças estimadas da pressão arterial média entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo – Análise de sensibilidade {#tbl-bp-sens}
+
+
+
+
+```{r mean_bp_mean_6}
+ggplot(
+    data = data_model, 
+    aes(
+        x = as.factor(visit),
+        y = mean_bp_mean,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model %>% 
+    filter(
+        !(record_id %in% 
+		mean_bp_mean_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = mean_bp_mean,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+### Escore EVS
+
+Variável: `evs_score`
+
+
+
+
+```{r evs_score_1}
+# Plot 1: Raw data
+evs_score_hist_1 <- data_model %>% 
+    filter(
+        evs_score >0
+    ) %>% 
+    ggplot(aes(x = evs_score)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+evs_score_hist_2 <- data_model %>% 
+     filter(
+        evs_score >0
+    ) %>% 
+    ggplot(aes(x = log1p(evs_score))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+evs_score_hist_1 + evs_score_hist_2 # library(patchwork)
+```
+
+```{r evs_score_2}
+# LMM
+
+data_model_evs <- data_model %>%
+  filter(evs_score > 0)
+
+evs_score_model <- lmer(log1p(evs_score) ~ allocation_group * visit + 
+(1 | record_id), data = data_model_evs)
+check_collinearity(evs_score_model)
+
+# Sensitivity analysis
+evs_score_model_check <- sensitivity_check_lmer(
+    model = evs_score_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+evs_score_model_sens <- update(object = evs_score_model,
+                              subset = !(record_id %in% 
+		evs_score_model_check$influential_ids))
+# Influential IDS
+evs_score_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r evs_score_3}
+# Model comparison
+summary(evs_score_model)
+summary(evs_score_model_sens)
+evs_score_model_check$comparison_table
+performance::compare_performance(
+    evs_score_model, 
+    evs_score_model_sens) 
+```
+
+```{r evs_score_4, fig.width=10, fig.height=10}
+performance::check_model(evs_score_model)
+performance::check_model(evs_score_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r evs_score_raw_emm}
+# Get EMMs for each group at each visit
+evs_score_raw_emm <- emmeans::emmeans(
+    evs_score_model, 
+    ~ allocation_group * visit
+)
+
+evs_score_raw_emm <- regrid(evs_score_raw_emm)
+
+# Table of marginal means
+# evs_score_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(evs_score_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(evs_score_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(evs_score_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r evs_score_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+evs_score_emm <- emmeans::emmeans(
+    evs_score_model_sens, 
+    ~ allocation_group * visit
+)
+
+evs_score_emm <- regrid(evs_score_emm)
+
+# Table of marginal means
+# evs_score_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(evs_score_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(evs_score_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(evs_score_emm, comparisons = TRUE)
+```
+
+```{r evs_score_6}
+ggplot(
+    data = data_model_evs, 
+    aes(
+        x = as.factor(visit),
+        y = evs_score,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+
+data_model_evs %>% 
+    filter(
+        !(record_id %in% 
+		evs_score_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = evs_score,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group) 
+    #coord_cartesian(ylim = c(10, 150))
+```
+
+
+
+
+#### EVS - modelo em 2 partes
+
+
+
+
+```{r}
+#| label: Part 1, Logistic regression — Who exercises vs who doesn’t?
+#| comment: What factors are associated with whether someone exercises at all during the week?
+data_model_evs <- data_model %>%
+  mutate(
+    exercised = if_else(evs_score > 0, 1, 0)
+  )
+
+model_part1 <- glmer(
+  exercised ~ allocation_group * visit + (1 | record_id),
+  data = data_model_evs,
+  family = binomial
+)
+
+summary(model_part1)
+```
+
+```{r}
+#| label: Part 2, Linear Mixed Model on log(evs_score) for those who do exercise
+#| comment: Among those who do exercise, what factors are associated with how much they exercise (log-transformed for normality)?
+
+data_model_evs_active <- data_model_evs %>%
+  filter(evs_score > 0)
+
+model_part2 <- lmer(
+  log(evs_score) ~ allocation_group * visit + (1 | record_id),
+  data = data_model_evs_active
+)
+
+summary(model_part2)
+```
+
+
+
+
+##### Resultado
+
+Para analisar o escore de atividade física semanal (evs_score), que representa o produto entre os dias por semana e os minutos por dia de exercício relatados por cada participante, foi adotado um modelo em dois estágios. Esta abordagem se mostrou mais adequada devido à presença de 33.9% de valores iguais a zero (pacientes inativos) e à distribuição assimétrica dos valores positivos (pacientes ativos).
+
+**No primeiro estágio**, foi ajustado um modelo de regressão logística mista com intercepto aleatório por participante para estimar a probabilidade de o participante relatar qualquer atividade física (evs_score \> 0). Observou-se que, independentemente do grupo, a chance de relatar exercício aumentou significativamente na visita 2 (OR ≈ 24, p = 0,002) e, em menor grau, na visita 3 (p = 0,046) em comparação à visita 1. No entanto, não houve efeito significativo do grupo de intervenção (Grupo B) nem interações significativas entre grupo e visita, indicando que o aumento da atividade física ao longo do tempo pode estar relacionado a outros fatores (por exemplo, efeito de acompanhamento ou motivação decorrente da participação no estudo).
+
+No segundo estágio, foi ajustado um modelo linear misto com intercepto aleatório por participante, incluindo apenas os participantes que relataram evs_score \> 0, utilizando a transformação logarítmica dos minutos semanais de exercício como variável dependente. Neste modelo, nenhuma diferença significativa foi observada entre os grupos ou ao longo do tempo em relação à quantidade de exercício realizada entre os participantes ativos. Ou seja, embora mais participantes tenham relatado prática de atividade física nas visitas seguintes, a duração total semanal entre aqueles que se exercitavam permaneceu estável.
+
+Esses resultados sugerem que o efeito observado ao longo do tempo se concentrou em uma maior adesão à prática de atividade física, mas não em um aumento da quantidade entre os que já praticavam.
+
+# Variáveis coletadas na primeira e terceira visitas
+
+### Ângulo de Fase
+
+Variável: `phase_angle`
+
+
+
+
+```{r phase_angle_1}
+# Plot 1: Raw data
+phase_angle_hist_1 <- data_model_V1V3 %>% 
+    filter(
+        phase_angle < 300
+    ) %>% 
+    ggplot(aes(x = phase_angle)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+phase_angle_hist_2 <- data_model_V1V3 %>% 
+    filter(
+        phase_angle < 300
+    ) %>%
+    ggplot(aes(x = log1p(phase_angle))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+phase_angle_hist_1 + phase_angle_hist_2 # library(patchwork)
+```
+
+```{r phase_angle_2}
+# LMM
+phase_angle_model <- lmer(log1p(phase_angle) ~ allocation_group * visit + 
+(1 | record_id), data = data_model_V1V3)
+check_collinearity(phase_angle_model)
+
+# Sensitivity analysis
+phase_angle_model_check <- sensitivity_check_lmer(
+    model = phase_angle_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+phase_angle_model_sens <- update(object = phase_angle_model,
+                              subset = !(record_id %in% 
+		phase_angle_model_check$influential_ids))
+# Influential IDS
+phase_angle_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r phase_angle_3}
+# Model comparison
+summary(phase_angle_model)
+summary(phase_angle_model_sens)
+phase_angle_model_check$comparison_table
+performance::compare_performance(
+    phase_angle_model, 
+    phase_angle_model_sens)
+```
+
+```{r phase_angle_4, fig.width=10, fig.height=10}
+performance::check_model(phase_angle_model)
+performance::check_model(phase_angle_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r phase_angle_raw_emm}
+# Get EMMs for each group at each visit
+phase_angle_raw_emm <- emmeans::emmeans(
+    phase_angle_model, 
+    ~ allocation_group * visit
+)
+
+phase_angle_raw_emm <- regrid(phase_angle_raw_emm)
+
+# Table of marginal means
+# phase_angle_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(phase_angle_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(phase_angle_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(phase_angle_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r phase_angle_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+phase_angle_emm <- emmeans::emmeans(
+    phase_angle_model_sens, 
+    ~ allocation_group * visit
+)
+
+phase_angle_emm <- regrid(phase_angle_emm)
+
+# Table of marginal means
+# phase_angle_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(phase_angle_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(phase_angle_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(phase_angle_emm)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para o desfecho primário do estudo, o ângulo de fase, observou-se uma tendência à diferença entre os grupos na visita 1 (estimativa = 0,34; IC 95% \[-0,04 ; 0,72\]), embora sem significância estatística. Na visita 3, as médias estimadas também foram semelhantes entre os grupos (estimativa = 0,28; IC 95% \[-0,13 ; 0,69\]). Dentro de cada grupo, não foram detectadas mudanças significativas ao longo do tempo.
+
+A análise de sensibilidade, com exclusão de observações influentes, revelou um aumento da magnitude do efeito entre os grupos na visita 1, com significância estatística (estimativa = 0,33; IC 95% \[0,02 ; 0,64\]), sugerindo que o grupo placebo apresentou valores de ângulo de fase ligeiramente superiores no início do estudo. As demais comparações permaneceram não significativas, e as estimativas dentro dos grupos ao longo do tempo se mantiveram estáveis.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-phase-angle e @tbl-phase-angle-sens
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,34       | \[-0,04 ; 0,72\] | 0,082   |
+| Entre grupos        | Visita 3            | 0,28       | \[-0,13 ; 0,69\] | 0,175   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,09       | \[-0,11 ; 0,29\] | 0,388   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 0,03       | \[-0,18 ; 0,24\] | 0,757   |
+
+: Diferenças estimadas do ângulo de fase entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo (todos os dados) {#tbl-phase-angle}
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,33       | \[0,02 ; 0,64\]  | 0,037   |
+| Entre grupos        | Visita 3            | 0,20       | \[-0,12 ; 0,52\] | 0,221   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,13       | \[-0,00 ; 0,27\] | 0,054   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 0,00       | \[-0,13 ; 0,14\] | 0,955   |
+
+: Diferenças estimadas do ângulo de fase entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo (Análise de sensibilidade) {#tbl-phase-angle-sens}
+
+
+
+
+```{r phase_angle_6}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = phase_angle,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		phase_angle_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = phase_angle,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+
+
+
+### Reatância
+
+Variável: `reactance`
+
+
+
+
+```{r reactance_1}
+# Plot 1: Raw data
+reactance_hist_1 <- data_model_V1V3 %>% 
+    #filter(
+    #    reactance < 300
+    #) %>% 
+    ggplot(aes(x = reactance)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+reactance_hist_2 <- data_model_V1V3 %>% 
+    #filter(
+    #    reactance < 300
+    #) %>%
+    ggplot(aes(x = log1p(reactance))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+reactance_hist_1 + reactance_hist_2 # library(patchwork)
+```
+
+```{r reactance_2}
+# LMM
+reactance_model <- lmer(log1p(reactance) ~ allocation_group * visit + 
+(1 | record_id), data = data_model_V1V3)
+check_collinearity(reactance_model)
+
+# Sensitivity analysis
+reactance_model_check <- sensitivity_check_lmer(
+    model = reactance_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+reactance_model_sens <- update(object = reactance_model,
+                              subset = !(record_id %in% 
+		reactance_model_check$influential_ids))
+# Influential IDS
+reactance_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r reactance_3}
+# Model comparison
+summary(reactance_model)
+summary(reactance_model_sens)
+reactance_model_check$comparison_table
+performance::compare_performance(
+    reactance_model, 
+    reactance_model_sens)
+```
+
+```{r reactance_4, fig.width=10, fig.height=10}
+performance::check_model(reactance_model)
+performance::check_model(reactance_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r reactance_raw_emm}
+# Get EMMs for each group at each visit
+reactance_raw_emm <- emmeans::emmeans(
+    reactance_model, 
+    ~ allocation_group * visit
+)
+
+reactance_raw_emm <- regrid(reactance_raw_emm)
+
+# Table of marginal means
+# reactance_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(reactance_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(reactance_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(reactance_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r reactance_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+reactance_emm <- emmeans::emmeans(
+    reactance_model_sens, 
+    ~ allocation_group * visit
+)
+
+reactance_emm <- regrid(reactance_emm)
+
+# Table of marginal means
+# reactance_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(reactance_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(reactance_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(reactance_emm, comparisons = TRUE)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os valores de reatância, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos momentos avaliados. As estimativas de diferença entre os grupos na visita 1 (estimativa = 0,73; IC 95% \[-3,10 ; 4,55\]) e na visita 3 (estimativa = -0,24; IC 95% \[-4,51 ; 4,04\]) apresentaram ampla sobreposição dos intervalos de confiança com zero. Da mesma forma, não foram identificadas mudanças significativas ao longo do tempo dentro de cada grupo.
+
+A análise de sensibilidade não alterou substancialmente os resultados. Embora tenha havido um leve aumento da estimativa de diferença entre os grupos na visita 1 (estimativa = 1,77; IC 95% \[-1,52 ; 5,05\]), essa diferença continuou não significativa. As demais comparações permaneceram estáveis, sem alterações relevantes nas conclusões.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-reactance.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,73       | \[-3,10 ; 4,55\] | 0,707   |
+| Entre grupos        | Visita 3            | -0,24      | \[-4,51 ; 4,04\] | 0,913   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,68       | \[-1,73 ; 3,08\] | 0,579   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -0,29      | \[-2,87 ; 2,29\] | 0,825   |
+
+: Diferenças estimadas da reatância entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-reactance}
+
+
+
+
+```{r reactance_6}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = reactance,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		reactance_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = reactance,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+
+
+
+### Resistência
+
+Variável: `resistance`
+
+
+
+
+```{r resistance_1}
+# Plot 1: Raw data
+resistance_hist_1 <- data_model_V1V3 %>% 
+    #filter(
+    #    resistance < 300
+    #) %>% 
+    ggplot(aes(x = resistance)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+resistance_hist_2 <- data_model_V1V3 %>% 
+    #filter(
+    #    resistance < 300
+    #) %>%
+    ggplot(aes(x = log1p(resistance))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+resistance_hist_1 + resistance_hist_2 # library(patchwork)
+```
+
+```{r resistance_2}
+# LMM
+resistance_model <- lmer(resistance ~ allocation_group * visit + 
+(1 | record_id), data = data_model_V1V3)
+check_collinearity(resistance_model)
+
+# Sensitivity analysis
+resistance_model_check <- sensitivity_check_lmer(
+    model = resistance_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+resistance_model_sens <- update(object = resistance_model,
+                              subset = !(record_id %in% 
+		resistance_model_check$influential_ids))
+# Influential IDS
+resistance_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r resistance_3}
+# Model comparison
+summary(resistance_model)
+summary(resistance_model_sens)
+resistance_model_check$comparison_table
+performance::compare_performance(
+    resistance_model, 
+    resistance_model_sens)
+```
+
+```{r resistance_4, fig.width=10, fig.height=10}
+performance::check_model(resistance_model)
+performance::check_model(resistance_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r resistance_raw_emm}
+# Get EMMs for each group at each visit
+resistance_raw_emm <- emmeans::emmeans(
+    resistance_model, 
+    ~ allocation_group * visit
+)
+
+resistance_raw_emm <- regrid(resistance_raw_emm)
+
+# Table of marginal means
+# resistance_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(resistance_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(resistance_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(resistance_raw_emm, comparisons = TRUE)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r resistance_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+resistance_emm <- emmeans::emmeans(
+    resistance_model_sens, 
+    ~ allocation_group * visit
+)
+
+resistance_emm <- regrid(resistance_emm)
+
+# Table of marginal means
+# resistance_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(resistance_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(resistance_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(resistance_emm, comparisons = TRUE)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para os valores de resistência bioelétrica corporal, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos momentos avaliados. As estimativas de diferença entre os grupos foram de -20,5 ohms (IC 95%: -50,6 a 9,6) na visita 1 e -25,2 ohms (IC 95%: -58,2 a 7,9) na visita 3. Tampouco foram observadas mudanças significativas ao longo do tempo dentro de cada grupo. 
+
+A análise de sensibilidade, com exclusão das observações mais influentes, não alterou substancialmente os resultados. As estimativas permaneceram similares, com diferença entre os grupos de -9,6 ohms (IC 95%: -35,9 a 16,8) na visita 1 e -20,4 ohms (IC 95%: -49,0 a 8,1) na visita 3, também sem significância estatística. Da mesma forma, não houve mudanças significativas entre as visitas dentro de cada grupo. As estimativas e intervalos de confiança de 95% estão apresentados na Tabela @tbl-resistance.
+
+Table: Diferenças estimadas nos valores de resistência elétrica entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo – Todos os dados {#tbl-resistance}
+
+| Grupo de comparação   | Comparação          | Estimativa | IC 95%              | p-valor |
+|-----------------------|---------------------|------------|----------------------|---------|
+| Entre grupos          | Visita 1            | -20,5      | [-50,6 ; 9,6]        | 0,180   |
+| Entre grupos          | Visita 3            | -25,2      | [-58,2 ; 7,9]        | 0,135   |
+| Grupo Placebo         | Visita 1 - Visita 3 | -2,23      | [-19,0 ; 14,6]       | 0,792   |
+| Grupo Eclipta         | Visita 1 - Visita 3 | -6,88      | [-25,0 ; 11,2]       | 0,451   |
+
+
+
+
+```{r resistance_6}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = resistance,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		resistance_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = resistance,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+
+
+
+### Força de Preensão Palmar
+
+Variável: `handgrip`
+
+
+
+
+```{r handgrip_1}
+# Plot 1: Raw data
+handgrip_hist_1 <- data_model_V1V3 %>% 
+    #filter(
+    #    handgrip < 300
+    #) %>% 
+    ggplot(aes(x = handgrip)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+handgrip_hist_2 <- data_model_V1V3 %>% 
+    #filter(
+    #    handgrip < 300
+    #) %>%
+    ggplot(aes(x = log1p(handgrip))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+handgrip_hist_1 + handgrip_hist_2 # library(patchwork)
+```
+
+```{r handgrip_2}
+# LMM
+handgrip_model <- lmer(log1p(handgrip) ~ allocation_group * visit + 
+(1 | record_id), data = data_model_V1V3)
+check_collinearity(handgrip_model)
+
+# Sensitivity analysis
+handgrip_model_check <- sensitivity_check_lmer(
+    model = handgrip_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+handgrip_model_sens <- update(object = handgrip_model,
+                              subset = !(record_id %in% 
+		handgrip_model_check$influential_ids))
+# Influential IDS
+handgrip_model_check$influential_ids
+```
+
+
+
+
+#### Resumo dos modelos
+
+
+
+
+```{r handgrip_3}
+# Model comparison
+summary(handgrip_model)
+summary(handgrip_model_sens)
+handgrip_model_check$comparison_table
+performance::compare_performance(
+    handgrip_model, 
+    handgrip_model_sens) 
+```
+
+```{r handgrip_4, fig.width=10, fig.height=10}
+performance::check_model(handgrip_model)
+performance::check_model(handgrip_model_sens)
+```
+
+
+
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+
+
+
+```{r handgrip_raw_emm}
+# Get EMMs for each group at each visit
+handgrip_raw_emm <- emmeans::emmeans(
+    handgrip_model, 
+    ~ allocation_group * visit
+)
+
+handgrip_raw_emm <- regrid(handgrip_raw_emm)
+
+# Table of marginal means
+# handgrip_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(handgrip_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(handgrip_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(handgrip_raw_emm)
+```
+
+
+
+
+##### Análise de sensibilidade
+
+
+
+
+```{r handgrip_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+handgrip_emm <- emmeans::emmeans(
+    handgrip_model_sens, 
+    ~ allocation_group * visit
+)
+
+handgrip_emm <- regrid(handgrip_emm)
+
+# Table of marginal means
+# handgrip_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(handgrip_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(handgrip_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(handgrip_emm)
+```
+
+
+
+
+#### Resultado
+
+No modelo ajustado para a força de preensão manual, observou-se uma diferença estatisticamente significativa entre os grupos na visita 3, com o grupo placebo apresentando força média 5,59 kgf superior ao grupo Eclipta (IC 95%: 1,67 a 9,51). Na visita 1, a diferença entre os grupos foi de 3,17 kgf (IC 95%: -0,54 a 6,88), sem alcançar significância estatística. Dentro de cada grupo, não foram observadas mudanças significativas ao longo do tempo.
+
+Na análise de sensibilidade, os efeitos observados foram atenuados e perderam significância estatística. A diferença entre os grupos na visita 3 reduziu-se para 2,60 kgf (IC 95%: -0,64 a 5,84), e na visita 1 para 2,02 kgf (IC 95%: -1,06 a 5,11). Também não houve mudanças significativas entre as visitas dentro de cada grupo. Esses achados sugerem que os resultados observados no modelo completo podem ter sido influenciados por observações com alto impacto.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas nas Tabelas @tbl-handgrip e @tbl-handgrip-sens.
+
+Table: Diferenças estimadas da força de preensão manual entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo – Todos os dados {#tbl-handgrip}
+
+| Grupo de comparação   | Comparação          | Estimativa | IC 95%              | p-valor |
+|-----------------------|---------------------|------------|----------------------|---------|
+| Entre grupos          | Visita 1            | 3,17       | [-0,54 ; 6,88]       | 0,093   |
+| Entre grupos          | Visita 3            | 5,59       | [1,67 ; 9,51]        | 0,006   |
+| Grupo Placebo         | Visita 1 - Visita 3 | -0,95      | [-2,83 ; 0,92]       | 0,316   |
+| Grupo Eclipta         | Visita 1 - Visita 3 | 1,47       | [-0,21 ; 3,15]       | 0,085   |
+
+Table: Diferenças estimadas da força de preensão manual entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo – Análise de sensibilidade {#tbl-handgrip-sens}
+
+| Grupo de comparação   | Comparação          | Estimativa | IC 95%              | p-valor |
+|-----------------------|---------------------|------------|----------------------|---------|
+| Entre grupos          | Visita 1            | 2,02       | [-1,06 ; 5,11]       | 0,195   |
+| Entre grupos          | Visita 3            | 2,60       | [-0,64 ; 5,84]       | 0,115   |
+| Grupo Placebo         | Visita 1 - Visita 3 | -0,78      | [-1,83 ; 0,26]       | 0,139   |
+| Grupo Eclipta         | Visita 1 - Visita 3 | -0,21      | [-1,28 ; 0,87]       | 0,702   |
+
+
+
+
+```{r handgrip_6}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = handgrip,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		handgrip_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = handgrip,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+
+
+
+# Informações da Sessão
+
+
+
+
+```{r}
+#| label: session_info
+sessionInfo()
+```
+
+```{r}
+#| include: false
+#| eval: false
+quarto::quarto_render("Outcomes_V1V2V3.qmd", "pdf")
+```
+

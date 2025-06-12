@@ -1,0 +1,182 @@
+---
+title: "template"
+format: html
+---
+
+## Escore DASS - Ansiedade
+
+Variável: `dass_score_anxiety`
+
+```{r}
+#| label: dass_score_anxiety-histogram
+
+# Plot 1: Raw data
+dass_score_anxiety_hist_1 <- data_model_V1V3 %>% 
+    #filter(
+    #    dass_score_anxiety < 300
+    #) %>% 
+    ggplot(aes(x = dass_score_anxiety)) + 
+    geom_histogram(bins = 30, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+dass_score_anxiety_hist_2 <- data_model_V1V3 %>% 
+    #filter(
+    #    dass_score_anxiety < 300
+    #) %>%
+    ggplot(aes(x = log1p(dass_score_anxiety))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+dass_score_anxiety_hist_1 + dass_score_anxiety_hist_2 # library(patchwork)
+```
+
+```{r}
+#| label: dass_score_anxiety-models
+ 
+# LMM
+dass_score_anxiety_model <- lmer(dass_score_anxiety ~ allocation_group * visit + 
+(1 | record_id), data = data_model_V1V3)
+check_collinearity(dass_score_anxiety_model)
+
+# Sensitivity analysis
+dass_score_anxiety_model_check <- sensitivity_check_lmer(
+    model = dass_score_anxiety_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+dass_score_anxiety_model_sens <- update(object = dass_score_anxiety_model,
+                              subset = !(record_id %in% 
+		dass_score_anxiety_model_check$influential_ids))
+# Influential IDS
+dass_score_anxiety_model_check$influential_ids
+```
+
+#### Resumo dos modelos
+
+```{r}
+#| label: dass_score_anxiety-models-summary
+
+summary(dass_score_anxiety_model)
+summary(dass_score_anxiety_model_sens)
+dass_score_anxiety_model_check$comparison_table
+performance::compare_performance(
+    dass_score_anxiety_model, 
+    dass_score_anxiety_model_sens) 
+```
+
+```{r, fig.width=10, fig.height=10}
+#| label: dass_score_anxiety-performance
+
+performance::check_model(dass_score_anxiety_model)
+performance::check_model(dass_score_anxiety_model_sens)
+```
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+```{r}
+#| label: dass_score_anxiety-EMM-raw
+
+# Get EMMs for each group at each visit
+dass_score_anxiety_raw_emm <- emmeans::emmeans(
+    dass_score_anxiety_model, 
+    ~ allocation_group * visit
+)
+
+dass_score_anxiety_raw_emm <- regrid(dass_score_anxiety_raw_emm)
+
+# Table of marginal means
+# dass_score_anxiety_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(dass_score_anxiety_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(dass_score_anxiety_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(dass_score_anxiety_raw_emm, comparisons = TRUE)
+```
+
+##### Análise de sensibilidade
+
+```{r}
+#| label: dass_score_anxiety-EMM-sens
+
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+dass_score_anxiety_emm <- emmeans::emmeans(
+    dass_score_anxiety_model_sens, 
+    ~ allocation_group * visit
+)
+
+dass_score_anxiety_emm <- regrid(dass_score_anxiety_emm)
+
+# Table of marginal means
+# dass_score_anxiety_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(dass_score_anxiety_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(dass_score_anxiety_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(dass_score_anxiety_emm, comparisons = TRUE)
+```
+
+```{r}
+#| label: dass_score_anxiety-plot-curve
+
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = dass_score_anxiety,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		dass_score_anxiety_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = dass_score_anxiety,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+

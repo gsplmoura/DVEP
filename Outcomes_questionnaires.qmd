@@ -1,0 +1,1848 @@
+---
+title: "Ensaio clínico randomizado: efeito da droga vegetal de *Eclipta prostrata* (L.) L. (Asteraceae) no ângulo de fase em adultos com obesidade grau I"
+subtitle: "Análise de dados: questionários"
+author: "Gustavo Santos Paiva Laender Moura"
+institute: "Departamento de Clínica Médica, Faculdade de Medicina de Ribeirão Preto da Universidade de São Paulo"
+date: today
+lang: pt
+cache: true
+freeze: true
+crossref:
+  fig-title: "Figura"
+  tbl-title: "Tabela"
+  title-delim: ":"
+  ref-hyperlink: true
+
+language:
+  title-block-author: "Autor"
+  title-block-institute: "Instituição"
+  title-block-date: "Data"
+  toc-title: "Sumário"
+  ref-title: "Referências"
+  appendix-title: "Apêndice"
+
+format:
+  html:
+    page-layout: full
+    toc: true
+    toc-depth: 5
+    toc-float:
+      collapsed: false
+      smooth-scroll: true
+    #css: styles.css
+    code-fold: false
+  pdf:
+    toc: true
+    toc-depth: 4
+    pdf-engine: xelatex
+    documentclass: article
+    mainfont: "Times New Roman"
+    fontsize: 12pt
+    linestretch: 1.5
+    geometry: top=3cm, bottom=2cm, left=3cm, right=2cm
+    colorlinks: true
+    code-overflow: wrap
+    code-block-font-size: 60%
+    number-sections: true
+    fig-align: center
+    fig-pos: 'H'
+    include-in-header: abnt-header.tex
+---
+
+```{r}
+#| label: setup
+#| include: false
+options(width = 180)
+
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  tibble.print_max = Inf,
+  tibble.width = Inf)
+```
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(lme4)
+library(lmerTest)
+library(skimr)
+library(performance)
+library(gt)
+library(patchwork)
+library(emmeans)
+library(knitr)
+library(kableExtra)
+
+data <- readRDS("local_files/Data_processed/data.rds")
+data_model <- readRDS("local_files/Data_processed/data_model.rds") %>% 
+    mutate(
+        visit = as.factor(visit),
+        record_id = as.factor(record_id)
+    )
+data_model_V1V3 <- data_model %>% 
+    filter(!visit == "2")
+```
+```{r}
+sensitivity_check_lmer <- function(model, id_var = "record_id", top_n = 5) {
+    require(influence.ME)
+    require(dplyr)
+    require(lme4)
+    require(broom.mixed)
+    
+    # Compute influence measures
+    infl <- influence(model, group = id_var)
+    cooks <- cooks.distance(infl)
+    
+    # Extract IDs safely
+    id_list <- rownames(as.data.frame(cooks))
+    
+    if (length(id_list) != length(cooks)) {
+        stop("Mismatch between ID list and Cook's distances. Check grouping variable.")
+    }
+    
+    # Build dataframe
+    cooks_df <- tibble::tibble(
+        record_id = id_list,
+        cooks_distance = as.numeric(cooks)
+    )
+    
+    # Rule-based threshold (4/n rule)
+    influential_ids_rule <- cooks_df %>%
+        filter(cooks_distance > (4 / nrow(cooks_df))) %>%
+        pull(record_id)
+    
+    # Top N most influential
+    top_ids <- cooks_df %>%
+        arrange(desc(cooks_distance)) %>%
+        slice_head(n = top_n) %>%
+        pull(record_id)
+    
+    # Combine unique IDs
+    influential_ids <- unique(c(influential_ids_rule, top_ids))
+    
+    # Refit model excluding influential IDs
+    model_sens <- update(
+        model,
+        subset = !(get(id_var) %in% influential_ids)
+    )
+    
+    # Compare fixed effects
+    comparison <- bind_rows(
+        broom.mixed::tidy(model) %>% mutate(Model = "Original"),
+        broom.mixed::tidy(model_sens) %>% mutate(Model = "Sensitivity")
+    ) %>%
+        select(Model, term, estimate, std.error, statistic, p.value) %>%
+        arrange(term, Model)
+    
+    # Output
+    list(
+        cooks_table = cooks_df,
+        influential_ids = influential_ids,
+        model_original = model,
+        model_sensitivity = model_sens,
+        comparison_table = comparison
+    )
+}
+```
+
+# WHOQOL
+
+```{r}
+whoqol <- data %>% 
+    select(record_id, event_name,
+           whoqol_timestamp:whoqol_26_negativity) %>% 
+    filter(
+        !is.na(whoqol_timestamp)
+    ) %>% 
+    mutate(
+        visit = case_when(
+            event_name == "1visit_arm_1" ~ 1L,
+            event_name == "3visit_arm_1" ~ 2L,
+            TRUE ~ NA_integer_
+        ),
+        visit = as.factor(visit),
+        record_id = as.factor(record_id)
+    )
+
+names(whoqol)
+```
+
+```{r}
+# Reverse-score the 3 negatively phrased items: Q3, Q4, Q26
+whoqol$whoqol_3_pain       <- 6 - whoqol$whoqol_3_pain       # Q3
+whoqol$whoqol_4_treatment  <- 6 - whoqol$whoqol_4_treatment  # Q4
+whoqol$whoqol_26_negativity <- 6 - whoqol$whoqol_26_negativity # Q26
+```
+
+```{r}
+# Helper function: compute row mean only if at least N non-NA values
+mean_if_enough <- function(x, min_valid) {
+  if (sum(!is.na(x)) >= min_valid) {
+    return(mean(x, na.rm = TRUE))
+  } else {
+    return(NA_real_)
+  }
+}
+```
+
+```{r}
+# Physical domain: require at least 6 of 7
+whoqol$score_physical <- apply(whoqol[, c(
+  "whoqol_3_pain", "whoqol_4_treatment", "whoqol_10_energy", 
+  "whoqol_15_mobility", "whoqol_16_sleep", "whoqol_17_activities", 
+  "whoqol_18_work"
+)], 1, mean_if_enough, min_valid = 6) * 4
+
+# Psychological domain: require at least 5 of 6
+whoqol$score_psychological <- apply(whoqol[, c(
+  "whoqol_5_enjoyment", "whoqol_6_meaning", "whoqol_7_concentration",
+  "whoqol_11_appearance", "whoqol_19_selfesteem", "whoqol_26_negativity"
+)], 1, mean_if_enough, min_valid = 5) * 4
+
+# Social domain: require at least 2 of 3
+whoqol$score_social <- apply(whoqol[, c(
+  "whoqol_20_relationships", "whoqol_21_sexual", "whoqol_22_support"
+)], 1, mean_if_enough, min_valid = 2) * 4
+
+# Environment domain: require at least 6 of 8
+whoqol$score_environment <- apply(whoqol[, c(
+  "whoqol_8_security", "whoqol_9_environment", "whoqol_12_finances",
+  "whoqol_13_information", "whoqol_14_leisure", "whoqol_23_housing",
+  "whoqol_24_health_services", "whoqol_25_transport"
+)], 1, mean_if_enough, min_valid = 6) * 4
+```
+
+
+```{r}
+whoqol$score_physical      <- (whoqol$score_physical - 4) * (100 / 16)
+whoqol$score_psychological <- (whoqol$score_psychological - 4) * (100 / 16)
+whoqol$score_social        <- (whoqol$score_social - 4) * (100 / 16)
+whoqol$score_environment   <- (whoqol$score_environment - 4) * (100 / 16)
+
+```
+
+```{r}
+data_model_V1V3 <- data_model %>% 
+    left_join(
+        whoqol %>% 
+            select(record_id, visit, 
+                   score_physical, score_psychological, 
+                   score_social, score_environment),
+        by = c("record_id", "visit")
+    )
+```
+
+## Domínio Físico
+
+Variável: `score_physical`
+
+```{r}
+#| label: score_physical-histogram
+
+# Plot 1: Raw data
+score_physical_hist_1 <- data_model_V1V3 %>% 
+    #filter(
+    #    score_physical < 300
+    #) %>% 
+    ggplot(aes(x = score_physical)) + 
+    geom_histogram(bins = 30, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+score_physical_hist_2 <- data_model_V1V3 %>% 
+    #filter(
+    #    score_physical < 300
+    #) %>%
+    ggplot(aes(x = log1p(score_physical))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+score_physical_hist_1 + score_physical_hist_2 # library(patchwork)
+```
+
+```{r}
+#| label: score_physical-models
+ 
+# LMM
+score_physical_model <- lmer(score_physical ~ allocation_group * visit + 
+(1 | record_id), data = data_model_V1V3)
+check_collinearity(score_physical_model)
+
+# Sensitivity analysis
+score_physical_model_check <- sensitivity_check_lmer(
+    model = score_physical_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+score_physical_model_sens <- update(object = score_physical_model,
+                              subset = !(record_id %in% 
+		score_physical_model_check$influential_ids))
+# Influential IDS
+score_physical_model_check$influential_ids
+```
+
+#### Resumo dos modelos
+
+```{r}
+#| label: score_physical-models-summary
+
+summary(score_physical_model)
+summary(score_physical_model_sens)
+score_physical_model_check$comparison_table
+performance::compare_performance(
+    score_physical_model, 
+    score_physical_model_sens) 
+```
+
+```{r, fig.width=10, fig.height=10}
+#| label: score_physical-performance
+
+performance::check_model(score_physical_model)
+performance::check_model(score_physical_model_sens)
+```
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+```{r}
+#| label: score_physical-EMM-raw
+
+# Get EMMs for each group at each visit
+score_physical_raw_emm <- emmeans::emmeans(
+    score_physical_model, 
+    ~ allocation_group * visit
+)
+
+score_physical_raw_emm <- regrid(score_physical_raw_emm)
+
+# Table of marginal means
+# score_physical_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(score_physical_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(score_physical_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(score_physical_raw_emm, comparisons = TRUE)
+```
+
+##### Análise de sensibilidade
+
+```{r}
+#| label: score_physical-EMM-sens
+
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+score_physical_emm <- emmeans::emmeans(
+    score_physical_model_sens, 
+    ~ allocation_group * visit
+)
+
+score_physical_emm <- regrid(score_physical_emm)
+
+# Table of marginal means
+# score_physical_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(score_physical_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(score_physical_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(score_physical_emm, comparisons = TRUE)
+```
+
+#### Resultado
+
+No modelo ajustado para o domínio físico do WHOQOL-BREF, não houve diferença significativa entre os grupos na visita 1 (estimativa = 4,92; IC 95%: –2,18 a 12,0). Na visita 2, o grupo placebo apresentou escores físicos em média 9,60 pontos superiores aos do grupo Eclipta (IC 95%: 1,50 a 17,7). Ao longo do tempo, o grupo placebo mostrou melhora significativa entre as visitas 1 e 2 (aumento médio de 8,94; IC 95%: 3,34 a 14,5), enquanto no grupo Eclipta essa mudança não foi significativa (aumento de 4,26; IC 95%: –1,52 a 10,0).
+
+Em análise de sensibilidade, o achado entre grupos na visita 2 permaneceu (estimativa = 7,43; IC 95%: 0,12 a 14,7). Além disso, ambos os grupos exibiram melhora significativa ao longo do tempo: placebo (aumento médio de 10,26; IC 95%: 5,53 a 15,0) e Eclipta (aumento médio de 6,67; IC 95%: 1,56 a 11,8).
+
+Tabela: Diferenças estimadas do escore físico do WHOQOL-BREF entre grupos (placebo vs Eclipta) e entre visitas dentro de cada grupo – Todos os dados {#tbl-score_physical}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%             | p-valor |
+|-----------------------|----------------------|------------|--------------------|---------|
+| Entre grupos          | Visita 1             | 4,92       | [–2,18; 12,0]      | 0,172   |
+| Entre grupos          | Visita 2             | 9,60       | [1,50; 17,7]       | 0,021   |
+| Grupo Placebo         | Visita 1 – Visita 2  | –8,94      | [–14,5; –3,34]     | 0,002   |
+| Grupo Eclipta         | Visita 1 – Visita 2  | –4,26      | [–10,0; 1,52]      | 0,147   |
+
+Tabela: Diferenças estimadas do escore físico do WHOQOL-BREF entre grupos (placebo vs Eclipta) e entre visitas dentro de cada grupo – Análise de sensibilidade {#tbl-score_phys_sens}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%             | p-valor  |
+|-----------------------|----------------------|------------|--------------------|----------|
+| Entre grupos          | Visita 1             | 3,84       | [–2,59; 10,3]      | 0,238    |
+| Entre grupos          | Visita 2             | 7,43       | [0,12; 14,7]       | 0,046    |
+| Grupo Placebo         | Visita 1 – Visita 2  | –10,26     | [–15,0; –5,53]     | < 0,001  |
+| Grupo Eclipta         | Visita 1 – Visita 2  | –6,67      | [–11,8; –1,56]     | 0,011    |
+
+```{r}
+#| label: score_physical-plot-curve
+
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = score_physical,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		score_physical_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = score_physical,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+
+## Domínio Psicológico
+
+Variável: `score_psychological`
+
+```{r}
+#| label: score_psychological-histogram
+
+# Plot 1: Raw data
+score_psychological_hist_1 <- data_model_V1V3 %>% 
+    #filter(
+    #    score_psychological < 300
+    #) %>% 
+    ggplot(aes(x = score_psychological)) + 
+    geom_histogram(bins = 30, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+score_psychological_hist_2 <- data_model_V1V3 %>% 
+    #filter(
+    #    score_psychological < 300
+    #) %>%
+    ggplot(aes(x = log1p(score_psychological))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+score_psychological_hist_1 + score_psychological_hist_2 # library(patchwork)
+```
+
+```{r}
+#| label: score_psychological-models
+ 
+# LMM
+score_psychological_model <- lmer(score_psychological ~ allocation_group * visit + 
+(1 | record_id), data = data_model_V1V3)
+check_collinearity(score_psychological_model)
+
+# Sensitivity analysis
+score_psychological_model_check <- sensitivity_check_lmer(
+    model = score_psychological_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+score_psychological_model_sens <- update(object = score_psychological_model,
+                              subset = !(record_id %in% 
+		score_psychological_model_check$influential_ids))
+# Influential IDS
+score_psychological_model_check$influential_ids
+```
+
+#### Resumo dos modelos
+
+```{r}
+#| label: score_psychological-models-summary
+
+summary(score_psychological_model)
+summary(score_psychological_model_sens)
+score_psychological_model_check$comparison_table
+performance::compare_performance(
+    score_psychological_model, 
+    score_psychological_model_sens) 
+```
+
+```{r, fig.width=10, fig.height=10}
+#| label: score_psychological-performance
+
+performance::check_model(score_psychological_model)
+performance::check_model(score_psychological_model_sens)
+```
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+```{r}
+#| label: score_psychological-EMM-raw
+
+# Get EMMs for each group at each visit
+score_psychological_raw_emm <- emmeans::emmeans(
+    score_psychological_model, 
+    ~ allocation_group * visit
+)
+
+score_psychological_raw_emm <- regrid(score_psychological_raw_emm)
+
+# Table of marginal means
+# score_psychological_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(score_psychological_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(score_psychological_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(score_psychological_raw_emm, comparisons = TRUE)
+```
+
+##### Análise de sensibilidade
+
+```{r}
+#| label: score_psychological-EMM-sens
+
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+score_psychological_emm <- emmeans::emmeans(
+    score_psychological_model_sens, 
+    ~ allocation_group * visit
+)
+
+score_psychological_emm <- regrid(score_psychological_emm)
+
+# Table of marginal means
+# score_psychological_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(score_psychological_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(score_psychological_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(score_psychological_emm, comparisons = TRUE)
+```
+#### Resultado
+
+No modelo ajustado para o domínio psicológico do WHOQOL-BREF, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos momentos avaliados (visita 1: estimativa = –1,47; IC 95%: –8,45 a 5,51; visita 2: estimativa = 2,87; IC 95%: –4,93 a 10,67). Ao longo do tempo, ambos os grupos apresentaram melhora significativa do escore psicológico entre a visita 1 e a visita 2: placebo (aumento médio de 12,39; IC 95%: 7,49 a 17,3) e Eclipta (aumento médio de 8,05; IC 95%: 2,99 a 13,1).
+
+Na análise de sensibilidade, os achados principais se mantiveram: não houve diferença entre grupos nas visitas 1 e 2, e as melhorias ao longo do tempo continuaram significativas para placebo (aumento de 12,08; IC 95%: 7,69 a 16,5) e Eclipta (aumento de 9,36; IC 95%: 5,09 a 13,6).
+
+As estimativas, intervalos de confiança de 95% e p-valores estão apresentados nas Tabelas @tbl-score_psychological e @tbl-score_psychological_sens.
+
+Table: Diferenças estimadas do escore psicológico do WHOQOL-BREF entre grupos (placebo vs Eclipta) e ao longo do tempo – Todos os dados {#tbl-score_psychological}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%           | p-valor |
+|-----------------------|----------------------|------------|------------------|---------|
+| Entre grupos          | Visita 1             | –1,47      | [–8,45; 5,51]    | 0,676   |
+| Entre grupos          | Visita 2             | 2,87       | [–4,93; 10,67]   | 0,468   |
+| Grupo Placebo         | Visita 1 – Visita 2  | –12,39     | [–17,3; –7,49]   | < 0,001 |
+| Grupo Eclipta         | Visita 1 – Visita 2  | –8,05      | [–13,1; –2,99]   | 0,002   |
+
+Table: Diferenças estimadas do escore psicológico do WHOQOL-BREF entre grupos (placebo vs Eclipta) e ao longo do tempo – Análise de sensibilidade {#tbl-score_psychological_sens}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%           | p-valor |
+|-----------------------|----------------------|------------|------------------|---------|
+| Entre grupos          | Visita 1             | –2,41      | [–8,76; 3,94]    | 0,454   |
+| Entre grupos          | Visita 2             | 0,31       | [–6,78; 7,39]    | 0,931   |
+| Grupo Placebo         | Visita 1 – Visita 2  | –12,08     | [–16,5; –7,69]   | < 0,001 |
+| Grupo Eclipta         | Visita 1 – Visita 2  | –9,36      | [–13,6; –5,09]   | < 0,001 |
+
+```{r}
+#| label: score_psychological-plot-curve
+
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = score_psychological,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		score_psychological_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = score_psychological,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+## Domínio Social
+
+Variável: `score_social`
+
+```{r}
+#| label: score_social-histogram
+
+# Plot 1: Raw data
+score_social_hist_1 <- data_model_V1V3 %>% 
+    #filter(
+    #    score_social < 300
+    #) %>% 
+    ggplot(aes(x = score_social)) + 
+    geom_histogram(bins = 30, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+score_social_hist_2 <- data_model_V1V3 %>% 
+    #filter(
+    #    score_social < 300
+    #) %>%
+    ggplot(aes(x = log1p(score_social))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+score_social_hist_1 + score_social_hist_2 # library(patchwork)
+```
+
+```{r}
+#| label: score_social-models
+ 
+# LMM
+score_social_model <- lmer(score_social ~ allocation_group * visit + 
+(1 | record_id), data = data_model_V1V3)
+check_collinearity(score_social_model)
+
+# Sensitivity analysis
+score_social_model_check <- sensitivity_check_lmer(
+    model = score_social_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+score_social_model_sens <- update(object = score_social_model,
+                              subset = !(record_id %in% 
+		score_social_model_check$influential_ids))
+# Influential IDS
+score_social_model_check$influential_ids
+```
+
+#### Resumo dos modelos
+
+```{r}
+#| label: score_social-models-summary
+
+summary(score_social_model)
+summary(score_social_model_sens)
+score_social_model_check$comparison_table
+performance::compare_performance(
+    score_social_model, 
+    score_social_model_sens) 
+```
+
+```{r, fig.width=10, fig.height=10}
+#| label: score_social-performance
+
+performance::check_model(score_social_model)
+performance::check_model(score_social_model_sens)
+```
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+```{r}
+#| label: score_social-EMM-raw
+
+# Get EMMs for each group at each visit
+score_social_raw_emm <- emmeans::emmeans(
+    score_social_model, 
+    ~ allocation_group * visit
+)
+
+score_social_raw_emm <- regrid(score_social_raw_emm)
+
+# Table of marginal means
+# score_social_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(score_social_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(score_social_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(score_social_raw_emm, comparisons = TRUE)
+```
+
+##### Análise de sensibilidade
+
+```{r}
+#| label: score_social-EMM-sens
+
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+score_social_emm <- emmeans::emmeans(
+    score_social_model_sens, 
+    ~ allocation_group * visit
+)
+
+score_social_emm <- regrid(score_social_emm)
+
+# Table of marginal means
+# score_social_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(score_social_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(score_social_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(score_social_emm, comparisons = TRUE)
+```
+#### Resultado
+
+No modelo ajustado para o domínio social do WHOQOL-BREF, não foram observadas diferenças significativas entre os grupos na visita 1 (estimativa = 1,31; IC 95%: –7,76 a 10,4) nem na visita 2 (estimativa = 6,21; IC 95%: –3,93 a 16,3). Também não houve mudanças significativas ao longo do tempo dentro de cada grupo (placebo: –4,05; IC 95%: –10,45 a 2,34; Eclipta: 0,85; IC 95%: –5,76 a 7,45).
+
+Na análise de sensibilidade, surgiu diferença significativa entre os grupos na visita 2, com o grupo placebo apresentando escore social 9,65 pontos superior ao grupo Eclipta (IC 95%: 0,72 a 18,6). Não houve alterações significativas ao longo do tempo dentro de nenhum dos grupos na análise de sensibilidade.
+
+As estimativas, intervalos de confiança de 95% e p-valores estão apresentados nas Tabelas @tbl-score_social e @tbl-score_social_sens.
+
+Table: Diferenças estimadas do escore social do WHOQOL-BREF entre grupos e ao longo do tempo – Todos os dados {#tbl-score_social}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%            | p-valor |
+|-----------------------|----------------------|------------|-------------------|---------|
+| Entre grupos          | Visita 1             | 1,31       | [–7,76; 10,4]     | 0,775   |
+| Entre grupos          | Visita 2             | 6,21       | [–3,93; 16,3]     | 0,228   |
+| Grupo Placebo         | Visita 1 – Visita 2  | –4,05      | [–10,45; 2,34]    | 0,212   |
+| Grupo Eclipta         | Visita 1 – Visita 2  | 0,85       | [–5,76; 7,45]     | 0,800   |
+
+Table: Diferenças estimadas do escore social do WHOQOL-BREF entre grupos e ao longo do tempo – Análise de sensibilidade {#tbl-score_social_sens}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%            | p-valor |
+|-----------------------|----------------------|------------|-------------------|---------|
+| Entre grupos          | Visita 1             | 2,17       | [–6,06; 10,4]     | 0,601   |
+| Entre grupos          | Visita 2             | 9,65       | [0,72; 18,6]      | 0,035   |
+| Grupo Placebo         | Visita 1 – Visita 2  | –3,60      | [–8,47; 1,27]     | 0,145   |
+| Grupo Eclipta         | Visita 1 – Visita 2  | 3,88       | [–0,88; 8,64]     | 0,109   |
+
+```{r}
+#| label: score_social-plot-curve
+
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = score_social,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		score_social_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = score_social,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+## Domínio Ambiental
+
+Variável: `score_environment`
+
+```{r}
+#| label: score_environment-histogram
+
+# Plot 1: Raw data
+score_environment_hist_1 <- data_model_V1V3 %>% 
+    #filter(
+    #    score_environment < 300
+    #) %>% 
+    ggplot(aes(x = score_environment)) + 
+    geom_histogram(bins = 30, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+score_environment_hist_2 <- data_model_V1V3 %>% 
+    #filter(
+    #    score_environment < 300
+    #) %>%
+    ggplot(aes(x = log1p(score_environment))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+score_environment_hist_1 + score_environment_hist_2 # library(patchwork)
+```
+
+```{r}
+#| label: score_environment-models
+ 
+# LMM
+score_environment_model <- lmer(score_environment ~ allocation_group * visit + 
+(1 | record_id), data = data_model_V1V3)
+check_collinearity(score_environment_model)
+
+# Sensitivity analysis
+score_environment_model_check <- sensitivity_check_lmer(
+    model = score_environment_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+score_environment_model_sens <- update(object = score_environment_model,
+                              subset = !(record_id %in% 
+		score_environment_model_check$influential_ids))
+# Influential IDS
+score_environment_model_check$influential_ids
+```
+
+#### Resumo dos modelos
+
+```{r}
+#| label: score_environment-models-summary
+
+summary(score_environment_model)
+summary(score_environment_model_sens)
+score_environment_model_check$comparison_table
+performance::compare_performance(
+    score_environment_model, 
+    score_environment_model_sens) 
+```
+
+```{r, fig.width=10, fig.height=10}
+#| label: score_environment-performance
+
+performance::check_model(score_environment_model)
+performance::check_model(score_environment_model_sens)
+```
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+```{r}
+#| label: score_environment-EMM-raw
+
+# Get EMMs for each group at each visit
+score_environment_raw_emm <- emmeans::emmeans(
+    score_environment_model, 
+    ~ allocation_group * visit
+)
+
+score_environment_raw_emm <- regrid(score_environment_raw_emm)
+
+# Table of marginal means
+# score_environment_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(score_environment_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(score_environment_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(score_environment_raw_emm, comparisons = TRUE)
+```
+
+##### Análise de sensibilidade
+
+```{r}
+#| label: score_environment-EMM-sens
+
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+score_environment_emm <- emmeans::emmeans(
+    score_environment_model_sens, 
+    ~ allocation_group * visit
+)
+
+score_environment_emm <- regrid(score_environment_emm)
+
+# Table of marginal means
+# score_environment_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(score_environment_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(score_environment_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(score_environment_emm, comparisons = TRUE)
+```
+#### Resultado
+
+No modelo ajustado para o domínio ambiente do WHOQOL-BREF, não foram observadas diferenças significativas entre os grupos na visita 1 (estimativa = 1,62; IC 95%: –4,58 a 7,81) nem na visita 2 (estimativa = 2,77; IC 95%: –3,96 a 9,50). Também não houve alterações significativas ao longo do tempo dentro de cada grupo (placebo: –2,39; IC 95%: –6,03 a 1,24; Eclipta: –1,24; IC 95%: –5,01 a 2,53). A análise de sensibilidade manteve o mesmo padrão de resultados.
+
+Tabela: Diferenças estimadas do escore ambiente do WHOQOL-BREF entre grupos (placebo vs Eclipta) e entre visitas dentro de cada grupo – Todos os dados {#tbl-score_environment}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%             | p-valor |
+|-----------------------|----------------------|------------|--------------------|---------|
+| Entre grupos          | Visita 1             | 1,62       | [–4,58; 7,81]      | 0,605   |
+| Entre grupos          | Visita 2             | 2,77       | [–3,96; 9,50]      | 0,416   |
+| Grupo Placebo         | Visita 1 – Visita 2  | –2,39      | [–6,03; 1,24]      | 0,194   |
+| Grupo Eclipta         | Visita 1 – Visita 2  | –1,24      | [–5,01; 2,53]      | 0,514   |
+
+```{r}
+#| label: score_environment-plot-curve
+
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = score_environment,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		score_environment_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = score_environment,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+# Escore DASS
+
+## Escore DASS - Depressão
+
+Variável: `dass_score_depression`
+
+```{r}
+#| label: dass_score_depression-histogram
+
+# Plot 1: Raw data
+dass_score_depression_hist_1 <- data_model_V1V3 %>% 
+    #filter(
+    #    dass_score_depression < 300
+    #) %>% 
+    ggplot(aes(x = dass_score_depression)) + 
+    geom_histogram(bins = 30, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+dass_score_depression_hist_2 <- data_model_V1V3 %>% 
+    #filter(
+    #    dass_score_depression < 300
+    #) %>%
+    ggplot(aes(x = log1p(dass_score_depression))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+dass_score_depression_hist_1 + dass_score_depression_hist_2 # library(patchwork)
+```
+```{r}
+#| label: dass_score_depression-models-nb
+
+# Fit a negative‐binomial GLMM
+dass_score_depression_nb_model <- glmmTMB::glmmTMB(
+  formula = dass_score_depression ~ allocation_group * visit + (1 | record_id),
+  family  = glmmTMB::nbinom2(),
+  data    = data_model_V1V3
+)
+
+# Check collinearity
+performance::check_collinearity(dass_score_depression_nb_model)
+
+# 3. Identify the 5 most “influential” clusters by magnitude of their random intercepts
+re_nb <- glmmTMB::ranef(dass_score_depression_nb_model)$cond$record_id
+re_nb_df <- data.frame(
+  record_id = rownames(re_nb),
+  intercept = re_nb[, 1],
+  stringsAsFactors = FALSE
+)
+influential_ids_nb <- re_nb_df %>%
+  dplyr::arrange(dplyr::desc(abs(intercept))) %>%
+  dplyr::slice_head(n = 5) %>%
+  dplyr::pull(record_id)
+
+# 4. Re‐fit the model excluding those top‐5 clusters
+dass_score_depression_nb_model_sens <- update(
+  dass_score_depression_nb_model,
+  data = dplyr::filter(data_model_V1V3, !record_id %in% influential_ids_nb)
+)
+
+# 5. Inspect which record_ids were most extreme
+influential_ids_nb
+```
+
+#### Resumo dos modelos
+
+```{r}
+#| label: dass_score_depression-models-summary-nb
+
+# Model summaries
+summary(dass_score_depression_nb_model)
+summary(dass_score_depression_nb_model_sens)
+
+# Compare performance
+performance::compare_performance(
+  dass_score_depression_nb_model,
+  dass_score_depression_nb_model_sens
+)
+```
+
+```{r}
+#| label: dass_score_depression-performance-nb
+
+# Diagnostic checks
+performance::check_model(dass_score_depression_nb_model)
+performance::check_model(dass_score_depression_nb_model_sens)
+```
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+```{r}
+#| label: dass_score_depression-EMM-nb
+
+# Estimated marginal means on the response scale
+dass_score_depression_nb_emm <- emmeans::emmeans(
+  dass_score_depression_nb_model,
+  ~ allocation_group * visit,
+  type = "response"
+)
+
+# Pairwise contrasts by visit
+emmeans::contrast(
+  dass_score_depression_nb_emm,
+  method = "pairwise",
+  by     = "visit",
+  adjust = "bonferroni"
+) %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise contrasts over time within each group
+emmeans::contrast(
+  dass_score_depression_nb_emm,
+  method = "pairwise",
+  by     = "allocation_group",
+  adjust = "bonferroni"
+) %>% summary(infer = c(TRUE, TRUE))
+
+# Plot marginal means
+plot(dass_score_depression_nb_emm, comparisons = TRUE)
+```
+##### Análise de sensibilidade
+
+```{r}
+#| label: dass_score_depression-EMM-nb-sens
+
+# Estimated marginal means on the response scale
+dass_score_depression_nb_emm_sens <- emmeans::emmeans(
+  dass_score_depression_nb_model_sens,
+  ~ allocation_group * visit,
+  type = "response"
+)
+
+# Pairwise contrasts by visit
+emmeans::contrast(
+  dass_score_depression_nb_emm_sens,
+  method = "pairwise",
+  by     = "visit",
+  adjust = "bonferroni"
+) %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise contrasts over time within each group
+emmeans::contrast(
+  dass_score_depression_nb_emm_sens,
+  method = "pairwise",
+  by     = "allocation_group",
+  adjust = "bonferroni"
+) %>% summary(infer = c(TRUE, TRUE))
+
+# Plot marginal means
+plot(dass_score_depression_nb_emm_sens, comparisons = TRUE)
+```
+
+#### Resultado
+
+No modelo de regressão para o escore de depressão (DASS), não foram observadas diferenças significativas entre os grupos em nenhum dos momentos avaliados. Na visita 1, a razão dos escores do Grupo A em relação ao Grupo B foi de 0,855 (IC 95%: 0,502–1,46; p = 0,564) e, na visita 3, 1,074 (IC 95%: 0,574–2,01; p = 0,824). Ao longo do tempo, também não houve mudança significativa dentro de cada grupo: Grupo Placebo (visita 1 vs visita 3, razão = 1,20; IC 95%: 0,767–1,87; p = 0,428) e Grupo Eclipta (visita 1 vs visita 3, razão = 1,50; IC 95%: 0,959–2,36; p = 0,076). A análise de sensibilidade apresentou padrão consistente, sem alterações relevantes nas conclusões.
+
+Tabela: Razões dos escores de depressão (DASS) entre grupos e ao longo do tempo – Todos os dados {#tbl-dass_depression}
+
+| Grupo de comparação   | Comparação           | Razão | IC 95%        | p-valor |
+|-----------------------|----------------------|-------|---------------|---------|
+| Entre grupos          | Visita 1             | 0,855 | [0,502; 1,46] | 0,564   |
+| Entre grupos          | Visita 3             | 1,074 | [0,574; 2,01] | 0,824   |
+| Grupo Placebo         | Visita 1 – Visita 3  | 1,20  | [0,767; 1,87] | 0,428   |
+| Grupo Eclipta         | Visita 1 – Visita 3  | 1,50  | [0,959; 2,36] | 0,076   |
+
+
+```{r}
+#| label: dass_score_depression-plot-curve
+
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = dass_score_depression,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		influential_ids_nb)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = dass_score_depression,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+## Escore DASS - Ansiedade
+
+Variável: `dass_score_anxiety`
+
+```{r}
+#| label: dass_score_anxiety-histogram
+
+# Plot 1: Raw data
+dass_score_anxiety_hist_1 <- data_model_V1V3 %>% 
+    #filter(
+    #    dass_score_anxiety < 300
+    #) %>% 
+    ggplot(aes(x = dass_score_anxiety)) + 
+    geom_histogram(bins = 30, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+dass_score_anxiety_hist_2 <- data_model_V1V3 %>% 
+    #filter(
+    #    dass_score_anxiety < 300
+    #) %>%
+    ggplot(aes(x = log1p(dass_score_anxiety))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+dass_score_anxiety_hist_1 + dass_score_anxiety_hist_2 # library(patchwork)
+```
+```{r}
+#| label: dass_score_anxiety-models-nb
+
+# Fit a negative‐binomial GLMM
+dass_score_anxiety_nb_model <- glmmTMB::glmmTMB(
+  formula = dass_score_anxiety ~ allocation_group * visit + (1 | record_id),
+  family  = glmmTMB::nbinom2(),
+  data    = data_model_V1V3
+)
+
+# Check collinearity
+performance::check_collinearity(dass_score_anxiety_nb_model)
+
+# 3. Identify the 5 most “influential” clusters by magnitude of their random intercepts
+re_nb <- glmmTMB::ranef(dass_score_anxiety_nb_model)$cond$record_id
+re_nb_df <- data.frame(
+  record_id = rownames(re_nb),
+  intercept = re_nb[, 1],
+  stringsAsFactors = FALSE
+)
+influential_ids_nb <- re_nb_df %>%
+  dplyr::arrange(dplyr::desc(abs(intercept))) %>%
+  dplyr::slice_head(n = 5) %>%
+  dplyr::pull(record_id)
+
+# 4. Re‐fit the model excluding those top‐5 clusters
+dass_score_anxiety_nb_model_sens <- update(
+  dass_score_anxiety_nb_model,
+  data = dplyr::filter(data_model_V1V3, !record_id %in% influential_ids_nb)
+)
+
+# 5. Inspect which record_ids were most extreme
+influential_ids_nb
+```
+
+#### Resumo dos modelos
+
+```{r}
+#| label: dass_score_anxiety-models-summary-nb
+
+# Model summaries
+summary(dass_score_anxiety_nb_model)
+summary(dass_score_anxiety_nb_model_sens)
+
+# Compare performance
+performance::compare_performance(
+  dass_score_anxiety_nb_model,
+  dass_score_anxiety_nb_model_sens
+)
+```
+
+```{r}
+#| label: dass_score_anxiety-performance-nb
+
+# Diagnostic checks
+performance::check_model(dass_score_anxiety_nb_model)
+performance::check_model(dass_score_anxiety_nb_model_sens)
+```
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+```{r}
+#| label: dass_score_anxiety-EMM-nb
+
+# Estimated marginal means on the response scale
+dass_score_anxiety_nb_emm <- emmeans::emmeans(
+  dass_score_anxiety_nb_model,
+  ~ allocation_group * visit,
+  type = "response"
+)
+
+# Pairwise contrasts by visit
+emmeans::contrast(
+  dass_score_anxiety_nb_emm,
+  method = "pairwise",
+  by     = "visit",
+  adjust = "bonferroni"
+) %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise contrasts over time within each group
+emmeans::contrast(
+  dass_score_anxiety_nb_emm,
+  method = "pairwise",
+  by     = "allocation_group",
+  adjust = "bonferroni"
+) %>% summary(infer = c(TRUE, TRUE))
+
+# Plot marginal means
+plot(dass_score_anxiety_nb_emm, comparisons = TRUE)
+```
+##### Análise de sensibilidade
+
+```{r}
+#| label: dass_score_anxiety-EMM-nb-sens
+
+# Estimated marginal means on the response scale
+dass_score_anxiety_nb_emm_sens <- emmeans::emmeans(
+  dass_score_anxiety_nb_model_sens,
+  ~ allocation_group * visit,
+  type = "response"
+)
+
+# Pairwise contrasts by visit
+emmeans::contrast(
+  dass_score_anxiety_nb_emm_sens,
+  method = "pairwise",
+  by     = "visit",
+  adjust = "bonferroni"
+) %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise contrasts over time within each group
+emmeans::contrast(
+  dass_score_anxiety_nb_emm_sens,
+  method = "pairwise",
+  by     = "allocation_group",
+  adjust = "bonferroni"
+) %>% summary(infer = c(TRUE, TRUE))
+
+# Plot marginal means
+plot(dass_score_anxiety_nb_emm_sens, comparisons = TRUE)
+```
+
+#### Resultado
+
+No modelo ajustado para o escore de ansiedade (DASS), não houve diferenças significativas entre os grupos em nenhum dos momentos avaliados (visita 1: razão = 1,06; IC 95%: 0,57–1,96; p = 0,861; visita 3: razão = 1,08; IC 95%: 0,52–2,26; p = 0,830). Também não houve alteração significativa ao longo do tempo dentro de cada grupo (placebo: visita 1 vs visita 3, razão = 1,53; IC 95%: 0,87–2,69; p = 0,136; Eclipta: razão = 1,57; IC 95%: 0,89–2,80; p = 0,122). A análise de sensibilidade manteve o mesmo padrão de resultados.
+
+Tabela: Razões dos escores de ansiedade (DASS) entre grupos e ao longo do tempo – Todos os dados {#tbl-dass_anxiety}
+
+| Grupo de comparação   | Comparação           | Razão | IC 95%       | p-valor |
+|-----------------------|----------------------|-------|--------------|---------|
+| Entre grupos          | Visita 1             | 1,06  | [0,57; 1,96] | 0,861   |
+| Entre grupos          | Visita 3             | 1,08  | [0,52; 2,26] | 0,830   |
+| Grupo Placebo         | Visita 1 – Visita 3  | 1,53  | [0,87; 2,69] | 0,136   |
+| Grupo Eclipta         | Visita 1 – Visita 3  | 1,57  | [0,89; 2,80] | 0,122   |
+
+```{r}
+#| label: dass_score_anxiety-plot-curve
+
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = dass_score_anxiety,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		influential_ids_nb)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = dass_score_anxiety,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+## Escore DASS - Estresse
+
+Variável: `dass_score_stress`
+
+```{r}
+#| label: dass_score_stress-histogram
+
+# Plot 1: Raw data
+dass_score_stress_hist_1 <- data_model_V1V3 %>% 
+    #filter(
+    #    dass_score_stress < 300
+    #) %>% 
+    ggplot(aes(x = dass_score_stress)) + 
+    geom_histogram(bins = 30, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+dass_score_stress_hist_2 <- data_model_V1V3 %>% 
+    #filter(
+    #    dass_score_stress < 300
+    #) %>%
+    ggplot(aes(x = log1p(dass_score_stress))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+dass_score_stress_hist_1 + dass_score_stress_hist_2 # library(patchwork)
+```
+```{r}
+#| label: dass_score_stress-models-nb
+
+# Fit a negative‐binomial GLMM
+dass_score_stress_nb_model <- glmmTMB::glmmTMB(
+  formula = dass_score_stress ~ allocation_group * visit + (1 | record_id),
+  family  = glmmTMB::nbinom2(),
+  data    = data_model_V1V3
+)
+
+# Check collinearity
+performance::check_collinearity(dass_score_stress_nb_model)
+
+# 3. Identify the 5 most “influential” clusters by magnitude of their random intercepts
+re_nb <- glmmTMB::ranef(dass_score_stress_nb_model)$cond$record_id
+re_nb_df <- data.frame(
+  record_id = rownames(re_nb),
+  intercept = re_nb[, 1],
+  stringsAsFactors = FALSE
+)
+influential_ids_nb <- re_nb_df %>%
+  dplyr::arrange(dplyr::desc(abs(intercept))) %>%
+  dplyr::slice_head(n = 5) %>%
+  dplyr::pull(record_id)
+
+# 4. Re‐fit the model excluding those top‐5 clusters
+dass_score_stress_nb_model_sens <- update(
+  dass_score_stress_nb_model,
+  data = dplyr::filter(data_model_V1V3, !record_id %in% influential_ids_nb)
+)
+
+# 5. Inspect which record_ids were most extreme
+influential_ids_nb
+```
+
+#### Resumo dos modelos
+
+```{r}
+#| label: dass_score_stress-models-summary-nb
+
+# Model summaries
+summary(dass_score_stress_nb_model)
+summary(dass_score_stress_nb_model_sens)
+
+# Compare performance
+performance::compare_performance(
+  dass_score_stress_nb_model,
+  dass_score_stress_nb_model_sens
+)
+```
+
+```{r}
+#| label: dass_score_stress-performance-nb
+
+# Diagnostic checks
+performance::check_model(dass_score_stress_nb_model)
+performance::check_model(dass_score_stress_nb_model_sens)
+```
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+```{r}
+#| label: dass_score_stress-EMM-nb
+
+# Estimated marginal means on the response scale
+dass_score_stress_nb_emm <- emmeans::emmeans(
+  dass_score_stress_nb_model,
+  ~ allocation_group * visit,
+  type = "response"
+)
+
+# Pairwise contrasts by visit
+emmeans::contrast(
+  dass_score_stress_nb_emm,
+  method = "pairwise",
+  by     = "visit",
+  adjust = "bonferroni"
+) %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise contrasts over time within each group
+emmeans::contrast(
+  dass_score_stress_nb_emm,
+  method = "pairwise",
+  by     = "allocation_group",
+  adjust = "bonferroni"
+) %>% summary(infer = c(TRUE, TRUE))
+
+# Plot marginal means
+plot(dass_score_stress_nb_emm, comparisons = TRUE)
+```
+
+##### Análise de sensibilidade
+
+```{r}
+#| label: dass_score_stress-EMM-nb-sens
+
+# Estimated marginal means on the response scale
+dass_score_stress_nb_emm_sens <- emmeans::emmeans(
+  dass_score_stress_nb_model_sens,
+  ~ allocation_group * visit,
+  type = "response"
+)
+
+# Pairwise contrasts by visit
+emmeans::contrast(
+  dass_score_stress_nb_emm_sens,
+  method = "pairwise",
+  by     = "visit",
+  adjust = "bonferroni"
+) %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise contrasts over time within each group
+emmeans::contrast(
+  dass_score_stress_nb_emm_sens,
+  method = "pairwise",
+  by     = "allocation_group",
+  adjust = "bonferroni"
+) %>% summary(infer = c(TRUE, TRUE))
+
+# Plot marginal means
+plot(dass_score_stress_nb_emm_sens, comparisons = TRUE)
+```
+
+#### Resultado
+
+No modelo ajustado para o escore de estresse (DASS), não houve diferenças significativas entre os grupos em nenhum dos momentos avaliados (visita 1: razão = 0,823; IC 95%: 0,515–1,31; p = 0,414; visita 3: razão = 1,190; IC 95%: 0,701–2,02; p = 0,519). Ao longo do tempo, o grupo Eclipta apresentou redução significativa do escore de estresse entre visita 1 e visita 3 (razão = 1,52; IC 95%: 1,102–2,11; p = 0,011), enquanto o grupo placebo não mostrou mudança significativa (razão = 1,05; IC 95%: 0,768–1,45; p = 0,745).
+
+Tabela: Razões dos escores de estresse (DASS) entre grupos e ao longo do tempo – Todos os dados {#tbl-dass_stress}
+
+| Grupo de comparação   | Comparação           | Razão | IC 95%         | p-valor |
+|-----------------------|----------------------|-------|----------------|---------|
+| Entre grupos          | Visita 1             | 0,823 | [0,515; 1,31]  | 0,414   |
+| Entre grupos          | Visita 3             | 1,190 | [0,701; 2,02]  | 0,519   |
+| Grupo Placebo         | Visita 1 – Visita 3  | 1,05  | [0,768; 1,45]  | 0,745   |
+| Grupo Eclipta         | Visita 1 – Visita 3  | 1,52  | [1,102; 2,11]  | 0,011   |
+
+```{r}
+#| label: dass_score_stress-plot-curve
+
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = dass_score_stress,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		influential_ids_nb)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = dass_score_stress,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+# ECAP
+
+Variável: `ecap_score`
+
+```{r ecap_score_1}
+# Plot 1: Raw data
+ecap_score_hist_1 <- data_model_V1V3 %>% 
+    #filter(
+    #    ecap_score < 300
+    #) %>% 
+    ggplot(aes(x = ecap_score)) + 
+    geom_histogram(bins = 50, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+ecap_score_hist_2 <- data_model_V1V3 %>% 
+    #filter(
+    #    ecap_score < 300
+    #) %>%
+    ggplot(aes(x = log1p(ecap_score))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+ecap_score_hist_1 + ecap_score_hist_2 # library(patchwork)
+```
+
+```{r ecap_score_2}
+# LMM
+ecap_score_model <- lmer(ecap_score ~ allocation_group * visit + 
+(1 | record_id), data = data_model_V1V3)
+check_collinearity(ecap_score_model)
+
+# Sensitivity analysis
+ecap_score_model_check <- sensitivity_check_lmer(
+    model = ecap_score_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+ecap_score_model_sens <- update(object = ecap_score_model,
+                              subset = !(record_id %in% 
+		ecap_score_model_check$influential_ids))
+# Influential IDS
+ecap_score_model_check$influential_ids
+```
+
+#### Resumo dos modelos
+
+```{r ecap_score_3}
+# Model comparison
+summary(ecap_score_model)
+summary(ecap_score_model_sens)
+ecap_score_model_check$comparison_table
+performance::compare_performance(
+    ecap_score_model, 
+    ecap_score_model_sens) 
+```
+
+```{r ecap_score_4, fig.width=10, fig.height=10}
+performance::check_model(ecap_score_model)
+performance::check_model(ecap_score_model_sens)
+```
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+```{r ecap_score_raw_emm}
+# Get EMMs for each group at each visit
+ecap_score_raw_emm <- emmeans::emmeans(
+    ecap_score_model, 
+    ~ allocation_group * visit
+)
+
+ecap_score_raw_emm <- regrid(ecap_score_raw_emm)
+
+# Table of marginal means
+# ecap_score_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(ecap_score_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(ecap_score_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(ecap_score_raw_emm, comparisons = TRUE)
+```
+
+##### Análise de sensibilidade
+
+```{r ecap_score_sens_emm}
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+ecap_score_emm <- emmeans::emmeans(
+    ecap_score_model_sens, 
+    ~ allocation_group * visit
+)
+
+ecap_score_emm <- regrid(ecap_score_emm)
+
+# Table of marginal means
+# ecap_score_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(ecap_score_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(ecap_score_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(ecap_score_emm, comparisons = TRUE)
+```
+
+#### Resultado
+
+No modelo ajustado para o escore de compulsão alimentar periódica (ECAP), não foram observadas diferenças significativas entre os grupos em nenhuma das visitas (visita 1: estimativa = 2,83; IC 95%: [–0,89; 6,56]; p = 0,134; visita 3: estimativa = 1,32; IC 95%: [–2,74; 5,38]; p = 0,521). Ao longo do tempo, ambos os grupos apresentaram redução significativa do escore de compulsão alimentar entre a visita 1 e a visita 3: Grupo Placebo (aumento médio de 4,80; IC 95%: [2,66; 6,95]; p < 0,001) e Grupo Eclipta (aumento médio de 3,29; IC 95%: [1,07; 5,51]; p = 0,004). A análise de sensibilidade confirmou esses achados sem alterações relevantes.
+
+Tabela: Diferenças estimadas do escore de compulsão alimentar periódica (ECAP) entre grupos e ao longo do tempo – Todos os dados {#tbl-ecap_score}
+
+| Grupo de comparação   | Comparação          | Estimativa | IC 95%          | p-valor |
+|-----------------------|---------------------|------------|-----------------|---------|
+| Entre grupos          | Visita 1            | 2,83       | [–0,89; 6,56]   | 0,134   |
+| Entre grupos          | Visita 3            | 1,32       | [–2,74; 5,38]   | 0,521   |
+| Grupo Placebo         | Visita 1 – Visita 3 | 4,80       | [2,66; 6,95]    | < 0,001 |
+| Grupo Eclipta         | Visita 1 – Visita 3 | 3,29       | [1,07; 5,51]    | 0,004   |
+
+```{r ecap_score_6}
+ggplot(
+    data = data_model_V1V3, 
+    aes(
+        x = as.factor(visit),
+        y = ecap_score,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_model_V1V3 %>% 
+    filter(
+        !(record_id %in% 
+		ecap_score_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = ecap_score,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+# Informações da Sessão
+
+```{r}
+#| label: session_info
+sessionInfo()
+```
+
+```{r}
+#| include: false
+#| eval: false
+quarto::quarto_render("Outcomes_V1V2V3.qmd", "pdf")
+```
