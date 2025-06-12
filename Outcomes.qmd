@@ -195,7 +195,7 @@ Variáveis:
 -   mean_bp_mean
 -   evs_score
 
-### Aspartato Aminotransferase
+## Aspartato Aminotransferase
 
 Variável: `labs_ast`
 
@@ -240,7 +240,7 @@ labs_ast_model_sens <- update(object = labs_ast_model,
 labs_ast_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_ast_3}
 # Model comparison
@@ -258,9 +258,9 @@ performance::check_model(labs_ast_model)
 performance::check_model(labs_ast_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_ast_raw_emm}
 # Get EMMs for each group at each visit (All data)
@@ -288,7 +288,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_ast_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_ast_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -316,7 +316,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_ast_emm, comparisons = TRUE)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os níveis de AST, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade não alterou substancialmente os resultados. As estimativas permaneceram estáveis e as diferenças entre os grupos e ao longo do tempo continuaram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-ast.
 
@@ -378,7 +378,7 @@ data_model %>%
     facet_wrap(~ allocation_group)
 ```
 
-### Alanina Aminotransferase
+## Alanina Aminotransferase
 
 ```{r labs_alt_1}
 # Plot 1: Raw data
@@ -421,7 +421,7 @@ labs_alt_model_sens <- update(object = labs_alt_model,
 labs_alt_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_alt_3}
 # Model comparison
@@ -438,9 +438,9 @@ performance::check_model(labs_alt_model)
 performance::check_model(labs_alt_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_alt_raw_emm}
 # Get EMMs for each group at each visit
@@ -468,7 +468,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_alt_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_alt_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -496,7 +496,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_alt_emm, comparisons = TRUE)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os níveis de ALT, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, realizada com a exclusão das observações influentes, confirmou esses achados. As estimativas permaneceram estáveis e todas as comparações entre os grupos e ao longo do tempo mantiveram-se não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-alt.
 
@@ -560,7 +560,7 @@ data_model %>%
     coord_cartesian(ylim = c(10, 80))
 ```
 
-### Gama Glutamil-transferase
+## Gama Glutamil-transferase
 
 Variável: `labs_ggt`
 
@@ -605,7 +605,7 @@ labs_ggt_model_sens <- update(object = labs_ggt_model,
 labs_ggt_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_ggt_3}
 # Model comparison
@@ -622,9 +622,9 @@ performance::check_model(labs_ggt_model)
 performance::check_model(labs_ggt_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_ggt_raw_emm}
 # Get EMMs for each group at each visit
@@ -652,7 +652,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_ggt_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_ggt_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -680,7 +680,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_ggt_emm)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os níveis de Gama Glutamiltransferase (GGT), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Também não foram identificadas mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, com exclusão das observações influentes, não alterou substancialmente os resultados. As estimativas permaneceram similares, reforçando a ausência de diferenças significativas entre os grupos ou de variações temporais relevantes. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-ggt.
 
@@ -744,7 +744,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### Fosfatase Alcalina
+## Fosfatase Alcalina
 
 Variável: `labs_alkp`
 
@@ -789,7 +789,7 @@ labs_alkp_model_sens <- update(object = labs_alkp_model,
 labs_alkp_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_alkp_3}
 # Model comparison
@@ -806,9 +806,9 @@ performance::check_model(labs_alkp_model)
 performance::check_model(labs_alkp_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_alkp_raw_emm}
 # Get EMMs for each group at each visit 
@@ -836,7 +836,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_alkp_raw_emm)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_alkp_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -862,7 +862,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_alkp_emm)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os níveis de Fosfatase Alcalina (ALP), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, as comparações intragrupo ao longo do tempo não indicaram variações significativas. A análise de sensibilidade, realizada com exclusão das observações influentes, manteve os resultados essencialmente inalterados, com estimativas semelhantes e ausência de significância estatística nas comparações entre grupos e entre visitas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-alkp.
 
@@ -926,7 +926,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### Colesterol Total
+## Colesterol Total
 
 Variável: `labs_cholesterol`
 
@@ -971,7 +971,7 @@ labs_cholesterol_model_sens <- update(object = labs_cholesterol_model,
 labs_cholesterol_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_cholesterol_3}
 # Model comparison
@@ -988,9 +988,9 @@ performance::check_model(labs_cholesterol_model)
 performance::check_model(labs_cholesterol_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_cholesterol_raw_emm}
 # Get EMMs for each group at each visit
@@ -1018,7 +1018,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_cholesterol_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_cholesterol_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -1046,7 +1046,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_cholesterol_emm, comparisons = TRUE)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os níveis de colesterol total, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. As comparações intragrupo ao longo do tempo também não indicaram alterações significativas em nenhum dos grupos. A análise de sensibilidade, realizada com a exclusão de observações influentes, confirmou esses achados. As estimativas se mantiveram estáveis e as diferenças permaneceram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-cholesterol.
 
@@ -1110,7 +1110,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### LDL Colesterol
+## LDL Colesterol
 
 Variável: `labs_ldl`
 
@@ -1155,7 +1155,7 @@ labs_ldl_model_sens <- update(object = labs_ldl_model,
 labs_ldl_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_ldl_3}
 # Model comparison
@@ -1172,9 +1172,9 @@ performance::check_model(labs_ldl_model)
 performance::check_model(labs_ldl_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_ldl_raw_emm}
 # Get EMMs for each group at each visit
@@ -1202,7 +1202,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_ldl_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_ldl_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -1230,7 +1230,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_ldl_emm)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os níveis de LDL-colesterol, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, as comparações dentro de cada grupo ao longo do tempo não indicaram alterações significativas. A análise de sensibilidade, com exclusão das observações influentes, não modificou substancialmente os achados: as estimativas permaneceram estáveis e todas as comparações continuaram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-ldl.
 
@@ -1294,7 +1294,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### HDL Colesterol
+## HDL Colesterol
 
 Variável: `labs_hdl`
 
@@ -1339,7 +1339,7 @@ labs_hdl_model_sens <- update(object = labs_hdl_model,
 labs_hdl_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_hdl_3}
 # Model comparison
@@ -1356,9 +1356,9 @@ performance::check_model(labs_hdl_model)
 performance::check_model(labs_hdl_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_hdl_raw_emm}
 # Get EMMs for each group at each visit
@@ -1386,7 +1386,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_hdl_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_hdl_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -1414,7 +1414,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_hdl_emm, comparisons = TRUE)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os níveis de HDL-colesterol, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Também não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, conduzida com a exclusão das observações influentes, não alterou substancialmente os resultados. As estimativas permaneceram consistentes e as comparações entre grupos e ao longo do tempo continuaram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-hdl.
 
@@ -1478,7 +1478,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### Triglicerídeos
+## Triglicerídeos
 
 Variável: `labs_triglycerides`
 
@@ -1523,7 +1523,7 @@ labs_triglycerides_model_sens <- update(object = labs_triglycerides_model,
 labs_triglycerides_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_triglycerides_3}
 # Model comparison
@@ -1540,9 +1540,9 @@ performance::check_model(labs_triglycerides_model)
 performance::check_model(labs_triglycerides_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_triglycerides_raw_emm}
 # Get EMMs for each group at each visit
@@ -1570,7 +1570,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_triglycerides_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_triglycerides_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -1598,7 +1598,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_triglycerides_emm, comparisons = TRUE)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os níveis de triglicerídeos, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. As estimativas entre grupos foram próximas de zero e os intervalos de confiança incluíram o valor nulo, com valores de p superiores a 0,47 em todas as comparações. Da mesma forma, as comparações intragrupo ao longo do tempo não revelaram mudanças significativas em nenhum dos grupos, embora tenha havido uma tendência não significativa de aumento entre a visita 2 e a visita 3 no grupo A (p = 0,078).
 
@@ -1664,7 +1664,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### Glicemia de jejum
+## Glicemia de jejum
 
 Variável: `labs_glucose`
 
@@ -1709,7 +1709,7 @@ labs_glucose_model_sens <- update(object = labs_glucose_model,
 labs_glucose_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_glucose_3}
 # Model comparison
@@ -1726,9 +1726,9 @@ performance::check_model(labs_glucose_model)
 performance::check_model(labs_glucose_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_glucose_raw_emm}
 # Get EMMs for each group at each visit
@@ -1756,7 +1756,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_glucose_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_glucose_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -1784,7 +1784,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_glucose_emm, comparisons = TRUE)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os níveis de glicose, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, conduzida após a exclusão de observações influentes, não alterou substancialmente os resultados. As estimativas permaneceram estáveis e as diferenças entre os grupos e ao longo do tempo continuaram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-glucose.
 
@@ -1848,7 +1848,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### Hemoglobina Glicosilada
+## Hemoglobina Glicosilada
 
 Variável: `labs_hba1c`
 
@@ -1893,7 +1893,7 @@ labs_hba1c_model_sens <- update(object = labs_hba1c_model,
 labs_hba1c_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_hba1c_3}
 # Model comparison
@@ -1910,9 +1910,9 @@ performance::check_model(labs_hba1c_model)
 performance::check_model(labs_hba1c_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_hba1c_raw_emm}
 # Get EMMs for each group at each visit
@@ -1940,7 +1940,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_hba1c_raw_emm)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_hba1c_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -1966,7 +1966,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_hba1c_emm)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os níveis de hemoglobina glicada (HbA1c), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, realizada após a exclusão de observações influentes, confirmou a estabilidade das estimativas. As diferenças entre os grupos e entre as visitas permaneceram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-hba1c.
 
@@ -2030,7 +2030,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### Insulina
+## Insulina
 
 Variável: `labs_insulin`
 
@@ -2075,7 +2075,7 @@ labs_insulin_model_sens <- update(object = labs_insulin_model,
 labs_insulin_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_insulin_3}
 # Model comparison
@@ -2092,9 +2092,9 @@ performance::check_model(labs_insulin_model)
 performance::check_model(labs_insulin_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_insulin_raw_emm}
 # Get EMMs for each group at each visit
@@ -2122,7 +2122,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_insulin_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_insulin_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -2150,7 +2150,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_insulin_emm, comparisons = TRUE)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os níveis de insulina, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Também não foram encontradas mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, realizada com a exclusão das observações influentes, confirmou a ausência de diferenças significativas entre os grupos e ao longo das visitas, com estimativas semelhantes às observadas na análise principal. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-insulin.
 
@@ -2214,7 +2214,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### HOMA-IR
+## HOMA-IR
 
 Variável: `labs_homa_ir`
 
@@ -2259,7 +2259,7 @@ labs_homa_ir_model_sens <- update(object = labs_homa_ir_model,
 labs_homa_ir_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_homa_ir_3}
 # Model comparison
@@ -2276,9 +2276,9 @@ performance::check_model(labs_homa_ir_model)
 performance::check_model(labs_homa_ir_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_homa_ir_raw_emm}
 # Get EMMs for each group at each visit
@@ -2306,7 +2306,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_homa_ir_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_homa_ir_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -2334,7 +2334,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_homa_ir_emm, comparisons = TRUE)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os níveis de HOMA-IR, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Além disso, as comparações dentro de cada grupo ao longo do tempo não revelaram mudanças significativas. A análise de sensibilidade, realizada com a exclusão de observações influentes, confirmou a robustez dos achados, com estimativas semelhantes e ausência de diferenças significativas entre os grupos ou ao longo das visitas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-homa-ir.
 
@@ -2398,7 +2398,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### Índice QUICK
+## Índice QUICK
 
 Variável: `labs_quick_index`
 
@@ -2443,7 +2443,7 @@ labs_quick_index_model_sens <- update(object = labs_quick_index_model,
 labs_quick_index_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r labs_quick_index_3}
 # Model comparison
@@ -2460,9 +2460,9 @@ performance::check_model(labs_quick_index_model)
 performance::check_model(labs_quick_index_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_quick_index_raw_emm}
 # Get EMMs for each group at each visit
@@ -2490,7 +2490,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_quick_index_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r labs_quick_index_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -2518,7 +2518,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(labs_quick_index_emm, comparisons = TRUE)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para o índice de sensibilidade à insulina (Quick Index), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, as comparações ao longo do tempo dentro de cada grupo também não mostraram variações significativas. A análise de sensibilidade, realizada com a exclusão das observações influentes, confirmou os achados da análise principal. As estimativas permaneceram consistentes, sem diferenças estatisticamente significativas entre os grupos ou ao longo do tempo. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-quick-index.
 
@@ -2582,7 +2582,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### Circunferência abdominal
+## Circunferência abdominal
 
 Variável: `abdomen`
 
@@ -2627,7 +2627,7 @@ abdomen_model_sens <- update(object = abdomen_model,
 abdomen_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r abdomen_3}
 # Model comparison
@@ -2644,9 +2644,9 @@ performance::check_model(abdomen_model)
 performance::check_model(abdomen_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r labs_abdomen_raw_emm}
 # Get EMMs for each group at each visit
@@ -2674,7 +2674,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(abdomen_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r abdomen_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -2702,7 +2702,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(abdomen_emm)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para a circunferência abdominal, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. As comparações dentro dos grupos ao longo do tempo também não revelaram mudanças significativas. Embora a diferença entre as visitas 1 e 3 no grupo placebo tenha se aproximado da significância (p = 0,089), essa tendência não foi confirmada na análise de sensibilidade. Após a exclusão das observações influentes, os resultados permaneceram estáveis, sem diferenças estatisticamente significativas entre os grupos ou ao longo do tempo. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-abdomen.
 
@@ -2766,7 +2766,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### Índice de Massa Corporal
+## Índice de Massa Corporal
 
 Variável: `bmi`
 
@@ -2811,7 +2811,7 @@ bmi_model_sens <- update(object = bmi_model,
 bmi_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r bmi_3}
 # Model comparison
@@ -2828,9 +2828,9 @@ performance::check_model(bmi_model)
 performance::check_model(bmi_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r bmi_raw_emm}
 # Get EMMs for each group at each visit
@@ -2858,7 +2858,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(bmi_raw_emm)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r bmi_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -2886,7 +2886,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(bmi_emm)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para o índice de massa corporal (IMC), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. No entanto, dentro do grupo placebo, observou-se uma redução estatisticamente significativa entre as visitas 1 e 3 (p = 0,0059). Para investigar a robustez desse achado, foi realizada uma análise de sensibilidade com exclusão das cinco observações mais influentes (IDs: 8, 50, 53, 74 e 32). Após a exclusão, a diferença intra grupo placebo deixou de ser significativa (p = 0,222), sugerindo que o resultado original foi influenciado por outliers.
 
@@ -2968,7 +2968,7 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### Pressão Arterial Média
+## Pressão Arterial Média
 
 Variável: `mean_bp_mean`
 
@@ -3013,7 +3013,7 @@ mean_bp_mean_model_sens <- update(object = mean_bp_mean_model,
 mean_bp_mean_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r mean_bp_mean_3}
 # Model comparison
@@ -3030,9 +3030,9 @@ performance::check_model(mean_bp_mean_model)
 performance::check_model(mean_bp_mean_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r mean_bp_mean_raw_emm}
 # Get EMMs for each group at each visit
@@ -3060,7 +3060,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(mean_bp_mean_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r mean_bp_mean_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -3088,7 +3088,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(mean_bp_mean_emm, comparisons = TRUE)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para a média da pressão arterial, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. No entanto, observou-se uma redução da pressão arterial entre as visitas 1 e 2 no grupo Eclipta (diferença média de 4,02 mmHg; IC 95%: 0,35 a 7,70), e uma tendência à redução entre as visitas 1 e 3 no grupo placebo (diferença média de 3,71 mmHg; IC 95%: -0,05 a 7,48).
 
@@ -3170,7 +3170,192 @@ data_model %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-### Escore EVS
+## PRESSÃO ARTERIAL
+
+```{r}
+data_bp_long <- readRDS('local_files/Data_processed/data_bp_long.rds')
+```
+
+### Pressão Arterial Média
+
+Variável: `bp_mean`
+
+```{r}
+#| label: bp_mean-histogram
+
+# Plot 1: Raw data
+bp_mean_hist_1 <- data_bp_long %>% 
+    #filter(
+    #    bp_mean < 300
+    #) %>% 
+    ggplot(aes(x = bp_mean)) + 
+    geom_histogram(bins = 30, fill = "skyblue", color = "black")
+
+# Plot 2: Log-transformed data
+bp_mean_hist_2 <- data_bp_long %>% 
+    #filter(
+    #    bp_mean < 300
+    #) %>%
+    ggplot(aes(x = log1p(bp_mean))) + 
+    geom_histogram(bins = 50, fill = "lightgreen", color = "black")
+
+# Combine side by side
+bp_mean_hist_1 + bp_mean_hist_2 # library(patchwork)
+```
+
+```{r}
+#| label: bp_mean-models
+ 
+# LMM
+bp_mean_model <- lmer(bp_mean ~ allocation_group * visit + 
+(1 | record_id), data = data_bp_long)
+check_collinearity(bp_mean_model)
+
+# Sensitivity analysis
+bp_mean_model_check <- sensitivity_check_lmer(
+    model = bp_mean_model,
+    id_var = "record_id",
+    top_n = 5)
+
+# LMM Sensitivity
+bp_mean_model_sens <- update(object = bp_mean_model,
+                              subset = !(record_id %in% 
+		bp_mean_model_check$influential_ids))
+# Influential IDS
+bp_mean_model_check$influential_ids
+```
+
+#### Resumo dos modelos
+
+```{r}
+#| label: bp_mean-models-summary
+
+summary(bp_mean_model)
+summary(bp_mean_model_sens)
+bp_mean_model_check$comparison_table
+performance::compare_performance(
+    bp_mean_model, 
+    bp_mean_model_sens) 
+```
+
+```{r, fig.width=10, fig.height=10}
+#| label: bp_mean-performance
+
+performance::check_model(bp_mean_model)
+performance::check_model(bp_mean_model_sens)
+```
+
+#### Médias Marginais Estimadas
+
+##### Todos os dados
+
+```{r}
+#| label: bp_mean-EMM-raw
+
+# Get EMMs for each group at each visit
+bp_mean_raw_emm <- emmeans::emmeans(
+    bp_mean_model, 
+    ~ allocation_group * visit
+)
+
+bp_mean_raw_emm <- regrid(bp_mean_raw_emm)
+
+# Table of marginal means
+# bp_mean_raw_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(bp_mean_raw_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(bp_mean_raw_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(bp_mean_raw_emm, comparisons = TRUE)
+```
+
+##### Análise de sensibilidade
+
+```{r}
+#| label: bp_mean-EMM-sens
+
+# Get EMMs for each group at each visit (Sensitivity Analysis)
+bp_mean_emm <- emmeans::emmeans(
+    bp_mean_model_sens, 
+    ~ allocation_group * visit
+)
+
+bp_mean_emm <- regrid(bp_mean_emm)
+
+# Table of marginal means
+# bp_mean_emm
+
+# Pairwise comparisons: Between groups at each visit
+emmeans::contrast(bp_mean_emm,
+method = "pairwise", by = "visit",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Pairwise comparisons: Changes over time within each group
+emmeans::contrast(bp_mean_emm,
+method = "pairwise", by = "allocation_group",
+adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
+
+# Plot of marginal means
+plot(bp_mean_emm, comparisons = TRUE)
+```
+
+```{r}
+#| label: bp_mean-plot-curve
+
+ggplot(
+    data = data_bp_long, 
+    aes(
+        x = as.factor(visit),
+        y = bp_mean,
+        group = record_id,
+    )
+) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "All data") +
+    facet_wrap(~ allocation_group)
+
+data_bp_long %>% 
+    filter(
+        !(record_id %in% 
+		bp_mean_model_check$influential_ids)
+    ) %>% 
+    ggplot(
+        aes(
+            x = as.factor(visit),
+            y = bp_mean,
+            group = record_id,
+        )
+    ) +
+    geom_line(alpha = 0.5) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(
+        aes(group = allocation_group),
+        method = "lm",
+        se = TRUE,
+        linewidth = 1
+    ) +
+    labs(title = "Sensitivity analysis") +
+    facet_wrap(~ allocation_group)
+```
+
+
+
+## Escore EVS
 
 Variável: `evs_score`
 
@@ -3219,7 +3404,7 @@ evs_score_model_sens <- update(object = evs_score_model,
 evs_score_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r evs_score_3}
 # Model comparison
@@ -3236,9 +3421,9 @@ performance::check_model(evs_score_model)
 performance::check_model(evs_score_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r evs_score_raw_emm}
 # Get EMMs for each group at each visit
@@ -3266,7 +3451,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(evs_score_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r evs_score_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -3340,7 +3525,7 @@ data_model_evs %>%
     #coord_cartesian(ylim = c(10, 150))
 ```
 
-#### EVS - modelo em 2 partes
+### EVS - modelo em 2 partes
 
 ```{r}
 #| label: Part 1, Logistic regression — Who exercises vs who doesn’t?
@@ -3374,7 +3559,7 @@ model_part2 <- lmer(
 summary(model_part2)
 ```
 
-##### Resultado
+#### Resultado
 
 Para analisar o escore de atividade física semanal (evs_score), que representa o produto entre os dias por semana e os minutos por dia de exercício relatados por cada participante, foi adotado um modelo em dois estágios. Esta abordagem se mostrou mais adequada devido à presença de 33.9% de valores iguais a zero (pacientes inativos) e à distribuição assimétrica dos valores positivos (pacientes ativos).
 
@@ -3386,7 +3571,7 @@ Esses resultados sugerem que o efeito observado ao longo do tempo se concentrou 
 
 # Variáveis coletadas na primeira e terceira visitas
 
-### Ângulo de Fase
+## Ângulo de Fase
 
 Variável: `phase_angle`
 
@@ -3431,7 +3616,7 @@ phase_angle_model_sens <- update(object = phase_angle_model,
 phase_angle_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r phase_angle_3}
 # Model comparison
@@ -3448,9 +3633,9 @@ performance::check_model(phase_angle_model)
 performance::check_model(phase_angle_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r phase_angle_raw_emm}
 # Get EMMs for each group at each visit
@@ -3478,7 +3663,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(phase_angle_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r phase_angle_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -3506,7 +3691,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(phase_angle_emm)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para o desfecho primário do estudo, o ângulo de fase, observou-se uma tendência à diferença entre os grupos na visita 1 (estimativa = 0,34; IC 95% \[-0,04 ; 0,72\]), embora sem significância estatística. Na visita 3, as médias estimadas também foram semelhantes entre os grupos (estimativa = 0,28; IC 95% \[-0,13 ; 0,69\]). Dentro de cada grupo, não foram detectadas mudanças significativas ao longo do tempo.
 
@@ -3576,7 +3761,7 @@ data_model_V1V3 %>%
     facet_wrap(~ allocation_group)
 ```
 
-### Reatância
+## Reatância
 
 Variável: `reactance`
 
@@ -3621,7 +3806,7 @@ reactance_model_sens <- update(object = reactance_model,
 reactance_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r reactance_3}
 # Model comparison
@@ -3638,9 +3823,9 @@ performance::check_model(reactance_model)
 performance::check_model(reactance_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r reactance_raw_emm}
 # Get EMMs for each group at each visit
@@ -3668,7 +3853,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(reactance_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r reactance_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -3696,7 +3881,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(reactance_emm, comparisons = TRUE)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os valores de reatância, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos momentos avaliados. As estimativas de diferença entre os grupos na visita 1 (estimativa = 0,73; IC 95% \[-3,10 ; 4,55\]) e na visita 3 (estimativa = -0,24; IC 95% \[-4,51 ; 4,04\]) apresentaram ampla sobreposição dos intervalos de confiança com zero. Da mesma forma, não foram identificadas mudanças significativas ao longo do tempo dentro de cada grupo.
 
@@ -3757,7 +3942,7 @@ data_model_V1V3 %>%
     facet_wrap(~ allocation_group)
 ```
 
-### Resistência
+## Resistência
 
 Variável: `resistance`
 
@@ -3802,7 +3987,7 @@ resistance_model_sens <- update(object = resistance_model,
 resistance_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r resistance_3}
 # Model comparison
@@ -3819,9 +4004,9 @@ performance::check_model(resistance_model)
 performance::check_model(resistance_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r resistance_raw_emm}
 # Get EMMs for each group at each visit
@@ -3849,7 +4034,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(resistance_raw_emm, comparisons = TRUE)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r resistance_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -3877,7 +4062,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(resistance_emm, comparisons = TRUE)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para os valores de resistência bioelétrica corporal, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos momentos avaliados. As estimativas de diferença entre os grupos foram de -20,5 ohms (IC 95%: -50,6 a 9,6) na visita 1 e -25,2 ohms (IC 95%: -58,2 a 7,9) na visita 3. Tampouco foram observadas mudanças significativas ao longo do tempo dentro de cada grupo. 
 
@@ -3936,7 +4121,7 @@ data_model_V1V3 %>%
     facet_wrap(~ allocation_group)
 ```
 
-### Força de Preensão Palmar
+## Força de Preensão Palmar
 
 Variável: `handgrip`
 
@@ -3981,7 +4166,7 @@ handgrip_model_sens <- update(object = handgrip_model,
 handgrip_model_check$influential_ids
 ```
 
-#### Resumo dos modelos
+### Resumo dos modelos
 
 ```{r handgrip_3}
 # Model comparison
@@ -3998,9 +4183,9 @@ performance::check_model(handgrip_model)
 performance::check_model(handgrip_model_sens)
 ```
 
-#### Médias Marginais Estimadas
+### Médias Marginais Estimadas
 
-##### Todos os dados
+#### Todos os dados
 
 ```{r handgrip_raw_emm}
 # Get EMMs for each group at each visit
@@ -4028,7 +4213,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(handgrip_raw_emm)
 ```
 
-##### Análise de sensibilidade
+#### Análise de sensibilidade
 
 ```{r handgrip_sens_emm}
 # Get EMMs for each group at each visit (Sensitivity Analysis)
@@ -4056,7 +4241,7 @@ adjust = "bonferroni") %>% summary(infer = c(TRUE, TRUE))
 plot(handgrip_emm)
 ```
 
-#### Resultado
+### Resultado
 
 No modelo ajustado para a força de preensão manual, observou-se uma diferença estatisticamente significativa entre os grupos na visita 3, com o grupo placebo apresentando força média 5,59 kgf superior ao grupo Eclipta (IC 95%: 1,67 a 9,51). Na visita 1, a diferença entre os grupos foi de 3,17 kgf (IC 95%: -0,54 a 6,88), sem alcançar significância estatística. Dentro de cada grupo, não foram observadas mudanças significativas ao longo do tempo.
 

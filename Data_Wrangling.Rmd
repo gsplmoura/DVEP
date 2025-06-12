@@ -46,6 +46,7 @@ library(here)
 
 # Load functions from external script
 source("helper_functions.R")
+
 ```
 
 # FIRST STEPS
@@ -91,7 +92,7 @@ codebook_bia <- read_excel(
 ```{r}
 
 data  <- read_csv(
-  "Data/data_dvep.csv",
+  "local_files/Data/data_dvep.csv",
   col_names = TRUE,
   col_types = NULL, #column types will be inferred from guess_max
   col_select = NULL,
@@ -113,11 +114,11 @@ data  <- read_csv(
 )
 
 data_bia_D3_raw <- read_csv(
-    "Data/data_bia_D3.csv",
+    "local_files/Data/data_bia_D3.csv",
     col_names = TRUE)
 
 data_bia_D1_raw <- read_csv(
-    "Data/data_bia_D1.csv",
+    "local_files/Data/data_bia_D1.csv",
     col_names = TRUE)
 
 ```
@@ -1233,8 +1234,8 @@ data <- data %>%
 ## EXPORT TIBBLES
 
 ### To RDS
-```{r}
-output_dir <- "Data_processed"
+```{r, eval=FALSE}
+output_dir <- "local_files/Data_processed"
 
 saveRDS(data,                file.path(output_dir, "data.rds"))
 saveRDS(data_bia,            file.path(output_dir, "data_bia.rds"))
@@ -1260,7 +1261,7 @@ saveRDS(I30_events_R,        file.path(output_dir, "I30_events_R.rds"))
 
 ### To CSV
 
-```{r}
+```{r, eval=FALSE}
 readr::write_csv(data,                file.path(output_dir, "data.csv"))
 readr::write_csv(data_bia,            file.path(output_dir, "data_bia.csv"))
 readr::write_csv(data_bia_D1,         file.path(output_dir, "data_bia_D1.csv"))
@@ -1288,7 +1289,7 @@ readr::write_csv(I30_events_R,        file.path(output_dir, "I30_events_R.csv"))
 
 Creates a supertibble (`data_instruments`) with one tibble for each instrument
 
-```{r}
+```{r, eval=FALSE}
 form_names <- unique(codebook_dvep$form_name_en)
 form_names <- form_names[-2]
 
@@ -1349,13 +1350,13 @@ rm(instruments)
 ```
 
 **EXPORT RDS**
-```{r}
+```{r, eval=FALSE}
 saveRDS(data_instruments, "Data_instruments/data_instruments.rds")
 ```
 
 **EXPORT CSV**
 
-```{r}
+```{r, eval=FALSE}
 output_dir <- 'Data_instruments'
 
 # Iterate over `data_instruments`
@@ -1429,5 +1430,49 @@ data_model <- data_filtered %>%
 
 saveRDS(data_model, file.path("Data_processed/data_model.rds"))
 write_csv(data_model, "Data_processed/data_model.csv", na = "NA")
+```
+
+# Blood pressure
+
+```{r}
+data_bp_wide <- data %>% 
+    select(
+        record_id, event_name,
+        bp_form_open_date, heart_rate,systolic_2, systolic_3, systolic_4, diastolic_2, diastolic_3, diastolic_4, bp_mean_2, bp_mean_3, bp_mean_4
+        ) %>% 
+    filter(
+        !is.na(bp_form_open_date)
+    ) %>% 
+    mutate(
+        visit = case_when(
+            event_name == "1visit_arm_1"    ~ 1,
+            event_name == "2visit_arm_1"    ~ 2,
+            event_name == "3visit_arm_1"    ~ 3
+        ),
+        .after = record_id
+    ) %>% 
+    select(-event_name)
+```
+
+```{r}
+data_bp_long <- data_bp_wide %>% 
+  pivot_longer(
+    cols = starts_with("systolic_") | starts_with("diastolic_") | starts_with("bp_mean_"),
+    names_to = c(".value", "measurement_num"),
+    names_pattern = "(systolic|diastolic|bp_mean)_(\\d+)"
+  ) %>%
+  mutate(measurement_num = as.integer(measurement_num))  # optional: convert visit number to integer
+```
+
+```{r}
+data_bp_long <- data_bp_long %>% 
+    filter(
+        !is.na(systolic)
+    ) %>% 
+    left_join(
+        y = data_model %>% select(record_id, allocation_group),
+        by = "record_id"
+    )
+saveRDS(data_bp_long, file.path(output_dir, "data_bp_long.rds"))
 ```
 
