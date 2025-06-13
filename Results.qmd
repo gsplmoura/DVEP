@@ -1,0 +1,763 @@
+---
+title: "Ensaio clínico randomizado: efeito da droga vegetal de *Eclipta prostrata* (L.) L. (Asteraceae) no ângulo de fase em adultos com obesidade grau I"
+subtitle: "Resultados"
+author: "Gustavo Santos Paiva Laender Moura"
+institute: "Departamento de Clínica Médica, Faculdade de Medicina de Ribeirão Preto da Universidade de São Paulo"
+date: today
+lang: pt
+cache: true
+freeze: true
+crossref:
+  fig-title: "Figura"
+  tbl-title: "Tabela"
+  title-delim: ":"
+  ref-hyperlink: true
+
+language:
+  title-block-author: "Autor"
+  title-block-institute: "Instituição"
+  title-block-date: "Data"
+  toc-title: "Sumário"
+  ref-title: "Referências"
+  appendix-title: "Apêndice"
+
+format:
+  html:
+    page-layout: full
+    toc: true
+    toc-depth: 5
+    toc-float:
+      collapsed: false
+      smooth-scroll: true
+    #css: styles.css
+    code-fold: false
+  pdf:
+    toc: true
+    toc-depth: 4
+    pdf-engine: xelatex
+    documentclass: article
+    mainfont: "Times New Roman"
+    fontsize: 10pt
+    linestretch: 1.5
+    geometry: top=3cm, bottom=2cm, left=2cm, right=1.5cm
+    colorlinks: true
+    code-overflow: wrap
+    code-block-font-size: 60%
+    number-sections: true
+    fig-align: center
+    fig-pos: 'H'
+    include-in-header: abnt-header.tex
+---
+
+# Estratégia Analítica Geral
+
+Todas as análises foram conduzidas utilizando modelos lineares mistos (LMM), com intercepto aleatório por participante para considerar a estrutura longitudinal dos dados. A variável dependente em cada modelo foi analisada de forma individual, tendo como variáveis explicativas fixas o grupo de alocação, o tempo (visita) e a interação entre ambos. As covariáveis incluídas foram as mesmas em todos os modelos.
+
+Variáveis com distribuição assimétrica à direita foram transformadas por logaritmo natural com deslocamento (+1), conforme apropriado, a fim de aproximar a normalidade dos resíduos. As demais variáveis foram mantidas em sua forma original. Para cada desfecho, os modelos foram ajustados aos dados completos e, adicionalmente, foi realizada uma análise de sensibilidade com exclusão de observações influentes, identificadas com base em medidas diagnósticas específicas.
+
+As médias marginais estimadas (Estimated Marginal Means – EMMs) foram calculadas a partir dos modelos ajustados, com o objetivo de estimar os valores médios ajustados para cada grupo em cada ponto temporal. As comparações pareadas entre grupos em cada visita e entre visitas dentro de cada grupo foram realizadas com correção para múltiplas comparações pelo método de Bonferroni.
+
+Esse procedimento foi replicado de forma consistente para todas as variáveis contínuas incluídas na análise.
+
+# Variáveis coletadas nas três visitas clínicas
+## Aspartato Aminotransferase
+
+No modelo ajustado para os níveis de AST, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade não alterou substancialmente os resultados. As estimativas permaneceram estáveis e as diferenças entre os grupos e ao longo do tempo continuaram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-ast.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,51       | \[-2,33 ; 3,35\] | 0,724   |
+| Entre grupos        | Visita 2            | 0,88       | \[-2,24 ; 4,00\] | 0,577   |
+| Entre grupos        | Visita 3            | -0,12      | \[-3,54 ; 3,31\] | 0,946   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,21       | \[-2,53 ; 2,95\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,23       | \[-2,73 ; 3,19\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 0,02       | \[-2,98 ; 3,02\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,58       | \[-2,25 ; 3,42\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -0,40      | \[-3,49 ; 2,70\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -0,98      | \[-4,20 ; 2,24\] | 1,000   |
+
+: Diferenças estimadas dos níveis de Aspartato Aminotransferase (AST) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-ast}
+
+## Alanina Aminotransferase
+
+No modelo ajustado para os níveis de ALT, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, realizada com a exclusão das observações influentes, confirmou esses achados. As estimativas permaneceram estáveis e todas as comparações entre os grupos e ao longo do tempo mantiveram-se não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-alt.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 2,73       | \[-2,25 ; 7,72\] | 0,279   |
+| Entre grupos        | Visita 2            | 1,03       | \[-4,10 ; 6,16\] | 0,691   |
+| Entre grupos        | Visita 3            | 0,61       | \[-5,09 ; 6,32\] | 0,832   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 2,16       | \[-1,71 ; 6,03\] | 0,533   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,93       | \[-3,35 ; 5,21\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -1,23      | \[-5,41 ; 2,96\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,46       | \[-3,41 ; 4,32\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -1,19      | \[-5,49 ; 3,11\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -1,65      | \[-6,07 ; 2,78\] | 1,000   |
+
+: Diferenças estimadas dos níveis de Alanina Aminotransferase (ALT) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-alt}
+
+## Gama Glutamil-transferase
+
+No modelo ajustado para os níveis de Gama Glutamiltransferase (GGT), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Também não foram identificadas mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, com exclusão das observações influentes, não alterou substancialmente os resultados. As estimativas permaneceram similares, reforçando a ausência de diferenças significativas entre os grupos ou de variações temporais relevantes. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-ggt.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -1,57      | \[-10,4 ; 7,23\] | 0,724   |
+| Entre grupos        | Visita 2            | -2,95      | \[-12,1 ; 6,19\] | 0,523   |
+| Entre grupos        | Visita 3            | -2,43      | \[-12,1 ; 7,24\] | 0,619   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,76       | \[-3,48 ; 5,01\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | -0,35      | \[-5,06 ; 4,35\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -1,12      | \[-5,79 ; 3,56\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | -0,62      | \[-5,58 ; 4,34\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -1,22      | \[-6,69 ; 4,26\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -0,60      | \[-6,27 ; 5,08\] | 1,000   |
+
+: Diferenças estimadas dos níveis de Gama Glutamiltransferase (GGT) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-ggt}
+
+## Fosfatase Alcalina
+
+No modelo ajustado para os níveis de Fosfatase Alcalina (ALP), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, as comparações intragrupo ao longo do tempo não indicaram variações significativas. A análise de sensibilidade, realizada com exclusão das observações influentes, manteve os resultados essencialmente inalterados, com estimativas semelhantes e ausência de significância estatística nas comparações entre grupos e entre visitas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-alkp.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -2,27      | \[-10,6 ; 6,09\] | 0,590   |
+| Entre grupos        | Visita 2            | -3,40      | \[-11,8 ; 4,98\] | 0,422   |
+| Entre grupos        | Visita 3            | -2,49      | \[-11,2 ; 6,22\] | 0,572   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 3,08       | \[-1,02 ; 7,18\] | 0,209   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 2,01       | \[-2,47 ; 6,48\] | 0,829   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -1,08      | \[-5,48 ; 3,33\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 1,95       | \[-2,65 ; 6,55\] | 0,909   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 1,79       | \[-3,21 ; 6,79\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -0,16      | \[-5,28 ; 4,96\] | 1,000   |
+
+: Diferenças estimadas dos níveis de Fosfatase Alcalina (ALP) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-alkp}
+
+## Colesterol Total
+
+No modelo ajustado para os níveis de colesterol total, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. As comparações intragrupo ao longo do tempo também não indicaram alterações significativas em nenhum dos grupos. A análise de sensibilidade, realizada com a exclusão de observações influentes, confirmou esses achados. As estimativas se mantiveram estáveis e as diferenças permaneceram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-cholesterol.
+
+| Grupo de comparação | Comparação | Estimativa | IC 95% | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos | Visita 1 | 0,72 | \[-13,78 ; 15,21\] | 0,922 |
+| Entre grupos | Visita 2 | 0,83 | \[-14,65 ; 16,30\] | 0,915 |
+| Entre grupos | Visita 3 | 8,48 | \[-7,66 ; 24,61\] | 0,300 |
+| Grupo Placebo | Visita 1 - Visita 2 | 5,91 | \[-3,92 ; 15,73\] | 0,439 |
+| Grupo Placebo | Visita 1 - Visita 3 | 0,38 | \[-10,27 ; 11,03\] | 1,000 |
+| Grupo Placebo | Visita 2 - Visita 3 | -5,53 | \[-16,25 ; 5,19\] | 0,638 |
+| Grupo Eclipta | Visita 1 - Visita 2 | 6,02 | \[-4,54 ; 16,59\] | 0,504 |
+| Grupo Eclipta | Visita 1 - Visita 3 | 8,14 | \[-3,13 ; 19,41\] | 0,245 |
+| Grupo Eclipta | Visita 2 - Visita 3 | 2,12 | \[-9,58 ; 13,81\] | 1,000 |
+
+: Diferenças estimadas dos níveis de Colesterol Total entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-cholesterol}
+
+## LDL Colesterol
+
+No modelo ajustado para os níveis de LDL-colesterol, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, as comparações dentro de cada grupo ao longo do tempo não indicaram alterações significativas. A análise de sensibilidade, com exclusão das observações influentes, não modificou substancialmente os achados: as estimativas permaneceram estáveis e todas as comparações continuaram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-ldl.
+
+| Grupo de comparação | Comparação | Estimativa | IC 95% | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos | Visita 1 | 3,77 | \[-9,63 ; 17,17\] | 0,578 |
+| Entre grupos | Visita 2 | 1,85 | \[-12,56 ; 16,26\] | 0,799 |
+| Entre grupos | Visita 3 | 9,68 | \[-5,41 ; 24,78\] | 0,207 |
+| Grupo Placebo | Visita 1 - Visita 2 | 5,59 | \[-4,07 ; 15,26\] | 0,486 |
+| Grupo Placebo | Visita 1 - Visita 3 | 0,02 | \[-10,46 ; 10,50\] | 1,000 |
+| Grupo Placebo | Visita 2 - Visita 3 | -5,57 | \[-16,13 ; 4,98\] | 0,606 |
+| Grupo Eclipta | Visita 1 - Visita 2 | 3,67 | \[-6,71 ; 14,06\] | 1,000 |
+| Grupo Eclipta | Visita 1 - Visita 3 | 5,93 | \[-5,15 ; 17,00\] | 0,586 |
+| Grupo Eclipta | Visita 2 - Visita 3 | 2,25 | \[-9,26 ; 13,76\] | 1,000 |
+
+: Diferenças estimadas dos níveis de LDL-colesterol entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-ldl}
+
+## HDL Colesterol
+
+No modelo ajustado para os níveis de HDL-colesterol, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Também não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, conduzida com a exclusão das observações influentes, não alterou substancialmente os resultados. As estimativas permaneceram consistentes e as comparações entre grupos e ao longo do tempo continuaram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-hdl.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -3,47      | \[-9,15 ; 2,21\] | 0,228   |
+| Entre grupos        | Visita 2            | -2,22      | \[-8,14 ; 3,69\] | 0,458   |
+| Entre grupos        | Visita 3            | -1,71      | \[-7,83 ; 4,42\] | 0,582   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,88       | \[-2,87 ; 4,64\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,99       | \[-3,08 ; 5,05\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 0,10       | \[-3,96 ; 4,17\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 2,13       | \[-2,12 ; 6,38\] | 0,675   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 2,75       | \[-1,74 ; 7,24\] | 0,418   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | 0,62       | \[-3,99 ; 5,22\] | 1,000   |
+
+: Diferenças estimadas dos níveis de HDL-colesterol entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-hdl}
+
+## Triglicerídeos
+
+No modelo ajustado para os níveis de triglicerídeos, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. As estimativas entre grupos foram próximas de zero e os intervalos de confiança incluíram o valor nulo, com valores de p superiores a 0,47 em todas as comparações. Da mesma forma, as comparações intragrupo ao longo do tempo não revelaram mudanças significativas em nenhum dos grupos, embora tenha havido uma tendência não significativa de aumento entre a visita 2 e a visita 3 no grupo A (p = 0,078).
+
+A análise de sensibilidade, realizada após a exclusão de observações influentes, manteve os resultados essencialmente inalterados. As estimativas permaneceram próximas das observadas no modelo completo e não houve modificações relevantes nas interpretações. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-triglycerides.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 2,46       | \[-20,8 ; 25,7\] | 0,834   |
+| Entre grupos        | Visita 2            | 9,28       | \[-16,6 ; 35,2\] | 0,479   |
+| Entre grupos        | Visita 3            | -3,44      | \[-30,8 ; 23,9\] | 0,804   |
+| Grupo Placebo       | Visita 1 - Visita 2 | -6,83      | \[-25,3 ; 11,7\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | -0,97      | \[-20,4 ; 18,5\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 5,86       | \[-14,3 ; 26,0\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | -0,01      | \[-18,8 ; 18,8\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -6,87      | \[-27,7 ; 14,0\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -6,86      | \[-28,4 ; 14,7\] | 1,000   |
+
+: Diferenças estimadas dos níveis de triglicerídeos entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-triglycerides}
+
+## Glicemia de jejum
+
+No modelo ajustado para os níveis de glicose, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, conduzida após a exclusão de observações influentes, não alterou substancialmente os resultados. As estimativas permaneceram estáveis e as diferenças entre os grupos e ao longo do tempo continuaram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-glucose.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -0,25      | \[-8,04 ; 7,54\] | 0,949   |
+| Entre grupos        | Visita 2            | 1,38       | \[-6,83 ; 9,59\] | 0,740   |
+| Entre grupos        | Visita 3            | 0,40       | \[-8,36 ; 9,17\] | 0,928   |
+| Grupo Placebo       | Visita 1 - Visita 2 | -0,78      | \[-5,65 ; 4,08\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | -3,11      | \[-8,42 ; 2,20\] | 0,471   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -2,32      | \[-7,73 ; 3,08\] | 0,894   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,85       | \[-4,31 ; 6,00\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -2,45      | \[-8,17 ; 3,26\] | 0,894   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -3,30      | \[-9,10 ; 2,51\] | 0,510   |
+
+: Diferenças estimadas dos níveis de glicose entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-glucose}
+
+## Hemoglobina Glicosilada
+
+No modelo ajustado para os níveis de hemoglobina glicada (HbA1c), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, não houve mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, realizada após a exclusão de observações influentes, confirmou a estabilidade das estimativas. As diferenças entre os grupos e entre as visitas permaneceram não significativas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-hba1c.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,13       | \[-0,20 ; 0,45\] | 0,449   |
+| Entre grupos        | Visita 2            | 0,16       | \[-0,18 ; 0,49\] | 0,361   |
+| Entre grupos        | Visita 3            | 0,15       | \[-0,20 ; 0,49\] | 0,408   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,00       | \[-0,15 ; 0,15\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | -0,09      | \[-0,25 ; 0,07\] | 0,517   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -0,09      | \[-0,25 ; 0,08\] | 0,597   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,03       | \[-0,13 ; 0,18\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -0,07      | \[-0,24 ; 0,09\] | 0,904   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -0,10      | \[-0,27 ; 0,07\] | 0,489   |
+
+: Diferenças estimadas dos níveis de hemoglobina glicada (HbA1c) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-hba1c}
+
+## Insulina
+
+No modelo ajustado para os níveis de insulina, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Também não foram encontradas mudanças significativas ao longo do tempo dentro de cada grupo. A análise de sensibilidade, realizada com a exclusão das observações influentes, confirmou a ausência de diferenças significativas entre os grupos e ao longo das visitas, com estimativas semelhantes às observadas na análise principal. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-insulin.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,44       | \[-2,62 ; 3,50\] | 0,776   |
+| Entre grupos        | Visita 2            | -0,65      | \[-3,63 ; 2,33\] | 0,667   |
+| Entre grupos        | Visita 3            | -0,53      | \[-4,19 ; 3,14\] | 0,777   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 2,13       | \[-0,21 ; 4,48\] | 0,087   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,50       | \[-2,19 ; 3,18\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -1,64      | \[-4,28 ; 1,01\] | 0,407   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 1,05       | \[-1,39 ; 3,48\] | 0,898   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -0,47      | \[-3,49 ; 2,55\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -1,51      | \[-4,57 ; 1,54\] | 0,695   |
+
+: Diferenças estimadas dos níveis de insulina entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-insulin}
+
+## HOMA-IR
+
+No modelo ajustado para os níveis de HOMA-IR, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Além disso, as comparações dentro de cada grupo ao longo do tempo não revelaram mudanças significativas. A análise de sensibilidade, realizada com a exclusão de observações influentes, confirmou a robustez dos achados, com estimativas semelhantes e ausência de diferenças significativas entre os grupos ou ao longo das visitas. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-homa-ir.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,15       | \[-0,57 ; 0,88\] | 0,675   |
+| Entre grupos        | Visita 2            | -0,07      | \[-0,80 ; 0,66\] | 0,844   |
+| Entre grupos        | Visita 3            | -0,06      | \[-0,96 ; 0,84\] | 0,896   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,41       | \[-0,16 ; 0,99\] | 0,252   |
+| Grupo Placebo       | Visita 1 - Visita 3 | -0,04      | \[-0,70 ; 0,63\] | 1,000   |
+| Grupo Placebo       | Visita 2 - Visita 3 | -0,45      | \[-1,12 ; 0,22\] | 0,309   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,19       | \[-0,41 ; 0,78\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -0,25      | \[-1,00 ; 0,50\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -0,44      | \[-1,19 ; 0,32\] | 0,485   |
+
+: Diferenças estimadas dos níveis de HOMA-IR entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-homa-ir}
+
+## Índice QUICK
+
+No modelo ajustado para o índice de sensibilidade à insulina (Quick Index), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. Da mesma forma, as comparações ao longo do tempo dentro de cada grupo também não mostraram variações significativas. A análise de sensibilidade, realizada com a exclusão das observações influentes, confirmou os achados da análise principal. As estimativas permaneceram consistentes, sem diferenças estatisticamente significativas entre os grupos ou ao longo do tempo. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-quick-index.
+
+| Grupo de comparação | Comparação | Estimativa | IC 95% | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos | Visita 1 | -0,001 | \[-0,013 ; 0,011\] | 0,833 |
+| Entre grupos | Visita 2 | 0,002 | \[-0,011 ; 0,015\] | 0,711 |
+| Entre grupos | Visita 3 | 0,004 | \[-0,010 ; 0,018\] | 0,565 |
+| Grupo Placebo | Visita 1 - Visita 2 | -0,008 | \[-0,018 ; 0,002\] | 0,131 |
+| Grupo Placebo | Visita 1 - Visita 3 | -0,002 | \[-0,013 ; 0,008\] | 1,000 |
+| Grupo Placebo | Visita 2 - Visita 3 | 0,006 | \[-0,005 ; 0,017\] | 0,585 |
+| Grupo Eclipta | Visita 1 - Visita 2 | -0,005 | \[-0,015 ; 0,006\] | 0,826 |
+| Grupo Eclipta | Visita 1 - Visita 3 | 0,003 | \[-0,009 ; 0,015\] | 1,000 |
+| Grupo Eclipta | Visita 2 - Visita 3 | 0,008 | \[-0,005 ; 0,020\] | 0,399 |
+
+: Diferenças estimadas do índice Quick entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-quick-index}
+
+## Circunferência abdominal
+
+No modelo ajustado para a circunferência abdominal, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. As comparações dentro dos grupos ao longo do tempo também não revelaram mudanças significativas. Embora a diferença entre as visitas 1 e 3 no grupo placebo tenha se aproximado da significância (p = 0,089), essa tendência não foi confirmada na análise de sensibilidade. Após a exclusão das observações influentes, os resultados permaneceram estáveis, sem diferenças estatisticamente significativas entre os grupos ou ao longo do tempo. As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-abdomen.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 1,56       | \[-1,96 ; 5,08\] | 0,381   |
+| Entre grupos        | Visita 2            | 0,87       | \[-2,74 ; 4,47\] | 0,634   |
+| Entre grupos        | Visita 3            | -0,81      | \[-4,49 ; 2,86\] | 0,661   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,91       | \[-0,84 ; 2,65\] | 0,623   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 1,66       | \[-0,17 ; 3,48\] | 0,089   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 0,75       | \[-1,08 ; 2,58\] | 0,962   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,22       | \[-1,56 ; 2,00\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -0,72      | \[-2,61 ; 1,18\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -0,93      | \[-2,83 ; 0,96\] | 0,700   |
+
+: Diferenças estimadas da circunferência abdominal entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-abdomen}
+
+## Índice de Massa Corporal
+
+No modelo ajustado para o índice de massa corporal (IMC), não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. No entanto, dentro do grupo placebo, observou-se uma redução estatisticamente significativa entre as visitas 1 e 3 (p = 0,0059). Para investigar a robustez desse achado, foi realizada uma análise de sensibilidade com exclusão das cinco observações mais influentes (IDs: 8, 50, 53, 74 e 32). Após a exclusão, a diferença intra grupo placebo deixou de ser significativa (p = 0,222), sugerindo que o resultado original foi influenciado por outliers.
+
+As figuras de diagnóstico do modelo indicaram leve heterocedasticidade e presença de observações influentes, justificando a realização da análise de sensibilidade. A comparação entre os modelos mostrou melhora nos índices de ajuste após a exclusão dos dados influentes (AIC e BIC consideravelmente menores e RMSE reduzido), além de maior normalidade dos resíduos e aleatoriedade nos efeitos aleatórios.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-bmi. As estimativas, intervalos de confiança de 95% e valores de p da análise de sensibilidade estão apresentadas na @tbl-bmi-sens.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -0,36      | \[-1,34 ; 0,62\] | 0,468   |
+| Entre grupos        | Visita 2            | -0,70      | \[-1,70 ; 0,31\] | 0,171   |
+| Entre grupos        | Visita 3            | -0,93      | \[-1,95 ; 0,09\] | 0,072   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,33       | \[-0,09 ; 0,74\] | 0,177   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,57       | \[0,14 ; 1,01\]  | 0,006   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 0,25       | \[-0,19 ; 0,69\] | 0,517   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | -0,01      | \[-0,44 ; 0,42\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 0,00       | \[-0,45 ; 0,46\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | 0,01       | \[-0,44 ; 0,47\] | 1,000   |
+
+: Diferenças estimadas do índice de massa corporal (IMC) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-bmi}
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -0,55      | \[-1,49 ; 0,39\] | 0,251   |
+| Entre grupos        | Visita 2            | -0,67      | \[-1,63 ; 0,29\] | 0,168   |
+| Entre grupos        | Visita 3            | -0,75      | \[-1,72 ; 0,22\] | 0,127   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 0,17       | \[-0,17 ; 0,52\] | 0,670   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,27       | \[-0,10 ; 0,64\] | 0,222   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 0,10       | \[-0,27 ; 0,47\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 0,05       | \[-0,29 ; 0,39\] | 1,000   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 0,07       | \[-0,29 ; 0,43\] | 1,000   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | 0,02       | \[-0,34 ; 0,38\] | 1,000   |
+
+: Diferenças estimadas do índice de massa corporal (IMC) entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo – Análise de sensibilidade {#tbl-bmi-sens}
+
+## Pressão Arterial
+
+### Média da Pressão arterial média
+
+No modelo ajustado para a média da pressão arterial, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados. No entanto, observou-se uma redução da pressão arterial entre as visitas 1 e 2 no grupo Eclipta (diferença média de 4,02 mmHg; IC 95%: 0,35 a 7,70), e uma tendência à redução entre as visitas 1 e 3 no grupo placebo (diferença média de 3,71 mmHg; IC 95%: -0,05 a 7,48).
+
+Na análise de sensibilidade, realizada com exclusão das observações mais influentes, foi identificada uma diferença significativa entre os grupos na visita 3, com o grupo Eclipta apresentando pressão arterial média 5,56 mmHg inferior ao grupo placebo (IC 95%: -10,57 a -0,55). A redução entre as visitas 1 e 3 no grupo placebo tornou-se significativa e mais pronunciada, com diferença de 4,53 mmHg (IC 95%: 1,01 a 8,04), e a diferença entre as visitas 1 e 2 no grupo Eclipta foi mantida (diferença de 4,80 mmHg; IC 95%: 1,57 a 8,04). Essas mudanças foram acompanhadas por melhora nos indicadores de ajuste do modelo. As melhorias nos indicadores de ajuste (AIC, BIC, RMSE e R²) reforçam a adequação do modelo sensível.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas nas @tbl-bp e @tbl-bp-sens.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | -2,78      | \[-7,41 ; 1,86\] | 0,238   |
+| Entre grupos        | Visita 2            | 0,04       | \[-4,95 ; 5,02\] | 0,988   |
+| Entre grupos        | Visita 3            | -4,21      | \[-9,34 ; 0,92\] | 0,107   |
+| Grupo Placebo       | Visita 1 - Visita 2 | 1,21       | \[-2,46 ; 4,87\] | 1,000   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 3,71       | \[-0,05 ; 7,48\] | 0,054   |
+| Grupo Placebo       | Visita 2 - Visita 3 | 2,51       | \[-1,38 ; 6,39\] | 0,362   |
+| Grupo Eclipta       | Visita 1 - Visita 2 | 4,02       | \[0,35 ; 7,70\]  | 0,027   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 2,28       | \[-1,61 ; 6,16\] | 0,470   |
+| Grupo Eclipta       | Visita 2 - Visita 3 | -1,74      | \[-5,68 ; 2,20\] | 0,855   |
+
+: Diferenças estimadas da pressão arterial média entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo – Todos os dados {#tbl-bp}
+
+| Grupo de comparação | Comparação | Estimativa | IC 95% | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos | Visita 1 | -3,76 | \[-8,32 ; 0,79\] | 0,104 |
+| Entre grupos | Visita 2 | -1,10 | \[-5,96 ; 3,76\] | 0,655 |
+| Entre grupos | Visita 3 | -5,56 | \[-10,57 ; -0,55\] | 0,030 |
+| Grupo Placebo | Visita 1 - Visita 2 | 2,14 | \[-1,22 ; 5,49\] | 0,372 |
+| Grupo Placebo | Visita 1 - Visita 3 | 4,53 | \[1,01 ; 8,04\] | 0,007 |
+| Grupo Placebo | Visita 2 - Visita 3 | 2,39 | \[-1,20 ; 5,98\] | 0,325 |
+| Grupo Eclipta | Visita 1 - Visita 2 | 4,80 | \[1,57 ; 8,04\] | 0,002 |
+| Grupo Eclipta | Visita 1 - Visita 3 | 2,73 | \[-0,70 ; 6,17\] | 0,165 |
+| Grupo Eclipta | Visita 2 - Visita 3 | -2,07 | \[-5,54 ; 1,40\] | 0,450 |
+
+: Diferenças estimadas da pressão arterial média entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo – Análise de sensibilidade {#tbl-bp-sens}
+
+### Pressão arterial (todas as medidas)
+
+Importante destacar que, ao invés de resumir cada visita em um único valor, incorporamos ao modelo todas as leituras realizadas em cada participante em cada ponto de avaliação (2 a 3 medidas por visita). Essa estratégia aumentou o número total de observações disponíveis para os modelos lineares mistos. O intercepto aleatório por participante continuou a controlar a correlação entre medidas repetidas do mesmo indivíduo, permitindo capturar tanto a variabilidade intraindividual (entre as 2–3 leituras de cada visita) quanto a variabilidade interindividual, sem prejuízo à robustez dos resultados.
+
+#### Pressão Arterial Média
+
+No modelo ajustado para a pressão arterial média não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados (visita 1: estimativa = –2,71 mmHg; IC 95%: –6,99 a 1,58; p = 0,212; visita 2: estimativa = 0,10 mmHg; IC 95%: –4,23 a 4,43; p = 0,964; visita 3: estimativa = –4,07 mmHg; IC 95%: –8,42 a 0,29; p = 0,067).  
+
+Ambos os grupos apresentaram redução significativa da pressão arterial entre as visitas 1 e 2 (placebo: –1,67 mmHg; IC 95%: –2,95 a –0,39; p = 0,006; eclipta: –4,48 mmHg; IC 95%: –5,76 a –3,20; p < 0,001) e entre as visitas 1 e 3 (placebo: –4,02 mmHg; IC 95%: –5,32 a –2,72; p < 0,001; eclipta: –2,66 mmHg; IC 95%: –4,01 a –1,32; p < 0,001). No grupo placebo houve ainda redução entre as visitas 2 e 3 (–2,35 mmHg; IC 95%: –3,66 a –1,04; p = 0,0001), enquanto no grupo eclipta essa redução entre a visita 2 e a 3 foi significativa apenas no modelo completo.
+
+Na análise de sensibilidade, as reduções entre as visitas 1 e 2 e entre as visitas 1 e 3 mantiveram-se significativas em ambos os grupos. Porém, a redução entre as visitas 2 e 3 no grupo eclipta deixou de ser significativa (–0,41 mmHg; IC 95%: –1,52 a 0,71; p = 1,000).
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas nas @tbl-bp-mean e @tbl-bp-mean-sens.
+
+Table: Diferenças estimadas da pressão arterial média entre grupos (placebo vs eclipta) e entre visitas – Todos os dados {#tbl-bp-mean}
+
+| Grupo de comparação   | Comparação           | Estimativa (mmHg) | IC 95%           | p-valor   |
+|-----------------------|----------------------|-------------------|------------------|-----------|
+| Entre grupos          | Visita 1             | –2,71             | [–6,99; 1,58]    | 0,212     |
+| Entre grupos          | Visita 2             | 0,10              | [–4,23; 4,43]    | 0,964     |
+| Entre grupos          | Visita 3             | –4,07             | [–8,42; 0,29]    | 0,067     |
+| Grupo Placebo         | Visita 1 – Visita 2  | –1,67             | [–2,95; –0,39]   | 0,006     |
+| Grupo Placebo         | Visita 1 – Visita 3  | –4,02             | [–5,32; –2,72]   | < 0,001   |
+| Grupo Placebo         | Visita 2 – Visita 3  | –2,35             | [–3,66; –1,04]   | 0,0001    |
+| Grupo Eclipta         | Visita 1 – Visita 2  | –4,48             | [–5,76; –3,20]   | < 0,001   |
+| Grupo Eclipta         | Visita 1 – Visita 3  | –2,66             | [–4,01; –1,32]   | < 0,001   |
+| Grupo Eclipta         | Visita 2 – Visita 3  | 1,82              | [0,46; 3,17]     | 0,005     |
+
+Table: Diferenças estimadas da pressão arterial média – Análise de sensibilidade {#tbl-bp-mean-sens}
+
+| Grupo de comparação   | Comparação           | Estimativa (mmHg) | IC 95%           | p-valor   |
+|-----------------------|----------------------|-------------------|------------------|-----------|
+| Entre grupos          | Visita 1             | –3,18             | [–9,03; 2,66]    | 0,279     |
+| Entre grupos          | Visita 2             | –0,84             | [–6,73; 5,04]    | 0,774     |
+| Entre grupos          | Visita 3             | –4,81             | [–10,70; 1,09]   | 0,108     |
+| Grupo Placebo         | Visita 1 – Visita 2  | –1,55             | [–2,59; –0,51]   | 0,002     |
+| Grupo Placebo         | Visita 1 – Visita 3  | –5,10             | [–6,20; –4,01]   | < 0,001   |
+| Grupo Placebo         | Visita 2 – Visita 3  | –3,55             | [–4,67; –2,44]   | < 0,001   |
+| Grupo Eclipta         | Visita 1 – Visita 2  | –3,89             | [–4,93; –2,84]   | < 0,001   |
+| Grupo Eclipta         | Visita 1 – Visita 3  | –3,48             | [–4,60; –2,36]   | < 0,001   |
+| Grupo Eclipta         | Visita 2 – Visita 3  | 0,41              | [–1,52; 0,71]    | 1,000     |
+
+#### Pressão Arterial Sistólica
+
+No modelo ajustado para pressão arterial sistólica, não houve diferença significativa entre os grupos nas visitas 1 (estimativa = –3,19 mmHg; IC 95%: –8,16 a 1,80; p = 0,207) e 2 (estimativa = –0,50 mmHg; IC 95%: –5,41 a 4,42; p = 0,842). Na visita 3, a pressão sistólica no grupo placebo foi em média 5,06 mmHg inferior ao grupo Eclipta (estimativa = –5,06 mmHg; IC 95%: –9,97 a –0,14; p = 0,044).
+
+Ao longo do tempo, ambos os grupos exibiram redução significativa da pressão sistólica:
+- **Grupo Placebo**: redução de 1,82 mmHg entre visita 1 e 2 (IC 95%: 0,20 a 3,43; p = 0,022), de 4,75 mmHg entre visita 1 e 3 (IC 95%: 3,13 a 6,37; p < 0,001) e de 2,93 mmHg entre visita 2 e 3 (IC 95%: 1,30 a 4,56; p < 0,001).
+- **Grupo Eclipta**: redução de 4,51 mmHg entre visita 1 e 2 (IC 95%: 2,87 a 6,15; p < 0,001) e de 2,88 mmHg entre visita 1 e 3 (IC 95%: 1,15 a 4,61; p = 0,0003); não houve redução significativa entre visita 2 e 3 (–1,63 mmHg; IC 95%: –3,35 a 0,09; p = 0,070).
+
+Na análise de sensibilidade, o contraste entre grupos na visita 3 permaneceu significativo (estimativa = –7,01 mmHg; IC 95%: –13,88 a –0,13; p = 0,046). As reduções dentro de cada grupo entre visita 1 e 3 mantiveram-se (placebo: –5,10 mmHg; IC 95%: –6,20 a –4,01; p < 0,001; eclipta: –3,48 mmHg; IC 95%: –4,60 a –2,36; p < 0,001), e a redução entre visita 2 e 3 no grupo eclipta continuou significativa (–1,88 mmHg; IC 95%: –3,70 a –0,05; p = 0,042), enquanto a redução entre visita 1 e 2 no placebo deixou de ser significativa (–1,55 mmHg; IC 95%: –2,59 a –0,51; p = 0,073).
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas nas @tbl-systolic e @tbl-systolic-sens.
+
+Table: Diferenças estimadas da pressão arterial sistólica entre grupos e entre visitas – Todos os dados {#tbl-systolic}
+
+| Grupo de comparação   | Comparação           | Estimativa (mmHg) | IC 95%           | p-valor |
+|-----------------------|----------------------|-------------------|------------------|---------|
+| Entre grupos          | Visita 1             | –3,19             | [–8,16; 1,80]    | 0,207   |
+| Entre grupos          | Visita 2             | –0,50             | [–5,41; 4,42]    | 0,842   |
+| Entre grupos          | Visita 3             | –5,06             | [–9,97; –0,14]   | 0,044   |
+| Grupo Placebo         | Visita 1–Visita 2    | –1,82             | [0,20; 3,43]     | 0,022   |
+| Grupo Placebo         | Visita 1–Visita 3    | –4,75             | [3,13; 6,37]     | < 0,001 |
+| Grupo Placebo         | Visita 2–Visita 3    | –2,93             | [1,30; 4,56]     | < 0,001 |
+| Grupo Eclipta         | Visita 1–Visita 2    | –4,51             | [2,87; 6,15]     | < 0,001 |
+| Grupo Eclipta         | Visita 1–Visita 3    | –2,88             | [1,15; 4,61]     | 0,0003  |
+| Grupo Eclipta         | Visita 2–Visita 3    | –1,63             | [–3,35; 0,09]    | 0,070   |
+
+Table: Diferenças estimadas da pressão arterial sistólica – Análise de sensibilidade {#tbl-systolic-sens}
+
+| Grupo de comparação   | Comparação           | Estimativa (mmHg) | IC 95%           | p-valor |
+|-----------------------|----------------------|-------------------|------------------|---------|
+| Entre grupos          | Visita 1             | –4,95             | [–11,88; 1,99]   | 0,157   |
+| Entre grupos          | Visita 2             | –2,13             | [–8,98; 4,71]    | 0,533   |
+| Entre grupos          | Visita 3             | –7,01             | [–13,88; –0,13]  | 0,046   |
+| Grupo Placebo         | Visita 1–Visita 2    | –1,55             | [–2,59; –0,51]   | 0,073   |
+| Grupo Placebo         | Visita 1–Visita 3    | –5,10             | [–6,20; –4,01]   | < 0,001 |
+| Grupo Placebo         | Visita 2–Visita 3    | –3,55             | [–4,67; –2,44]   | < 0,001 |
+| Grupo Eclipta         | Visita 1–Visita 2    | –3,89             | [–4,93; –2,84]   | < 0,001 |
+| Grupo Eclipta         | Visita 1–Visita 3    | –3,48             | [–4,60; –2,36]   | < 0,001 |
+| Grupo Eclipta         | Visita 2–Visita 3    | –1,88             | [–3,70; –0,05]   | 0,042   |
+
+#### Pressão Arterial Diastólica
+
+No modelo ajustado para a pressão arterial diastólica, não houve diferenças estatisticamente significativas entre os grupos em nenhum dos três momentos avaliados (visita 1: estimativa = –2,46 mmHg; IC 95%: –6,74 a 1,83; p = 0,257; visita 2: estimativa = 0,34 mmHg; IC 95%: –3,82 a 4,50; p = 0,872; visita 3: estimativa = –3,55 mmHg; IC 95%: –7,74 a 0,63; p = 0,095).
+
+Contudo, ambos os grupos apresentaram redução significativa da pressão diastólica ao longo do tempo:
+- **Grupo Placebo**: redução média de 1,49 mmHg entre visita 1 e 2 (IC 95%: 0,26 a 2,72; p = 0,012), de 3,46 mmHg entre visita 1 e 3 (IC 95%: 2,22 a 4,69; p < 0,001) e de 1,96 mmHg entre visita 2 e 3 (IC 95%: 0,73 a 3,20; p = 0,001).
+- **Grupo Eclipta**: redução média de 4,29 mmHg entre visita 1 e 2 (IC 95%: 3,03 a 5,55; p < 0,001), de 2,36 mmHg entre visita 1 e 3 (IC 95%: 1,03 a 3,69; p < 0,001) e de 1,93 mmHg entre visita 2 e 3 (IC 95%: 1,24 a 3,23; p = 0,002).
+
+Na análise de sensibilidade, as reduções entre visita 1 e 2 e entre visita 1 e 3 mantiveram-se significativas em ambos os grupos. Já a redução entre visita 2 e 3 no grupo Eclipta deixou de ser significativa (–0,29 mmHg; IC 95%: –1,34 a 0,75; p = 1,000).
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas nas @tbl-diastolic e @tbl-diastolic-sens.
+
+Table: Diferenças estimadas da pressão diastólica entre grupos e ao longo do tempo – Modelo completo {#tbl-diastolic}
+
+| Grupo de comparação   | Comparação          | Estimativa (mmHg) | IC 95%           | p-valor |
+|-----------------------|---------------------|-------------------|------------------|---------|
+| Entre grupos          | Visita 1            | –2,46             | [–6,74; 1,83]    | 0,257   |
+| Entre grupos          | Visita 2            | 0,34              | [–3,82; 4,50]    | 0,872   |
+| Entre grupos          | Visita 3            | –3,55             | [–7,74; 0,63]    | 0,095   |
+| Grupo Placebo         | Visita 1 – Visita 2 | –1,49             | [0,26; 2,72]     | 0,012   |
+| Grupo Placebo         | Visita 1 – Visita 3 | –3,46             | [2,22; 4,69]     | < 0,001 |
+| Grupo Placebo         | Visita 2 – Visita 3 | –1,96             | [0,73; 3,20]     | 0,001   |
+| Grupo Eclipta         | Visita 1 – Visita 2 | –4,29             | [3,03; 5,55]     | < 0,001 |
+| Grupo Eclipta         | Visita 1 – Visita 3 | –2,36             | [1,03; 3,69]     | < 0,001 |
+| Grupo Eclipta         | Visita 2 – Visita 3 | –1,93             | [1,24; 3,23]     | 0,002   |
+
+Table: Diferenças estimadas da pressão diastólica – Análise de sensibilidade {#tbl-diastolic-sens}
+
+| Grupo de comparação   | Comparação          | Estimativa (mmHg) | IC 95%           | p-valor |
+|-----------------------|---------------------|-------------------|------------------|---------|
+| Entre grupos          | Visita 1            | –1,43             | [–7,69; 4,83]    | 0,647   |
+| Entre grupos          | Visita 2            | 0,51              | [–5,60; 6,62]    | 0,867   |
+| Entre grupos          | Visita 3            | –2,54             | [–8,55; 3,47]    | 0,399   |
+| Grupo Placebo         | Visita 1 – Visita 2 | –1,41             | [0,25; 2,57]     | 0,013   |
+| Grupo Placebo         | Visita 1 – Visita 3 | –4,17             | [2,93; 5,41]     | < 0,001 |
+| Grupo Placebo         | Visita 2 – Visita 3 | –2,76             | [1,50; 4,02]     | < 0,001 |
+| Grupo Eclipta         | Visita 1 – Visita 2 | –3,35             | [2,33; 4,37]     | < 0,001 |
+| Grupo Eclipta         | Visita 1 – Visita 3 | –3,06             | [1,97; 4,14]     | < 0,001 |
+| Grupo Eclipta         | Visita 2 – Visita 3 | –0,29             | [–1,34; 0,75]    | 1,000   |
+
+## Escore EVS
+
+Para analisar o escore de atividade física semanal (evs_score), que representa o produto entre os dias por semana e os minutos por dia de exercício relatados por cada participante, foi adotado um modelo em dois estágios. Esta abordagem se mostrou mais adequada devido à presença de 33.9% de valores iguais a zero (pacientes inativos) e à distribuição assimétrica dos valores positivos (pacientes ativos).
+
+**No primeiro estágio**, foi ajustado um modelo de regressão logística mista com intercepto aleatório por participante para estimar a probabilidade de o participante relatar qualquer atividade física (evs_score \> 0). Observou-se que, independentemente do grupo, a chance de relatar exercício aumentou significativamente na visita 2 (OR ≈ 24, p = 0,002) e, em menor grau, na visita 3 (p = 0,046) em comparação à visita 1. No entanto, não houve efeito significativo do grupo de intervenção (Grupo B) nem interações significativas entre grupo e visita, indicando que o aumento da atividade física ao longo do tempo pode estar relacionado a outros fatores (por exemplo, efeito de acompanhamento ou motivação decorrente da participação no estudo).
+
+No segundo estágio, foi ajustado um modelo linear misto com intercepto aleatório por participante, incluindo apenas os participantes que relataram evs_score \> 0, utilizando a transformação logarítmica dos minutos semanais de exercício como variável dependente. Neste modelo, nenhuma diferença significativa foi observada entre os grupos ou ao longo do tempo em relação à quantidade de exercício realizada entre os participantes ativos. Ou seja, embora mais participantes tenham relatado prática de atividade física nas visitas seguintes, a duração total semanal entre aqueles que se exercitavam permaneceu estável.
+
+Esses resultados sugerem que o efeito observado ao longo do tempo se concentrou em uma maior adesão à prática de atividade física, mas não em um aumento da quantidade entre os que já praticavam.
+
+# Variáveis coletadas na primeira e terceira visitas
+## Ângulo de Fase
+
+No modelo ajustado para o desfecho primário do estudo, o ângulo de fase, observou-se uma tendência à diferença entre os grupos na visita 1 (estimativa = 0,34; IC 95% \[-0,04 ; 0,72\]), embora sem significância estatística. Na visita 3, as médias estimadas também foram semelhantes entre os grupos (estimativa = 0,28; IC 95% \[-0,13 ; 0,69\]). Dentro de cada grupo, não foram detectadas mudanças significativas ao longo do tempo.
+
+A análise de sensibilidade, com exclusão de observações influentes, revelou um aumento da magnitude do efeito entre os grupos na visita 1, com significância estatística (estimativa = 0,33; IC 95% \[0,02 ; 0,64\]), sugerindo que o grupo placebo apresentou valores de ângulo de fase ligeiramente superiores no início do estudo. As demais comparações permaneceram não significativas, e as estimativas dentro dos grupos ao longo do tempo se mantiveram estáveis.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-phase-angle e @tbl-phase-angle-sens
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,34       | \[-0,04 ; 0,72\] | 0,082   |
+| Entre grupos        | Visita 3            | 0,28       | \[-0,13 ; 0,69\] | 0,175   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,09       | \[-0,11 ; 0,29\] | 0,388   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 0,03       | \[-0,18 ; 0,24\] | 0,757   |
+
+: Diferenças estimadas do ângulo de fase entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo (todos os dados) {#tbl-phase-angle}
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,33       | \[0,02 ; 0,64\]  | 0,037   |
+| Entre grupos        | Visita 3            | 0,20       | \[-0,12 ; 0,52\] | 0,221   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,13       | \[-0,00 ; 0,27\] | 0,054   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | 0,00       | \[-0,13 ; 0,14\] | 0,955   |
+
+: Diferenças estimadas do ângulo de fase entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo (Análise de sensibilidade) {#tbl-phase-angle-sens}
+
+## Reatância
+
+No modelo ajustado para os valores de reatância, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos momentos avaliados. As estimativas de diferença entre os grupos na visita 1 (estimativa = 0,73; IC 95% \[-3,10 ; 4,55\]) e na visita 3 (estimativa = -0,24; IC 95% \[-4,51 ; 4,04\]) apresentaram ampla sobreposição dos intervalos de confiança com zero. Da mesma forma, não foram identificadas mudanças significativas ao longo do tempo dentro de cada grupo.
+
+A análise de sensibilidade não alterou substancialmente os resultados. Embora tenha havido um leve aumento da estimativa de diferença entre os grupos na visita 1 (estimativa = 1,77; IC 95% \[-1,52 ; 5,05\]), essa diferença continuou não significativa. As demais comparações permaneceram estáveis, sem alterações relevantes nas conclusões.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentados na @tbl-reactance.
+
+| Grupo de comparação | Comparação          | Estimativa | IC 95%           | p-valor |
+|---------------|---------------|---------------|---------------|---------------|
+| Entre grupos        | Visita 1            | 0,73       | \[-3,10 ; 4,55\] | 0,707   |
+| Entre grupos        | Visita 3            | -0,24      | \[-4,51 ; 4,04\] | 0,913   |
+| Grupo Placebo       | Visita 1 - Visita 3 | 0,68       | \[-1,73 ; 3,08\] | 0,579   |
+| Grupo Eclipta       | Visita 1 - Visita 3 | -0,29      | \[-2,87 ; 2,29\] | 0,825   |
+
+: Diferenças estimadas da reatância entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo {#tbl-reactance}
+
+## Resistência
+
+No modelo ajustado para os valores de resistência bioelétrica corporal, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos momentos avaliados. As estimativas de diferença entre os grupos foram de -20,5 ohms (IC 95%: -50,6 a 9,6) na visita 1 e -25,2 ohms (IC 95%: -58,2 a 7,9) na visita 3. Tampouco foram observadas mudanças significativas ao longo do tempo dentro de cada grupo. 
+
+A análise de sensibilidade, com exclusão das observações mais influentes, não alterou substancialmente os resultados. As estimativas permaneceram similares, com diferença entre os grupos de -9,6 ohms (IC 95%: -35,9 a 16,8) na visita 1 e -20,4 ohms (IC 95%: -49,0 a 8,1) na visita 3, também sem significância estatística. Da mesma forma, não houve mudanças significativas entre as visitas dentro de cada grupo. As estimativas e intervalos de confiança de 95% estão apresentados na @tbl-resistance.
+
+Table: Diferenças estimadas nos valores de resistência elétrica entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo – Todos os dados {#tbl-resistance}
+
+| Grupo de comparação   | Comparação          | Estimativa | IC 95%              | p-valor |
+|-----------------------|---------------------|------------|----------------------|---------|
+| Entre grupos          | Visita 1            | -20,5      | [-50,6 ; 9,6]        | 0,180   |
+| Entre grupos          | Visita 3            | -25,2      | [-58,2 ; 7,9]        | 0,135   |
+| Grupo Placebo         | Visita 1 - Visita 3 | -2,23      | [-19,0 ; 14,6]       | 0,792   |
+| Grupo Eclipta         | Visita 1 - Visita 3 | -6,88      | [-25,0 ; 11,2]       | 0,451   |
+
+## Força de Preensão Palmar
+
+No modelo ajustado para a força de preensão manual, observou-se uma diferença estatisticamente significativa entre os grupos na visita 3, com o grupo placebo apresentando força média 5,59 kgf superior ao grupo Eclipta (IC 95%: 1,67 a 9,51). Na visita 1, a diferença entre os grupos foi de 3,17 kgf (IC 95%: -0,54 a 6,88), sem alcançar significância estatística. Dentro de cada grupo, não foram observadas mudanças significativas ao longo do tempo.
+
+Na análise de sensibilidade, os efeitos observados foram atenuados e perderam significância estatística. A diferença entre os grupos na visita 3 reduziu-se para 2,60 kgf (IC 95%: -0,64 a 5,84), e na visita 1 para 2,02 kgf (IC 95%: -1,06 a 5,11). Também não houve mudanças significativas entre as visitas dentro de cada grupo. Esses achados sugerem que os resultados observados no modelo completo podem ter sido influenciados por observações com alto impacto.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas nas @tbl-handgrip e @tbl-handgrip-sens.
+
+Table: Diferenças estimadas da força de preensão manual entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo – Todos os dados {#tbl-handgrip}
+
+| Grupo de comparação   | Comparação          | Estimativa | IC 95%              | p-valor |
+|-----------------------|---------------------|------------|----------------------|---------|
+| Entre grupos          | Visita 1            | 3,17       | [-0,54 ; 6,88]       | 0,093   |
+| Entre grupos          | Visita 3            | 5,59       | [1,67 ; 9,51]        | 0,006   |
+| Grupo Placebo         | Visita 1 - Visita 3 | -0,95      | [-2,83 ; 0,92]       | 0,316   |
+| Grupo Eclipta         | Visita 1 - Visita 3 | 1,47       | [-0,21 ; 3,15]       | 0,085   |
+
+Table: Diferenças estimadas da força de preensão manual entre os grupos de alocação (placebo vs Eclipta) e entre visitas dentro de cada grupo – Análise de sensibilidade {#tbl-handgrip-sens}
+
+| Grupo de comparação   | Comparação          | Estimativa | IC 95%              | p-valor |
+|-----------------------|---------------------|------------|----------------------|---------|
+| Entre grupos          | Visita 1            | 2,02       | [-1,06 ; 5,11]       | 0,195   |
+| Entre grupos          | Visita 3            | 2,60       | [-0,64 ; 5,84]       | 0,115   |
+| Grupo Placebo         | Visita 1 - Visita 3 | -0,78      | [-1,83 ; 0,26]       | 0,139   |
+| Grupo Eclipta         | Visita 1 - Visita 3 | -0,21      | [-1,28 ; 0,87]       | 0,702   |
+
+## WHOQOL
+
+### Domínio Físico
+
+No modelo ajustado para o domínio físico do WHOQOL-BREF, não houve diferença significativa entre os grupos na visita 1 (estimativa = 4,92; IC 95%: –2,18 a 12,0). Na visita 2, o grupo placebo apresentou escores físicos em média 9,60 pontos superiores aos do grupo Eclipta (IC 95%: 1,50 a 17,7). Ao longo do tempo, o grupo placebo mostrou melhora significativa entre as visitas 1 e 2 (aumento médio de 8,94; IC 95%: 3,34 a 14,5), enquanto no grupo Eclipta essa mudança não foi significativa (aumento de 4,26; IC 95%: –1,52 a 10,0).
+
+Em análise de sensibilidade, o achado entre grupos na visita 2 permaneceu (estimativa = 7,43; IC 95%: 0,12 a 14,7). Além disso, ambos os grupos exibiram melhora significativa ao longo do tempo: placebo (aumento médio de 10,26; IC 95%: 5,53 a 15,0) e Eclipta (aumento médio de 6,67; IC 95%: 1,56 a 11,8).
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas nas @tbl-score_physical e @tbl-score_phys_sens.
+
+Table: Diferenças estimadas do escore físico do WHOQOL-BREF entre grupos (placebo vs Eclipta) e entre visitas dentro de cada grupo – Todos os dados {#tbl-score_physical}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%             | p-valor |
+|-----------------------|----------------------|------------|--------------------|---------|
+| Entre grupos          | Visita 1             | 4,92       | [–2,18; 12,0]      | 0,172   |
+| Entre grupos          | Visita 2             | 9,60       | [1,50; 17,7]       | 0,021   |
+| Grupo Placebo         | Visita 1 – Visita 2  | –8,94      | [–14,5; –3,34]     | 0,002   |
+| Grupo Eclipta         | Visita 1 – Visita 2  | –4,26      | [–10,0; 1,52]      | 0,147   |
+
+Table: Diferenças estimadas do escore físico do WHOQOL-BREF entre grupos (placebo vs Eclipta) e entre visitas dentro de cada grupo – Análise de sensibilidade {#tbl-score_phys_sens}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%             | p-valor  |
+|-----------------------|----------------------|------------|--------------------|----------|
+| Entre grupos          | Visita 1             | 3,84       | [–2,59; 10,3]      | 0,238    |
+| Entre grupos          | Visita 2             | 7,43       | [0,12; 14,7]       | 0,046    |
+| Grupo Placebo         | Visita 1 – Visita 2  | –10,26     | [–15,0; –5,53]     | < 0,001  |
+| Grupo Eclipta         | Visita 1 – Visita 2  | –6,67      | [–11,8; –1,56]     | 0,011    |
+
+### Domínio Psicológico
+
+No modelo ajustado para o domínio psicológico do WHOQOL-BREF, não foram observadas diferenças estatisticamente significativas entre os grupos em nenhum dos momentos avaliados (visita 1: estimativa = –1,47; IC 95%: –8,45 a 5,51; visita 2: estimativa = 2,87; IC 95%: –4,93 a 10,67). Ao longo do tempo, ambos os grupos apresentaram melhora significativa do escore psicológico entre a visita 1 e a visita 2: placebo (aumento médio de 12,39; IC 95%: 7,49 a 17,3) e Eclipta (aumento médio de 8,05; IC 95%: 2,99 a 13,1).
+
+Na análise de sensibilidade, os achados principais se mantiveram: não houve diferença entre grupos nas visitas 1 e 2, e as melhorias ao longo do tempo continuaram significativas para placebo (aumento de 12,08; IC 95%: 7,69 a 16,5) e Eclipta (aumento de 9,36; IC 95%: 5,09 a 13,6).
+
+As estimativas, intervalos de confiança de 95% e p-valores estão apresentados nas @tbl-score_psychological e @tbl-score_psychological_sens.
+
+Table: Diferenças estimadas do escore psicológico do WHOQOL-BREF entre grupos (placebo vs Eclipta) e ao longo do tempo – Todos os dados {#tbl-score_psychological}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%           | p-valor |
+|-----------------------|----------------------|------------|------------------|---------|
+| Entre grupos          | Visita 1             | –1,47      | [–8,45; 5,51]    | 0,676   |
+| Entre grupos          | Visita 2             | 2,87       | [–4,93; 10,67]   | 0,468   |
+| Grupo Placebo         | Visita 1 – Visita 2  | –12,39     | [–17,3; –7,49]   | < 0,001 |
+| Grupo Eclipta         | Visita 1 – Visita 2  | –8,05      | [–13,1; –2,99]   | 0,002   |
+
+Table: Diferenças estimadas do escore psicológico do WHOQOL-BREF entre grupos (placebo vs Eclipta) e ao longo do tempo – Análise de sensibilidade {#tbl-score_psychological_sens}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%           | p-valor |
+|-----------------------|----------------------|------------|------------------|---------|
+| Entre grupos          | Visita 1             | –2,41      | [–8,76; 3,94]    | 0,454   |
+| Entre grupos          | Visita 2             | 0,31       | [–6,78; 7,39]    | 0,931   |
+| Grupo Placebo         | Visita 1 – Visita 2  | –12,08     | [–16,5; –7,69]   | < 0,001 |
+| Grupo Eclipta         | Visita 1 – Visita 2  | –9,36      | [–13,6; –5,09]   | < 0,001 |
+
+### Domínio Social
+
+No modelo ajustado para o domínio social do WHOQOL-BREF, não foram observadas diferenças significativas entre os grupos na visita 1 (estimativa = 1,31; IC 95%: –7,76 a 10,4) nem na visita 2 (estimativa = 6,21; IC 95%: –3,93 a 16,3). Também não houve mudanças significativas ao longo do tempo dentro de cada grupo (placebo: –4,05; IC 95%: –10,45 a 2,34; Eclipta: 0,85; IC 95%: –5,76 a 7,45).
+
+Na análise de sensibilidade, surgiu diferença significativa entre os grupos na visita 2, com o grupo placebo apresentando escore social 9,65 pontos superior ao grupo Eclipta (IC 95%: 0,72 a 18,6). Não houve alterações significativas ao longo do tempo dentro de nenhum dos grupos na análise de sensibilidade.
+
+As estimativas, intervalos de confiança de 95% e p-valores estão apresentados nas @tbl-score_social e @tbl-score_social_sens.
+
+Table: Diferenças estimadas do escore social do WHOQOL-BREF entre grupos e ao longo do tempo – Todos os dados {#tbl-score_social}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%            | p-valor |
+|-----------------------|----------------------|------------|-------------------|---------|
+| Entre grupos          | Visita 1             | 1,31       | [–7,76; 10,4]     | 0,775   |
+| Entre grupos          | Visita 2             | 6,21       | [–3,93; 16,3]     | 0,228   |
+| Grupo Placebo         | Visita 1 – Visita 2  | –4,05      | [–10,45; 2,34]    | 0,212   |
+| Grupo Eclipta         | Visita 1 – Visita 2  | 0,85       | [–5,76; 7,45]     | 0,800   |
+
+Table: Diferenças estimadas do escore social do WHOQOL-BREF entre grupos e ao longo do tempo – Análise de sensibilidade {#tbl-score_social_sens}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%            | p-valor |
+|-----------------------|----------------------|------------|-------------------|---------|
+| Entre grupos          | Visita 1             | 2,17       | [–6,06; 10,4]     | 0,601   |
+| Entre grupos          | Visita 2             | 9,65       | [0,72; 18,6]      | 0,035   |
+| Grupo Placebo         | Visita 1 – Visita 2  | –3,60      | [–8,47; 1,27]     | 0,145   |
+| Grupo Eclipta         | Visita 1 – Visita 2  | 3,88       | [–0,88; 8,64]     | 0,109   |
+
+### Domínio Ambiental
+
+No modelo ajustado para o domínio ambiente do WHOQOL-BREF, não foram observadas diferenças significativas entre os grupos na visita 1 (estimativa = 1,62; IC 95%: –4,58 a 7,81) nem na visita 2 (estimativa = 2,77; IC 95%: –3,96 a 9,50). Também não houve alterações significativas ao longo do tempo dentro de cada grupo (placebo: –2,39; IC 95%: –6,03 a 1,24; Eclipta: –1,24; IC 95%: –5,01 a 2,53). A análise de sensibilidade manteve o mesmo padrão de resultados.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas nas @tbl-score_environment.
+
+Table: Diferenças estimadas do escore ambiente do WHOQOL-BREF entre grupos (placebo vs Eclipta) e entre visitas dentro de cada grupo – Todos os dados {#tbl-score_environment}
+
+| Grupo de comparação   | Comparação           | Estimativa | IC 95%             | p-valor |
+|-----------------------|----------------------|------------|--------------------|---------|
+| Entre grupos          | Visita 1             | 1,62       | [–4,58; 7,81]      | 0,605   |
+| Entre grupos          | Visita 2             | 2,77       | [–3,96; 9,50]      | 0,416   |
+| Grupo Placebo         | Visita 1 – Visita 2  | –2,39      | [–6,03; 1,24]      | 0,194   |
+| Grupo Eclipta         | Visita 1 – Visita 2  | –1,24      | [–5,01; 2,53]      | 0,514   |
+
+## Escore DASS
+
+### Escore DASS - Depressão
+
+No modelo de regressão para o escore de depressão (DASS), não foram observadas diferenças significativas entre os grupos em nenhum dos momentos avaliados. Na visita 1, a razão dos escores do Grupo A em relação ao Grupo B foi de 0,855 (IC 95%: 0,502–1,46; p = 0,564) e, na visita 3, 1,074 (IC 95%: 0,574–2,01; p = 0,824). Ao longo do tempo, também não houve mudança significativa dentro de cada grupo: Grupo Placebo (visita 1 vs visita 3, razão = 1,20; IC 95%: 0,767–1,87; p = 0,428) e Grupo Eclipta (visita 1 vs visita 3, razão = 1,50; IC 95%: 0,959–2,36; p = 0,076). A análise de sensibilidade apresentou padrão consistente, sem alterações relevantes nas conclusões.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas na @tbl-dass_depression.
+
+Table: Razões dos escores de depressão (DASS) entre grupos e ao longo do tempo – Todos os dados {#tbl-dass_depression}
+
+| Grupo de comparação   | Comparação           | Razão | IC 95%        | p-valor |
+|-----------------------|----------------------|-------|---------------|---------|
+| Entre grupos          | Visita 1             | 0,855 | [0,502; 1,46] | 0,564   |
+| Entre grupos          | Visita 3             | 1,074 | [0,574; 2,01] | 0,824   |
+| Grupo Placebo         | Visita 1 – Visita 3  | 1,20  | [0,767; 1,87] | 0,428   |
+| Grupo Eclipta         | Visita 1 – Visita 3  | 1,50  | [0,959; 2,36] | 0,076   |
+
+### Escore DASS - Ansiedade
+
+No modelo ajustado para o escore de ansiedade (DASS), não houve diferenças significativas entre os grupos em nenhum dos momentos avaliados (visita 1: razão = 1,06; IC 95%: 0,57–1,96; p = 0,861; visita 3: razão = 1,08; IC 95%: 0,52–2,26; p = 0,830). Também não houve alteração significativa ao longo do tempo dentro de cada grupo (placebo: visita 1 vs visita 3, razão = 1,53; IC 95%: 0,87–2,69; p = 0,136; Eclipta: razão = 1,57; IC 95%: 0,89–2,80; p = 0,122). A análise de sensibilidade manteve o mesmo padrão de resultados.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas na @tbl-dass_anxiety.
+
+Table: Razões dos escores de ansiedade (DASS) entre grupos e ao longo do tempo – Todos os dados {#tbl-dass_anxiety}
+
+| Grupo de comparação   | Comparação           | Razão | IC 95%       | p-valor |
+|-----------------------|----------------------|-------|--------------|---------|
+| Entre grupos          | Visita 1             | 1,06  | [0,57; 1,96] | 0,861   |
+| Entre grupos          | Visita 3             | 1,08  | [0,52; 2,26] | 0,830   |
+| Grupo Placebo         | Visita 1 – Visita 3  | 1,53  | [0,87; 2,69] | 0,136   |
+| Grupo Eclipta         | Visita 1 – Visita 3  | 1,57  | [0,89; 2,80] | 0,122   |
+
+### Escore DASS - Estresse
+
+No modelo ajustado para o escore de estresse (DASS), não houve diferenças significativas entre os grupos em nenhum dos momentos avaliados (visita 1: razão = 0,823; IC 95%: 0,515–1,31; p = 0,414; visita 3: razão = 1,190; IC 95%: 0,701–2,02; p = 0,519). Ao longo do tempo, o grupo Eclipta apresentou redução significativa do escore de estresse entre visita 1 e visita 3 (razão = 1,52; IC 95%: 1,102–2,11; p = 0,011), enquanto o grupo placebo não mostrou mudança significativa (razão = 1,05; IC 95%: 0,768–1,45; p = 0,745).
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas na @tbl-dass_stress.
+
+Table: Razões dos escores de estresse (DASS) entre grupos e ao longo do tempo – Todos os dados {#tbl-dass_stress}
+
+| Grupo de comparação   | Comparação           | Razão | IC 95%         | p-valor |
+|-----------------------|----------------------|-------|----------------|---------|
+| Entre grupos          | Visita 1             | 0,823 | [0,515; 1,31]  | 0,414   |
+| Entre grupos          | Visita 3             | 1,190 | [0,701; 2,02]  | 0,519   |
+| Grupo Placebo         | Visita 1 – Visita 3  | 1,05  | [0,768; 1,45]  | 0,745   |
+| Grupo Eclipta         | Visita 1 – Visita 3  | 1,52  | [1,102; 2,11]  | 0,011   |
+
+## ECAP
+
+No modelo ajustado para o escore de compulsão alimentar periódica (ECAP), não foram observadas diferenças significativas entre os grupos em nenhuma das visitas (visita 1: estimativa = 2,83; IC 95%: [–0,89; 6,56]; p = 0,134; visita 3: estimativa = 1,32; IC 95%: [–2,74; 5,38]; p = 0,521). Ao longo do tempo, ambos os grupos apresentaram redução significativa do escore de compulsão alimentar entre a visita 1 e a visita 3: Grupo Placebo (aumento médio de 4,80; IC 95%: [2,66; 6,95]; p < 0,001) e Grupo Eclipta (aumento médio de 3,29; IC 95%: [1,07; 5,51]; p = 0,004). A análise de sensibilidade confirmou esses achados sem alterações relevantes.
+
+As estimativas, intervalos de confiança de 95% e valores de p estão apresentadas nas @tbl-ecap_score.
+
+Table: Diferenças estimadas do escore de compulsão alimentar periódica (ECAP) entre grupos e ao longo do tempo – Todos os dados {#tbl-ecap_score}
+
+| Grupo de comparação   | Comparação          | Estimativa | IC 95%          | p-valor |
+|-----------------------|---------------------|------------|-----------------|---------|
+| Entre grupos          | Visita 1            | 2,83       | [–0,89; 6,56]   | 0,134   |
+| Entre grupos          | Visita 3            | 1,32       | [–2,74; 5,38]   | 0,521   |
+| Grupo Placebo         | Visita 1 – Visita 3 | 4,80       | [2,66; 6,95]    | < 0,001 |
+| Grupo Eclipta         | Visita 1 – Visita 3 | 3,29       | [1,07; 5,51]    | 0,004   |

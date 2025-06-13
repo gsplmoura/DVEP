@@ -39,7 +39,7 @@ format:
     mainfont: "Times New Roman"
     fontsize: 10pt
     linestretch: 1.5
-    geometry: top=2cm, bottom=2cm, left=3cm, right=2cm
+    geometry: top=3cm, bottom=2cm, left=2cm, right=1.5cm
     colorlinks: true
     code-overflow: wrap
     code-block-font-size: 60%
